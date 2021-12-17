@@ -1,0 +1,5 @@
+CREATE TABLE `SynProNetlistParcels` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `parcel` varchar(1000) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=latin1;

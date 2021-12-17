@@ -1,0 +1,921 @@
+body {
+	background-color:#FFFFFF;
+	padding: 0;
+	margin: 0;
+}
+
+/* Change with resolution ------------------------------------------------------------- */
+.main_bar {
+	position:absolute; top: 0px; left: 0px;
+	background-color:#98AFC7;
+	width:1021px;
+	height:80px;
+}
+
+	.title_table {
+		margin:auto;
+	}
+
+
+a {
+text-decoration:underline;
+border:none;
+}
+
+	a:visited {
+	text-decoration:underline;
+	border:none;
+	}
+	
+	a:link {
+	text-decoration:underline;
+	border:none;
+	}
+	
+	a:active {
+	text-decoration:underline;
+	border:none;
+	}
+
+	a:hover {
+	text-decoration:underline;
+	border:none;
+	}
+	
+
+.button2 {
+	position:absolute; top: 0px; left: 70%;
+}
+
+/* Change with resolution ------------------------------------------------------------- */
+.hippocampo_immage {
+	position:absolute; top: 5px; left: 10px;
+	width:auto;
+	height:80px;
+	background:none;
+}
+
+/* Change with resolution ------------------------------------------------------------- */
+.image_brain{
+	position:absolute; top: 120px; left: 550px;
+	width:auto;
+	height:auto;
+	filter:alpha(opacity=30);
+	-moz-opacity:.30;
+	opacity:.30;
+}
+
+
+/* MAIN MENU BUTTONS */
+/* Change with resolution ------------------------------------------------------------- */
+#menu_main_button_new{
+	position:absolute; top: 46px; left: 340px;
+	width:550px;
+	border:none;
+}
+
+#menu_main_button_new_clr{
+	position:absolute; top: 25px; left: 500px;
+	width:600px;
+	border:none;
+}
+
+
+/* Change with resolution ------------------------------------------------------------- */
+	.main_button{
+		width:120px;
+		height:30px;
+		color:#FFFFCC;
+		background:#342D7E;
+		font-family:Georgia, "Times New Roman", Times, serif;
+		font-size:11px;
+		border-top: 3px solid #151B54;
+		border-bottom: 3px solid #151B54;
+		border-left: 3px solid #151B54;
+		border-right: 3px solid #151B54;
+	}
+
+/* Change with resolution ------------------------------------------------------------- */
+	.main_button:hover{
+		width:120px;
+		height:30px;
+		color:#FFFFCC;
+		background:#616D7E;
+		font-family:Georgia, "Times New Roman", Times, serif;
+		font-size:11px;
+		border-top: 3px solid #151B54;
+		border-bottom: 3px solid #151B54;
+		border-left: 3px solid #151B54;
+		border-right: 3px solid #151B54;
+	}
+	
+/* Change with resolution ------------------------------------------------------------- */	
+	.main_button_no_work{
+		width:120px;
+		height:30px;
+		color:#FFFFCC;
+		background:#999999;
+		font-family:Georgia, "Times New Roman", Times, serif;
+		font-size:11px;
+		border-top: 3px solid #151B54;
+		border-bottom: 3px solid #151B54;
+		border-left: 3px solid #151B54;
+		border-right: 3px solid #151B54;
+	}	
+	
+/* +++++++++++++++++++++++++ */
+
+
+.menu {
+	position:absolute; top: 91px; left: 59%;
+}
+
+
+
+.body_table {
+	margin:auto;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.font_table_index {
+	color:#000099;
+	font-size:12px;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.font_table_index2 {
+	color:#FFFFFF;
+	font-size:12px;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.font_table_index3 {
+	color:#000066;
+	font-size:9px;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+	.font_table_index3:hover {
+		color:#993300;
+		font-size:9px;
+		font-family:Verdana, Arial, Helvetica, sans-serif;
+	}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.font_table_index4 {
+	color:#FFFFFF;
+	font-size:9px;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+	.font_table_index4:hover {
+		color:#66FFFF;
+		font-size:10px;
+		font-family:Verdana, Arial, Helvetica, sans-serif;
+	}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.table_neuron_page1 {
+	color:#FFFFFF;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:12px;
+	background:#8F8F8F;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.table_neuron_page2 {
+	color:#000066;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:10px;
+	background:#E4E4E4;
+}
+
+.for_accordion {
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:11px;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.table_neuron_page3 {
+	color:#FFFFFF;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:13px;
+	background:#98AFC7;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.font1 {
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:19px;
+	font-stretch:expanded;
+	font-weight:500;
+}
+
+
+/* Change with resolution ------------------------------------------------------------- */	
+.font1a {
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:20px;
+	font-weight:200;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.font2 {
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:11px;
+	font-stretch:expanded;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.font3 {
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:10px;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.hr1 {
+	width:82%;
+	height:3px;
+	border-width:0;
+	color:#CCCCCC;
+	background-color:#666666;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.hr2 {
+	width:500px;
+	height:3px;
+	border-width:0;
+	color:#CCCCCC;
+	background-color:#D6D6D6;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.select1 {
+	background:#EBDDE2;
+	font:Verdana, Arial, Helvetica, sans-serif;
+	font-size:11px;
+	color:#000066;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.botton1 {
+	background:#CCCCCC;
+	font:Verdana, Arial, Helvetica, sans-serif;
+	font-size:13px;
+	color:#000066;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.font_table_index4 {
+	color:#FFFFFF;
+	font-size:10px;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.font4 {
+	color:#000000;
+	font-size:9px;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+}
+
+.font4_unvetted {
+	color:#808080;
+	font-size:9px;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.font5 {
+	color:#000099;
+	font-size:9px;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.font6 {
+	color:#FFFFCC;
+	font-size:10px;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.font7 {
+	color:#000066;
+	font-size:14px;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-stretch:extra-expanded;
+	font-weight:400;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+	.font7:hover {
+		color:#8D38C9;
+		font-size:14px;
+		font-family:Verdana, Arial, Helvetica, sans-serif;
+		font-stretch:extra-expanded;
+		font-weight:400;
+	}
+
+/* Change with resolution ------------------------------------------------------------- */	
+	.font7_A {
+	color:#000066;
+	font-size:15px;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-weight:800;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+	.font7_no_work {
+		color:#000066;
+		font-size:14px;
+		font-family:Verdana, Arial, Helvetica, sans-serif;
+		font-stretch:extra-expanded;
+		font-weight:400;
+}
+
+
+/* Change with resolution ------------------------------------------------------------- */	
+	.font7_B {
+		color:#993300;
+		font-size:14px;
+		font-family:Verdana, Arial, Helvetica, sans-serif;
+		font-stretch:extra-expanded;
+		font-weight:400;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.font8 {
+	color:#000099;
+	font-size:8px;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+}
+
+
+/* ROLL TABLE -------------------- */
+.tabellauno th#header1, .tabellauno th#header2, .tabellauno th#header3 {text-align:left; padding-left:0.5em;}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.tabellauno {
+margin:0 auto;
+padding:0;
+width:920px;
+}
+
+.tabellauno caption {
+font-size:1.2em; 
+margin:0 auto;
+}
+
+.tabellauno td {
+text-align: center;
+}
+
+.tabelladue {
+margin:0;
+padding:0;
+background: transparent;
+width:900px;
+}
+
+
+.tabelladue1 {
+margin:0;
+padding:0;
+background: transparent;
+border-color:#000099;
+width:900px;
+}
+
+.tabelladue tr.colorata td {
+}
+
+.divinterno {height: 380px; overflow:auto;}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.table_10 {
+	width:900px;	
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.table_11 {
+	width:900px;	
+}
+
+/* ------------------------------- */
+
+/* Change with resolution ------------------------------------------------------------- */	
+.td_border_color1 {
+	color:#000099;
+	font-size:10px;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	border-right-color:#FF0000;
+	border-right-width:medium;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.td_border_color2 {
+	color:#000099;
+	font-size:10px;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	border-left-color:#FF0000;
+	border-left-width:medium;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.version {
+	position:absolute; top: 500px; left: 220px;
+	text-align:center;
+	width:560px;
+	border:none;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.sub_menu {
+	position:absolute; top: 100px; left: 100px;
+	text-align:center;
+	width:700px;
+	border:none;
+}
+
+.title_area {
+	position:absolute; top: 80px; left: 50px;
+	width: 700px;
+	border:none;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.title_3 {
+	position:absolute; top: 130px; left: 120px;
+	width:600px;
+	border:none;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.table_position {
+	position:absolute; top: 110px; left: 50px;
+	width:auto;	
+	border:none;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.table_position_search_page {
+	position:absolute; top: 110px; left: 15px;
+	width:auto;	
+	border:none;	
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.table_search {
+	width:680px;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.table_search2 {
+	width:190px;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.show1 {
+/*	width:20px;
+	height:20px;
+	background:#FF6633;*/
+	width:34px;
+	height:34px;
+	border-style: solid;
+	border-color: #E4E4E4;
+	background: url(../images/triangle_close1.png) no-repeat;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.show0 {
+/*	width:20px;
+	height:20px;
+	background:#009966;*/
+	width:34px;
+	height:34px;
+	border-style: solid;
+	border-color: #E4E4E4;
+	background: url(../images/triangle_open1.png) no-repeat;
+}
+
+
+/* Change with resolution ------------------------------------------------------------- */	
+.more_button {
+	color:#FFFFFF;
+	font-size:12px;
+	background:#3366CC;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.font12 {
+	color:#000099;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:12px;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.table_result{
+	width:900px;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.table_neuron_page4{
+	color:#0000CC;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:10px;
+	background:#CCCCCC;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.font13 {
+	color:#0000CC;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:10px;
+}
+	
+	.font13:hover{
+		color:#663300;
+		font-family:Verdana, Arial, Helvetica, sans-serif;
+		font-size:10px;	
+	}
+
+
+/* Change with resolution ------------------------------------------------------------- */	
+.font14 {
+	color:#FF3300;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:12px;
+}
+
+
+/* Change with resolution ------------------------------------------------------------- */	
+.font9 {
+	color:#000066;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:10px;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+	.font9:hover {
+		color:#0066FF;
+		font-family:Verdana, Arial, Helvetica, sans-serif;
+		font-size:10px;
+		}
+
+	.font9:visited {
+		color:#663300;
+		font-family:Verdana, Arial, Helvetica, sans-serif;
+		font-size:10px;
+	}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.font10 {
+	color:#006633;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:10px;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+	.font10:hover {
+	color:#009900;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:10px;
+	}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.font10a {
+	color:#339900;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:11px;
+}
+ 
+/* Change with resolution ------------------------------------------------------------- */	
+	.font10a:hover {
+	color:#009900;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:11px;
+	}
+
+/* Change with resolution ------------------------------------------------------------- */	
+.font11 {
+	color:#CC0000;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:10px;
+}
+
+/* Change with resolution ------------------------------------------------------------- */	
+	.font11:hover {
+	color:#FF6699;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:10px;
+	}
+
+
+/* FONT CELLS ***************************************************************** */
+/* **************************************************************************** */
+.font_cell {
+	color:#770000;
+	font-size:12px;
+	font-weight:600;
+}
+
+	.font_cell:hover {
+		color:#CC3366;
+		font-size:12px;
+		font-weight:600;
+	}
+
+
+.cella_1 {
+	border:none;
+}
+
+
+.disclamer {
+	position:absolute; top: 170px; left: 190px;
+	width:800px;
+	border:none;
+	color:#0000CC;
+	font:Verdana, Arial, Helvetica, sans-serif;
+	font-size:13px
+}
+
+
+.font_cell_2 {
+	color:#770000;
+	font-size:12px;
+	font-weight:500;
+}
+
+	.font_cell_2:hover {
+		color:#CC3366;
+		font-size:12px;
+		font-weight:500;
+	}
+
+
+/* Change with resolution ------------------------------------------------------------- */	
+.font22 {
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:11px;
+}
+
+.vText {	
+   -moz-transform: rotate(-90deg) translate(0, 100%);
+   -moz-transform-origin: bottom left;
+   -o-transform: rotate(-90deg) translate(0, 100%);
+   -o-transform-origin: 0% 100%;
+   -webkit-transform: rotate(-90deg) translate(0, 100%);
+   -webkit-transform-origin: 0% 100%;
+   transform: rotate(-90deg) translate(0, 100%);
+   transform-origin: 0% 100%;
+    	 
+   display: inline-block;
+   max-height: 500px;
+   height: 200px;
+   width: 30px;
+   padding: 0;
+   border-spacing: 0;
+   border: 0;
+   font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+.clr-page-tabs{
+	float:left;
+	clear:both;
+	width:100%;
+}
+
+.clr-page-tabs ul.ui-tabs{
+	font-family:verdana,sans-serif;
+	font-size:11px;
+	/*overflow:hidden;*/
+	overflow:auto;
+}
+
+.clr-page-tabs ul.ui-tabs li{
+	float:left;
+}
+
+.clr-page-tabs ul.ui-tabs li a{
+	float:left;
+	font-weight:700;
+	cursor:pointer;
+}
+
+
+
+.clr-subnav-tabs{
+	border-bottom:1px solid #ddd;
+	margin:12px 0;
+}
+
+.clr-subnav-tabs ul.ui-tabs{
+	padding:0 12px;
+	margin:0 0 -1px;
+	font-family:helvetica,arial,sans-serif;
+	float:left;
+	list-style-type: none;
+}
+
+.clr-subnav-tabs ul.ui-tabs li{
+	margin:0 4px 0 0;
+	list-style-type:none;
+}
+
+.clr-subnav-tabs ul.ui-tabs li a{
+	color:#000;
+	background:#eaf4fd url('../images/bg-tabs-inactive.png') 0 100% repeat-x;
+	border-style:solid;
+	border-color:#bcd1e2 #bcd1e2 #ddd;
+	border-width:1px;
+	font-size:14px;
+	padding:0 10px;
+	display:block;
+	padding:10px 12px 8px;
+}
+
+.clr-subnav-tabs ul.ui-tabs li.active a{
+	border-color:#ddd #ddd #fff;
+	background:#000099;
+	color:#ffffff;
+}
+
+
+span.link_left {
+	position: relative;
+}
+				
+span.link_left a span {
+	display: none;
+}
+				
+span.link_left a:hover {
+	/*font-size: 99%;*/
+	/*font-color: #FF00FF;*/
+}
+				
+span.link_left a:hover span {
+	display: block;
+	position: absolute;
+	margin-top: 10px;
+	margin-left: -5px;
+	width: 90px; 
+	padding: 5px;
+	z-index: 100;
+	color: #000000;
+	background: #FFFFAA;
+	font: 12px "Arial", sans-serif;
+	text-align: left;
+	text-decoration: none;
+}
+
+span.link_left_bottom {
+	position: relative;
+}
+				
+span.link_left_bottom a span {
+	display: none;
+}
+				
+span.link_left_bottom a:hover {
+	/*font-size: 99%;*/
+	/*font-color: #FF00FF;*/
+}
+				
+span.link_left_bottom a:hover span {
+	display: block;
+	position: absolute;
+	margin-top: -75px;
+	margin-left: -5px;
+	width: 90px; 
+	padding: 5px;
+	z-index: 100;
+	color: #000000;
+	background: #FFFFAA;
+	font: 12px "Arial", sans-serif;
+	text-align: left;
+	text-decoration: none;
+}
+
+
+span.link_middle {
+	position: relative;
+}
+				
+span.link_middle a span {
+	display: none;
+}
+				
+span.link_middle a:hover {
+	/*font-size: 99%;*/
+	/*font-color: #FF00FF;*/
+}
+				
+span.link_middle a:hover span {
+	display: block;
+	position: absolute;
+	margin-top: 10px;
+	margin-left: -25px;
+	width: 90px; 
+	padding: 5px;
+	z-index: 100;
+	color: #000000;
+	background: #FFFFAA;
+	font: 12px "Arial", sans-serif;
+	text-align: left;
+	text-decoration: none;
+}
+
+
+span.link_middle_bottom {
+	position: relative;
+}
+				
+span.link_middle_bottom a span {
+	display: none;
+}
+				
+span.link_middle_bottom a:hover {
+	/*font-size: 99%;*/
+	/*font-color: #FF00FF;*/
+}
+				
+span.link_middle_bottom a:hover span {
+	display: block;
+	position: absolute;
+	margin-top: -75px;
+	margin-left: -25px;
+	width: 90px; 
+	padding: 5px;
+	z-index: 100;
+	color: #000000;
+	background: #FFFFAA;
+	font: 12px "Arial", sans-serif;
+	text-align: left;
+	text-decoration: none;
+}
+
+
+span.link_right {
+	position: relative;
+}
+				
+span.link_right a span {
+	display: none;
+}
+				
+span.link_right a:hover {
+	/*font-size: 99%;*/
+	/*font-color: #FF00FF;*/
+}
+				
+span.link_right a:hover span {
+	display: block;
+	position: absolute;
+	margin-top: 10px;
+	margin-left: -40px;
+	width: 90px; 
+	padding: 5px;
+	z-index: 100;
+	color: #000000;
+	background: #FFFFAA;
+	font: 12px "Arial", sans-serif;
+	text-align: left;
+	text-decoration: none;
+}
+
+
+span.link_right_bottom {
+	position: relative;
+}
+				
+span.link_right_bottom a span {
+	display: none;
+}
+				
+span.link_right_bottom a:hover {
+	/*font-size: 99%;*/
+	/*font-color: #FF00FF;*/
+}
+				
+span.link_right_bottom a:hover span {
+	display: block;
+	position: absolute;
+	margin-top: -75px;
+	margin-left: -40px;
+	width: 90px; 
+	padding: 5px;
+	z-index: 100;
+	color: #000000;
+	background: #FFFFAA;
+	font: 12px "Arial", sans-serif;
+	text-align: left;
+	text-decoration: none;
+}

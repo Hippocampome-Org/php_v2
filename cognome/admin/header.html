@@ -1,0 +1,24 @@
+<br>
+<!-- header bar for navigation and page titles -->
+<select name='site_menu' id='site_menu' size='1' class='select-css' style='position:absolute; left:1em;top:2.1em;'>
+	<option value='#'>Site Menu</option>
+	<option value='../index.php'>Main Page</option>
+	<option value='../help.php'>Help and Details</option>
+	<option value='../reporting.php'>Site Stats</option>
+	<option value='../browse.php'>Browse Articles</option>
+	<option value='../advanced_search.php'>Advanced Search</option>
+	<option value='../custom_search/custom_search.php'>Custom Search</option>
+	<option value='../sugg/mod_art.php'>Suggest/Modify Literature</option>
+	<option value='../update_access.php'>Admin Access</option>
+</select>
+<br>
+<div class='article_details' style='text-align: center;margin: 0 auto;padding: .4rem;font-size:1.2em;'>
+	<span class='title_section'><span id='header_title'></span></span>
+</div>
+<script type='text/javascript'>
+	var urlmenu = document.getElementById( 'site_menu' );
+	urlmenu.onchange = function() {
+		window.location.replace( this.options[ this.selectedIndex ].value );
+	};
+</script>
+<br>

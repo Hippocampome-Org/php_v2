@@ -1,0 +1,154 @@
+html {
+  color: rgb(198,198,198);
+  background-image: none;
+  background-repeat: repeat;
+  background-attachment: scroll;
+  background-clip: border-box;
+  background-origin: padding-box;
+  background-position-x: 0%;
+  background-position-y: 0%;
+  background-size: auto auto;
+  background-color: rgb(41,41,41);
+}
+
+a {
+  color: rgb(133,196,151) !important;
+}
+
+hr {
+  color: rgb(200,200,200); !important;
+  border: 0.5px solid black !important;
+  background-color: black !important; height: 0.5px !important;
+}
+
+/* collabsible section */
+.lbl-toggle {
+  color: rgb(179, 179, 179);
+  background: rgb(79, 79, 79);
+}
+
+.lbl-toggle:hover {
+  color: rgb(189, 189, 189);
+}
+
+.collapsible-content .content-inner {
+  /*background: rgb(209, 209, 209);*/
+  background: rgb(89, 89, 89);
+  /*border-bottom: 1px solid rgba(250, 224, 66, .45);*/
+  border-bottom: 1px solid rgba(65, 65, 65, .45);
+  border-bottom-left-radius: 7px;
+  border-bottom-right-radius: 7px;
+  padding: .5rem 1rem;
+}
+/* additions */
+.article_details {
+  background: rgb(106,106,106);
+  padding: 1rem;
+  border-radius: 18px;  
+  font-size:24px;
+}
+
+/* select colors */
+select {
+	color: rgb(200,200,200);
+	font-color:rgb(200, 200, 200);
+}
+select option { 
+	color: rgb(200,200,200);
+	font-color:rgb(200, 200, 200);
+}
+
+select option:first-child{
+	color: rgb(200,200,200);
+	font-color:rgb(200, 200, 200);
+}
+.select-css {
+    /*box-shadow: 0 1px 0 1px rgba(0,0,0,.04);*/
+	background: rgb(79, 79, 79);
+	color: rgb(200,200,200);
+	font-color:rgb(200, 200, 200);
+	border: rgb(110, 110, 110);
+}
+.select-css:hover {
+    /*border-color: rgb(129,129,129);*/
+      background: rgb(79, 79, 79);
+	color: rgb(220,220,220);
+	font-color:rgb(220, 220, 220);
+}
+.select-css:focus {
+    /*border-color: rgb(129,129,129);*/
+    box-shadow: 0 0 1px 3px rgba(89,89,89,.5);
+      background: rgb(79, 79, 79);
+	color: rgb(220,220,220);
+	font-color:rgb(220, 220, 220);
+}
+option { /* Text and background colour, blue on light gray */
+color:#000000;
+background-color:rgb(79, 79, 79);
+}
+
+.dropdown-button {
+  background: rgb(79, 79, 79);
+  color:rgb(189, 189, 189);
+}
+
+.dropdown-button:hover {
+  background: #2980b9;
+}
+
+.dropdown li {
+  background:#fff;
+  }
+.dropdown li.check {
+  background:#f6f6f6;
+}
+.dropdown li.check:after {
+	background:#ccc;
+}
+.dropdown li.check:before {
+	background:#ccc;
+}
+.dropdown li:hover {
+  background:#f6f6f6;
+}
+
+.title_section a {
+	color:rgb(189, 189, 189) !important;
+	font-color:rgb(189, 189, 189) !important;
+}
+
+textarea {
+	color:rgb(189, 189, 189);
+	font-color:rgb(189, 189, 189);
+	background:rgb(59, 59, 59);
+	border: rgb(110, 110, 110);
+}
+
+input, button {
+	color: rgb(220,220,220);
+	font-color:rgb(220, 220, 220);
+	background:rgb(59, 59, 59);
+	border: rgb(110, 110, 110);
+}
+
+/* width */
+::-webkit-scrollbar {
+	width: 15px;
+	background:rgb(59, 59, 59);
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background:rgb(59, 59, 59); 
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background:rgb(80, 80, 80); 
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background:rgb(90, 90, 90); 
+}

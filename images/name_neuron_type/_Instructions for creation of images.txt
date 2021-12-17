@@ -1,0 +1,19 @@
+Use website:  http://www.text2image.com/
+
+Save each neuron type (format = SUBREG:Type Name (+/-)PATTERNp) with the following parameters:
+
+Image Width: 350
+Image Height: 40
+Font: Arial
+Font Size: 8pt
+Forecolor: Black
+Backcolor: White
+Image Format: PNG
+Vertical Align: Top
+
+Save image as neuron type name (same as copied text), but replace all : and / with _
+
+Crop images tightly around text
+
+In PowerPoint (or other program), make the white background transparent
+

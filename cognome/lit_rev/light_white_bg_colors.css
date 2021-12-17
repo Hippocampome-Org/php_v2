@@ -1,0 +1,116 @@
+html {
+  color: black;
+  background-image: none;
+  background-repeat: repeat;
+  background-attachment: scroll;
+  background-clip: border-box;
+  background-origin: padding-box;
+  background-position-x: 0%;
+  background-position-y: 0%;
+  background-size: auto auto;
+  background-color: white;
+}
+
+a {
+  color: #1d3e70 !important;
+}
+
+hr {
+  /*color: black !important;*/
+  border: 0.5px solid rgba(0,0,0,0);
+  /*background-color: black !important; height: 0.5px !important;*/
+}
+
+/* collabsible section */
+.lbl-toggle {
+  color: black;
+  background: rgb(227, 227, 227);
+}
+
+.lbl-toggle:hover {
+  color: black;
+}
+
+.article_details {
+  background: rgb(239, 239, 239);
+  padding: 1rem;
+  border-radius: 18px;  
+  font-size:24px;
+}
+
+.collapsible-content .content-inner {
+  background: rgb(239, 239, 239);
+  /*border-bottom: 1em;
+  border-bottom-left-radius: 7px;
+  border-bottom-right-radius: 7px;*/
+  padding: .5rem 1rem;
+}
+
+/* select colors */
+.select-css {
+    box-shadow: 0 1px 0 1px rgba(0,0,0,.04);
+}
+.select-css-main-menu {
+  background:#FFFFFF;
+  color:#000066;
+  font-color:#000066;
+  border: rgb(110, 110, 110);    
+}
+.select-css:hover {
+    border-color: rgb(129,129,129);
+}
+.select-css:focus {
+    border-color: rgb(129,129,129);
+    box-shadow: 0 0 1px 3px rgba(229,229,229.5);
+}
+select {
+	background:rgb(234, 234, 234);;
+}
+option { /* Text and background colour, blue on light gray */
+  color:#000000;
+  background-color:rgb(234, 234, 234);
+}
+
+.title_section {
+  color:black !important;
+  font-color:black !important;
+}
+
+.title_section a {
+  color:black !important;
+  font-color:black !important;
+}
+
+table.reporting_table {
+  background-color:rgb(234, 234, 234);
+}
+
+.reporting_table_head {
+  background-color:rgb(214, 214, 214);
+}
+
+.reporting_table_body {
+  background-color:rgb(229, 229, 229);
+  border-top:1px solid rgb(229, 229, 229);
+  border-bottom:1px solid rgb(229, 229, 229);
+}
+
+.light_bg {
+  background-color:rgb(234, 234, 234);
+  background:rgb(234, 234, 234);
+}
+
+
+.button_link {
+  background-color:rgb(240,240,240);
+  color:rgb(0,0,0);
+  border-color:rgb(100,100,100);
+  border-style:solid;
+  margin:2px;
+  border-width: 0.01em;
+}
+
+/* internal article site content */
+.sd-flex-content {
+  background-color: black;
+}

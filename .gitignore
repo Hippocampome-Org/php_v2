@@ -1,0 +1,16 @@
+.DS_Store
+access_db.php
+.buildpath
+.metadata
+.project
+.settings/
+attachment
+cache
+error_log
+hits.txt
+figure
+figure_pdf
+synap_prob/data
+synap_model/db_access/access_db.php
+synap_model/gen_json/json_files
+cognome/access_db.php

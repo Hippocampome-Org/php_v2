@@ -1,0 +1,99 @@
+ DG (+)2201p-CA3 00110 granule cells (GC) 
+---------------------------------------------------
+
+Synonym(s): 
+Dentate gyrus granule cell
+mossy fibers
+
+******** MORPHOLOGY ********
+SOMA:
+DG:SG (in)
+
+DENDRITE(S):
+DG:SMo (in)
+DG:SMi (in)
+DG:H (not in)
+
+AXON(S):
+DG:H (in)
+CA3:SL (in)
+CA3:SP (in)
+EC:I (not in)
+EC:II (not in)
+EC:III (not in)
+EC:IV (not in)
+EC:V (not in)
+EC:VI (not in)
+
+******** MOLECULAR MARKERS ********
+POSITIVE:
+CCK
+nNOS
+NPY
+ENK
+DYN
+NKB
+nNOS(weak-positive)
+
+NEGATIVE:
+CR
+CCK
+NPY
+PV
+SOM
+
+******** Electrophysiological properties ********
+- property: value ± S.D (n. measurements)
+Vrest: -75 ± 2 (16)
+Rin: 292 ± 34 (16)
+tm: 31 ± 2 (16)
+Vthresh: 25.6
+fast_AHP: 11.7 ± 1.1 (16)
+AP_ampl: 69.4
+AP_width: 0.87 ± 0.06 (16)
+max_fr: 72 ± 8 (16)
+
+******** Potential presynaptic connections ********
+For DG:H: 
+ DG:MC(+)
+ DG:TML(-)
+ DG:TML-MOLAX(-)
+ DG:HICAP(-)
+ DG:AA(-)
+ DG:BC(-)
+ DG:HIPP(-)
+For CA3:SL: 
+ CA3:PC-ab(+)
+ CA3:LM-R(-)
+ CA3:BC(-)
+ CA3:AA(-)
+ CA3:BiC-ivy(-)
+ CA3:MFA-2(-)
+For CA3:SP: 
+ CA3:PC-ab(+)
+ CA3:BC(-)
+ CA3:AA(-)
+ CA3:BiC-ivy(-)
+ CA3:MFA-2(-)
+
+******** Potential presynaptic connections ********
+For DG:SMo: 
+ DG:TML(-)
+ DG:TML-MOLAX(-)
+ DG:NGF(-)
+ DG:MOPP-NGF(-)
+ DG:HIPP(-)
+ CA1:PPA-SUB(-)
+ CA1:NGF_proj(-)
+ EC:PC_V-DG-SUB(+)
+ EC:SC_II(+)
+ EC:PC_V-DG(+)
+For DG:SMi: 
+ DG:MC(+)
+ DG:TML(-)
+ DG:TML-MOLAX(-)
+ DG:HICAP(-)
+ CA3:PC-c(+)
+ EC:PC_V-DG-SUB(+)
+
+

@@ -1,0 +1,3237 @@
+From (pre-synaptic type),To (post-synaptic type)
+Granule,Hilar Ectopic Granule
+Granule,Mossy
+Granule,Mossy MOLDEN
+Granule,AIPRIM
+Granule,DG Axo-axonic
+Granule,DG Basket
+Granule,DG Basket CCK+
+Granule,HICAP
+Granule,HIPP
+Granule,HIPROM
+Granule,MOLAX
+Granule,Outer Molecular Layer
+Granule,Total Molecular Layer
+Granule,CA3 Pyramidal
+Granule,CA3c Pyramidal
+Granule,CA3 Axo-axonic
+Granule,CA3 Basket
+Granule,CA3 Basket CCK+
+Granule,CA3 Bistratified
+Granule,CA3 Interneuron Specific Quad
+Granule,CA3 Ivy
+Granule,CA3 LMR-Targeting
+Granule,Lucidum LAX
+Granule,Lucidum ORAX
+Granule,Lucidum-Radiatum
+Granule,Spiny Lucidum
+Granule,Mossy Fiber-Associated ORDEN
+Granule,CA3 QuadD-LM
+Granule,CA2 Pyramidal
+Granule,CA2 Basket
+Granule,CA2 Wide-Arbor Basket
+Granule,CA2 Bistratified
+Granule,CA2 SP-SR
+Hilar Ectopic Granule,Hilar Ectopic Granule
+Hilar Ectopic Granule,Mossy
+Hilar Ectopic Granule,Mossy MOLDEN
+Hilar Ectopic Granule,AIPRIM
+Hilar Ectopic Granule,DG Axo-axonic
+Hilar Ectopic Granule,DG Basket
+Hilar Ectopic Granule,DG Basket CCK+
+Hilar Ectopic Granule,HICAP
+Hilar Ectopic Granule,HIPP
+Hilar Ectopic Granule,HIPROM
+Hilar Ectopic Granule,MOLAX
+Hilar Ectopic Granule,Outer Molecular Layer
+Hilar Ectopic Granule,Total Molecular Layer
+Hilar Ectopic Granule,CA3 Pyramidal
+Hilar Ectopic Granule,CA3c Pyramidal
+Hilar Ectopic Granule,CA3 Axo-axonic
+Hilar Ectopic Granule,CA3 Basket
+Hilar Ectopic Granule,CA3 Basket CCK+
+Hilar Ectopic Granule,CA3 Bistratified
+Hilar Ectopic Granule,CA3 Interneuron Specific Quad
+Hilar Ectopic Granule,CA3 Ivy
+Hilar Ectopic Granule,CA3 LMR-Targeting
+Hilar Ectopic Granule,Lucidum LAX
+Hilar Ectopic Granule,Lucidum ORAX
+Hilar Ectopic Granule,Lucidum-Radiatum
+Hilar Ectopic Granule,Spiny Lucidum
+Hilar Ectopic Granule,Mossy Fiber-Associated
+Hilar Ectopic Granule,Mossy Fiber-Associated ORDEN
+Hilar Ectopic Granule,CA3 QuadD-LM
+Semilunar Granule,Granule
+Semilunar Granule,Hilar Ectopic Granule
+Semilunar Granule,Semilunar Granule
+Semilunar Granule,Mossy
+Semilunar Granule,Mossy MOLDEN
+Semilunar Granule,AIPRIM
+Semilunar Granule,DG Axo-axonic
+Semilunar Granule,DG Basket
+Semilunar Granule,DG Basket CCK+
+Semilunar Granule,HICAP
+Semilunar Granule,HIPP
+Semilunar Granule,HIPROM
+Semilunar Granule,MOCAP
+Semilunar Granule,MOLAX
+Semilunar Granule,Outer Molecular Layer
+Semilunar Granule,Total Molecular Layer
+Semilunar Granule,CA3 Pyramidal
+Semilunar Granule,CA3c Pyramidal
+Semilunar Granule,CA3 Axo-axonic
+Semilunar Granule,CA3 Basket
+Semilunar Granule,CA3 Basket CCK+
+Semilunar Granule,CA3 Bistratified
+Semilunar Granule,CA3 Interneuron Specific Quad
+Semilunar Granule,CA3 Ivy
+Semilunar Granule,CA3 LMR-Targeting
+Semilunar Granule,Lucidum LAX
+Semilunar Granule,Lucidum ORAX
+Semilunar Granule,Lucidum-Radiatum
+Semilunar Granule,Spiny Lucidum
+Semilunar Granule,Mossy Fiber-Associated
+Semilunar Granule,Mossy Fiber-Associated ORDEN
+Semilunar Granule,CA3 QuadD-LM
+Mossy,Granule
+Mossy,Hilar Ectopic Granule
+Mossy,Semilunar Granule
+Mossy,Mossy
+Mossy,Mossy MOLDEN
+Mossy,AIPRIM
+Mossy,DG Axo-axonic
+Mossy,DG Basket
+Mossy,DG Basket CCK+
+Mossy,HICAP
+Mossy,HIPP
+Mossy,HIPROM
+Mossy,MOCAP
+Mossy,MOLAX
+Mossy,Outer Molecular Layer
+Mossy,Total Molecular Layer
+Mossy,CA3 Interneuron Specific Quad
+Mossy MOLDEN,Granule
+Mossy MOLDEN,Hilar Ectopic Granule
+Mossy MOLDEN,Semilunar Granule
+Mossy MOLDEN,Mossy
+Mossy MOLDEN,Mossy MOLDEN
+Mossy MOLDEN,AIPRIM
+Mossy MOLDEN,DG Axo-axonic
+Mossy MOLDEN,DG Basket
+Mossy MOLDEN,DG Basket CCK+
+Mossy MOLDEN,HICAP
+Mossy MOLDEN,HIPP
+Mossy MOLDEN,HIPROM
+Mossy MOLDEN,MOCAP
+Mossy MOLDEN,MOLAX
+Mossy MOLDEN,Outer Molecular Layer
+Mossy MOLDEN,Total Molecular Layer
+Mossy MOLDEN,CA3 Interneuron Specific Quad
+AIPRIM,Granule
+AIPRIM,Hilar Ectopic Granule
+AIPRIM,Semilunar Granule
+AIPRIM,Mossy
+AIPRIM,Mossy MOLDEN
+AIPRIM,AIPRIM
+AIPRIM,DG Axo-axonic
+AIPRIM,DG Basket
+AIPRIM,DG Basket CCK+
+AIPRIM,HICAP
+AIPRIM,HIPP
+AIPRIM,HIPROM
+AIPRIM,MOCAP
+AIPRIM,MOLAX
+AIPRIM,Outer Molecular Layer
+AIPRIM,Total Molecular Layer
+AIPRIM,CA3 Interneuron Specific Quad
+DG Axo-axonic,Granule
+DG Axo-axonic,Hilar Ectopic Granule
+DG Axo-axonic,Mossy
+DG Axo-axonic,Mossy MOLDEN
+DG Basket,Granule
+DG Basket,DG Axo-axonic
+DG Basket,DG Basket
+DG Basket,DG Basket CCK+
+DG Basket,HICAP
+DG Basket,HIPP
+DG Basket,MOCAP
+DG Basket,MOLAX
+DG Basket,Outer Molecular Layer
+DG Basket,Total Molecular Layer
+DG Basket CCK+,Granule
+DG Basket CCK+,DG Axo-axonic
+DG Basket CCK+,DG Basket
+DG Basket CCK+,DG Basket CCK+
+DG Basket CCK+,HICAP
+DG Basket CCK+,HIPP
+DG Basket CCK+,MOCAP
+DG Basket CCK+,MOLAX
+DG Basket CCK+,Outer Molecular Layer
+DG Basket CCK+,Total Molecular Layer
+HICAP,Granule
+HICAP,Hilar Ectopic Granule
+HICAP,Semilunar Granule
+HICAP,Mossy MOLDEN
+HICAP,AIPRIM
+HICAP,DG Axo-axonic
+HICAP,DG Basket
+HICAP,DG Basket CCK+
+HICAP,HICAP
+HICAP,HIPROM
+HICAP,MOCAP
+HICAP,MOLAX
+HICAP,Outer Molecular Layer
+HICAP,Total Molecular Layer
+HIPP,Granule
+HIPP,Hilar Ectopic Granule
+HIPP,Semilunar Granule
+HIPP,Mossy MOLDEN
+HIPP,AIPRIM
+HIPP,DG Axo-axonic
+HIPP,DG Basket
+HIPP,DG Basket CCK+
+HIPP,HICAP
+HIPP,MOLAX
+HIPP,MOPP
+HIPP,DG Neurogliaform
+HIPP,Outer Molecular Layer
+HIPP,Total Molecular Layer
+HIPP,CA1 Neurogliaform Projecting
+HIPROM,Granule
+HIPROM,Hilar Ectopic Granule
+HIPROM,Semilunar Granule
+HIPROM,Mossy
+HIPROM,Mossy MOLDEN
+HIPROM,AIPRIM
+HIPROM,DG Axo-axonic
+HIPROM,DG Basket
+HIPROM,DG Basket CCK+
+HIPROM,HICAP
+HIPROM,HIPP
+HIPROM,HIPROM
+HIPROM,MOCAP
+HIPROM,MOLAX
+HIPROM,MOPP
+HIPROM,DG Neurogliaform
+HIPROM,Outer Molecular Layer
+HIPROM,Total Molecular Layer
+HIPROM,CA3 Pyramidal
+HIPROM,CA3c Pyramidal
+HIPROM,CA3 Giant
+HIPROM,CA3 Granule
+HIPROM,CA3 Axo-axonic
+HIPROM,CA3 Horizontal Axo-axonic
+HIPROM,CA3 Basket
+HIPROM,CA3 Basket CCK+
+HIPROM,CA3 Bistratified
+HIPROM,CA3 Interneuron Specific Oriens
+HIPROM,CA3 Interneuron Specific Quad
+HIPROM,CA3 Ivy
+HIPROM,CA3 LMR-Targeting
+HIPROM,Lucidum LAX
+HIPROM,Lucidum ORAX
+HIPROM,Lucidum-Radiatum
+HIPROM,Spiny Lucidum
+HIPROM,Mossy Fiber-Associated
+HIPROM,Mossy Fiber-Associated ORDEN
+HIPROM,CA3 O-LM
+HIPROM,CA3 QuadD-LM
+HIPROM,CA3 Radiatum
+HIPROM,CA3 R-LM
+HIPROM,CA3 SO-SO
+HIPROM,CA3 Trilaminar
+HIPROM,CA2 Wide-Arbor Basket
+HIPROM,CA1 Neurogliaform Projecting
+MOCAP,Granule
+MOCAP,Hilar Ectopic Granule
+MOCAP,Semilunar Granule
+MOCAP,Mossy
+MOCAP,Mossy MOLDEN
+MOCAP,AIPRIM
+MOCAP,DG Axo-axonic
+MOCAP,DG Basket
+MOCAP,DG Basket CCK+
+MOCAP,HICAP
+MOCAP,HIPP
+MOCAP,HIPROM
+MOCAP,MOCAP
+MOCAP,MOLAX
+MOCAP,Outer Molecular Layer
+MOCAP,Total Molecular Layer
+MOCAP,CA3 Interneuron Specific Quad
+MOLAX,Granule
+MOLAX,Hilar Ectopic Granule
+MOLAX,Semilunar Granule
+MOLAX,Mossy MOLDEN
+MOLAX,AIPRIM
+MOLAX,DG Axo-axonic
+MOLAX,DG Basket
+MOLAX,DG Basket CCK+
+MOLAX,HICAP
+MOLAX,HIPROM
+MOLAX,MOCAP
+MOLAX,MOLAX
+MOLAX,MOPP
+MOLAX,DG Neurogliaform
+MOLAX,Outer Molecular Layer
+MOLAX,Total Molecular Layer
+MOLAX,CA1 Neurogliaform Projecting
+MOPP,Granule
+MOPP,Hilar Ectopic Granule
+MOPP,Semilunar Granule
+MOPP,Mossy MOLDEN
+MOPP,AIPRIM
+MOPP,DG Axo-axonic
+MOPP,DG Basket
+MOPP,DG Basket CCK+
+MOPP,HICAP
+MOPP,MOLAX
+MOPP,MOPP
+MOPP,DG Neurogliaform
+MOPP,Outer Molecular Layer
+MOPP,Total Molecular Layer
+MOPP,CA1 Neurogliaform Projecting
+DG Neurogliaform,Granule
+DG Neurogliaform,Hilar Ectopic Granule
+DG Neurogliaform,Semilunar Granule
+DG Neurogliaform,Mossy MOLDEN
+DG Neurogliaform,AIPRIM
+DG Neurogliaform,DG Axo-axonic
+DG Neurogliaform,DG Basket
+DG Neurogliaform,DG Basket CCK+
+DG Neurogliaform,HICAP
+DG Neurogliaform,MOLAX
+DG Neurogliaform,MOPP
+DG Neurogliaform,DG Neurogliaform
+DG Neurogliaform,Outer Molecular Layer
+DG Neurogliaform,Total Molecular Layer
+DG Neurogliaform,CA1 Neurogliaform Projecting
+DG Neurogliaform,SUB EC-Projecting Pyramidal
+DG Neurogliaform,SUB CA1-Projecting Pyramidal
+DG Neurogliaform,SUB Axo-axonic
+Outer Molecular Layer,Granule
+Outer Molecular Layer,Hilar Ectopic Granule
+Outer Molecular Layer,Semilunar Granule
+Outer Molecular Layer,Mossy MOLDEN
+Outer Molecular Layer,AIPRIM
+Outer Molecular Layer,DG Axo-axonic
+Outer Molecular Layer,DG Basket
+Outer Molecular Layer,DG Basket CCK+
+Outer Molecular Layer,HICAP
+Outer Molecular Layer,MOLAX
+Outer Molecular Layer,MOPP
+Outer Molecular Layer,DG Neurogliaform
+Outer Molecular Layer,Outer Molecular Layer
+Outer Molecular Layer,Total Molecular Layer
+Outer Molecular Layer,CA1 Neurogliaform Projecting
+Total Molecular Layer,Granule
+Total Molecular Layer,Hilar Ectopic Granule
+Total Molecular Layer,Semilunar Granule
+Total Molecular Layer,Mossy
+Total Molecular Layer,Mossy MOLDEN
+Total Molecular Layer,AIPRIM
+Total Molecular Layer,DG Axo-axonic
+Total Molecular Layer,DG Basket
+Total Molecular Layer,DG Basket CCK+
+Total Molecular Layer,HICAP
+Total Molecular Layer,HIPP
+Total Molecular Layer,HIPROM
+Total Molecular Layer,MOCAP
+Total Molecular Layer,MOLAX
+Total Molecular Layer,MOPP
+Total Molecular Layer,DG Neurogliaform
+Total Molecular Layer,Outer Molecular Layer
+Total Molecular Layer,Total Molecular Layer
+Total Molecular Layer,CA3 Interneuron Specific Quad
+Total Molecular Layer,CA1 Neurogliaform Projecting
+CA3 Pyramidal,CA3 Pyramidal
+CA3 Pyramidal,CA3c Pyramidal
+CA3 Pyramidal,CA3 Giant
+CA3 Pyramidal,CA3 Granule
+CA3 Pyramidal,CA3 Axo-axonic
+CA3 Pyramidal,CA3 Horizontal Axo-axonic
+CA3 Pyramidal,CA3 Basket
+CA3 Pyramidal,CA3 Basket CCK+
+CA3 Pyramidal,CA3 Bistratified
+CA3 Pyramidal,CA3 Interneuron Specific Oriens
+CA3 Pyramidal,CA3 Interneuron Specific Quad
+CA3 Pyramidal,CA3 Ivy
+CA3 Pyramidal,CA3 LMR-Targeting
+CA3 Pyramidal,Lucidum LAX
+CA3 Pyramidal,Lucidum ORAX
+CA3 Pyramidal,Lucidum-Radiatum
+CA3 Pyramidal,Mossy Fiber-Associated
+CA3 Pyramidal,Mossy Fiber-Associated ORDEN
+CA3 Pyramidal,CA3 O-LM
+CA3 Pyramidal,CA3 QuadD-LM
+CA3 Pyramidal,CA3 Radiatum
+CA3 Pyramidal,CA3 R-LM
+CA3 Pyramidal,CA3 SO-SO
+CA3 Pyramidal,CA3 Trilaminar
+CA3 Pyramidal,CA2 Pyramidal
+CA3 Pyramidal,CA2 Basket
+CA3 Pyramidal,CA2 Wide-Arbor Basket
+CA3 Pyramidal,CA2 Bistratified
+CA3 Pyramidal,CA2 SP-SR
+CA3 Pyramidal,CA1 Pyramidal
+CA3 Pyramidal,CA1 Radiatum Giant
+CA3 Pyramidal,CA1 Axo-axonic
+CA3 Pyramidal,CA1 Horizontal Axo-axonic
+CA3 Pyramidal,CA1 Back-Projection
+CA3 Pyramidal,CA1 Basket
+CA3 Pyramidal,CA1 Basket CCK+
+CA3 Pyramidal,CA1 Horizontal Basket
+CA3 Pyramidal,CA1 Bistratified
+CA3 Pyramidal,CA1 Interneuron Specific LMO-O
+CA3 Pyramidal,CA1 Interneuron Specific LMR-R
+CA3 Pyramidal,CA1 Interneuron Specific O-R
+CA3 Pyramidal,CA1 Interneuron Specific O-Targeting QuadD
+CA3 Pyramidal,CA1 Interneuron Specific R-O
+CA3 Pyramidal,CA1 Interneuron Specific RO-O
+CA3 Pyramidal,CA1 Ivy
+CA3 Pyramidal,CA1 LMR
+CA3 Pyramidal,CA1 LMR Projecting
+CA3 Pyramidal,CA1 O-LM
+CA3 Pyramidal,CA1 Recurrent O-LM
+CA3 Pyramidal,CA1 O-LMR
+CA3 Pyramidal,CA1 Oriens/Alveus
+CA3 Pyramidal,CA1 Oriens-Bistratified
+CA3 Pyramidal,CA1 Oriens-Bistratified Projecting
+CA3 Pyramidal,CA1 OR-LM
+CA3 Pyramidal,CA1 Perforant Path-Associated
+CA3 Pyramidal,CA1 Perforant Path-Associated QuadD
+CA3 Pyramidal,CA1 Quadrilaminar
+CA3 Pyramidal,CA1 Radiatum
+CA3 Pyramidal,CA1 R-Receiving Apical-Targeting
+CA3 Pyramidal,Schaffer Collateral-Associated
+CA3 Pyramidal,Schaffer Collateral-Receiving R-Targeting
+CA3 Pyramidal,CA1 SO-SO
+CA3 Pyramidal,CA1 Hippocampo-subicular Projecting ENK+
+CA3 Pyramidal,CA1 Trilaminar
+CA3 Pyramidal,CA1 Radial Trilaminar
+CA3c Pyramidal,Granule
+CA3c Pyramidal,Hilar Ectopic Granule
+CA3c Pyramidal,Semilunar Granule
+CA3c Pyramidal,Mossy
+CA3c Pyramidal,Mossy MOLDEN
+CA3c Pyramidal,AIPRIM
+CA3c Pyramidal,DG Axo-axonic
+CA3c Pyramidal,DG Basket
+CA3c Pyramidal,DG Basket CCK+
+CA3c Pyramidal,HICAP
+CA3c Pyramidal,HIPP
+CA3c Pyramidal,HIPROM
+CA3c Pyramidal,MOCAP
+CA3c Pyramidal,MOLAX
+CA3c Pyramidal,Outer Molecular Layer
+CA3c Pyramidal,Total Molecular Layer
+CA3c Pyramidal,CA3 Pyramidal
+CA3c Pyramidal,CA3c Pyramidal
+CA3c Pyramidal,CA3 Giant
+CA3c Pyramidal,CA3 Granule
+CA3c Pyramidal,CA3 Axo-axonic
+CA3c Pyramidal,CA3 Horizontal Axo-axonic
+CA3c Pyramidal,CA3 Basket
+CA3c Pyramidal,CA3 Basket CCK+
+CA3c Pyramidal,CA3 Bistratified
+CA3c Pyramidal,CA3 Interneuron Specific Oriens
+CA3c Pyramidal,CA3 Interneuron Specific Quad
+CA3c Pyramidal,CA3 Ivy
+CA3c Pyramidal,CA3 LMR-Targeting
+CA3c Pyramidal,Lucidum LAX
+CA3c Pyramidal,Lucidum ORAX
+CA3c Pyramidal,Lucidum-Radiatum
+CA3c Pyramidal,Mossy Fiber-Associated
+CA3c Pyramidal,Mossy Fiber-Associated ORDEN
+CA3c Pyramidal,CA3 O-LM
+CA3c Pyramidal,CA3 QuadD-LM
+CA3c Pyramidal,CA3 Radiatum
+CA3c Pyramidal,CA3 R-LM
+CA3c Pyramidal,CA3 SO-SO
+CA3c Pyramidal,CA3 Trilaminar
+CA3c Pyramidal,CA2 Pyramidal
+CA3c Pyramidal,CA2 Basket
+CA3c Pyramidal,CA2 Wide-Arbor Basket
+CA3c Pyramidal,CA2 Bistratified
+CA3c Pyramidal,CA2 SP-SR
+CA3c Pyramidal,CA1 Pyramidal
+CA3c Pyramidal,CA1 Radiatum Giant
+CA3c Pyramidal,CA1 Axo-axonic
+CA3c Pyramidal,CA1 Horizontal Axo-axonic
+CA3c Pyramidal,CA1 Back-Projection
+CA3c Pyramidal,CA1 Basket
+CA3c Pyramidal,CA1 Basket CCK+
+CA3c Pyramidal,CA1 Horizontal Basket
+CA3c Pyramidal,CA1 Bistratified
+CA3c Pyramidal,CA1 Interneuron Specific LMO-O
+CA3c Pyramidal,CA1 Interneuron Specific LMR-R
+CA3c Pyramidal,CA1 Interneuron Specific O-R
+CA3c Pyramidal,CA1 Interneuron Specific O-Targeting QuadD
+CA3c Pyramidal,CA1 Interneuron Specific R-O
+CA3c Pyramidal,CA1 Interneuron Specific RO-O
+CA3c Pyramidal,CA1 Ivy
+CA3c Pyramidal,CA1 LMR
+CA3c Pyramidal,CA1 LMR Projecting
+CA3c Pyramidal,CA1 O-LM
+CA3c Pyramidal,CA1 Recurrent O-LM
+CA3c Pyramidal,CA1 O-LMR
+CA3c Pyramidal,CA1 Oriens/Alveus
+CA3c Pyramidal,CA1 Oriens-Bistratified
+CA3c Pyramidal,CA1 Oriens-Bistratified Projecting
+CA3c Pyramidal,CA1 OR-LM
+CA3c Pyramidal,CA1 Perforant Path-Associated
+CA3c Pyramidal,CA1 Perforant Path-Associated QuadD
+CA3c Pyramidal,CA1 Quadrilaminar
+CA3c Pyramidal,CA1 Radiatum
+CA3c Pyramidal,CA1 R-Receiving Apical-Targeting
+CA3c Pyramidal,Schaffer Collateral-Associated
+CA3c Pyramidal,Schaffer Collateral-Receiving R-Targeting
+CA3c Pyramidal,CA1 SO-SO
+CA3c Pyramidal,CA1 Hippocampo-subicular Projecting ENK+
+CA3c Pyramidal,CA1 Trilaminar
+CA3c Pyramidal,CA1 Radial Trilaminar
+CA3c Pyramidal,SUB EC-Projecting Pyramidal
+CA3c Pyramidal,SUB CA1-Projecting Pyramidal
+CA3c Pyramidal,SUB Axo-axonic
+CA3 Giant,CA3 Pyramidal
+CA3 Giant,CA3c Pyramidal
+CA3 Giant,CA3 Axo-axonic
+CA3 Giant,CA3 Basket
+CA3 Giant,CA3 Basket CCK+
+CA3 Giant,CA3 Bistratified
+CA3 Giant,CA3 Interneuron Specific Quad
+CA3 Giant,CA3 Ivy
+CA3 Giant,Spiny Lucidum
+CA3 Giant,Mossy Fiber-Associated
+CA3 Giant,Mossy Fiber-Associated ORDEN
+CA3 Giant,CA3 QuadD-LM
+CA3 Giant,CA2 Wide-Arbor Basket
+CA3 Granule,CA3 Pyramidal
+CA3 Granule,CA3c Pyramidal
+CA3 Granule,CA3 Axo-axonic
+CA3 Granule,CA3 Basket
+CA3 Granule,CA3 Basket CCK+
+CA3 Granule,CA3 Bistratified
+CA3 Granule,CA3 Interneuron Specific Quad
+CA3 Granule,CA3 Ivy
+CA3 Granule,CA3 LMR-Targeting
+CA3 Granule,Lucidum LAX
+CA3 Granule,Lucidum ORAX
+CA3 Granule,Lucidum-Radiatum
+CA3 Granule,Spiny Lucidum
+CA3 Granule,Mossy Fiber-Associated
+CA3 Granule,Mossy Fiber-Associated ORDEN
+CA3 Granule,CA3 QuadD-LM
+CA3 Axo-axonic,CA3 Pyramidal
+CA3 Axo-axonic,CA3c Pyramidal
+CA3 Horizontal Axo-axonic,CA3 Pyramidal
+CA3 Horizontal Axo-axonic,CA3c Pyramidal
+CA3 Basket,CA3 Pyramidal
+CA3 Basket,CA3c Pyramidal
+CA3 Basket,CA3 Axo-axonic
+CA3 Basket,CA3 Basket
+CA3 Basket,CA3 Basket CCK+
+CA3 Basket,CA3 Bistratified
+CA3 Basket,CA3 Interneuron Specific Quad
+CA3 Basket,Mossy Fiber-Associated ORDEN
+CA3 Basket,CA3 QuadD-LM
+CA3 Basket CCK+,CA3 Pyramidal
+CA3 Basket CCK+,CA3c Pyramidal
+CA3 Basket CCK+,CA3 Axo-axonic
+CA3 Basket CCK+,CA3 Basket
+CA3 Basket CCK+,CA3 Basket CCK+
+CA3 Basket CCK+,CA3 Bistratified
+CA3 Basket CCK+,CA3 Interneuron Specific Quad
+CA3 Basket CCK+,Mossy Fiber-Associated ORDEN
+CA3 Basket CCK+,CA3 QuadD-LM
+CA3 Bistratified,CA3 Pyramidal
+CA3 Bistratified,CA3c Pyramidal
+CA3 Bistratified,CA3 Giant
+CA3 Bistratified,CA3 Granule
+CA3 Bistratified,CA3 Axo-axonic
+CA3 Bistratified,CA3 Horizontal Axo-axonic
+CA3 Bistratified,CA3 Basket
+CA3 Bistratified,CA3 Basket CCK+
+CA3 Bistratified,CA3 Bistratified
+CA3 Bistratified,CA3 Interneuron Specific Oriens
+CA3 Bistratified,CA3 Interneuron Specific Quad
+CA3 Bistratified,CA3 Ivy
+CA3 Bistratified,CA3 LMR-Targeting
+CA3 Bistratified,Lucidum LAX
+CA3 Bistratified,Lucidum ORAX
+CA3 Bistratified,Lucidum-Radiatum
+CA3 Bistratified,Spiny Lucidum
+CA3 Bistratified,Mossy Fiber-Associated
+CA3 Bistratified,Mossy Fiber-Associated ORDEN
+CA3 Bistratified,CA3 O-LM
+CA3 Bistratified,CA3 QuadD-LM
+CA3 Bistratified,CA3 Radiatum
+CA3 Bistratified,CA3 R-LM
+CA3 Bistratified,CA3 SO-SO
+CA3 Bistratified,CA3 Trilaminar
+CA3 Bistratified,CA2 Wide-Arbor Basket
+CA3 Interneuron Specific Oriens,CA3 Pyramidal
+CA3 Interneuron Specific Oriens,CA3c Pyramidal
+CA3 Interneuron Specific Oriens,CA3 Giant
+CA3 Interneuron Specific Oriens,CA3 Granule
+CA3 Interneuron Specific Oriens,CA3 Axo-axonic
+CA3 Interneuron Specific Oriens,CA3 Horizontal Axo-axonic
+CA3 Interneuron Specific Oriens,CA3 Basket
+CA3 Interneuron Specific Oriens,CA3 Basket CCK+
+CA3 Interneuron Specific Oriens,CA3 Bistratified
+CA3 Interneuron Specific Oriens,CA3 Interneuron Specific Oriens
+CA3 Interneuron Specific Oriens,CA3 Interneuron Specific Quad
+CA3 Interneuron Specific Oriens,CA3 Ivy
+CA3 Interneuron Specific Oriens,CA3 LMR-Targeting
+CA3 Interneuron Specific Oriens,Lucidum LAX
+CA3 Interneuron Specific Oriens,Lucidum ORAX
+CA3 Interneuron Specific Oriens,Lucidum-Radiatum
+CA3 Interneuron Specific Oriens,Spiny Lucidum
+CA3 Interneuron Specific Oriens,Mossy Fiber-Associated
+CA3 Interneuron Specific Oriens,Mossy Fiber-Associated ORDEN
+CA3 Interneuron Specific Oriens,CA3 O-LM
+CA3 Interneuron Specific Oriens,CA3 QuadD-LM
+CA3 Interneuron Specific Oriens,CA3 Radiatum
+CA3 Interneuron Specific Oriens,CA3 R-LM
+CA3 Interneuron Specific Oriens,CA3 SO-SO
+CA3 Interneuron Specific Oriens,CA3 Trilaminar
+CA3 Interneuron Specific Oriens,CA2 Wide-Arbor Basket
+CA3 Interneuron Specific Quad,Hilar Ectopic Granule
+CA3 Interneuron Specific Quad,Mossy
+CA3 Interneuron Specific Quad,Mossy MOLDEN
+CA3 Interneuron Specific Quad,AIPRIM
+CA3 Interneuron Specific Quad,DG Axo-axonic
+CA3 Interneuron Specific Quad,DG Basket
+CA3 Interneuron Specific Quad,DG Basket CCK+
+CA3 Interneuron Specific Quad,HICAP
+CA3 Interneuron Specific Quad,HIPP
+CA3 Interneuron Specific Quad,HIPROM
+CA3 Interneuron Specific Quad,MOLAX
+CA3 Interneuron Specific Quad,Outer Molecular Layer
+CA3 Interneuron Specific Quad,Total Molecular Layer
+CA3 Interneuron Specific Quad,CA3 Pyramidal
+CA3 Interneuron Specific Quad,CA3c Pyramidal
+CA3 Interneuron Specific Quad,CA3 Giant
+CA3 Interneuron Specific Quad,CA3 Granule
+CA3 Interneuron Specific Quad,CA3 Axo-axonic
+CA3 Interneuron Specific Quad,CA3 Horizontal Axo-axonic
+CA3 Interneuron Specific Quad,CA3 Basket
+CA3 Interneuron Specific Quad,CA3 Basket CCK+
+CA3 Interneuron Specific Quad,CA3 Bistratified
+CA3 Interneuron Specific Quad,CA3 Interneuron Specific Oriens
+CA3 Interneuron Specific Quad,CA3 Interneuron Specific Quad
+CA3 Interneuron Specific Quad,CA3 Ivy
+CA3 Interneuron Specific Quad,CA3 LMR-Targeting
+CA3 Interneuron Specific Quad,Lucidum LAX
+CA3 Interneuron Specific Quad,Lucidum ORAX
+CA3 Interneuron Specific Quad,Lucidum-Radiatum
+CA3 Interneuron Specific Quad,Spiny Lucidum
+CA3 Interneuron Specific Quad,Mossy Fiber-Associated
+CA3 Interneuron Specific Quad,Mossy Fiber-Associated ORDEN
+CA3 Interneuron Specific Quad,CA3 O-LM
+CA3 Interneuron Specific Quad,CA3 QuadD-LM
+CA3 Interneuron Specific Quad,CA3 Radiatum
+CA3 Interneuron Specific Quad,CA3 R-LM
+CA3 Interneuron Specific Quad,CA3 SO-SO
+CA3 Interneuron Specific Quad,CA3 Trilaminar
+CA3 Interneuron Specific Quad,CA2 Wide-Arbor Basket
+CA3 Ivy,CA3 Pyramidal
+CA3 Ivy,CA3c Pyramidal
+CA3 Ivy,CA3 Giant
+CA3 Ivy,CA3 Granule
+CA3 Ivy,CA3 Axo-axonic
+CA3 Ivy,CA3 Horizontal Axo-axonic
+CA3 Ivy,CA3 Basket
+CA3 Ivy,CA3 Basket CCK+
+CA3 Ivy,CA3 Bistratified
+CA3 Ivy,CA3 Interneuron Specific Oriens
+CA3 Ivy,CA3 Interneuron Specific Quad
+CA3 Ivy,CA3 Ivy
+CA3 Ivy,CA3 LMR-Targeting
+CA3 Ivy,Lucidum LAX
+CA3 Ivy,Lucidum ORAX
+CA3 Ivy,Lucidum-Radiatum
+CA3 Ivy,Spiny Lucidum
+CA3 Ivy,Mossy Fiber-Associated
+CA3 Ivy,Mossy Fiber-Associated ORDEN
+CA3 Ivy,CA3 O-LM
+CA3 Ivy,CA3 QuadD-LM
+CA3 Ivy,CA3 Radiatum
+CA3 Ivy,CA3 R-LM
+CA3 Ivy,CA3 SO-SO
+CA3 Ivy,CA3 Trilaminar
+CA3 Ivy,CA2 Wide-Arbor Basket
+CA3 LMR-Targeting,CA3 Pyramidal
+CA3 LMR-Targeting,CA3c Pyramidal
+CA3 LMR-Targeting,CA3 Giant
+CA3 LMR-Targeting,CA3 Granule
+CA3 LMR-Targeting,CA3 Axo-axonic
+CA3 LMR-Targeting,CA3 Basket
+CA3 LMR-Targeting,CA3 Basket CCK+
+CA3 LMR-Targeting,CA3 Bistratified
+CA3 LMR-Targeting,CA3 Interneuron Specific Quad
+CA3 LMR-Targeting,CA3 Ivy
+CA3 LMR-Targeting,CA3 LMR-Targeting
+CA3 LMR-Targeting,Lucidum LAX
+CA3 LMR-Targeting,Lucidum ORAX
+CA3 LMR-Targeting,Lucidum-Radiatum
+CA3 LMR-Targeting,Mossy Fiber-Associated
+CA3 LMR-Targeting,Mossy Fiber-Associated ORDEN
+CA3 LMR-Targeting,CA3 QuadD-LM
+CA3 LMR-Targeting,CA3 Radiatum
+CA3 LMR-Targeting,CA3 R-LM
+Lucidum LAX,CA3 Pyramidal
+Lucidum LAX,CA3c Pyramidal
+Lucidum LAX,CA3 Axo-axonic
+Lucidum LAX,CA3 Basket
+Lucidum LAX,CA3 Basket CCK+
+Lucidum LAX,CA3 Bistratified
+Lucidum LAX,CA3 Interneuron Specific Quad
+Lucidum LAX,CA3 Ivy
+Lucidum LAX,CA3 LMR-Targeting
+Lucidum LAX,Lucidum LAX
+Lucidum LAX,Lucidum ORAX
+Lucidum LAX,Lucidum-Radiatum
+Lucidum LAX,Spiny Lucidum
+Lucidum LAX,Mossy Fiber-Associated
+Lucidum LAX,Mossy Fiber-Associated ORDEN
+Lucidum LAX,CA3 QuadD-LM
+Lucidum LAX,CA2 Wide-Arbor Basket
+Lucidum ORAX,CA3 Pyramidal
+Lucidum ORAX,CA3c Pyramidal
+Lucidum ORAX,CA3 Giant
+Lucidum ORAX,CA3 Granule
+Lucidum ORAX,CA3 Axo-axonic
+Lucidum ORAX,CA3 Horizontal Axo-axonic
+Lucidum ORAX,CA3 Basket
+Lucidum ORAX,CA3 Basket CCK+
+Lucidum ORAX,CA3 Bistratified
+Lucidum ORAX,CA3 Interneuron Specific Oriens
+Lucidum ORAX,CA3 Interneuron Specific Quad
+Lucidum ORAX,CA3 Ivy
+Lucidum ORAX,CA3 LMR-Targeting
+Lucidum ORAX,Lucidum LAX
+Lucidum ORAX,Lucidum ORAX
+Lucidum ORAX,Lucidum-Radiatum
+Lucidum ORAX,Spiny Lucidum
+Lucidum ORAX,Mossy Fiber-Associated
+Lucidum ORAX,Mossy Fiber-Associated ORDEN
+Lucidum ORAX,CA3 O-LM
+Lucidum ORAX,CA3 QuadD-LM
+Lucidum ORAX,CA3 Radiatum
+Lucidum ORAX,CA3 R-LM
+Lucidum ORAX,CA3 SO-SO
+Lucidum ORAX,CA3 Trilaminar
+Lucidum ORAX,CA2 Wide-Arbor Basket
+Lucidum-Radiatum,CA3 Pyramidal
+Lucidum-Radiatum,CA3c Pyramidal
+Lucidum-Radiatum,CA3 Giant
+Lucidum-Radiatum,CA3 Granule
+Lucidum-Radiatum,CA3 Axo-axonic
+Lucidum-Radiatum,CA3 Basket
+Lucidum-Radiatum,CA3 Basket CCK+
+Lucidum-Radiatum,CA3 Bistratified
+Lucidum-Radiatum,CA3 Interneuron Specific Quad
+Lucidum-Radiatum,CA3 Ivy
+Lucidum-Radiatum,CA3 LMR-Targeting
+Lucidum-Radiatum,Lucidum LAX
+Lucidum-Radiatum,Lucidum ORAX
+Lucidum-Radiatum,Lucidum-Radiatum
+Lucidum-Radiatum,Spiny Lucidum
+Lucidum-Radiatum,Mossy Fiber-Associated
+Lucidum-Radiatum,Mossy Fiber-Associated ORDEN
+Lucidum-Radiatum,CA3 QuadD-LM
+Lucidum-Radiatum,CA3 Radiatum
+Lucidum-Radiatum,CA3 R-LM
+Spiny Lucidum,Granule
+Spiny Lucidum,Hilar Ectopic Granule
+Spiny Lucidum,Semilunar Granule
+Spiny Lucidum,Mossy MOLDEN
+Spiny Lucidum,AIPRIM
+Spiny Lucidum,DG Axo-axonic
+Spiny Lucidum,DG Basket
+Spiny Lucidum,DG Basket CCK+
+Spiny Lucidum,HICAP
+Spiny Lucidum,HIPROM
+Spiny Lucidum,MOCAP
+Spiny Lucidum,MOLAX
+Spiny Lucidum,MOPP
+Spiny Lucidum,DG Neurogliaform
+Spiny Lucidum,Outer Molecular Layer
+Spiny Lucidum,Total Molecular Layer
+Spiny Lucidum,CA3 Pyramidal
+Spiny Lucidum,CA3c Pyramidal
+Spiny Lucidum,CA3 Giant
+Spiny Lucidum,CA3 Granule
+Spiny Lucidum,CA3 Axo-axonic
+Spiny Lucidum,CA3 Basket
+Spiny Lucidum,CA3 Basket CCK+
+Spiny Lucidum,CA3 Bistratified
+Spiny Lucidum,CA3 Interneuron Specific Quad
+Spiny Lucidum,CA3 Ivy
+Spiny Lucidum,CA3 LMR-Targeting
+Spiny Lucidum,Lucidum LAX
+Spiny Lucidum,Lucidum ORAX
+Spiny Lucidum,Lucidum-Radiatum
+Spiny Lucidum,Spiny Lucidum
+Spiny Lucidum,Mossy Fiber-Associated
+Spiny Lucidum,Mossy Fiber-Associated ORDEN
+Spiny Lucidum,CA3 QuadD-LM
+Spiny Lucidum,CA3 Radiatum
+Spiny Lucidum,CA3 R-LM
+Spiny Lucidum,CA1 Neurogliaform Projecting
+Mossy Fiber-Associated,Hilar Ectopic Granule
+Mossy Fiber-Associated,Mossy
+Mossy Fiber-Associated,Mossy MOLDEN
+Mossy Fiber-Associated,AIPRIM
+Mossy Fiber-Associated,DG Axo-axonic
+Mossy Fiber-Associated,DG Basket
+Mossy Fiber-Associated,DG Basket CCK+
+Mossy Fiber-Associated,HICAP
+Mossy Fiber-Associated,HIPP
+Mossy Fiber-Associated,HIPROM
+Mossy Fiber-Associated,MOLAX
+Mossy Fiber-Associated,Outer Molecular Layer
+Mossy Fiber-Associated,Total Molecular Layer
+Mossy Fiber-Associated,CA3 Pyramidal
+Mossy Fiber-Associated,CA3c Pyramidal
+Mossy Fiber-Associated,CA3 Giant
+Mossy Fiber-Associated,CA3 Granule
+Mossy Fiber-Associated,CA3 Axo-axonic
+Mossy Fiber-Associated,CA3 Basket
+Mossy Fiber-Associated,CA3 Basket CCK+
+Mossy Fiber-Associated,CA3 Bistratified
+Mossy Fiber-Associated,CA3 Interneuron Specific Quad
+Mossy Fiber-Associated,CA3 Ivy
+Mossy Fiber-Associated,CA3 LMR-Targeting
+Mossy Fiber-Associated,Lucidum LAX
+Mossy Fiber-Associated,Lucidum ORAX
+Mossy Fiber-Associated,Lucidum-Radiatum
+Mossy Fiber-Associated,Spiny Lucidum
+Mossy Fiber-Associated,Mossy Fiber-Associated
+Mossy Fiber-Associated,Mossy Fiber-Associated ORDEN
+Mossy Fiber-Associated,CA3 QuadD-LM
+Mossy Fiber-Associated,CA3 Radiatum
+Mossy Fiber-Associated,CA3 R-LM
+Mossy Fiber-Associated,CA2 Wide-Arbor Basket
+Mossy Fiber-Associated ORDEN,Hilar Ectopic Granule
+Mossy Fiber-Associated ORDEN,Mossy
+Mossy Fiber-Associated ORDEN,Mossy MOLDEN
+Mossy Fiber-Associated ORDEN,AIPRIM
+Mossy Fiber-Associated ORDEN,DG Axo-axonic
+Mossy Fiber-Associated ORDEN,DG Basket
+Mossy Fiber-Associated ORDEN,DG Basket CCK+
+Mossy Fiber-Associated ORDEN,HICAP
+Mossy Fiber-Associated ORDEN,HIPP
+Mossy Fiber-Associated ORDEN,HIPROM
+Mossy Fiber-Associated ORDEN,MOLAX
+Mossy Fiber-Associated ORDEN,Outer Molecular Layer
+Mossy Fiber-Associated ORDEN,Total Molecular Layer
+Mossy Fiber-Associated ORDEN,CA3 Pyramidal
+Mossy Fiber-Associated ORDEN,CA3c Pyramidal
+Mossy Fiber-Associated ORDEN,CA3 Axo-axonic
+Mossy Fiber-Associated ORDEN,CA3 Basket
+Mossy Fiber-Associated ORDEN,CA3 Basket CCK+
+Mossy Fiber-Associated ORDEN,CA3 Bistratified
+Mossy Fiber-Associated ORDEN,CA3 Interneuron Specific Quad
+Mossy Fiber-Associated ORDEN,CA3 Ivy
+Mossy Fiber-Associated ORDEN,CA3 LMR-Targeting
+Mossy Fiber-Associated ORDEN,Lucidum LAX
+Mossy Fiber-Associated ORDEN,Lucidum ORAX
+Mossy Fiber-Associated ORDEN,Lucidum-Radiatum
+Mossy Fiber-Associated ORDEN,Spiny Lucidum
+Mossy Fiber-Associated ORDEN,Mossy Fiber-Associated
+Mossy Fiber-Associated ORDEN,Mossy Fiber-Associated ORDEN
+Mossy Fiber-Associated ORDEN,CA3 QuadD-LM
+Mossy Fiber-Associated ORDEN,CA2 Wide-Arbor Basket
+CA3 O-LM,CA3 Pyramidal
+CA3 O-LM,CA3c Pyramidal
+CA3 O-LM,CA3 Giant
+CA3 O-LM,CA3 Granule
+CA3 O-LM,CA3 Axo-axonic
+CA3 O-LM,CA3 Horizontal Axo-axonic
+CA3 O-LM,CA3 Basket
+CA3 O-LM,CA3 Basket CCK+
+CA3 O-LM,CA3 Bistratified
+CA3 O-LM,CA3 Interneuron Specific Oriens
+CA3 O-LM,CA3 Interneuron Specific Quad
+CA3 O-LM,CA3 Ivy
+CA3 O-LM,CA3 LMR-Targeting
+CA3 O-LM,Lucidum LAX
+CA3 O-LM,Lucidum ORAX
+CA3 O-LM,Lucidum-Radiatum
+CA3 O-LM,Mossy Fiber-Associated
+CA3 O-LM,Mossy Fiber-Associated ORDEN
+CA3 O-LM,CA3 O-LM
+CA3 O-LM,CA3 QuadD-LM
+CA3 O-LM,CA3 Radiatum
+CA3 O-LM,CA3 R-LM
+CA3 O-LM,CA3 SO-SO
+CA3 O-LM,CA3 Trilaminar
+CA3 QuadD-LM,CA3 Pyramidal
+CA3 QuadD-LM,CA3 Giant
+CA3 QuadD-LM,CA3 Granule
+CA3 QuadD-LM,CA3 Axo-axonic
+CA3 QuadD-LM,CA3 Basket
+CA3 QuadD-LM,CA3 Basket CCK+
+CA3 QuadD-LM,CA3 LMR-Targeting
+CA3 Radiatum,CA3 Pyramidal
+CA3 Radiatum,CA3c Pyramidal
+CA3 Radiatum,CA3 Giant
+CA3 Radiatum,CA3 Granule
+CA3 Radiatum,CA3 Axo-axonic
+CA3 Radiatum,CA3 Basket
+CA3 Radiatum,CA3 Basket CCK+
+CA3 Radiatum,CA3 Bistratified
+CA3 Radiatum,CA3 Interneuron Specific Quad
+CA3 Radiatum,CA3 Ivy
+CA3 Radiatum,CA3 LMR-Targeting
+CA3 Radiatum,Lucidum LAX
+CA3 Radiatum,Lucidum ORAX
+CA3 Radiatum,Lucidum-Radiatum
+CA3 Radiatum,Mossy Fiber-Associated
+CA3 Radiatum,Mossy Fiber-Associated ORDEN
+CA3 Radiatum,CA3 QuadD-LM
+CA3 Radiatum,CA3 Radiatum
+CA3 Radiatum,CA3 R-LM
+CA3 R-LM,CA3 Pyramidal
+CA3 R-LM,CA3 Giant
+CA3 R-LM,CA3 Granule
+CA3 R-LM,CA3 Axo-axonic
+CA3 R-LM,CA3 Basket
+CA3 R-LM,CA3 Basket CCK+
+CA3 R-LM,CA3 LMR-Targeting
+CA3 SO-SO,CA3 Pyramidal
+CA3 SO-SO,CA3c Pyramidal
+CA3 SO-SO,CA3 Axo-axonic
+CA3 SO-SO,CA3 Horizontal Axo-axonic
+CA3 SO-SO,CA3 Basket
+CA3 SO-SO,CA3 Basket CCK+
+CA3 SO-SO,CA3 Bistratified
+CA3 SO-SO,CA3 Interneuron Specific Oriens
+CA3 SO-SO,CA3 Interneuron Specific Quad
+CA3 SO-SO,CA3 Ivy
+CA3 SO-SO,Mossy Fiber-Associated ORDEN
+CA3 SO-SO,CA3 O-LM
+CA3 SO-SO,CA3 QuadD-LM
+CA3 SO-SO,CA3 SO-SO
+CA3 SO-SO,CA3 Trilaminar
+CA3 Trilaminar,CA3 Pyramidal
+CA3 Trilaminar,CA3c Pyramidal
+CA3 Trilaminar,CA3 Giant
+CA3 Trilaminar,CA3 Granule
+CA3 Trilaminar,CA3 Axo-axonic
+CA3 Trilaminar,CA3 Horizontal Axo-axonic
+CA3 Trilaminar,CA3 Basket
+CA3 Trilaminar,CA3 Basket CCK+
+CA3 Trilaminar,CA3 Bistratified
+CA3 Trilaminar,CA3 Interneuron Specific Oriens
+CA3 Trilaminar,CA3 Interneuron Specific Quad
+CA3 Trilaminar,CA3 Ivy
+CA3 Trilaminar,CA3 LMR-Targeting
+CA3 Trilaminar,Lucidum LAX
+CA3 Trilaminar,Lucidum ORAX
+CA3 Trilaminar,Lucidum-Radiatum
+CA3 Trilaminar,Spiny Lucidum
+CA3 Trilaminar,Mossy Fiber-Associated
+CA3 Trilaminar,Mossy Fiber-Associated ORDEN
+CA3 Trilaminar,CA3 O-LM
+CA3 Trilaminar,CA3 QuadD-LM
+CA3 Trilaminar,CA3 Radiatum
+CA3 Trilaminar,CA3 R-LM
+CA3 Trilaminar,CA3 SO-SO
+CA3 Trilaminar,CA3 Trilaminar
+CA3 Trilaminar,CA2 Wide-Arbor Basket
+CA3 Trilaminar,CA1 Pyramidal
+CA3 Trilaminar,CA1 Radiatum Giant
+CA3 Trilaminar,CA1 Axo-axonic
+CA3 Trilaminar,CA1 Horizontal Axo-axonic
+CA3 Trilaminar,CA1 Back-Projection
+CA3 Trilaminar,CA1 Basket
+CA3 Trilaminar,CA1 Basket CCK+
+CA3 Trilaminar,CA1 Horizontal Basket
+CA3 Trilaminar,CA1 Bistratified
+CA3 Trilaminar,CA1 Interneuron Specific LMO-O
+CA3 Trilaminar,CA1 Interneuron Specific LMR-R
+CA3 Trilaminar,CA1 Interneuron Specific O-R
+CA3 Trilaminar,CA1 Interneuron Specific O-Targeting QuadD
+CA3 Trilaminar,CA1 Interneuron Specific R-O
+CA3 Trilaminar,CA1 Interneuron Specific RO-O
+CA3 Trilaminar,CA1 Ivy
+CA3 Trilaminar,CA1 LMR
+CA3 Trilaminar,CA1 LMR Projecting
+CA3 Trilaminar,CA1 O-LM
+CA3 Trilaminar,CA1 Recurrent O-LM
+CA3 Trilaminar,CA1 O-LMR
+CA3 Trilaminar,CA1 Oriens/Alveus
+CA3 Trilaminar,CA1 Oriens-Bistratified
+CA3 Trilaminar,CA1 Oriens-Bistratified Projecting
+CA3 Trilaminar,CA1 OR-LM
+CA3 Trilaminar,CA1 Perforant Path-Associated
+CA3 Trilaminar,CA1 Perforant Path-Associated QuadD
+CA3 Trilaminar,CA1 Quadrilaminar
+CA3 Trilaminar,CA1 Radiatum
+CA3 Trilaminar,CA1 R-Receiving Apical-Targeting
+CA3 Trilaminar,Schaffer Collateral-Associated
+CA3 Trilaminar,Schaffer Collateral-Receiving R-Targeting
+CA3 Trilaminar,CA1 SO-SO
+CA3 Trilaminar,CA1 Hippocampo-subicular Projecting ENK+
+CA3 Trilaminar,CA1 Trilaminar
+CA3 Trilaminar,CA1 Radial Trilaminar
+CA2 Pyramidal,Hilar Ectopic Granule
+CA2 Pyramidal,Mossy
+CA2 Pyramidal,Mossy MOLDEN
+CA2 Pyramidal,AIPRIM
+CA2 Pyramidal,DG Axo-axonic
+CA2 Pyramidal,DG Basket
+CA2 Pyramidal,DG Basket CCK+
+CA2 Pyramidal,HICAP
+CA2 Pyramidal,HIPP
+CA2 Pyramidal,HIPROM
+CA2 Pyramidal,MOLAX
+CA2 Pyramidal,Outer Molecular Layer
+CA2 Pyramidal,Total Molecular Layer
+CA2 Pyramidal,CA3 Pyramidal
+CA2 Pyramidal,CA3c Pyramidal
+CA2 Pyramidal,CA3 Giant
+CA2 Pyramidal,CA3 Granule
+CA2 Pyramidal,CA3 Axo-axonic
+CA2 Pyramidal,CA3 Horizontal Axo-axonic
+CA2 Pyramidal,CA3 Basket
+CA2 Pyramidal,CA3 Basket CCK+
+CA2 Pyramidal,CA3 Bistratified
+CA2 Pyramidal,CA3 Interneuron Specific Oriens
+CA2 Pyramidal,CA3 Interneuron Specific Quad
+CA2 Pyramidal,CA3 Ivy
+CA2 Pyramidal,CA3 LMR-Targeting
+CA2 Pyramidal,Lucidum LAX
+CA2 Pyramidal,Lucidum ORAX
+CA2 Pyramidal,Lucidum-Radiatum
+CA2 Pyramidal,Spiny Lucidum
+CA2 Pyramidal,Mossy Fiber-Associated
+CA2 Pyramidal,Mossy Fiber-Associated ORDEN
+CA2 Pyramidal,CA3 O-LM
+CA2 Pyramidal,CA3 QuadD-LM
+CA2 Pyramidal,CA3 Radiatum
+CA2 Pyramidal,CA3 R-LM
+CA2 Pyramidal,CA3 SO-SO
+CA2 Pyramidal,CA3 Trilaminar
+CA2 Pyramidal,CA2 Pyramidal
+CA2 Pyramidal,CA2 Basket
+CA2 Pyramidal,CA2 Wide-Arbor Basket
+CA2 Pyramidal,CA2 Bistratified
+CA2 Pyramidal,CA2 SP-SR
+CA2 Pyramidal,CA1 Pyramidal
+CA2 Pyramidal,CA1 Radiatum Giant
+CA2 Pyramidal,CA1 Axo-axonic
+CA2 Pyramidal,CA1 Horizontal Axo-axonic
+CA2 Pyramidal,CA1 Back-Projection
+CA2 Pyramidal,CA1 Basket
+CA2 Pyramidal,CA1 Basket CCK+
+CA2 Pyramidal,CA1 Horizontal Basket
+CA2 Pyramidal,CA1 Bistratified
+CA2 Pyramidal,CA1 Interneuron Specific LMO-O
+CA2 Pyramidal,CA1 Interneuron Specific LMR-R
+CA2 Pyramidal,CA1 Interneuron Specific O-R
+CA2 Pyramidal,CA1 Interneuron Specific O-Targeting QuadD
+CA2 Pyramidal,CA1 Interneuron Specific R-O
+CA2 Pyramidal,CA1 Interneuron Specific RO-O
+CA2 Pyramidal,CA1 Ivy
+CA2 Pyramidal,CA1 LMR
+CA2 Pyramidal,CA1 LMR Projecting
+CA2 Pyramidal,CA1 O-LM
+CA2 Pyramidal,CA1 Recurrent O-LM
+CA2 Pyramidal,CA1 O-LMR
+CA2 Pyramidal,CA1 Oriens/Alveus
+CA2 Pyramidal,CA1 Oriens-Bistratified
+CA2 Pyramidal,CA1 Oriens-Bistratified Projecting
+CA2 Pyramidal,CA1 OR-LM
+CA2 Pyramidal,CA1 Perforant Path-Associated
+CA2 Pyramidal,CA1 Perforant Path-Associated QuadD
+CA2 Pyramidal,CA1 Quadrilaminar
+CA2 Pyramidal,CA1 Radiatum
+CA2 Pyramidal,CA1 R-Receiving Apical-Targeting
+CA2 Pyramidal,Schaffer Collateral-Associated
+CA2 Pyramidal,Schaffer Collateral-Receiving R-Targeting
+CA2 Pyramidal,CA1 SO-SO
+CA2 Pyramidal,CA1 Hippocampo-subicular Projecting ENK+
+CA2 Pyramidal,CA1 Trilaminar
+CA2 Pyramidal,CA1 Radial Trilaminar
+CA2 Basket,CA2 Pyramidal
+CA2 Basket,CA2 Basket
+CA2 Basket,CA2 Wide-Arbor Basket
+CA2 Basket,CA2 Bistratified
+CA2 Basket,CA2 SP-SR
+CA2 Wide-Arbor Basket,CA3 Pyramidal
+CA2 Wide-Arbor Basket,CA3c Pyramidal
+CA2 Wide-Arbor Basket,CA3 Axo-axonic
+CA2 Wide-Arbor Basket,CA3 Basket
+CA2 Wide-Arbor Basket,CA3 Basket CCK+
+CA2 Wide-Arbor Basket,CA3 Bistratified
+CA2 Wide-Arbor Basket,CA3 Interneuron Specific Quad
+CA2 Wide-Arbor Basket,Mossy Fiber-Associated ORDEN
+CA2 Wide-Arbor Basket,CA3 QuadD-LM
+CA2 Wide-Arbor Basket,CA2 Pyramidal
+CA2 Wide-Arbor Basket,CA2 Basket
+CA2 Wide-Arbor Basket,CA2 Wide-Arbor Basket
+CA2 Wide-Arbor Basket,CA2 Bistratified
+CA2 Wide-Arbor Basket,CA2 SP-SR
+CA2 Wide-Arbor Basket,CA1 Pyramidal
+CA2 Wide-Arbor Basket,CA1 Radiatum Giant
+CA2 Wide-Arbor Basket,CA1 Axo-axonic
+CA2 Wide-Arbor Basket,CA1 Basket
+CA2 Wide-Arbor Basket,CA1 Basket CCK+
+CA2 Wide-Arbor Basket,CA1 Horizontal Basket
+CA2 Wide-Arbor Basket,CA1 Bistratified
+CA2 Wide-Arbor Basket,CA1 Interneuron Specific LMO-O
+CA2 Wide-Arbor Basket,CA1 Interneuron Specific LMR-R
+CA2 Wide-Arbor Basket,CA1 Interneuron Specific O-Targeting QuadD
+CA2 Wide-Arbor Basket,CA1 Interneuron Specific R-O
+CA2 Wide-Arbor Basket,CA1 Interneuron Specific RO-O
+CA2 Wide-Arbor Basket,CA1 Ivy
+CA2 Wide-Arbor Basket,CA1 OR-LM
+CA2 Wide-Arbor Basket,CA1 Radial Trilaminar
+CA2 Bistratified,CA2 Pyramidal
+CA2 Bistratified,CA2 Basket
+CA2 Bistratified,CA2 Wide-Arbor Basket
+CA2 Bistratified,CA2 Bistratified
+CA2 Bistratified,CA2 SP-SR
+CA2 Bistratified,CA1 Pyramidal
+CA2 Bistratified,CA1 Radiatum Giant
+CA2 Bistratified,CA1 Axo-axonic
+CA2 Bistratified,CA1 Horizontal Axo-axonic
+CA2 Bistratified,CA1 Back-Projection
+CA2 Bistratified,CA1 Basket
+CA2 Bistratified,CA1 Basket CCK+
+CA2 Bistratified,CA1 Horizontal Basket
+CA2 Bistratified,CA1 Bistratified
+CA2 Bistratified,CA1 Interneuron Specific LMO-O
+CA2 Bistratified,CA1 Interneuron Specific LMR-R
+CA2 Bistratified,CA1 Interneuron Specific O-R
+CA2 Bistratified,CA1 Interneuron Specific O-Targeting QuadD
+CA2 Bistratified,CA1 Interneuron Specific R-O
+CA2 Bistratified,CA1 Interneuron Specific RO-O
+CA2 Bistratified,CA1 Ivy
+CA2 Bistratified,CA1 LMR
+CA2 Bistratified,CA1 LMR Projecting
+CA2 Bistratified,CA1 O-LM
+CA2 Bistratified,CA1 Recurrent O-LM
+CA2 Bistratified,CA1 O-LMR
+CA2 Bistratified,CA1 Oriens/Alveus
+CA2 Bistratified,CA1 Oriens-Bistratified
+CA2 Bistratified,CA1 Oriens-Bistratified Projecting
+CA2 Bistratified,CA1 OR-LM
+CA2 Bistratified,CA1 Perforant Path-Associated
+CA2 Bistratified,CA1 Perforant Path-Associated QuadD
+CA2 Bistratified,CA1 Quadrilaminar
+CA2 Bistratified,CA1 Radiatum
+CA2 Bistratified,CA1 R-Receiving Apical-Targeting
+CA2 Bistratified,Schaffer Collateral-Associated
+CA2 Bistratified,Schaffer Collateral-Receiving R-Targeting
+CA2 Bistratified,CA1 SO-SO
+CA2 Bistratified,CA1 Hippocampo-subicular Projecting ENK+
+CA2 Bistratified,CA1 Trilaminar
+CA2 Bistratified,CA1 Radial Trilaminar
+CA2 SP-SR,CA2 Pyramidal
+CA2 SP-SR,CA2 Basket
+CA2 SP-SR,CA2 Wide-Arbor Basket
+CA2 SP-SR,CA2 Bistratified
+CA2 SP-SR,CA2 SP-SR
+CA1 Pyramidal,CA1 Pyramidal
+CA1 Pyramidal,CA1 Axo-axonic
+CA1 Pyramidal,CA1 Horizontal Axo-axonic
+CA1 Pyramidal,CA1 Back-Projection
+CA1 Pyramidal,CA1 Basket
+CA1 Pyramidal,CA1 Basket CCK+
+CA1 Pyramidal,CA1 Horizontal Basket
+CA1 Pyramidal,CA1 Bistratified
+CA1 Pyramidal,CA1 Interneuron Specific LMO-O
+CA1 Pyramidal,CA1 Interneuron Specific O-R
+CA1 Pyramidal,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Pyramidal,CA1 Interneuron Specific RO-O
+CA1 Pyramidal,CA1 Ivy
+CA1 Pyramidal,CA1 O-LM
+CA1 Pyramidal,CA1 Recurrent O-LM
+CA1 Pyramidal,CA1 O-LMR
+CA1 Pyramidal,CA1 Oriens/Alveus
+CA1 Pyramidal,CA1 Oriens-Bistratified
+CA1 Pyramidal,CA1 Oriens-Bistratified Projecting
+CA1 Pyramidal,CA1 OR-LM
+CA1 Pyramidal,CA1 Perforant Path-Associated QuadD
+CA1 Pyramidal,CA1 Quadrilaminar
+CA1 Pyramidal,Schaffer Collateral-Receiving R-Targeting
+CA1 Pyramidal,CA1 SO-SO
+CA1 Pyramidal,CA1 Hippocampo-subicular Projecting ENK+
+CA1 Pyramidal,CA1 Trilaminar
+CA1 Pyramidal,CA1 Radial Trilaminar
+CA1 Pyramidal,SUB EC-Projecting Pyramidal
+CA1 Pyramidal,SUB CA1-Projecting Pyramidal
+CA1 Pyramidal,SUB Axo-axonic
+CA1 Pyramidal,LEC LIII Multipolar Principal
+CA1 Pyramidal,LIII-V Bipolar Pyramidal
+CA1 Pyramidal,LIV-V Pyramidal-Horizontal
+CA1 Pyramidal,LIV-VI Deep Multipolar Principal
+CA1 Pyramidal,MEC LV Multipolar-Pyramidal
+CA1 Pyramidal,LV Deep Pyramidal
+CA1 Pyramidal,MEC LV Pyramidal
+CA1 Pyramidal,MEC LV Superficial Pyramidal
+CA1 Pyramidal,MEC LV-VI Pyramidal-Polymorphic
+CA1 Pyramidal,LEC LVI Multipolar-Pyramidal
+CA1 Pyramidal,MEC LIII Multipolar Interneuron
+Cajal-Retzius,CA1 Pyramidal
+Cajal-Retzius,Cajal-Retzius
+Cajal-Retzius,CA1 Radiatum Giant
+Cajal-Retzius,CA1 Axo-axonic
+Cajal-Retzius,CA1 Basket
+Cajal-Retzius,CA1 Basket CCK+
+Cajal-Retzius,CA1 Interneuron Specific LMO-O
+Cajal-Retzius,CA1 Interneuron Specific LM-R
+Cajal-Retzius,CA1 Interneuron Specific LMR-R
+Cajal-Retzius,CA1 Interneuron Specific O-Targeting QuadD
+Cajal-Retzius,CA1 LMR
+Cajal-Retzius,CA1 LMR Projecting
+Cajal-Retzius,CA1 Neurogliaform
+Cajal-Retzius,CA1 Neurogliaform Projecting
+Cajal-Retzius,CA1 Oriens/Alveus
+Cajal-Retzius,CA1 Perforant Path-Associated
+Cajal-Retzius,CA1 Perforant Path-Associated QuadD
+Cajal-Retzius,CA1 Quadrilaminar
+Cajal-Retzius,Schaffer Collateral-Associated
+Cajal-Retzius,CA1 Radial Trilaminar
+CA1 Radiatum Giant,CA1 Pyramidal
+CA1 Radiatum Giant,CA1 Axo-axonic
+CA1 Radiatum Giant,CA1 Horizontal Axo-axonic
+CA1 Radiatum Giant,CA1 Back-Projection
+CA1 Radiatum Giant,CA1 Basket
+CA1 Radiatum Giant,CA1 Basket CCK+
+CA1 Radiatum Giant,CA1 Horizontal Basket
+CA1 Radiatum Giant,CA1 Bistratified
+CA1 Radiatum Giant,CA1 Interneuron Specific LMO-O
+CA1 Radiatum Giant,CA1 Interneuron Specific O-R
+CA1 Radiatum Giant,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Radiatum Giant,CA1 Interneuron Specific RO-O
+CA1 Radiatum Giant,CA1 Ivy
+CA1 Radiatum Giant,CA1 O-LM
+CA1 Radiatum Giant,CA1 Recurrent O-LM
+CA1 Radiatum Giant,CA1 O-LMR
+CA1 Radiatum Giant,CA1 Oriens/Alveus
+CA1 Radiatum Giant,CA1 Oriens-Bistratified
+CA1 Radiatum Giant,CA1 Oriens-Bistratified Projecting
+CA1 Radiatum Giant,CA1 OR-LM
+CA1 Radiatum Giant,CA1 Perforant Path-Associated QuadD
+CA1 Radiatum Giant,CA1 Quadrilaminar
+CA1 Radiatum Giant,Schaffer Collateral-Receiving R-Targeting
+CA1 Radiatum Giant,CA1 SO-SO
+CA1 Radiatum Giant,CA1 Hippocampo-subicular Projecting ENK+
+CA1 Radiatum Giant,CA1 Trilaminar
+CA1 Radiatum Giant,CA1 Radial Trilaminar
+CA1 Axo-axonic,CA1 Pyramidal
+CA1 Axo-axonic,CA1 Radiatum Giant
+CA1 Horizontal Axo-axonic,CA1 Pyramidal
+CA1 Horizontal Axo-axonic,CA1 Radiatum Giant
+CA1 Back-Projection,Hilar Ectopic Granule
+CA1 Back-Projection,Mossy
+CA1 Back-Projection,Mossy MOLDEN
+CA1 Back-Projection,AIPRIM
+CA1 Back-Projection,DG Axo-axonic
+CA1 Back-Projection,DG Basket
+CA1 Back-Projection,DG Basket CCK+
+CA1 Back-Projection,HICAP
+CA1 Back-Projection,HIPP
+CA1 Back-Projection,HIPROM
+CA1 Back-Projection,MOLAX
+CA1 Back-Projection,Outer Molecular Layer
+CA1 Back-Projection,Total Molecular Layer
+CA1 Back-Projection,CA3 Pyramidal
+CA1 Back-Projection,CA3c Pyramidal
+CA1 Back-Projection,CA3 Giant
+CA1 Back-Projection,CA3 Granule
+CA1 Back-Projection,CA3 Axo-axonic
+CA1 Back-Projection,CA3 Horizontal Axo-axonic
+CA1 Back-Projection,CA3 Basket
+CA1 Back-Projection,CA3 Basket CCK+
+CA1 Back-Projection,CA3 Bistratified
+CA1 Back-Projection,CA3 Interneuron Specific Oriens
+CA1 Back-Projection,CA3 Interneuron Specific Quad
+CA1 Back-Projection,CA3 Ivy
+CA1 Back-Projection,CA3 LMR-Targeting
+CA1 Back-Projection,Lucidum LAX
+CA1 Back-Projection,Lucidum ORAX
+CA1 Back-Projection,Lucidum-Radiatum
+CA1 Back-Projection,Spiny Lucidum
+CA1 Back-Projection,Mossy Fiber-Associated
+CA1 Back-Projection,Mossy Fiber-Associated ORDEN
+CA1 Back-Projection,CA3 O-LM
+CA1 Back-Projection,CA3 QuadD-LM
+CA1 Back-Projection,CA3 Radiatum
+CA1 Back-Projection,CA3 R-LM
+CA1 Back-Projection,CA3 SO-SO
+CA1 Back-Projection,CA3 Trilaminar
+CA1 Back-Projection,CA2 Wide-Arbor Basket
+CA1 Back-Projection,CA1 Pyramidal
+CA1 Back-Projection,Cajal-Retzius
+CA1 Back-Projection,CA1 Radiatum Giant
+CA1 Back-Projection,CA1 Axo-axonic
+CA1 Back-Projection,CA1 Horizontal Axo-axonic
+CA1 Back-Projection,CA1 Back-Projection
+CA1 Back-Projection,CA1 Basket
+CA1 Back-Projection,CA1 Basket CCK+
+CA1 Back-Projection,CA1 Horizontal Basket
+CA1 Back-Projection,CA1 Bistratified
+CA1 Back-Projection,CA1 Interneuron Specific LMO-O
+CA1 Back-Projection,CA1 Interneuron Specific LM-R
+CA1 Back-Projection,CA1 Interneuron Specific LMR-R
+CA1 Back-Projection,CA1 Interneuron Specific O-R
+CA1 Back-Projection,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Back-Projection,CA1 Interneuron Specific R-O
+CA1 Back-Projection,CA1 Interneuron Specific RO-O
+CA1 Back-Projection,CA1 Ivy
+CA1 Back-Projection,CA1 LMR
+CA1 Back-Projection,CA1 LMR Projecting
+CA1 Back-Projection,CA1 Neurogliaform
+CA1 Back-Projection,CA1 Neurogliaform Projecting
+CA1 Back-Projection,CA1 O-LM
+CA1 Back-Projection,CA1 Recurrent O-LM
+CA1 Back-Projection,CA1 O-LMR
+CA1 Back-Projection,CA1 Oriens/Alveus
+CA1 Back-Projection,CA1 Oriens-Bistratified
+CA1 Back-Projection,CA1 Oriens-Bistratified Projecting
+CA1 Back-Projection,CA1 OR-LM
+CA1 Back-Projection,CA1 Perforant Path-Associated
+CA1 Back-Projection,CA1 Perforant Path-Associated QuadD
+CA1 Back-Projection,CA1 Quadrilaminar
+CA1 Back-Projection,CA1 Radiatum
+CA1 Back-Projection,CA1 R-Receiving Apical-Targeting
+CA1 Back-Projection,Schaffer Collateral-Associated
+CA1 Back-Projection,Schaffer Collateral-Receiving R-Targeting
+CA1 Back-Projection,CA1 SO-SO
+CA1 Back-Projection,CA1 Hippocampo-subicular Projecting ENK+
+CA1 Back-Projection,CA1 Trilaminar
+CA1 Back-Projection,CA1 Radial Trilaminar
+CA1 Basket,CA1 Pyramidal
+CA1 Basket,CA1 Radiatum Giant
+CA1 Basket,CA1 Axo-axonic
+CA1 Basket,CA1 Basket
+CA1 Basket,CA1 Basket CCK+
+CA1 Basket,CA1 Horizontal Basket
+CA1 Basket,CA1 Bistratified
+CA1 Basket,CA1 Interneuron Specific LMO-O
+CA1 Basket,CA1 Interneuron Specific LMR-R
+CA1 Basket,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Basket,CA1 Interneuron Specific R-O
+CA1 Basket,CA1 Interneuron Specific RO-O
+CA1 Basket,CA1 Ivy
+CA1 Basket,CA1 OR-LM
+CA1 Basket,CA1 Radial Trilaminar
+CA1 Basket CCK+,CA1 Pyramidal
+CA1 Basket CCK+,CA1 Radiatum Giant
+CA1 Basket CCK+,CA1 Axo-axonic
+CA1 Basket CCK+,CA1 Basket
+CA1 Basket CCK+,CA1 Basket CCK+
+CA1 Basket CCK+,CA1 Horizontal Basket
+CA1 Basket CCK+,CA1 Bistratified
+CA1 Basket CCK+,CA1 Interneuron Specific LMO-O
+CA1 Basket CCK+,CA1 Interneuron Specific LMR-R
+CA1 Basket CCK+,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Basket CCK+,CA1 Interneuron Specific R-O
+CA1 Basket CCK+,CA1 Interneuron Specific RO-O
+CA1 Basket CCK+,CA1 Ivy
+CA1 Basket CCK+,CA1 OR-LM
+CA1 Basket CCK+,CA1 Radial Trilaminar
+CA1 Horizontal Basket,CA1 Pyramidal
+CA1 Horizontal Basket,CA1 Radiatum Giant
+CA1 Horizontal Basket,CA1 Axo-axonic
+CA1 Horizontal Basket,CA1 Basket
+CA1 Horizontal Basket,CA1 Basket CCK+
+CA1 Horizontal Basket,CA1 Horizontal Basket
+CA1 Horizontal Basket,CA1 Bistratified
+CA1 Horizontal Basket,CA1 Interneuron Specific LMO-O
+CA1 Horizontal Basket,CA1 Interneuron Specific LMR-R
+CA1 Horizontal Basket,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Horizontal Basket,CA1 Interneuron Specific R-O
+CA1 Horizontal Basket,CA1 Interneuron Specific RO-O
+CA1 Horizontal Basket,CA1 Ivy
+CA1 Horizontal Basket,CA1 OR-LM
+CA1 Horizontal Basket,CA1 Radial Trilaminar
+CA1 Bistratified,CA2 Wide-Arbor Basket
+CA1 Bistratified,CA1 Pyramidal
+CA1 Bistratified,CA1 Radiatum Giant
+CA1 Bistratified,CA1 Axo-axonic
+CA1 Bistratified,CA1 Horizontal Axo-axonic
+CA1 Bistratified,CA1 Back-Projection
+CA1 Bistratified,CA1 Basket
+CA1 Bistratified,CA1 Basket CCK+
+CA1 Bistratified,CA1 Horizontal Basket
+CA1 Bistratified,CA1 Bistratified
+CA1 Bistratified,CA1 Interneuron Specific LMO-O
+CA1 Bistratified,CA1 Interneuron Specific LMR-R
+CA1 Bistratified,CA1 Interneuron Specific O-R
+CA1 Bistratified,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Bistratified,CA1 Interneuron Specific R-O
+CA1 Bistratified,CA1 Interneuron Specific RO-O
+CA1 Bistratified,CA1 Ivy
+CA1 Bistratified,CA1 LMR
+CA1 Bistratified,CA1 LMR Projecting
+CA1 Bistratified,CA1 O-LM
+CA1 Bistratified,CA1 Recurrent O-LM
+CA1 Bistratified,CA1 O-LMR
+CA1 Bistratified,CA1 Oriens/Alveus
+CA1 Bistratified,CA1 Oriens-Bistratified
+CA1 Bistratified,CA1 Oriens-Bistratified Projecting
+CA1 Bistratified,CA1 OR-LM
+CA1 Bistratified,CA1 Perforant Path-Associated
+CA1 Bistratified,CA1 Perforant Path-Associated QuadD
+CA1 Bistratified,CA1 Quadrilaminar
+CA1 Bistratified,CA1 Radiatum
+CA1 Bistratified,CA1 R-Receiving Apical-Targeting
+CA1 Bistratified,Schaffer Collateral-Associated
+CA1 Bistratified,Schaffer Collateral-Receiving R-Targeting
+CA1 Bistratified,CA1 SO-SO
+CA1 Bistratified,CA1 Hippocampo-subicular Projecting ENK+
+CA1 Bistratified,CA1 Trilaminar
+CA1 Bistratified,CA1 Radial Trilaminar
+CA1 Interneuron Specific LMO-O,CA1 Axo-axonic
+CA1 Interneuron Specific LMO-O,CA1 Horizontal Axo-axonic
+CA1 Interneuron Specific LMO-O,CA1 Back-Projection
+CA1 Interneuron Specific LMO-O,CA1 Basket
+CA1 Interneuron Specific LMO-O,CA1 Basket CCK+
+CA1 Interneuron Specific LMO-O,CA1 Horizontal Basket
+CA1 Interneuron Specific LMO-O,CA1 Bistratified
+CA1 Interneuron Specific LMO-O,CA1 Interneuron Specific LMO-O
+CA1 Interneuron Specific LMO-O,CA1 Interneuron Specific O-R
+CA1 Interneuron Specific LMO-O,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Interneuron Specific LMO-O,CA1 Interneuron Specific RO-O
+CA1 Interneuron Specific LMO-O,CA1 Ivy
+CA1 Interneuron Specific LMO-O,CA1 O-LM
+CA1 Interneuron Specific LMO-O,CA1 Recurrent O-LM
+CA1 Interneuron Specific LMO-O,CA1 O-LMR
+CA1 Interneuron Specific LMO-O,CA1 Oriens/Alveus
+CA1 Interneuron Specific LMO-O,CA1 Oriens-Bistratified
+CA1 Interneuron Specific LMO-O,CA1 Oriens-Bistratified Projecting
+CA1 Interneuron Specific LMO-O,CA1 OR-LM
+CA1 Interneuron Specific LMO-O,CA1 Perforant Path-Associated QuadD
+CA1 Interneuron Specific LMO-O,CA1 Quadrilaminar
+CA1 Interneuron Specific LMO-O,Schaffer Collateral-Associated
+CA1 Interneuron Specific LMO-O,Schaffer Collateral-Receiving R-Targeting
+CA1 Interneuron Specific LMO-O,CA1 SO-SO
+CA1 Interneuron Specific LMO-O,CA1 Hippocampo-subicular Projecting ENK+
+CA1 Interneuron Specific LMO-O,CA1 Trilaminar
+CA1 Interneuron Specific LMO-O,CA1 Radial Trilaminar
+CA1 Interneuron Specific LM-R,CA1 Radiatum Giant
+CA1 Interneuron Specific LM-R,CA1 Axo-axonic
+CA1 Interneuron Specific LM-R,CA1 Basket
+CA1 Interneuron Specific LM-R,CA1 Basket CCK+
+CA1 Interneuron Specific LM-R,CA1 Bistratified
+CA1 Interneuron Specific LM-R,CA1 Interneuron Specific LMR-R
+CA1 Interneuron Specific LM-R,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Interneuron Specific LM-R,CA1 Interneuron Specific R-O
+CA1 Interneuron Specific LM-R,CA1 Interneuron Specific RO-O
+CA1 Interneuron Specific LM-R,CA1 Ivy
+CA1 Interneuron Specific LM-R,CA1 LMR
+CA1 Interneuron Specific LM-R,CA1 LMR Projecting
+CA1 Interneuron Specific LM-R,CA1 Oriens/Alveus
+CA1 Interneuron Specific LM-R,CA1 OR-LM
+CA1 Interneuron Specific LM-R,CA1 Perforant Path-Associated
+CA1 Interneuron Specific LM-R,CA1 Perforant Path-Associated QuadD
+CA1 Interneuron Specific LM-R,CA1 Quadrilaminar
+CA1 Interneuron Specific LM-R,CA1 Radiatum
+CA1 Interneuron Specific LM-R,CA1 R-Receiving Apical-Targeting
+CA1 Interneuron Specific LM-R,Schaffer Collateral-Associated
+CA1 Interneuron Specific LM-R,Schaffer Collateral-Receiving R-Targeting
+CA1 Interneuron Specific LM-R,CA1 Hippocampo-subicular Projecting ENK+
+CA1 Interneuron Specific LM-R,CA1 Radial Trilaminar
+CA1 Interneuron Specific LMR-R,CA1 Pyramidal
+CA1 Interneuron Specific LMR-R,CA1 Radiatum Giant
+CA1 Interneuron Specific LMR-R,CA1 Axo-axonic
+CA1 Interneuron Specific LMR-R,CA1 Basket
+CA1 Interneuron Specific LMR-R,CA1 Basket CCK+
+CA1 Interneuron Specific LMR-R,CA1 Bistratified
+CA1 Interneuron Specific LMR-R,CA1 Interneuron Specific LMR-R
+CA1 Interneuron Specific LMR-R,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Interneuron Specific LMR-R,CA1 Interneuron Specific R-O
+CA1 Interneuron Specific LMR-R,CA1 Interneuron Specific RO-O
+CA1 Interneuron Specific LMR-R,CA1 Ivy
+CA1 Interneuron Specific LMR-R,CA1 LMR
+CA1 Interneuron Specific LMR-R,CA1 LMR Projecting
+CA1 Interneuron Specific LMR-R,CA1 Oriens/Alveus
+CA1 Interneuron Specific LMR-R,CA1 OR-LM
+CA1 Interneuron Specific LMR-R,CA1 Perforant Path-Associated
+CA1 Interneuron Specific LMR-R,CA1 Perforant Path-Associated QuadD
+CA1 Interneuron Specific LMR-R,CA1 Quadrilaminar
+CA1 Interneuron Specific LMR-R,CA1 Radiatum
+CA1 Interneuron Specific LMR-R,CA1 R-Receiving Apical-Targeting
+CA1 Interneuron Specific LMR-R,Schaffer Collateral-Associated
+CA1 Interneuron Specific LMR-R,Schaffer Collateral-Receiving R-Targeting
+CA1 Interneuron Specific LMR-R,CA1 Hippocampo-subicular Projecting ENK+
+CA1 Interneuron Specific LMR-R,CA1 Radial Trilaminar
+CA1 Interneuron Specific O-R,CA1 Pyramidal
+CA1 Interneuron Specific O-R,CA1 Radiatum Giant
+CA1 Interneuron Specific O-R,CA1 Axo-axonic
+CA1 Interneuron Specific O-R,CA1 Basket
+CA1 Interneuron Specific O-R,CA1 Basket CCK+
+CA1 Interneuron Specific O-R,CA1 Bistratified
+CA1 Interneuron Specific O-R,CA1 Interneuron Specific LMR-R
+CA1 Interneuron Specific O-R,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Interneuron Specific O-R,CA1 Interneuron Specific R-O
+CA1 Interneuron Specific O-R,CA1 Interneuron Specific RO-O
+CA1 Interneuron Specific O-R,CA1 Ivy
+CA1 Interneuron Specific O-R,CA1 LMR
+CA1 Interneuron Specific O-R,CA1 LMR Projecting
+CA1 Interneuron Specific O-R,CA1 Oriens/Alveus
+CA1 Interneuron Specific O-R,CA1 OR-LM
+CA1 Interneuron Specific O-R,CA1 Perforant Path-Associated
+CA1 Interneuron Specific O-R,CA1 Perforant Path-Associated QuadD
+CA1 Interneuron Specific O-R,CA1 Quadrilaminar
+CA1 Interneuron Specific O-R,CA1 Radiatum
+CA1 Interneuron Specific O-R,CA1 R-Receiving Apical-Targeting
+CA1 Interneuron Specific O-R,Schaffer Collateral-Associated
+CA1 Interneuron Specific O-R,Schaffer Collateral-Receiving R-Targeting
+CA1 Interneuron Specific O-R,CA1 Hippocampo-subicular Projecting ENK+
+CA1 Interneuron Specific O-R,CA1 Radial Trilaminar
+CA1 Interneuron Specific O-Targeting QuadD,CA1 Pyramidal
+CA1 Interneuron Specific O-Targeting QuadD,CA1 Axo-axonic
+CA1 Interneuron Specific O-Targeting QuadD,CA1 Horizontal Axo-axonic
+CA1 Interneuron Specific O-Targeting QuadD,CA1 Back-Projection
+CA1 Interneuron Specific O-Targeting QuadD,CA1 Basket
+CA1 Interneuron Specific O-Targeting QuadD,CA1 Basket CCK+
+CA1 Interneuron Specific O-Targeting QuadD,CA1 Horizontal Basket
+CA1 Interneuron Specific O-Targeting QuadD,CA1 Bistratified
+CA1 Interneuron Specific O-Targeting QuadD,CA1 Interneuron Specific LMO-O
+CA1 Interneuron Specific O-Targeting QuadD,CA1 Interneuron Specific O-R
+CA1 Interneuron Specific O-Targeting QuadD,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Interneuron Specific O-Targeting QuadD,CA1 Interneuron Specific RO-O
+CA1 Interneuron Specific O-Targeting QuadD,CA1 Ivy
+CA1 Interneuron Specific O-Targeting QuadD,CA1 O-LM
+CA1 Interneuron Specific O-Targeting QuadD,CA1 Recurrent O-LM
+CA1 Interneuron Specific O-Targeting QuadD,CA1 O-LMR
+CA1 Interneuron Specific O-Targeting QuadD,CA1 Oriens/Alveus
+CA1 Interneuron Specific O-Targeting QuadD,CA1 Oriens-Bistratified
+CA1 Interneuron Specific O-Targeting QuadD,CA1 Oriens-Bistratified Projecting
+CA1 Interneuron Specific O-Targeting QuadD,CA1 OR-LM
+CA1 Interneuron Specific O-Targeting QuadD,CA1 Perforant Path-Associated QuadD
+CA1 Interneuron Specific O-Targeting QuadD,CA1 Quadrilaminar
+CA1 Interneuron Specific O-Targeting QuadD,Schaffer Collateral-Receiving R-Targeting
+CA1 Interneuron Specific O-Targeting QuadD,CA1 SO-SO
+CA1 Interneuron Specific O-Targeting QuadD,CA1 Hippocampo-subicular Projecting ENK+
+CA1 Interneuron Specific O-Targeting QuadD,CA1 Trilaminar
+CA1 Interneuron Specific O-Targeting QuadD,CA1 Radial Trilaminar
+CA1 Interneuron Specific R-O,CA1 Axo-axonic
+CA1 Interneuron Specific R-O,CA1 Horizontal Axo-axonic
+CA1 Interneuron Specific R-O,CA1 Back-Projection
+CA1 Interneuron Specific R-O,CA1 Basket
+CA1 Interneuron Specific R-O,CA1 Basket CCK+
+CA1 Interneuron Specific R-O,CA1 Horizontal Basket
+CA1 Interneuron Specific R-O,CA1 Bistratified
+CA1 Interneuron Specific R-O,CA1 Interneuron Specific LMO-O
+CA1 Interneuron Specific R-O,CA1 Interneuron Specific O-R
+CA1 Interneuron Specific R-O,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Interneuron Specific R-O,CA1 Interneuron Specific RO-O
+CA1 Interneuron Specific R-O,CA1 Ivy
+CA1 Interneuron Specific R-O,CA1 O-LM
+CA1 Interneuron Specific R-O,CA1 Recurrent O-LM
+CA1 Interneuron Specific R-O,CA1 O-LMR
+CA1 Interneuron Specific R-O,CA1 Oriens/Alveus
+CA1 Interneuron Specific R-O,CA1 Oriens-Bistratified
+CA1 Interneuron Specific R-O,CA1 Oriens-Bistratified Projecting
+CA1 Interneuron Specific R-O,CA1 OR-LM
+CA1 Interneuron Specific R-O,CA1 Perforant Path-Associated QuadD
+CA1 Interneuron Specific R-O,CA1 Quadrilaminar
+CA1 Interneuron Specific R-O,Schaffer Collateral-Receiving R-Targeting
+CA1 Interneuron Specific R-O,CA1 SO-SO
+CA1 Interneuron Specific R-O,CA1 Hippocampo-subicular Projecting ENK+
+CA1 Interneuron Specific R-O,CA1 Trilaminar
+CA1 Interneuron Specific R-O,CA1 Radial Trilaminar
+CA1 Interneuron Specific RO-O,CA1 Pyramidal
+CA1 Interneuron Specific RO-O,CA1 Axo-axonic
+CA1 Interneuron Specific RO-O,CA1 Horizontal Axo-axonic
+CA1 Interneuron Specific RO-O,CA1 Back-Projection
+CA1 Interneuron Specific RO-O,CA1 Basket
+CA1 Interneuron Specific RO-O,CA1 Basket CCK+
+CA1 Interneuron Specific RO-O,CA1 Horizontal Basket
+CA1 Interneuron Specific RO-O,CA1 Bistratified
+CA1 Interneuron Specific RO-O,CA1 Interneuron Specific LMO-O
+CA1 Interneuron Specific RO-O,CA1 Interneuron Specific O-R
+CA1 Interneuron Specific RO-O,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Interneuron Specific RO-O,CA1 Interneuron Specific RO-O
+CA1 Interneuron Specific RO-O,CA1 Ivy
+CA1 Interneuron Specific RO-O,CA1 O-LM
+CA1 Interneuron Specific RO-O,CA1 Recurrent O-LM
+CA1 Interneuron Specific RO-O,CA1 O-LMR
+CA1 Interneuron Specific RO-O,CA1 Oriens/Alveus
+CA1 Interneuron Specific RO-O,CA1 Oriens-Bistratified
+CA1 Interneuron Specific RO-O,CA1 Oriens-Bistratified Projecting
+CA1 Interneuron Specific RO-O,CA1 OR-LM
+CA1 Interneuron Specific RO-O,CA1 Perforant Path-Associated QuadD
+CA1 Interneuron Specific RO-O,CA1 Quadrilaminar
+CA1 Interneuron Specific RO-O,Schaffer Collateral-Receiving R-Targeting
+CA1 Interneuron Specific RO-O,CA1 SO-SO
+CA1 Interneuron Specific RO-O,CA1 Hippocampo-subicular Projecting ENK+
+CA1 Interneuron Specific RO-O,CA1 Trilaminar
+CA1 Interneuron Specific RO-O,CA1 Radial Trilaminar
+CA1 Ivy,CA2 Wide-Arbor Basket
+CA1 Ivy,CA1 Pyramidal
+CA1 Ivy,CA1 Radiatum Giant
+CA1 Ivy,CA1 Axo-axonic
+CA1 Ivy,CA1 Horizontal Axo-axonic
+CA1 Ivy,CA1 Back-Projection
+CA1 Ivy,CA1 Basket
+CA1 Ivy,CA1 Basket CCK+
+CA1 Ivy,CA1 Horizontal Basket
+CA1 Ivy,CA1 Bistratified
+CA1 Ivy,CA1 Interneuron Specific LMO-O
+CA1 Ivy,CA1 Interneuron Specific LMR-R
+CA1 Ivy,CA1 Interneuron Specific O-R
+CA1 Ivy,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Ivy,CA1 Interneuron Specific R-O
+CA1 Ivy,CA1 Interneuron Specific RO-O
+CA1 Ivy,CA1 Ivy
+CA1 Ivy,CA1 LMR
+CA1 Ivy,CA1 LMR Projecting
+CA1 Ivy,CA1 O-LM
+CA1 Ivy,CA1 Recurrent O-LM
+CA1 Ivy,CA1 O-LMR
+CA1 Ivy,CA1 Oriens/Alveus
+CA1 Ivy,CA1 Oriens-Bistratified
+CA1 Ivy,CA1 Oriens-Bistratified Projecting
+CA1 Ivy,CA1 OR-LM
+CA1 Ivy,CA1 Perforant Path-Associated
+CA1 Ivy,CA1 Perforant Path-Associated QuadD
+CA1 Ivy,CA1 Quadrilaminar
+CA1 Ivy,CA1 Radiatum
+CA1 Ivy,CA1 R-Receiving Apical-Targeting
+CA1 Ivy,Schaffer Collateral-Associated
+CA1 Ivy,Schaffer Collateral-Receiving R-Targeting
+CA1 Ivy,CA1 SO-SO
+CA1 Ivy,CA1 Hippocampo-subicular Projecting ENK+
+CA1 Ivy,CA1 Trilaminar
+CA1 Ivy,CA1 Radial Trilaminar
+CA1 LMR,CA1 Pyramidal
+CA1 LMR,Cajal-Retzius
+CA1 LMR,CA1 Radiatum Giant
+CA1 LMR,CA1 Axo-axonic
+CA1 LMR,CA1 Basket
+CA1 LMR,CA1 Basket CCK+
+CA1 LMR,CA1 Bistratified
+CA1 LMR,CA1 Interneuron Specific LMO-O
+CA1 LMR,CA1 Interneuron Specific LM-R
+CA1 LMR,CA1 Interneuron Specific LMR-R
+CA1 LMR,CA1 Interneuron Specific O-Targeting QuadD
+CA1 LMR,CA1 Interneuron Specific R-O
+CA1 LMR,CA1 Interneuron Specific RO-O
+CA1 LMR,CA1 Ivy
+CA1 LMR,CA1 LMR
+CA1 LMR,CA1 LMR Projecting
+CA1 LMR,CA1 Neurogliaform
+CA1 LMR,CA1 Neurogliaform Projecting
+CA1 LMR,CA1 Oriens/Alveus
+CA1 LMR,CA1 OR-LM
+CA1 LMR,CA1 Perforant Path-Associated
+CA1 LMR,CA1 Perforant Path-Associated QuadD
+CA1 LMR,CA1 Quadrilaminar
+CA1 LMR,CA1 Radiatum
+CA1 LMR,CA1 R-Receiving Apical-Targeting
+CA1 LMR,Schaffer Collateral-Associated
+CA1 LMR,Schaffer Collateral-Receiving R-Targeting
+CA1 LMR,CA1 Hippocampo-subicular Projecting ENK+
+CA1 LMR,CA1 Radial Trilaminar
+CA1 LMR Projecting,Granule
+CA1 LMR Projecting,Hilar Ectopic Granule
+CA1 LMR Projecting,Semilunar Granule
+CA1 LMR Projecting,Mossy MOLDEN
+CA1 LMR Projecting,AIPRIM
+CA1 LMR Projecting,DG Axo-axonic
+CA1 LMR Projecting,DG Basket
+CA1 LMR Projecting,DG Basket CCK+
+CA1 LMR Projecting,HICAP
+CA1 LMR Projecting,HIPROM
+CA1 LMR Projecting,MOCAP
+CA1 LMR Projecting,MOLAX
+CA1 LMR Projecting,MOPP
+CA1 LMR Projecting,DG Neurogliaform
+CA1 LMR Projecting,Outer Molecular Layer
+CA1 LMR Projecting,Total Molecular Layer
+CA1 LMR Projecting,CA1 Pyramidal
+CA1 LMR Projecting,Cajal-Retzius
+CA1 LMR Projecting,CA1 Radiatum Giant
+CA1 LMR Projecting,CA1 Axo-axonic
+CA1 LMR Projecting,CA1 Basket
+CA1 LMR Projecting,CA1 Basket CCK+
+CA1 LMR Projecting,CA1 Bistratified
+CA1 LMR Projecting,CA1 Interneuron Specific LMO-O
+CA1 LMR Projecting,CA1 Interneuron Specific LM-R
+CA1 LMR Projecting,CA1 Interneuron Specific LMR-R
+CA1 LMR Projecting,CA1 Interneuron Specific O-Targeting QuadD
+CA1 LMR Projecting,CA1 Interneuron Specific R-O
+CA1 LMR Projecting,CA1 Interneuron Specific RO-O
+CA1 LMR Projecting,CA1 Ivy
+CA1 LMR Projecting,CA1 LMR
+CA1 LMR Projecting,CA1 LMR Projecting
+CA1 LMR Projecting,CA1 Neurogliaform
+CA1 LMR Projecting,CA1 Neurogliaform Projecting
+CA1 LMR Projecting,CA1 Oriens/Alveus
+CA1 LMR Projecting,CA1 OR-LM
+CA1 LMR Projecting,CA1 Perforant Path-Associated
+CA1 LMR Projecting,CA1 Perforant Path-Associated QuadD
+CA1 LMR Projecting,CA1 Quadrilaminar
+CA1 LMR Projecting,CA1 Radiatum
+CA1 LMR Projecting,CA1 R-Receiving Apical-Targeting
+CA1 LMR Projecting,Schaffer Collateral-Associated
+CA1 LMR Projecting,Schaffer Collateral-Receiving R-Targeting
+CA1 LMR Projecting,CA1 Hippocampo-subicular Projecting ENK+
+CA1 LMR Projecting,CA1 Radial Trilaminar
+CA1 Neurogliaform,CA1 Pyramidal
+CA1 Neurogliaform,Cajal-Retzius
+CA1 Neurogliaform,CA1 Radiatum Giant
+CA1 Neurogliaform,CA1 Axo-axonic
+CA1 Neurogliaform,CA1 Basket
+CA1 Neurogliaform,CA1 Basket CCK+
+CA1 Neurogliaform,CA1 Interneuron Specific LMO-O
+CA1 Neurogliaform,CA1 Interneuron Specific LM-R
+CA1 Neurogliaform,CA1 Interneuron Specific LMR-R
+CA1 Neurogliaform,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Neurogliaform,CA1 LMR
+CA1 Neurogliaform,CA1 LMR Projecting
+CA1 Neurogliaform,CA1 Neurogliaform
+CA1 Neurogliaform,CA1 Neurogliaform Projecting
+CA1 Neurogliaform,CA1 Oriens/Alveus
+CA1 Neurogliaform,CA1 Perforant Path-Associated
+CA1 Neurogliaform,CA1 Perforant Path-Associated QuadD
+CA1 Neurogliaform,CA1 Quadrilaminar
+CA1 Neurogliaform,Schaffer Collateral-Associated
+CA1 Neurogliaform,CA1 Radial Trilaminar
+CA1 Neurogliaform Projecting,Granule
+CA1 Neurogliaform Projecting,Hilar Ectopic Granule
+CA1 Neurogliaform Projecting,Semilunar Granule
+CA1 Neurogliaform Projecting,Mossy MOLDEN
+CA1 Neurogliaform Projecting,AIPRIM
+CA1 Neurogliaform Projecting,DG Axo-axonic
+CA1 Neurogliaform Projecting,DG Basket
+CA1 Neurogliaform Projecting,DG Basket CCK+
+CA1 Neurogliaform Projecting,HICAP
+CA1 Neurogliaform Projecting,MOLAX
+CA1 Neurogliaform Projecting,MOPP
+CA1 Neurogliaform Projecting,DG Neurogliaform
+CA1 Neurogliaform Projecting,Outer Molecular Layer
+CA1 Neurogliaform Projecting,Total Molecular Layer
+CA1 Neurogliaform Projecting,CA1 Pyramidal
+CA1 Neurogliaform Projecting,Cajal-Retzius
+CA1 Neurogliaform Projecting,CA1 Radiatum Giant
+CA1 Neurogliaform Projecting,CA1 Axo-axonic
+CA1 Neurogliaform Projecting,CA1 Basket
+CA1 Neurogliaform Projecting,CA1 Basket CCK+
+CA1 Neurogliaform Projecting,CA1 Interneuron Specific LMO-O
+CA1 Neurogliaform Projecting,CA1 Interneuron Specific LM-R
+CA1 Neurogliaform Projecting,CA1 Interneuron Specific LMR-R
+CA1 Neurogliaform Projecting,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Neurogliaform Projecting,CA1 LMR
+CA1 Neurogliaform Projecting,CA1 LMR Projecting
+CA1 Neurogliaform Projecting,CA1 Neurogliaform
+CA1 Neurogliaform Projecting,CA1 Neurogliaform Projecting
+CA1 Neurogliaform Projecting,CA1 Oriens/Alveus
+CA1 Neurogliaform Projecting,CA1 Perforant Path-Associated
+CA1 Neurogliaform Projecting,CA1 Perforant Path-Associated QuadD
+CA1 Neurogliaform Projecting,CA1 Quadrilaminar
+CA1 Neurogliaform Projecting,Schaffer Collateral-Associated
+CA1 Neurogliaform Projecting,CA1 Radial Trilaminar
+CA1 O-LM,CA1 Pyramidal
+CA1 O-LM,Cajal-Retzius
+CA1 O-LM,CA1 Radiatum Giant
+CA1 O-LM,CA1 Axo-axonic
+CA1 O-LM,CA1 Basket
+CA1 O-LM,CA1 Basket CCK+
+CA1 O-LM,CA1 Interneuron Specific LMO-O
+CA1 O-LM,CA1 Interneuron Specific LM-R
+CA1 O-LM,CA1 Interneuron Specific LMR-R
+CA1 O-LM,CA1 Interneuron Specific O-Targeting QuadD
+CA1 O-LM,CA1 LMR
+CA1 O-LM,CA1 LMR Projecting
+CA1 O-LM,CA1 Neurogliaform
+CA1 O-LM,CA1 Neurogliaform Projecting
+CA1 O-LM,CA1 Oriens/Alveus
+CA1 O-LM,CA1 Perforant Path-Associated
+CA1 O-LM,CA1 Perforant Path-Associated QuadD
+CA1 O-LM,CA1 Quadrilaminar
+CA1 O-LM,Schaffer Collateral-Associated
+CA1 O-LM,CA1 Radial Trilaminar
+CA1 Recurrent O-LM,CA1 Pyramidal
+CA1 Recurrent O-LM,Cajal-Retzius
+CA1 Recurrent O-LM,CA1 Radiatum Giant
+CA1 Recurrent O-LM,CA1 Axo-axonic
+CA1 Recurrent O-LM,CA1 Horizontal Axo-axonic
+CA1 Recurrent O-LM,CA1 Back-Projection
+CA1 Recurrent O-LM,CA1 Basket
+CA1 Recurrent O-LM,CA1 Basket CCK+
+CA1 Recurrent O-LM,CA1 Horizontal Basket
+CA1 Recurrent O-LM,CA1 Bistratified
+CA1 Recurrent O-LM,CA1 Interneuron Specific LMO-O
+CA1 Recurrent O-LM,CA1 Interneuron Specific LM-R
+CA1 Recurrent O-LM,CA1 Interneuron Specific LMR-R
+CA1 Recurrent O-LM,CA1 Interneuron Specific O-R
+CA1 Recurrent O-LM,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Recurrent O-LM,CA1 Interneuron Specific RO-O
+CA1 Recurrent O-LM,CA1 Ivy
+CA1 Recurrent O-LM,CA1 LMR
+CA1 Recurrent O-LM,CA1 LMR Projecting
+CA1 Recurrent O-LM,CA1 Neurogliaform
+CA1 Recurrent O-LM,CA1 Neurogliaform Projecting
+CA1 Recurrent O-LM,CA1 O-LM
+CA1 Recurrent O-LM,CA1 Recurrent O-LM
+CA1 Recurrent O-LM,CA1 O-LMR
+CA1 Recurrent O-LM,CA1 Oriens/Alveus
+CA1 Recurrent O-LM,CA1 Oriens-Bistratified
+CA1 Recurrent O-LM,CA1 Oriens-Bistratified Projecting
+CA1 Recurrent O-LM,CA1 OR-LM
+CA1 Recurrent O-LM,CA1 Perforant Path-Associated
+CA1 Recurrent O-LM,CA1 Perforant Path-Associated QuadD
+CA1 Recurrent O-LM,CA1 Quadrilaminar
+CA1 Recurrent O-LM,Schaffer Collateral-Associated
+CA1 Recurrent O-LM,Schaffer Collateral-Receiving R-Targeting
+CA1 Recurrent O-LM,CA1 SO-SO
+CA1 Recurrent O-LM,CA1 Hippocampo-subicular Projecting ENK+
+CA1 Recurrent O-LM,CA1 Trilaminar
+CA1 Recurrent O-LM,CA1 Radial Trilaminar
+CA1 O-LMR,CA1 Pyramidal
+CA1 O-LMR,Cajal-Retzius
+CA1 O-LMR,CA1 Radiatum Giant
+CA1 O-LMR,CA1 Axo-axonic
+CA1 O-LMR,CA1 Basket
+CA1 O-LMR,CA1 Basket CCK+
+CA1 O-LMR,CA1 Bistratified
+CA1 O-LMR,CA1 Interneuron Specific LMO-O
+CA1 O-LMR,CA1 Interneuron Specific LM-R
+CA1 O-LMR,CA1 Interneuron Specific LMR-R
+CA1 O-LMR,CA1 Interneuron Specific O-Targeting QuadD
+CA1 O-LMR,CA1 Interneuron Specific R-O
+CA1 O-LMR,CA1 Interneuron Specific RO-O
+CA1 O-LMR,CA1 Ivy
+CA1 O-LMR,CA1 LMR
+CA1 O-LMR,CA1 LMR Projecting
+CA1 O-LMR,CA1 Neurogliaform
+CA1 O-LMR,CA1 Neurogliaform Projecting
+CA1 O-LMR,CA1 Oriens/Alveus
+CA1 O-LMR,CA1 OR-LM
+CA1 O-LMR,CA1 Perforant Path-Associated
+CA1 O-LMR,CA1 Perforant Path-Associated QuadD
+CA1 O-LMR,CA1 Quadrilaminar
+CA1 O-LMR,CA1 Radiatum
+CA1 O-LMR,CA1 R-Receiving Apical-Targeting
+CA1 O-LMR,Schaffer Collateral-Associated
+CA1 O-LMR,Schaffer Collateral-Receiving R-Targeting
+CA1 O-LMR,CA1 Hippocampo-subicular Projecting ENK+
+CA1 O-LMR,CA1 Radial Trilaminar
+CA1 Oriens/Alveus,CA2 Wide-Arbor Basket
+CA1 Oriens/Alveus,CA1 Pyramidal
+CA1 Oriens/Alveus,CA1 Axo-axonic
+CA1 Oriens/Alveus,CA1 Horizontal Axo-axonic
+CA1 Oriens/Alveus,CA1 Back-Projection
+CA1 Oriens/Alveus,CA1 Basket
+CA1 Oriens/Alveus,CA1 Basket CCK+
+CA1 Oriens/Alveus,CA1 Horizontal Basket
+CA1 Oriens/Alveus,CA1 Bistratified
+CA1 Oriens/Alveus,CA1 Interneuron Specific LMO-O
+CA1 Oriens/Alveus,CA1 Interneuron Specific O-R
+CA1 Oriens/Alveus,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Oriens/Alveus,CA1 Interneuron Specific R-O
+CA1 Oriens/Alveus,CA1 Interneuron Specific RO-O
+CA1 Oriens/Alveus,CA1 Ivy
+CA1 Oriens/Alveus,CA1 O-LM
+CA1 Oriens/Alveus,CA1 Recurrent O-LM
+CA1 Oriens/Alveus,CA1 O-LMR
+CA1 Oriens/Alveus,CA1 Oriens/Alveus
+CA1 Oriens/Alveus,CA1 Oriens-Bistratified
+CA1 Oriens/Alveus,CA1 Oriens-Bistratified Projecting
+CA1 Oriens/Alveus,CA1 OR-LM
+CA1 Oriens/Alveus,CA1 Perforant Path-Associated QuadD
+CA1 Oriens/Alveus,CA1 Quadrilaminar
+CA1 Oriens/Alveus,Schaffer Collateral-Receiving R-Targeting
+CA1 Oriens/Alveus,CA1 SO-SO
+CA1 Oriens/Alveus,CA1 Hippocampo-subicular Projecting ENK+
+CA1 Oriens/Alveus,CA1 Trilaminar
+CA1 Oriens/Alveus,CA1 Radial Trilaminar
+CA1 Oriens-Bistratified,CA1 Pyramidal
+CA1 Oriens-Bistratified,CA1 Radiatum Giant
+CA1 Oriens-Bistratified,CA1 Axo-axonic
+CA1 Oriens-Bistratified,CA1 Horizontal Axo-axonic
+CA1 Oriens-Bistratified,CA1 Back-Projection
+CA1 Oriens-Bistratified,CA1 Basket
+CA1 Oriens-Bistratified,CA1 Basket CCK+
+CA1 Oriens-Bistratified,CA1 Horizontal Basket
+CA1 Oriens-Bistratified,CA1 Bistratified
+CA1 Oriens-Bistratified,CA1 Interneuron Specific LMO-O
+CA1 Oriens-Bistratified,CA1 Interneuron Specific LMR-R
+CA1 Oriens-Bistratified,CA1 Interneuron Specific O-R
+CA1 Oriens-Bistratified,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Oriens-Bistratified,CA1 Interneuron Specific R-O
+CA1 Oriens-Bistratified,CA1 Interneuron Specific RO-O
+CA1 Oriens-Bistratified,CA1 Ivy
+CA1 Oriens-Bistratified,CA1 LMR
+CA1 Oriens-Bistratified,CA1 LMR Projecting
+CA1 Oriens-Bistratified,CA1 O-LM
+CA1 Oriens-Bistratified,CA1 Recurrent O-LM
+CA1 Oriens-Bistratified,CA1 O-LMR
+CA1 Oriens-Bistratified,CA1 Oriens/Alveus
+CA1 Oriens-Bistratified,CA1 Oriens-Bistratified
+CA1 Oriens-Bistratified,CA1 Oriens-Bistratified Projecting
+CA1 Oriens-Bistratified,CA1 OR-LM
+CA1 Oriens-Bistratified,CA1 Perforant Path-Associated
+CA1 Oriens-Bistratified,CA1 Perforant Path-Associated QuadD
+CA1 Oriens-Bistratified,CA1 Quadrilaminar
+CA1 Oriens-Bistratified,CA1 Radiatum
+CA1 Oriens-Bistratified,CA1 R-Receiving Apical-Targeting
+CA1 Oriens-Bistratified,Schaffer Collateral-Associated
+CA1 Oriens-Bistratified,Schaffer Collateral-Receiving R-Targeting
+CA1 Oriens-Bistratified,CA1 SO-SO
+CA1 Oriens-Bistratified,CA1 Hippocampo-subicular Projecting ENK+
+CA1 Oriens-Bistratified,CA1 Trilaminar
+CA1 Oriens-Bistratified,CA1 Radial Trilaminar
+CA1 Oriens-Bistratified Projecting,CA2 Wide-Arbor Basket
+CA1 Oriens-Bistratified Projecting,CA1 Pyramidal
+CA1 Oriens-Bistratified Projecting,Cajal-Retzius
+CA1 Oriens-Bistratified Projecting,CA1 Radiatum Giant
+CA1 Oriens-Bistratified Projecting,CA1 Axo-axonic
+CA1 Oriens-Bistratified Projecting,CA1 Horizontal Axo-axonic
+CA1 Oriens-Bistratified Projecting,CA1 Back-Projection
+CA1 Oriens-Bistratified Projecting,CA1 Basket
+CA1 Oriens-Bistratified Projecting,CA1 Basket CCK+
+CA1 Oriens-Bistratified Projecting,CA1 Horizontal Basket
+CA1 Oriens-Bistratified Projecting,CA1 Bistratified
+CA1 Oriens-Bistratified Projecting,CA1 Interneuron Specific LMO-O
+CA1 Oriens-Bistratified Projecting,CA1 Interneuron Specific LM-R
+CA1 Oriens-Bistratified Projecting,CA1 Interneuron Specific LMR-R
+CA1 Oriens-Bistratified Projecting,CA1 Interneuron Specific O-R
+CA1 Oriens-Bistratified Projecting,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Oriens-Bistratified Projecting,CA1 Interneuron Specific R-O
+CA1 Oriens-Bistratified Projecting,CA1 Interneuron Specific RO-O
+CA1 Oriens-Bistratified Projecting,CA1 Ivy
+CA1 Oriens-Bistratified Projecting,CA1 LMR
+CA1 Oriens-Bistratified Projecting,CA1 LMR Projecting
+CA1 Oriens-Bistratified Projecting,CA1 Neurogliaform
+CA1 Oriens-Bistratified Projecting,CA1 Neurogliaform Projecting
+CA1 Oriens-Bistratified Projecting,CA1 O-LM
+CA1 Oriens-Bistratified Projecting,CA1 Recurrent O-LM
+CA1 Oriens-Bistratified Projecting,CA1 O-LMR
+CA1 Oriens-Bistratified Projecting,CA1 Oriens/Alveus
+CA1 Oriens-Bistratified Projecting,CA1 Oriens-Bistratified
+CA1 Oriens-Bistratified Projecting,CA1 Oriens-Bistratified Projecting
+CA1 Oriens-Bistratified Projecting,CA1 OR-LM
+CA1 Oriens-Bistratified Projecting,CA1 Perforant Path-Associated
+CA1 Oriens-Bistratified Projecting,CA1 Perforant Path-Associated QuadD
+CA1 Oriens-Bistratified Projecting,CA1 Quadrilaminar
+CA1 Oriens-Bistratified Projecting,CA1 Radiatum
+CA1 Oriens-Bistratified Projecting,CA1 R-Receiving Apical-Targeting
+CA1 Oriens-Bistratified Projecting,Schaffer Collateral-Associated
+CA1 Oriens-Bistratified Projecting,Schaffer Collateral-Receiving R-Targeting
+CA1 Oriens-Bistratified Projecting,CA1 SO-SO
+CA1 Oriens-Bistratified Projecting,CA1 Hippocampo-subicular Projecting ENK+
+CA1 Oriens-Bistratified Projecting,CA1 Trilaminar
+CA1 Oriens-Bistratified Projecting,CA1 Radial Trilaminar
+CA1 Oriens-Bistratified Projecting,SUB EC-Projecting Pyramidal
+CA1 Oriens-Bistratified Projecting,SUB CA1-Projecting Pyramidal
+CA1 Oriens-Bistratified Projecting,SUB Axo-axonic
+CA1 OR-LM,CA1 Pyramidal
+CA1 OR-LM,Cajal-Retzius
+CA1 OR-LM,CA1 Radiatum Giant
+CA1 OR-LM,CA1 Axo-axonic
+CA1 OR-LM,CA1 Basket
+CA1 OR-LM,CA1 Basket CCK+
+CA1 OR-LM,CA1 Interneuron Specific LMO-O
+CA1 OR-LM,CA1 Interneuron Specific LM-R
+CA1 OR-LM,CA1 Interneuron Specific LMR-R
+CA1 OR-LM,CA1 Interneuron Specific O-Targeting QuadD
+CA1 OR-LM,CA1 LMR
+CA1 OR-LM,CA1 LMR Projecting
+CA1 OR-LM,CA1 Neurogliaform
+CA1 OR-LM,CA1 Neurogliaform Projecting
+CA1 OR-LM,CA1 Oriens/Alveus
+CA1 OR-LM,CA1 Perforant Path-Associated
+CA1 OR-LM,CA1 Perforant Path-Associated QuadD
+CA1 OR-LM,CA1 Quadrilaminar
+CA1 OR-LM,Schaffer Collateral-Associated
+CA1 OR-LM,CA1 Radial Trilaminar
+CA1 Perforant Path-Associated,Granule
+CA1 Perforant Path-Associated,Hilar Ectopic Granule
+CA1 Perforant Path-Associated,Semilunar Granule
+CA1 Perforant Path-Associated,Mossy MOLDEN
+CA1 Perforant Path-Associated,AIPRIM
+CA1 Perforant Path-Associated,DG Axo-axonic
+CA1 Perforant Path-Associated,DG Basket
+CA1 Perforant Path-Associated,DG Basket CCK+
+CA1 Perforant Path-Associated,HICAP
+CA1 Perforant Path-Associated,MOLAX
+CA1 Perforant Path-Associated,MOPP
+CA1 Perforant Path-Associated,DG Neurogliaform
+CA1 Perforant Path-Associated,Outer Molecular Layer
+CA1 Perforant Path-Associated,Total Molecular Layer
+CA1 Perforant Path-Associated,CA1 Pyramidal
+CA1 Perforant Path-Associated,Cajal-Retzius
+CA1 Perforant Path-Associated,CA1 Radiatum Giant
+CA1 Perforant Path-Associated,CA1 Axo-axonic
+CA1 Perforant Path-Associated,CA1 Basket
+CA1 Perforant Path-Associated,CA1 Basket CCK+
+CA1 Perforant Path-Associated,CA1 Interneuron Specific LMO-O
+CA1 Perforant Path-Associated,CA1 Interneuron Specific LM-R
+CA1 Perforant Path-Associated,CA1 Interneuron Specific LMR-R
+CA1 Perforant Path-Associated,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Perforant Path-Associated,CA1 LMR
+CA1 Perforant Path-Associated,CA1 LMR Projecting
+CA1 Perforant Path-Associated,CA1 Neurogliaform
+CA1 Perforant Path-Associated,CA1 Neurogliaform Projecting
+CA1 Perforant Path-Associated,CA1 Oriens/Alveus
+CA1 Perforant Path-Associated,CA1 Perforant Path-Associated
+CA1 Perforant Path-Associated,CA1 Perforant Path-Associated QuadD
+CA1 Perforant Path-Associated,CA1 Quadrilaminar
+CA1 Perforant Path-Associated,Schaffer Collateral-Associated
+CA1 Perforant Path-Associated,CA1 Radial Trilaminar
+CA1 Perforant Path-Associated,SUB EC-Projecting Pyramidal
+CA1 Perforant Path-Associated,SUB CA1-Projecting Pyramidal
+CA1 Perforant Path-Associated,SUB Axo-axonic
+CA1 Perforant Path-Associated QuadD,CA1 Pyramidal
+CA1 Perforant Path-Associated QuadD,Cajal-Retzius
+CA1 Perforant Path-Associated QuadD,CA1 Radiatum Giant
+CA1 Perforant Path-Associated QuadD,CA1 Axo-axonic
+CA1 Perforant Path-Associated QuadD,CA1 Basket
+CA1 Perforant Path-Associated QuadD,CA1 Basket CCK+
+CA1 Perforant Path-Associated QuadD,CA1 Interneuron Specific LMO-O
+CA1 Perforant Path-Associated QuadD,CA1 Interneuron Specific LM-R
+CA1 Perforant Path-Associated QuadD,CA1 Interneuron Specific LMR-R
+CA1 Perforant Path-Associated QuadD,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Perforant Path-Associated QuadD,CA1 LMR
+CA1 Perforant Path-Associated QuadD,CA1 LMR Projecting
+CA1 Perforant Path-Associated QuadD,CA1 Neurogliaform
+CA1 Perforant Path-Associated QuadD,CA1 Neurogliaform Projecting
+CA1 Perforant Path-Associated QuadD,CA1 Oriens/Alveus
+CA1 Perforant Path-Associated QuadD,CA1 Perforant Path-Associated
+CA1 Perforant Path-Associated QuadD,CA1 Perforant Path-Associated QuadD
+CA1 Perforant Path-Associated QuadD,CA1 Quadrilaminar
+CA1 Perforant Path-Associated QuadD,Schaffer Collateral-Associated
+CA1 Perforant Path-Associated QuadD,CA1 Radial Trilaminar
+CA1 Quadrilaminar,CA2 Wide-Arbor Basket
+CA1 Quadrilaminar,CA1 Pyramidal
+CA1 Quadrilaminar,Cajal-Retzius
+CA1 Quadrilaminar,CA1 Radiatum Giant
+CA1 Quadrilaminar,CA1 Axo-axonic
+CA1 Quadrilaminar,CA1 Horizontal Axo-axonic
+CA1 Quadrilaminar,CA1 Back-Projection
+CA1 Quadrilaminar,CA1 Basket
+CA1 Quadrilaminar,CA1 Basket CCK+
+CA1 Quadrilaminar,CA1 Horizontal Basket
+CA1 Quadrilaminar,CA1 Bistratified
+CA1 Quadrilaminar,CA1 Interneuron Specific LMO-O
+CA1 Quadrilaminar,CA1 Interneuron Specific LM-R
+CA1 Quadrilaminar,CA1 Interneuron Specific LMR-R
+CA1 Quadrilaminar,CA1 Interneuron Specific O-R
+CA1 Quadrilaminar,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Quadrilaminar,CA1 Interneuron Specific R-O
+CA1 Quadrilaminar,CA1 Interneuron Specific RO-O
+CA1 Quadrilaminar,CA1 Ivy
+CA1 Quadrilaminar,CA1 LMR
+CA1 Quadrilaminar,CA1 LMR Projecting
+CA1 Quadrilaminar,CA1 Neurogliaform
+CA1 Quadrilaminar,CA1 Neurogliaform Projecting
+CA1 Quadrilaminar,CA1 O-LM
+CA1 Quadrilaminar,CA1 Recurrent O-LM
+CA1 Quadrilaminar,CA1 O-LMR
+CA1 Quadrilaminar,CA1 Oriens/Alveus
+CA1 Quadrilaminar,CA1 Oriens-Bistratified
+CA1 Quadrilaminar,CA1 Oriens-Bistratified Projecting
+CA1 Quadrilaminar,CA1 OR-LM
+CA1 Quadrilaminar,CA1 Perforant Path-Associated
+CA1 Quadrilaminar,CA1 Perforant Path-Associated QuadD
+CA1 Quadrilaminar,CA1 Quadrilaminar
+CA1 Quadrilaminar,CA1 Radiatum
+CA1 Quadrilaminar,CA1 R-Receiving Apical-Targeting
+CA1 Quadrilaminar,Schaffer Collateral-Associated
+CA1 Quadrilaminar,Schaffer Collateral-Receiving R-Targeting
+CA1 Quadrilaminar,CA1 SO-SO
+CA1 Quadrilaminar,CA1 Hippocampo-subicular Projecting ENK+
+CA1 Quadrilaminar,CA1 Trilaminar
+CA1 Quadrilaminar,CA1 Radial Trilaminar
+CA1 Radiatum,CA1 Pyramidal
+CA1 Radiatum,CA1 Radiatum Giant
+CA1 Radiatum,CA1 Axo-axonic
+CA1 Radiatum,CA1 Basket
+CA1 Radiatum,CA1 Basket CCK+
+CA1 Radiatum,CA1 Bistratified
+CA1 Radiatum,CA1 Interneuron Specific LMR-R
+CA1 Radiatum,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Radiatum,CA1 Interneuron Specific R-O
+CA1 Radiatum,CA1 Interneuron Specific RO-O
+CA1 Radiatum,CA1 Ivy
+CA1 Radiatum,CA1 LMR
+CA1 Radiatum,CA1 LMR Projecting
+CA1 Radiatum,CA1 Oriens/Alveus
+CA1 Radiatum,CA1 OR-LM
+CA1 Radiatum,CA1 Perforant Path-Associated
+CA1 Radiatum,CA1 Perforant Path-Associated QuadD
+CA1 Radiatum,CA1 Quadrilaminar
+CA1 Radiatum,CA1 Radiatum
+CA1 Radiatum,CA1 R-Receiving Apical-Targeting
+CA1 Radiatum,Schaffer Collateral-Associated
+CA1 Radiatum,Schaffer Collateral-Receiving R-Targeting
+CA1 Radiatum,CA1 Hippocampo-subicular Projecting ENK+
+CA1 Radiatum,CA1 Radial Trilaminar
+CA1 R-Receiving Apical-Targeting,CA1 Pyramidal
+CA1 R-Receiving Apical-Targeting,Cajal-Retzius
+CA1 R-Receiving Apical-Targeting,CA1 Radiatum Giant
+CA1 R-Receiving Apical-Targeting,CA1 Axo-axonic
+CA1 R-Receiving Apical-Targeting,CA1 Basket
+CA1 R-Receiving Apical-Targeting,CA1 Basket CCK+
+CA1 R-Receiving Apical-Targeting,CA1 Bistratified
+CA1 R-Receiving Apical-Targeting,CA1 Interneuron Specific LMO-O
+CA1 R-Receiving Apical-Targeting,CA1 Interneuron Specific LM-R
+CA1 R-Receiving Apical-Targeting,CA1 Interneuron Specific LMR-R
+CA1 R-Receiving Apical-Targeting,CA1 Interneuron Specific O-Targeting QuadD
+CA1 R-Receiving Apical-Targeting,CA1 Interneuron Specific R-O
+CA1 R-Receiving Apical-Targeting,CA1 Interneuron Specific RO-O
+CA1 R-Receiving Apical-Targeting,CA1 Ivy
+CA1 R-Receiving Apical-Targeting,CA1 LMR
+CA1 R-Receiving Apical-Targeting,CA1 LMR Projecting
+CA1 R-Receiving Apical-Targeting,CA1 Neurogliaform
+CA1 R-Receiving Apical-Targeting,CA1 Neurogliaform Projecting
+CA1 R-Receiving Apical-Targeting,CA1 Oriens/Alveus
+CA1 R-Receiving Apical-Targeting,CA1 OR-LM
+CA1 R-Receiving Apical-Targeting,CA1 Perforant Path-Associated
+CA1 R-Receiving Apical-Targeting,CA1 Perforant Path-Associated QuadD
+CA1 R-Receiving Apical-Targeting,CA1 Quadrilaminar
+CA1 R-Receiving Apical-Targeting,CA1 Radiatum
+CA1 R-Receiving Apical-Targeting,CA1 R-Receiving Apical-Targeting
+CA1 R-Receiving Apical-Targeting,Schaffer Collateral-Associated
+CA1 R-Receiving Apical-Targeting,Schaffer Collateral-Receiving R-Targeting
+CA1 R-Receiving Apical-Targeting,CA1 Hippocampo-subicular Projecting ENK+
+CA1 R-Receiving Apical-Targeting,CA1 Radial Trilaminar
+Schaffer Collateral-Associated,CA2 Wide-Arbor Basket
+Schaffer Collateral-Associated,CA1 Pyramidal
+Schaffer Collateral-Associated,CA1 Radiatum Giant
+Schaffer Collateral-Associated,CA1 Axo-axonic
+Schaffer Collateral-Associated,CA1 Horizontal Axo-axonic
+Schaffer Collateral-Associated,CA1 Back-Projection
+Schaffer Collateral-Associated,CA1 Basket
+Schaffer Collateral-Associated,CA1 Basket CCK+
+Schaffer Collateral-Associated,CA1 Horizontal Basket
+Schaffer Collateral-Associated,CA1 Bistratified
+Schaffer Collateral-Associated,CA1 Interneuron Specific LMO-O
+Schaffer Collateral-Associated,CA1 Interneuron Specific LMR-R
+Schaffer Collateral-Associated,CA1 Interneuron Specific O-R
+Schaffer Collateral-Associated,CA1 Interneuron Specific O-Targeting QuadD
+Schaffer Collateral-Associated,CA1 Interneuron Specific R-O
+Schaffer Collateral-Associated,CA1 Interneuron Specific RO-O
+Schaffer Collateral-Associated,CA1 Ivy
+Schaffer Collateral-Associated,CA1 LMR
+Schaffer Collateral-Associated,CA1 LMR Projecting
+Schaffer Collateral-Associated,CA1 O-LM
+Schaffer Collateral-Associated,CA1 Recurrent O-LM
+Schaffer Collateral-Associated,CA1 O-LMR
+Schaffer Collateral-Associated,CA1 Oriens/Alveus
+Schaffer Collateral-Associated,CA1 Oriens-Bistratified
+Schaffer Collateral-Associated,CA1 Oriens-Bistratified Projecting
+Schaffer Collateral-Associated,CA1 OR-LM
+Schaffer Collateral-Associated,CA1 Perforant Path-Associated
+Schaffer Collateral-Associated,CA1 Perforant Path-Associated QuadD
+Schaffer Collateral-Associated,CA1 Quadrilaminar
+Schaffer Collateral-Associated,CA1 Radiatum
+Schaffer Collateral-Associated,CA1 R-Receiving Apical-Targeting
+Schaffer Collateral-Associated,Schaffer Collateral-Associated
+Schaffer Collateral-Associated,Schaffer Collateral-Receiving R-Targeting
+Schaffer Collateral-Associated,CA1 SO-SO
+Schaffer Collateral-Associated,CA1 Hippocampo-subicular Projecting ENK+
+Schaffer Collateral-Associated,CA1 Trilaminar
+Schaffer Collateral-Associated,CA1 Radial Trilaminar
+Schaffer Collateral-Receiving R-Targeting,CA1 Pyramidal
+Schaffer Collateral-Receiving R-Targeting,CA1 Radiatum Giant
+Schaffer Collateral-Receiving R-Targeting,CA1 Axo-axonic
+Schaffer Collateral-Receiving R-Targeting,CA1 Basket
+Schaffer Collateral-Receiving R-Targeting,CA1 Basket CCK+
+Schaffer Collateral-Receiving R-Targeting,CA1 Bistratified
+Schaffer Collateral-Receiving R-Targeting,CA1 Interneuron Specific LMR-R
+Schaffer Collateral-Receiving R-Targeting,CA1 Interneuron Specific O-Targeting QuadD
+Schaffer Collateral-Receiving R-Targeting,CA1 Interneuron Specific R-O
+Schaffer Collateral-Receiving R-Targeting,CA1 Interneuron Specific RO-O
+Schaffer Collateral-Receiving R-Targeting,CA1 Ivy
+Schaffer Collateral-Receiving R-Targeting,CA1 LMR
+Schaffer Collateral-Receiving R-Targeting,CA1 LMR Projecting
+Schaffer Collateral-Receiving R-Targeting,CA1 Oriens/Alveus
+Schaffer Collateral-Receiving R-Targeting,CA1 OR-LM
+Schaffer Collateral-Receiving R-Targeting,CA1 Perforant Path-Associated
+Schaffer Collateral-Receiving R-Targeting,CA1 Perforant Path-Associated QuadD
+Schaffer Collateral-Receiving R-Targeting,CA1 Quadrilaminar
+Schaffer Collateral-Receiving R-Targeting,CA1 Radiatum
+Schaffer Collateral-Receiving R-Targeting,CA1 R-Receiving Apical-Targeting
+Schaffer Collateral-Receiving R-Targeting,Schaffer Collateral-Associated
+Schaffer Collateral-Receiving R-Targeting,Schaffer Collateral-Receiving R-Targeting
+Schaffer Collateral-Receiving R-Targeting,CA1 Hippocampo-subicular Projecting ENK+
+Schaffer Collateral-Receiving R-Targeting,CA1 Radial Trilaminar
+CA1 SO-SO,CA1 Pyramidal
+CA1 SO-SO,CA1 Axo-axonic
+CA1 SO-SO,CA1 Horizontal Axo-axonic
+CA1 SO-SO,CA1 Back-Projection
+CA1 SO-SO,CA1 Basket
+CA1 SO-SO,CA1 Basket CCK+
+CA1 SO-SO,CA1 Horizontal Basket
+CA1 SO-SO,CA1 Bistratified
+CA1 SO-SO,CA1 Interneuron Specific LMO-O
+CA1 SO-SO,CA1 Interneuron Specific O-R
+CA1 SO-SO,CA1 Interneuron Specific O-Targeting QuadD
+CA1 SO-SO,CA1 Interneuron Specific RO-O
+CA1 SO-SO,CA1 Ivy
+CA1 SO-SO,CA1 O-LM
+CA1 SO-SO,CA1 Recurrent O-LM
+CA1 SO-SO,CA1 O-LMR
+CA1 SO-SO,CA1 Oriens/Alveus
+CA1 SO-SO,CA1 Oriens-Bistratified
+CA1 SO-SO,CA1 Oriens-Bistratified Projecting
+CA1 SO-SO,CA1 OR-LM
+CA1 SO-SO,CA1 Perforant Path-Associated QuadD
+CA1 SO-SO,CA1 Quadrilaminar
+CA1 SO-SO,Schaffer Collateral-Receiving R-Targeting
+CA1 SO-SO,CA1 SO-SO
+CA1 SO-SO,CA1 Hippocampo-subicular Projecting ENK+
+CA1 SO-SO,CA1 Trilaminar
+CA1 SO-SO,CA1 Radial Trilaminar
+CA1 Hippocampo-subicular Projecting ENK+,CA2 Wide-Arbor Basket
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Pyramidal
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Radiatum Giant
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Axo-axonic
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Horizontal Axo-axonic
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Back-Projection
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Basket
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Basket CCK+
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Horizontal Basket
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Bistratified
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Interneuron Specific LMO-O
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Interneuron Specific LMR-R
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Interneuron Specific O-R
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Interneuron Specific R-O
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Interneuron Specific RO-O
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Ivy
+CA1 Hippocampo-subicular Projecting ENK+,CA1 LMR
+CA1 Hippocampo-subicular Projecting ENK+,CA1 LMR Projecting
+CA1 Hippocampo-subicular Projecting ENK+,CA1 O-LM
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Recurrent O-LM
+CA1 Hippocampo-subicular Projecting ENK+,CA1 O-LMR
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Oriens/Alveus
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Oriens-Bistratified
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Oriens-Bistratified Projecting
+CA1 Hippocampo-subicular Projecting ENK+,CA1 OR-LM
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Perforant Path-Associated
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Perforant Path-Associated QuadD
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Quadrilaminar
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Radiatum
+CA1 Hippocampo-subicular Projecting ENK+,CA1 R-Receiving Apical-Targeting
+CA1 Hippocampo-subicular Projecting ENK+,Schaffer Collateral-Associated
+CA1 Hippocampo-subicular Projecting ENK+,Schaffer Collateral-Receiving R-Targeting
+CA1 Hippocampo-subicular Projecting ENK+,CA1 SO-SO
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Hippocampo-subicular Projecting ENK+
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Trilaminar
+CA1 Hippocampo-subicular Projecting ENK+,CA1 Radial Trilaminar
+CA1 Trilaminar,CA2 Wide-Arbor Basket
+CA1 Trilaminar,CA1 Pyramidal
+CA1 Trilaminar,CA1 Radiatum Giant
+CA1 Trilaminar,CA1 Axo-axonic
+CA1 Trilaminar,CA1 Horizontal Axo-axonic
+CA1 Trilaminar,CA1 Back-Projection
+CA1 Trilaminar,CA1 Basket
+CA1 Trilaminar,CA1 Basket CCK+
+CA1 Trilaminar,CA1 Horizontal Basket
+CA1 Trilaminar,CA1 Bistratified
+CA1 Trilaminar,CA1 Interneuron Specific LMO-O
+CA1 Trilaminar,CA1 Interneuron Specific LMR-R
+CA1 Trilaminar,CA1 Interneuron Specific O-R
+CA1 Trilaminar,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Trilaminar,CA1 Interneuron Specific R-O
+CA1 Trilaminar,CA1 Interneuron Specific RO-O
+CA1 Trilaminar,CA1 Ivy
+CA1 Trilaminar,CA1 LMR
+CA1 Trilaminar,CA1 LMR Projecting
+CA1 Trilaminar,CA1 O-LM
+CA1 Trilaminar,CA1 Recurrent O-LM
+CA1 Trilaminar,CA1 O-LMR
+CA1 Trilaminar,CA1 Oriens/Alveus
+CA1 Trilaminar,CA1 Oriens-Bistratified
+CA1 Trilaminar,CA1 Oriens-Bistratified Projecting
+CA1 Trilaminar,CA1 OR-LM
+CA1 Trilaminar,CA1 Perforant Path-Associated
+CA1 Trilaminar,CA1 Perforant Path-Associated QuadD
+CA1 Trilaminar,CA1 Quadrilaminar
+CA1 Trilaminar,CA1 Radiatum
+CA1 Trilaminar,CA1 R-Receiving Apical-Targeting
+CA1 Trilaminar,Schaffer Collateral-Associated
+CA1 Trilaminar,Schaffer Collateral-Receiving R-Targeting
+CA1 Trilaminar,CA1 SO-SO
+CA1 Trilaminar,CA1 Hippocampo-subicular Projecting ENK+
+CA1 Trilaminar,CA1 Trilaminar
+CA1 Trilaminar,CA1 Radial Trilaminar
+CA1 Trilaminar,SUB EC-Projecting Pyramidal
+CA1 Trilaminar,SUB CA1-Projecting Pyramidal
+CA1 Trilaminar,SUB Axo-axonic
+CA1 Radial Trilaminar,CA2 Wide-Arbor Basket
+CA1 Radial Trilaminar,CA1 Pyramidal
+CA1 Radial Trilaminar,CA1 Radiatum Giant
+CA1 Radial Trilaminar,CA1 Axo-axonic
+CA1 Radial Trilaminar,CA1 Horizontal Axo-axonic
+CA1 Radial Trilaminar,CA1 Back-Projection
+CA1 Radial Trilaminar,CA1 Basket
+CA1 Radial Trilaminar,CA1 Basket CCK+
+CA1 Radial Trilaminar,CA1 Horizontal Basket
+CA1 Radial Trilaminar,CA1 Bistratified
+CA1 Radial Trilaminar,CA1 Interneuron Specific LMO-O
+CA1 Radial Trilaminar,CA1 Interneuron Specific LMR-R
+CA1 Radial Trilaminar,CA1 Interneuron Specific O-R
+CA1 Radial Trilaminar,CA1 Interneuron Specific O-Targeting QuadD
+CA1 Radial Trilaminar,CA1 Interneuron Specific R-O
+CA1 Radial Trilaminar,CA1 Interneuron Specific RO-O
+CA1 Radial Trilaminar,CA1 Ivy
+CA1 Radial Trilaminar,CA1 LMR
+CA1 Radial Trilaminar,CA1 LMR Projecting
+CA1 Radial Trilaminar,CA1 O-LM
+CA1 Radial Trilaminar,CA1 Recurrent O-LM
+CA1 Radial Trilaminar,CA1 O-LMR
+CA1 Radial Trilaminar,CA1 Oriens/Alveus
+CA1 Radial Trilaminar,CA1 Oriens-Bistratified
+CA1 Radial Trilaminar,CA1 Oriens-Bistratified Projecting
+CA1 Radial Trilaminar,CA1 OR-LM
+CA1 Radial Trilaminar,CA1 Perforant Path-Associated
+CA1 Radial Trilaminar,CA1 Perforant Path-Associated QuadD
+CA1 Radial Trilaminar,CA1 Quadrilaminar
+CA1 Radial Trilaminar,CA1 Radiatum
+CA1 Radial Trilaminar,CA1 R-Receiving Apical-Targeting
+CA1 Radial Trilaminar,Schaffer Collateral-Associated
+CA1 Radial Trilaminar,Schaffer Collateral-Receiving R-Targeting
+CA1 Radial Trilaminar,CA1 SO-SO
+CA1 Radial Trilaminar,CA1 Hippocampo-subicular Projecting ENK+
+CA1 Radial Trilaminar,CA1 Trilaminar
+CA1 Radial Trilaminar,CA1 Radial Trilaminar
+SUB EC-Projecting Pyramidal,SUB EC-Projecting Pyramidal
+SUB EC-Projecting Pyramidal,SUB CA1-Projecting Pyramidal
+SUB EC-Projecting Pyramidal,SUB Axo-axonic
+SUB EC-Projecting Pyramidal,LEC LIII Multipolar Principal
+SUB EC-Projecting Pyramidal,MEC LIII Multipolar Principal
+SUB EC-Projecting Pyramidal,LEC LIII Complex Pyramidal
+SUB EC-Projecting Pyramidal,MEC LIII Complex Pyramidal
+SUB EC-Projecting Pyramidal,LIII Pyramidal-Stellate
+SUB EC-Projecting Pyramidal,LIII-V Bipolar Pyramidal
+SUB EC-Projecting Pyramidal,LIV-V Pyramidal-Horizontal
+SUB EC-Projecting Pyramidal,LIV-VI Deep Multipolar Principal
+SUB EC-Projecting Pyramidal,MEC LV Multipolar-Pyramidal
+SUB EC-Projecting Pyramidal,LV Deep Pyramidal
+SUB EC-Projecting Pyramidal,MEC LV Pyramidal
+SUB EC-Projecting Pyramidal,MEC LV Superficial Pyramidal
+SUB EC-Projecting Pyramidal,MEC LV-VI Pyramidal-Polymorphic
+SUB EC-Projecting Pyramidal,LEC LVI Multipolar-Pyramidal
+SUB EC-Projecting Pyramidal,MEC LIII Multipolar Interneuron
+SUB EC-Projecting Pyramidal,LIII Pyramidal-Looking Interneuron
+SUB CA1-Projecting Pyramidal,CA2 Wide-Arbor Basket
+SUB CA1-Projecting Pyramidal,CA1 Pyramidal
+SUB CA1-Projecting Pyramidal,Cajal-Retzius
+SUB CA1-Projecting Pyramidal,CA1 Radiatum Giant
+SUB CA1-Projecting Pyramidal,CA1 Axo-axonic
+SUB CA1-Projecting Pyramidal,CA1 Back-Projection
+SUB CA1-Projecting Pyramidal,CA1 Basket
+SUB CA1-Projecting Pyramidal,CA1 Basket CCK+
+SUB CA1-Projecting Pyramidal,CA1 Bistratified
+SUB CA1-Projecting Pyramidal,CA1 Interneuron Specific LMO-O
+SUB CA1-Projecting Pyramidal,CA1 Interneuron Specific LM-R
+SUB CA1-Projecting Pyramidal,CA1 Interneuron Specific LMR-R
+SUB CA1-Projecting Pyramidal,CA1 Interneuron Specific O-Targeting QuadD
+SUB CA1-Projecting Pyramidal,CA1 Interneuron Specific R-O
+SUB CA1-Projecting Pyramidal,CA1 Interneuron Specific RO-O
+SUB CA1-Projecting Pyramidal,CA1 Ivy
+SUB CA1-Projecting Pyramidal,CA1 LMR
+SUB CA1-Projecting Pyramidal,CA1 LMR Projecting
+SUB CA1-Projecting Pyramidal,CA1 Neurogliaform
+SUB CA1-Projecting Pyramidal,CA1 Neurogliaform Projecting
+SUB CA1-Projecting Pyramidal,CA1 Oriens/Alveus
+SUB CA1-Projecting Pyramidal,CA1 OR-LM
+SUB CA1-Projecting Pyramidal,CA1 Perforant Path-Associated
+SUB CA1-Projecting Pyramidal,CA1 Perforant Path-Associated QuadD
+SUB CA1-Projecting Pyramidal,CA1 Quadrilaminar
+SUB CA1-Projecting Pyramidal,CA1 Radiatum
+SUB CA1-Projecting Pyramidal,CA1 R-Receiving Apical-Targeting
+SUB CA1-Projecting Pyramidal,Schaffer Collateral-Associated
+SUB CA1-Projecting Pyramidal,Schaffer Collateral-Receiving R-Targeting
+SUB CA1-Projecting Pyramidal,CA1 Hippocampo-subicular Projecting ENK+
+SUB CA1-Projecting Pyramidal,CA1 Radial Trilaminar
+SUB CA1-Projecting Pyramidal,SUB EC-Projecting Pyramidal
+SUB CA1-Projecting Pyramidal,SUB CA1-Projecting Pyramidal
+SUB CA1-Projecting Pyramidal,SUB Axo-axonic
+SUB Axo-axonic,SUB EC-Projecting Pyramidal
+SUB Axo-axonic,SUB CA1-Projecting Pyramidal
+LI-II Multipolar-Pyramidal,LI-II Multipolar-Pyramidal
+LI-II Multipolar-Pyramidal,LI-II Pyramidal-Fan
+LI-II Multipolar-Pyramidal,MEC LII-III Pyramidal-Multiform
+LI-II Multipolar-Pyramidal,MEC LII Oblique Pyramidal
+LI-II Multipolar-Pyramidal,MEC LII Stellate
+LI-II Multipolar-Pyramidal,LII-III Pyramidal-Tripolar
+LI-II Multipolar-Pyramidal,LEC LIII Multipolar Principal
+LI-II Multipolar-Pyramidal,MEC LIII Multipolar Principal
+LI-II Multipolar-Pyramidal,LIII Pyramidal
+LI-II Multipolar-Pyramidal,LEC LIII Complex Pyramidal
+LI-II Multipolar-Pyramidal,MEC LIII Complex Pyramidal
+LI-II Multipolar-Pyramidal,MEC LIII Bipolar Complex Pyramidal
+LI-II Multipolar-Pyramidal,LIII Pyramidal-Stellate
+LI-II Multipolar-Pyramidal,LIII Stellate
+LI-II Multipolar-Pyramidal,LIII-V Bipolar Pyramidal
+LI-II Multipolar-Pyramidal,LIV-V Pyramidal-Horizontal
+LI-II Multipolar-Pyramidal,LV Deep Pyramidal
+LI-II Multipolar-Pyramidal,MEC LV Pyramidal
+LI-II Multipolar-Pyramidal,MEC LV Superficial Pyramidal
+LI-II Multipolar-Pyramidal,LII Axo-axonic
+LI-II Multipolar-Pyramidal,MEC LII Basket
+LI-II Multipolar-Pyramidal,LII Basket-Multipolar Interneuron
+LI-II Multipolar-Pyramidal,LEC LIII Multipolar Interneuron
+LI-II Multipolar-Pyramidal,MEC LIII Multipolar Interneuron
+LI-II Multipolar-Pyramidal,MEC LIII Superficial Multipolar Interneuron
+LI-II Multipolar-Pyramidal,LIII Pyramidal-Looking Interneuron
+LI-II Multipolar-Pyramidal,MEC LIII Superficial Trilayered Interneuron
+LI-II Pyramidal-Fan,Granule
+LI-II Pyramidal-Fan,Hilar Ectopic Granule
+LI-II Pyramidal-Fan,Semilunar Granule
+LI-II Pyramidal-Fan,Mossy MOLDEN
+LI-II Pyramidal-Fan,AIPRIM
+LI-II Pyramidal-Fan,DG Axo-axonic
+LI-II Pyramidal-Fan,DG Basket
+LI-II Pyramidal-Fan,DG Basket CCK+
+LI-II Pyramidal-Fan,HICAP
+LI-II Pyramidal-Fan,MOLAX
+LI-II Pyramidal-Fan,MOPP
+LI-II Pyramidal-Fan,DG Neurogliaform
+LI-II Pyramidal-Fan,Outer Molecular Layer
+LI-II Pyramidal-Fan,Total Molecular Layer
+LI-II Pyramidal-Fan,CA1 Neurogliaform Projecting
+LI-II Pyramidal-Fan,SUB EC-Projecting Pyramidal
+LI-II Pyramidal-Fan,SUB CA1-Projecting Pyramidal
+LI-II Pyramidal-Fan,SUB Axo-axonic
+LI-II Pyramidal-Fan,LI-II Multipolar-Pyramidal
+LI-II Pyramidal-Fan,LI-II Pyramidal-Fan
+LI-II Pyramidal-Fan,MEC LII-III Pyramidal-Multiform
+LI-II Pyramidal-Fan,MEC LII Oblique Pyramidal
+LI-II Pyramidal-Fan,MEC LII Stellate
+LI-II Pyramidal-Fan,LII-III Pyramidal-Tripolar
+LI-II Pyramidal-Fan,LEC LIII Multipolar Principal
+LI-II Pyramidal-Fan,MEC LIII Multipolar Principal
+LI-II Pyramidal-Fan,LIII Pyramidal
+LI-II Pyramidal-Fan,LEC LIII Complex Pyramidal
+LI-II Pyramidal-Fan,MEC LIII Complex Pyramidal
+LI-II Pyramidal-Fan,MEC LIII Bipolar Complex Pyramidal
+LI-II Pyramidal-Fan,LIII Pyramidal-Stellate
+LI-II Pyramidal-Fan,LIII Stellate
+LI-II Pyramidal-Fan,LIII-V Bipolar Pyramidal
+LI-II Pyramidal-Fan,LIV-V Pyramidal-Horizontal
+LI-II Pyramidal-Fan,LV Deep Pyramidal
+LI-II Pyramidal-Fan,MEC LV Pyramidal
+LI-II Pyramidal-Fan,MEC LV Superficial Pyramidal
+LI-II Pyramidal-Fan,LII Axo-axonic
+LI-II Pyramidal-Fan,MEC LII Basket
+LI-II Pyramidal-Fan,LII Basket-Multipolar Interneuron
+LI-II Pyramidal-Fan,LEC LIII Multipolar Interneuron
+LI-II Pyramidal-Fan,MEC LIII Multipolar Interneuron
+LI-II Pyramidal-Fan,MEC LIII Superficial Multipolar Interneuron
+LI-II Pyramidal-Fan,LIII Pyramidal-Looking Interneuron
+LI-II Pyramidal-Fan,MEC LIII Superficial Trilayered Interneuron
+MEC LII-III Pyramidal-Multiform,LI-II Multipolar-Pyramidal
+MEC LII-III Pyramidal-Multiform,LI-II Pyramidal-Fan
+MEC LII-III Pyramidal-Multiform,MEC LII-III Pyramidal-Multiform
+MEC LII-III Pyramidal-Multiform,MEC LII Oblique Pyramidal
+MEC LII-III Pyramidal-Multiform,MEC LII Stellate
+MEC LII-III Pyramidal-Multiform,LII-III Pyramidal-Tripolar
+MEC LII-III Pyramidal-Multiform,LEC LIII Multipolar Principal
+MEC LII-III Pyramidal-Multiform,MEC LIII Multipolar Principal
+MEC LII-III Pyramidal-Multiform,LIII Pyramidal
+MEC LII-III Pyramidal-Multiform,LEC LIII Complex Pyramidal
+MEC LII-III Pyramidal-Multiform,MEC LIII Complex Pyramidal
+MEC LII-III Pyramidal-Multiform,MEC LIII Bipolar Complex Pyramidal
+MEC LII-III Pyramidal-Multiform,LIII Pyramidal-Stellate
+MEC LII-III Pyramidal-Multiform,LIII Stellate
+MEC LII-III Pyramidal-Multiform,LIII-V Bipolar Pyramidal
+MEC LII-III Pyramidal-Multiform,LIV-V Pyramidal-Horizontal
+MEC LII-III Pyramidal-Multiform,LIV-VI Deep Multipolar Principal
+MEC LII-III Pyramidal-Multiform,MEC LV Multipolar-Pyramidal
+MEC LII-III Pyramidal-Multiform,LV Deep Pyramidal
+MEC LII-III Pyramidal-Multiform,MEC LV Pyramidal
+MEC LII-III Pyramidal-Multiform,MEC LV Superficial Pyramidal
+MEC LII-III Pyramidal-Multiform,MEC LV-VI Pyramidal-Polymorphic
+MEC LII-III Pyramidal-Multiform,LEC LVI Multipolar-Pyramidal
+MEC LII-III Pyramidal-Multiform,LII Axo-axonic
+MEC LII-III Pyramidal-Multiform,MEC LII Basket
+MEC LII-III Pyramidal-Multiform,LII Basket-Multipolar Interneuron
+MEC LII-III Pyramidal-Multiform,LEC LIII Multipolar Interneuron
+MEC LII-III Pyramidal-Multiform,MEC LIII Multipolar Interneuron
+MEC LII-III Pyramidal-Multiform,MEC LIII Superficial Multipolar Interneuron
+MEC LII-III Pyramidal-Multiform,LIII Pyramidal-Looking Interneuron
+MEC LII-III Pyramidal-Multiform,MEC LIII Superficial Trilayered Interneuron
+MEC LII Oblique Pyramidal,MEC LII-III Pyramidal-Multiform
+MEC LII Oblique Pyramidal,LII-III Pyramidal-Tripolar
+MEC LII Oblique Pyramidal,LEC LIII Multipolar Principal
+MEC LII Oblique Pyramidal,MEC LIII Multipolar Principal
+MEC LII Oblique Pyramidal,LIII Pyramidal
+MEC LII Oblique Pyramidal,LEC LIII Complex Pyramidal
+MEC LII Oblique Pyramidal,MEC LIII Complex Pyramidal
+MEC LII Oblique Pyramidal,MEC LIII Bipolar Complex Pyramidal
+MEC LII Oblique Pyramidal,LIII Pyramidal-Stellate
+MEC LII Oblique Pyramidal,LIII Stellate
+MEC LII Oblique Pyramidal,LIII-V Bipolar Pyramidal
+MEC LII Oblique Pyramidal,LIV-V Pyramidal-Horizontal
+MEC LII Oblique Pyramidal,LIV-VI Deep Multipolar Principal
+MEC LII Oblique Pyramidal,MEC LV Multipolar-Pyramidal
+MEC LII Oblique Pyramidal,MEC LV Superficial Pyramidal
+MEC LII Oblique Pyramidal,LEC LIII Multipolar Interneuron
+MEC LII Oblique Pyramidal,MEC LIII Multipolar Interneuron
+MEC LII Oblique Pyramidal,MEC LIII Superficial Multipolar Interneuron
+MEC LII Oblique Pyramidal,LIII Pyramidal-Looking Interneuron
+MEC LII Oblique Pyramidal,MEC LIII Superficial Trilayered Interneuron
+MEC LII Stellate,Granule
+MEC LII Stellate,Hilar Ectopic Granule
+MEC LII Stellate,Semilunar Granule
+MEC LII Stellate,Mossy MOLDEN
+MEC LII Stellate,AIPRIM
+MEC LII Stellate,DG Axo-axonic
+MEC LII Stellate,DG Basket
+MEC LII Stellate,DG Basket CCK+
+MEC LII Stellate,HICAP
+MEC LII Stellate,MOLAX
+MEC LII Stellate,MOPP
+MEC LII Stellate,DG Neurogliaform
+MEC LII Stellate,Outer Molecular Layer
+MEC LII Stellate,Total Molecular Layer
+MEC LII Stellate,CA3 Pyramidal
+MEC LII Stellate,CA3 Giant
+MEC LII Stellate,CA3 Granule
+MEC LII Stellate,CA3 Axo-axonic
+MEC LII Stellate,CA3 Basket
+MEC LII Stellate,CA3 Basket CCK+
+MEC LII Stellate,CA3 LMR-Targeting
+MEC LII Stellate,CA2 Pyramidal
+MEC LII Stellate,CA2 Basket
+MEC LII Stellate,CA2 Wide-Arbor Basket
+MEC LII Stellate,CA1 Neurogliaform Projecting
+MEC LII Stellate,SUB EC-Projecting Pyramidal
+MEC LII Stellate,SUB CA1-Projecting Pyramidal
+MEC LII Stellate,SUB Axo-axonic
+MEC LII Stellate,LI-II Multipolar-Pyramidal
+MEC LII Stellate,LI-II Pyramidal-Fan
+MEC LII Stellate,MEC LII-III Pyramidal-Multiform
+MEC LII Stellate,MEC LII Oblique Pyramidal
+MEC LII Stellate,LII-III Pyramidal-Tripolar
+MEC LII Stellate,LEC LIII Multipolar Principal
+MEC LII Stellate,MEC LIII Multipolar Principal
+MEC LII Stellate,LIII Pyramidal
+MEC LII Stellate,LEC LIII Complex Pyramidal
+MEC LII Stellate,MEC LIII Complex Pyramidal
+MEC LII Stellate,MEC LIII Bipolar Complex Pyramidal
+MEC LII Stellate,LIII Pyramidal-Stellate
+MEC LII Stellate,LIII Stellate
+MEC LII Stellate,LIII-V Bipolar Pyramidal
+MEC LII Stellate,LIV-V Pyramidal-Horizontal
+MEC LII Stellate,LIV-VI Deep Multipolar Principal
+MEC LII Stellate,MEC LV Multipolar-Pyramidal
+MEC LII Stellate,LV Deep Pyramidal
+MEC LII Stellate,MEC LV Pyramidal
+MEC LII Stellate,MEC LV Superficial Pyramidal
+MEC LII Stellate,MEC LV-VI Pyramidal-Polymorphic
+MEC LII Stellate,LEC LVI Multipolar-Pyramidal
+MEC LII Stellate,LII Axo-axonic
+MEC LII Stellate,MEC LII Basket
+MEC LII Stellate,LII Basket-Multipolar Interneuron
+MEC LII Stellate,LEC LIII Multipolar Interneuron
+MEC LII Stellate,MEC LIII Multipolar Interneuron
+MEC LII Stellate,MEC LIII Superficial Multipolar Interneuron
+MEC LII Stellate,LIII Pyramidal-Looking Interneuron
+MEC LII Stellate,MEC LIII Superficial Trilayered Interneuron
+LII-III Pyramidal-Tripolar,Granule
+LII-III Pyramidal-Tripolar,Hilar Ectopic Granule
+LII-III Pyramidal-Tripolar,Semilunar Granule
+LII-III Pyramidal-Tripolar,Mossy MOLDEN
+LII-III Pyramidal-Tripolar,AIPRIM
+LII-III Pyramidal-Tripolar,DG Axo-axonic
+LII-III Pyramidal-Tripolar,DG Basket
+LII-III Pyramidal-Tripolar,DG Basket CCK+
+LII-III Pyramidal-Tripolar,HICAP
+LII-III Pyramidal-Tripolar,MOLAX
+LII-III Pyramidal-Tripolar,MOPP
+LII-III Pyramidal-Tripolar,DG Neurogliaform
+LII-III Pyramidal-Tripolar,Outer Molecular Layer
+LII-III Pyramidal-Tripolar,Total Molecular Layer
+LII-III Pyramidal-Tripolar,CA1 Neurogliaform Projecting
+LII-III Pyramidal-Tripolar,SUB EC-Projecting Pyramidal
+LII-III Pyramidal-Tripolar,SUB CA1-Projecting Pyramidal
+LII-III Pyramidal-Tripolar,SUB Axo-axonic
+LII-III Pyramidal-Tripolar,LI-II Multipolar-Pyramidal
+LII-III Pyramidal-Tripolar,LI-II Pyramidal-Fan
+LII-III Pyramidal-Tripolar,MEC LII-III Pyramidal-Multiform
+LII-III Pyramidal-Tripolar,MEC LII Oblique Pyramidal
+LII-III Pyramidal-Tripolar,MEC LII Stellate
+LII-III Pyramidal-Tripolar,LII-III Pyramidal-Tripolar
+LII-III Pyramidal-Tripolar,LEC LIII Multipolar Principal
+LII-III Pyramidal-Tripolar,MEC LIII Multipolar Principal
+LII-III Pyramidal-Tripolar,LIII Pyramidal
+LII-III Pyramidal-Tripolar,LEC LIII Complex Pyramidal
+LII-III Pyramidal-Tripolar,MEC LIII Complex Pyramidal
+LII-III Pyramidal-Tripolar,MEC LIII Bipolar Complex Pyramidal
+LII-III Pyramidal-Tripolar,LIII Pyramidal-Stellate
+LII-III Pyramidal-Tripolar,LIII Stellate
+LII-III Pyramidal-Tripolar,LIII-V Bipolar Pyramidal
+LII-III Pyramidal-Tripolar,LIV-V Pyramidal-Horizontal
+LII-III Pyramidal-Tripolar,LV Deep Pyramidal
+LII-III Pyramidal-Tripolar,MEC LV Pyramidal
+LII-III Pyramidal-Tripolar,MEC LV Superficial Pyramidal
+LII-III Pyramidal-Tripolar,LII Axo-axonic
+LII-III Pyramidal-Tripolar,MEC LII Basket
+LII-III Pyramidal-Tripolar,LII Basket-Multipolar Interneuron
+LII-III Pyramidal-Tripolar,LEC LIII Multipolar Interneuron
+LII-III Pyramidal-Tripolar,MEC LIII Multipolar Interneuron
+LII-III Pyramidal-Tripolar,MEC LIII Superficial Multipolar Interneuron
+LII-III Pyramidal-Tripolar,LIII Pyramidal-Looking Interneuron
+LII-III Pyramidal-Tripolar,MEC LIII Superficial Trilayered Interneuron
+LEC LIII Multipolar Principal,LI-II Multipolar-Pyramidal
+LEC LIII Multipolar Principal,LI-II Pyramidal-Fan
+LEC LIII Multipolar Principal,MEC LII-III Pyramidal-Multiform
+LEC LIII Multipolar Principal,MEC LII Oblique Pyramidal
+LEC LIII Multipolar Principal,MEC LII Stellate
+LEC LIII Multipolar Principal,LII-III Pyramidal-Tripolar
+LEC LIII Multipolar Principal,LEC LIII Multipolar Principal
+LEC LIII Multipolar Principal,MEC LIII Multipolar Principal
+LEC LIII Multipolar Principal,LIII Pyramidal
+LEC LIII Multipolar Principal,LEC LIII Complex Pyramidal
+LEC LIII Multipolar Principal,MEC LIII Complex Pyramidal
+LEC LIII Multipolar Principal,MEC LIII Bipolar Complex Pyramidal
+LEC LIII Multipolar Principal,LIII Pyramidal-Stellate
+LEC LIII Multipolar Principal,LIII Stellate
+LEC LIII Multipolar Principal,LIII-V Bipolar Pyramidal
+LEC LIII Multipolar Principal,LIV-V Pyramidal-Horizontal
+LEC LIII Multipolar Principal,LIV-VI Deep Multipolar Principal
+LEC LIII Multipolar Principal,MEC LV Multipolar-Pyramidal
+LEC LIII Multipolar Principal,LV Deep Pyramidal
+LEC LIII Multipolar Principal,MEC LV Pyramidal
+LEC LIII Multipolar Principal,MEC LV Superficial Pyramidal
+LEC LIII Multipolar Principal,MEC LV-VI Pyramidal-Polymorphic
+LEC LIII Multipolar Principal,LEC LVI Multipolar-Pyramidal
+LEC LIII Multipolar Principal,LII Axo-axonic
+LEC LIII Multipolar Principal,MEC LII Basket
+LEC LIII Multipolar Principal,LII Basket-Multipolar Interneuron
+LEC LIII Multipolar Principal,LEC LIII Multipolar Interneuron
+LEC LIII Multipolar Principal,MEC LIII Multipolar Interneuron
+LEC LIII Multipolar Principal,MEC LIII Superficial Multipolar Interneuron
+LEC LIII Multipolar Principal,LIII Pyramidal-Looking Interneuron
+LEC LIII Multipolar Principal,MEC LIII Superficial Trilayered Interneuron
+MEC LIII Multipolar Principal,MEC LII-III Pyramidal-Multiform
+MEC LIII Multipolar Principal,LII-III Pyramidal-Tripolar
+MEC LIII Multipolar Principal,LEC LIII Multipolar Principal
+MEC LIII Multipolar Principal,MEC LIII Multipolar Principal
+MEC LIII Multipolar Principal,LIII Pyramidal
+MEC LIII Multipolar Principal,LEC LIII Complex Pyramidal
+MEC LIII Multipolar Principal,MEC LIII Complex Pyramidal
+MEC LIII Multipolar Principal,MEC LIII Bipolar Complex Pyramidal
+MEC LIII Multipolar Principal,LIII Pyramidal-Stellate
+MEC LIII Multipolar Principal,LIII Stellate
+MEC LIII Multipolar Principal,LIII-V Bipolar Pyramidal
+MEC LIII Multipolar Principal,LIV-V Pyramidal-Horizontal
+MEC LIII Multipolar Principal,LIV-VI Deep Multipolar Principal
+MEC LIII Multipolar Principal,MEC LV Multipolar-Pyramidal
+MEC LIII Multipolar Principal,LV Deep Pyramidal
+MEC LIII Multipolar Principal,MEC LV Pyramidal
+MEC LIII Multipolar Principal,MEC LV Superficial Pyramidal
+MEC LIII Multipolar Principal,MEC LV-VI Pyramidal-Polymorphic
+MEC LIII Multipolar Principal,LEC LVI Multipolar-Pyramidal
+MEC LIII Multipolar Principal,LEC LIII Multipolar Interneuron
+MEC LIII Multipolar Principal,MEC LIII Multipolar Interneuron
+MEC LIII Multipolar Principal,MEC LIII Superficial Multipolar Interneuron
+MEC LIII Multipolar Principal,LIII Pyramidal-Looking Interneuron
+MEC LIII Multipolar Principal,MEC LIII Superficial Trilayered Interneuron
+LIII Pyramidal,CA1 Pyramidal
+LIII Pyramidal,Cajal-Retzius
+LIII Pyramidal,CA1 Radiatum Giant
+LIII Pyramidal,CA1 Axo-axonic
+LIII Pyramidal,CA1 Basket
+LIII Pyramidal,CA1 Basket CCK+
+LIII Pyramidal,CA1 Interneuron Specific LMO-O
+LIII Pyramidal,CA1 Interneuron Specific LM-R
+LIII Pyramidal,CA1 Interneuron Specific LMR-R
+LIII Pyramidal,CA1 Interneuron Specific O-Targeting QuadD
+LIII Pyramidal,CA1 LMR
+LIII Pyramidal,CA1 LMR Projecting
+LIII Pyramidal,CA1 Neurogliaform
+LIII Pyramidal,CA1 Neurogliaform Projecting
+LIII Pyramidal,CA1 Oriens/Alveus
+LIII Pyramidal,CA1 Perforant Path-Associated
+LIII Pyramidal,CA1 Perforant Path-Associated QuadD
+LIII Pyramidal,CA1 Quadrilaminar
+LIII Pyramidal,Schaffer Collateral-Associated
+LIII Pyramidal,CA1 Radial Trilaminar
+LIII Pyramidal,SUB EC-Projecting Pyramidal
+LIII Pyramidal,SUB CA1-Projecting Pyramidal
+LIII Pyramidal,SUB Axo-axonic
+LIII Pyramidal,MEC LII-III Pyramidal-Multiform
+LIII Pyramidal,LII-III Pyramidal-Tripolar
+LIII Pyramidal,LEC LIII Multipolar Principal
+LIII Pyramidal,MEC LIII Multipolar Principal
+LIII Pyramidal,LIII Pyramidal
+LIII Pyramidal,LEC LIII Complex Pyramidal
+LIII Pyramidal,MEC LIII Complex Pyramidal
+LIII Pyramidal,MEC LIII Bipolar Complex Pyramidal
+LIII Pyramidal,LIII Pyramidal-Stellate
+LIII Pyramidal,LIII Stellate
+LIII Pyramidal,LIII-V Bipolar Pyramidal
+LIII Pyramidal,LIV-V Pyramidal-Horizontal
+LIII Pyramidal,LIV-VI Deep Multipolar Principal
+LIII Pyramidal,MEC LV Multipolar-Pyramidal
+LIII Pyramidal,LV Deep Pyramidal
+LIII Pyramidal,MEC LV Pyramidal
+LIII Pyramidal,MEC LV Superficial Pyramidal
+LIII Pyramidal,MEC LV-VI Pyramidal-Polymorphic
+LIII Pyramidal,LEC LVI Multipolar-Pyramidal
+LIII Pyramidal,LEC LIII Multipolar Interneuron
+LIII Pyramidal,MEC LIII Multipolar Interneuron
+LIII Pyramidal,MEC LIII Superficial Multipolar Interneuron
+LIII Pyramidal,LIII Pyramidal-Looking Interneuron
+LIII Pyramidal,MEC LIII Superficial Trilayered Interneuron
+LEC LIII Complex Pyramidal,LI-II Multipolar-Pyramidal
+LEC LIII Complex Pyramidal,LI-II Pyramidal-Fan
+LEC LIII Complex Pyramidal,MEC LII-III Pyramidal-Multiform
+LEC LIII Complex Pyramidal,MEC LII Oblique Pyramidal
+LEC LIII Complex Pyramidal,MEC LII Stellate
+LEC LIII Complex Pyramidal,LII-III Pyramidal-Tripolar
+LEC LIII Complex Pyramidal,LEC LIII Multipolar Principal
+LEC LIII Complex Pyramidal,MEC LIII Multipolar Principal
+LEC LIII Complex Pyramidal,LIII Pyramidal
+LEC LIII Complex Pyramidal,LEC LIII Complex Pyramidal
+LEC LIII Complex Pyramidal,MEC LIII Complex Pyramidal
+LEC LIII Complex Pyramidal,MEC LIII Bipolar Complex Pyramidal
+LEC LIII Complex Pyramidal,LIII Pyramidal-Stellate
+LEC LIII Complex Pyramidal,LIII Stellate
+LEC LIII Complex Pyramidal,LIII-V Bipolar Pyramidal
+LEC LIII Complex Pyramidal,LIV-V Pyramidal-Horizontal
+LEC LIII Complex Pyramidal,LIV-VI Deep Multipolar Principal
+LEC LIII Complex Pyramidal,MEC LV Multipolar-Pyramidal
+LEC LIII Complex Pyramidal,LV Deep Pyramidal
+LEC LIII Complex Pyramidal,MEC LV Pyramidal
+LEC LIII Complex Pyramidal,MEC LV Superficial Pyramidal
+LEC LIII Complex Pyramidal,MEC LV-VI Pyramidal-Polymorphic
+LEC LIII Complex Pyramidal,LEC LVI Multipolar-Pyramidal
+LEC LIII Complex Pyramidal,LII Axo-axonic
+LEC LIII Complex Pyramidal,MEC LII Basket
+LEC LIII Complex Pyramidal,LII Basket-Multipolar Interneuron
+LEC LIII Complex Pyramidal,LEC LIII Multipolar Interneuron
+LEC LIII Complex Pyramidal,MEC LIII Multipolar Interneuron
+LEC LIII Complex Pyramidal,MEC LIII Superficial Multipolar Interneuron
+LEC LIII Complex Pyramidal,LIII Pyramidal-Looking Interneuron
+LEC LIII Complex Pyramidal,MEC LIII Superficial Trilayered Interneuron
+MEC LIII Complex Pyramidal,LI-II Multipolar-Pyramidal
+MEC LIII Complex Pyramidal,LI-II Pyramidal-Fan
+MEC LIII Complex Pyramidal,MEC LII-III Pyramidal-Multiform
+MEC LIII Complex Pyramidal,MEC LII Oblique Pyramidal
+MEC LIII Complex Pyramidal,MEC LII Stellate
+MEC LIII Complex Pyramidal,LII-III Pyramidal-Tripolar
+MEC LIII Complex Pyramidal,LEC LIII Multipolar Principal
+MEC LIII Complex Pyramidal,MEC LIII Multipolar Principal
+MEC LIII Complex Pyramidal,LIII Pyramidal
+MEC LIII Complex Pyramidal,LEC LIII Complex Pyramidal
+MEC LIII Complex Pyramidal,MEC LIII Complex Pyramidal
+MEC LIII Complex Pyramidal,MEC LIII Bipolar Complex Pyramidal
+MEC LIII Complex Pyramidal,LIII Pyramidal-Stellate
+MEC LIII Complex Pyramidal,LIII Stellate
+MEC LIII Complex Pyramidal,LIII-V Bipolar Pyramidal
+MEC LIII Complex Pyramidal,LIV-V Pyramidal-Horizontal
+MEC LIII Complex Pyramidal,LIV-VI Deep Multipolar Principal
+MEC LIII Complex Pyramidal,MEC LV Multipolar-Pyramidal
+MEC LIII Complex Pyramidal,LV Deep Pyramidal
+MEC LIII Complex Pyramidal,MEC LV Pyramidal
+MEC LIII Complex Pyramidal,MEC LV Superficial Pyramidal
+MEC LIII Complex Pyramidal,LII Axo-axonic
+MEC LIII Complex Pyramidal,MEC LII Basket
+MEC LIII Complex Pyramidal,LII Basket-Multipolar Interneuron
+MEC LIII Complex Pyramidal,LEC LIII Multipolar Interneuron
+MEC LIII Complex Pyramidal,MEC LIII Multipolar Interneuron
+MEC LIII Complex Pyramidal,MEC LIII Superficial Multipolar Interneuron
+MEC LIII Complex Pyramidal,LIII Pyramidal-Looking Interneuron
+MEC LIII Complex Pyramidal,MEC LIII Superficial Trilayered Interneuron
+MEC LIII Bipolar Complex Pyramidal,LI-II Multipolar-Pyramidal
+MEC LIII Bipolar Complex Pyramidal,LI-II Pyramidal-Fan
+MEC LIII Bipolar Complex Pyramidal,MEC LII-III Pyramidal-Multiform
+MEC LIII Bipolar Complex Pyramidal,MEC LII Oblique Pyramidal
+MEC LIII Bipolar Complex Pyramidal,MEC LII Stellate
+MEC LIII Bipolar Complex Pyramidal,LII-III Pyramidal-Tripolar
+MEC LIII Bipolar Complex Pyramidal,LEC LIII Multipolar Principal
+MEC LIII Bipolar Complex Pyramidal,MEC LIII Multipolar Principal
+MEC LIII Bipolar Complex Pyramidal,LIII Pyramidal
+MEC LIII Bipolar Complex Pyramidal,LEC LIII Complex Pyramidal
+MEC LIII Bipolar Complex Pyramidal,MEC LIII Complex Pyramidal
+MEC LIII Bipolar Complex Pyramidal,MEC LIII Bipolar Complex Pyramidal
+MEC LIII Bipolar Complex Pyramidal,LIII Pyramidal-Stellate
+MEC LIII Bipolar Complex Pyramidal,LIII Stellate
+MEC LIII Bipolar Complex Pyramidal,LIII-V Bipolar Pyramidal
+MEC LIII Bipolar Complex Pyramidal,LIV-V Pyramidal-Horizontal
+MEC LIII Bipolar Complex Pyramidal,LIV-VI Deep Multipolar Principal
+MEC LIII Bipolar Complex Pyramidal,MEC LV Multipolar-Pyramidal
+MEC LIII Bipolar Complex Pyramidal,LV Deep Pyramidal
+MEC LIII Bipolar Complex Pyramidal,MEC LV Pyramidal
+MEC LIII Bipolar Complex Pyramidal,MEC LV Superficial Pyramidal
+MEC LIII Bipolar Complex Pyramidal,LII Axo-axonic
+MEC LIII Bipolar Complex Pyramidal,MEC LII Basket
+MEC LIII Bipolar Complex Pyramidal,LII Basket-Multipolar Interneuron
+MEC LIII Bipolar Complex Pyramidal,LEC LIII Multipolar Interneuron
+MEC LIII Bipolar Complex Pyramidal,MEC LIII Multipolar Interneuron
+MEC LIII Bipolar Complex Pyramidal,MEC LIII Superficial Multipolar Interneuron
+MEC LIII Bipolar Complex Pyramidal,LIII Pyramidal-Looking Interneuron
+MEC LIII Bipolar Complex Pyramidal,MEC LIII Superficial Trilayered Interneuron
+LIII Pyramidal-Stellate,Mossy MOLDEN
+LIII Pyramidal-Stellate,CA1 Pyramidal
+LIII Pyramidal-Stellate,Cajal-Retzius
+LIII Pyramidal-Stellate,CA1 Radiatum Giant
+LIII Pyramidal-Stellate,CA1 Axo-axonic
+LIII Pyramidal-Stellate,CA1 Basket
+LIII Pyramidal-Stellate,CA1 Basket CCK+
+LIII Pyramidal-Stellate,CA1 Interneuron Specific LMO-O
+LIII Pyramidal-Stellate,CA1 Interneuron Specific LM-R
+LIII Pyramidal-Stellate,CA1 Interneuron Specific LMR-R
+LIII Pyramidal-Stellate,CA1 Interneuron Specific O-Targeting QuadD
+LIII Pyramidal-Stellate,CA1 LMR
+LIII Pyramidal-Stellate,CA1 LMR Projecting
+LIII Pyramidal-Stellate,CA1 Neurogliaform
+LIII Pyramidal-Stellate,CA1 Neurogliaform Projecting
+LIII Pyramidal-Stellate,CA1 Oriens/Alveus
+LIII Pyramidal-Stellate,CA1 Perforant Path-Associated
+LIII Pyramidal-Stellate,CA1 Perforant Path-Associated QuadD
+LIII Pyramidal-Stellate,CA1 Quadrilaminar
+LIII Pyramidal-Stellate,Schaffer Collateral-Associated
+LIII Pyramidal-Stellate,CA1 Radial Trilaminar
+LIII Pyramidal-Stellate,SUB EC-Projecting Pyramidal
+LIII Pyramidal-Stellate,SUB CA1-Projecting Pyramidal
+LIII Pyramidal-Stellate,SUB Axo-axonic
+LIII Pyramidal-Stellate,MEC LII-III Pyramidal-Multiform
+LIII Pyramidal-Stellate,LII-III Pyramidal-Tripolar
+LIII Pyramidal-Stellate,LEC LIII Multipolar Principal
+LIII Pyramidal-Stellate,MEC LIII Multipolar Principal
+LIII Pyramidal-Stellate,LIII Pyramidal
+LIII Pyramidal-Stellate,LEC LIII Complex Pyramidal
+LIII Pyramidal-Stellate,MEC LIII Complex Pyramidal
+LIII Pyramidal-Stellate,MEC LIII Bipolar Complex Pyramidal
+LIII Pyramidal-Stellate,LIII Pyramidal-Stellate
+LIII Pyramidal-Stellate,LIII Stellate
+LIII Pyramidal-Stellate,LIII-V Bipolar Pyramidal
+LIII Pyramidal-Stellate,MEC LV Superficial Pyramidal
+LIII Pyramidal-Stellate,LEC LIII Multipolar Interneuron
+LIII Pyramidal-Stellate,MEC LIII Multipolar Interneuron
+LIII Pyramidal-Stellate,MEC LIII Superficial Multipolar Interneuron
+LIII Pyramidal-Stellate,LIII Pyramidal-Looking Interneuron
+LIII Pyramidal-Stellate,MEC LIII Superficial Trilayered Interneuron
+LIII Stellate,MEC LII-III Pyramidal-Multiform
+LIII Stellate,LII-III Pyramidal-Tripolar
+LIII Stellate,LEC LIII Multipolar Principal
+LIII Stellate,MEC LIII Multipolar Principal
+LIII Stellate,LIII Pyramidal
+LIII Stellate,LEC LIII Complex Pyramidal
+LIII Stellate,MEC LIII Complex Pyramidal
+LIII Stellate,MEC LIII Bipolar Complex Pyramidal
+LIII Stellate,LIII Pyramidal-Stellate
+LIII Stellate,LIII Stellate
+LIII Stellate,LIII-V Bipolar Pyramidal
+LIII Stellate,MEC LV Superficial Pyramidal
+LIII Stellate,LEC LIII Multipolar Interneuron
+LIII Stellate,MEC LIII Multipolar Interneuron
+LIII Stellate,MEC LIII Superficial Multipolar Interneuron
+LIII Stellate,LIII Pyramidal-Looking Interneuron
+LIII Stellate,MEC LIII Superficial Trilayered Interneuron
+LIII-V Bipolar Pyramidal,MEC LII-III Pyramidal-Multiform
+LIII-V Bipolar Pyramidal,LII-III Pyramidal-Tripolar
+LIII-V Bipolar Pyramidal,LEC LIII Multipolar Principal
+LIII-V Bipolar Pyramidal,MEC LIII Multipolar Principal
+LIII-V Bipolar Pyramidal,LIII Pyramidal
+LIII-V Bipolar Pyramidal,LEC LIII Complex Pyramidal
+LIII-V Bipolar Pyramidal,MEC LIII Complex Pyramidal
+LIII-V Bipolar Pyramidal,MEC LIII Bipolar Complex Pyramidal
+LIII-V Bipolar Pyramidal,LIII Pyramidal-Stellate
+LIII-V Bipolar Pyramidal,LIII Stellate
+LIII-V Bipolar Pyramidal,LIII-V Bipolar Pyramidal
+LIII-V Bipolar Pyramidal,LIV-V Pyramidal-Horizontal
+LIII-V Bipolar Pyramidal,LIV-VI Deep Multipolar Principal
+LIII-V Bipolar Pyramidal,MEC LV Multipolar-Pyramidal
+LIII-V Bipolar Pyramidal,LV Deep Pyramidal
+LIII-V Bipolar Pyramidal,MEC LV Pyramidal
+LIII-V Bipolar Pyramidal,MEC LV Superficial Pyramidal
+LIII-V Bipolar Pyramidal,MEC LV-VI Pyramidal-Polymorphic
+LIII-V Bipolar Pyramidal,LEC LVI Multipolar-Pyramidal
+LIII-V Bipolar Pyramidal,LEC LIII Multipolar Interneuron
+LIII-V Bipolar Pyramidal,MEC LIII Multipolar Interneuron
+LIII-V Bipolar Pyramidal,MEC LIII Superficial Multipolar Interneuron
+LIII-V Bipolar Pyramidal,LIII Pyramidal-Looking Interneuron
+LIII-V Bipolar Pyramidal,MEC LIII Superficial Trilayered Interneuron
+LIV-V Pyramidal-Horizontal,Granule
+LIV-V Pyramidal-Horizontal,Hilar Ectopic Granule
+LIV-V Pyramidal-Horizontal,Semilunar Granule
+LIV-V Pyramidal-Horizontal,Mossy MOLDEN
+LIV-V Pyramidal-Horizontal,AIPRIM
+LIV-V Pyramidal-Horizontal,DG Axo-axonic
+LIV-V Pyramidal-Horizontal,DG Basket
+LIV-V Pyramidal-Horizontal,DG Basket CCK+
+LIV-V Pyramidal-Horizontal,HICAP
+LIV-V Pyramidal-Horizontal,MOLAX
+LIV-V Pyramidal-Horizontal,MOPP
+LIV-V Pyramidal-Horizontal,DG Neurogliaform
+LIV-V Pyramidal-Horizontal,Outer Molecular Layer
+LIV-V Pyramidal-Horizontal,Total Molecular Layer
+LIV-V Pyramidal-Horizontal,CA1 Neurogliaform Projecting
+LIV-V Pyramidal-Horizontal,LEC LIII Multipolar Principal
+LIV-V Pyramidal-Horizontal,LIII-V Bipolar Pyramidal
+LIV-V Pyramidal-Horizontal,LIV-V Pyramidal-Horizontal
+LIV-V Pyramidal-Horizontal,LIV-VI Deep Multipolar Principal
+LIV-V Pyramidal-Horizontal,MEC LV Multipolar-Pyramidal
+LIV-V Pyramidal-Horizontal,LV Deep Pyramidal
+LIV-V Pyramidal-Horizontal,MEC LV Pyramidal
+LIV-V Pyramidal-Horizontal,MEC LV Superficial Pyramidal
+LIV-V Pyramidal-Horizontal,MEC LV-VI Pyramidal-Polymorphic
+LIV-V Pyramidal-Horizontal,LEC LVI Multipolar-Pyramidal
+LIV-V Pyramidal-Horizontal,MEC LIII Multipolar Interneuron
+LIV-VI Deep Multipolar Principal,SUB EC-Projecting Pyramidal
+LIV-VI Deep Multipolar Principal,SUB CA1-Projecting Pyramidal
+LIV-VI Deep Multipolar Principal,SUB Axo-axonic
+LIV-VI Deep Multipolar Principal,LEC LIII Multipolar Principal
+LIV-VI Deep Multipolar Principal,MEC LIII Multipolar Principal
+LIV-VI Deep Multipolar Principal,LEC LIII Complex Pyramidal
+LIV-VI Deep Multipolar Principal,MEC LIII Complex Pyramidal
+LIV-VI Deep Multipolar Principal,LIII Pyramidal-Stellate
+LIV-VI Deep Multipolar Principal,LIII-V Bipolar Pyramidal
+LIV-VI Deep Multipolar Principal,LIV-V Pyramidal-Horizontal
+LIV-VI Deep Multipolar Principal,LIV-VI Deep Multipolar Principal
+LIV-VI Deep Multipolar Principal,MEC LV Multipolar-Pyramidal
+LIV-VI Deep Multipolar Principal,LV Deep Pyramidal
+LIV-VI Deep Multipolar Principal,MEC LV Pyramidal
+LIV-VI Deep Multipolar Principal,MEC LV Superficial Pyramidal
+LIV-VI Deep Multipolar Principal,MEC LV-VI Pyramidal-Polymorphic
+LIV-VI Deep Multipolar Principal,LEC LVI Multipolar-Pyramidal
+LIV-VI Deep Multipolar Principal,MEC LIII Multipolar Interneuron
+LIV-VI Deep Multipolar Principal,LIII Pyramidal-Looking Interneuron
+MEC LV Multipolar-Pyramidal,MEC LII-III Pyramidal-Multiform
+MEC LV Multipolar-Pyramidal,LII-III Pyramidal-Tripolar
+MEC LV Multipolar-Pyramidal,LEC LIII Multipolar Principal
+MEC LV Multipolar-Pyramidal,MEC LIII Multipolar Principal
+MEC LV Multipolar-Pyramidal,LIII Pyramidal
+MEC LV Multipolar-Pyramidal,LEC LIII Complex Pyramidal
+MEC LV Multipolar-Pyramidal,MEC LIII Complex Pyramidal
+MEC LV Multipolar-Pyramidal,MEC LIII Bipolar Complex Pyramidal
+MEC LV Multipolar-Pyramidal,LIII Pyramidal-Stellate
+MEC LV Multipolar-Pyramidal,LIII Stellate
+MEC LV Multipolar-Pyramidal,LIII-V Bipolar Pyramidal
+MEC LV Multipolar-Pyramidal,LIV-V Pyramidal-Horizontal
+MEC LV Multipolar-Pyramidal,LIV-VI Deep Multipolar Principal
+MEC LV Multipolar-Pyramidal,MEC LV Multipolar-Pyramidal
+MEC LV Multipolar-Pyramidal,LV Deep Pyramidal
+MEC LV Multipolar-Pyramidal,MEC LV Pyramidal
+MEC LV Multipolar-Pyramidal,MEC LV Superficial Pyramidal
+MEC LV Multipolar-Pyramidal,MEC LV-VI Pyramidal-Polymorphic
+MEC LV Multipolar-Pyramidal,LEC LVI Multipolar-Pyramidal
+MEC LV Multipolar-Pyramidal,LEC LIII Multipolar Interneuron
+MEC LV Multipolar-Pyramidal,MEC LIII Multipolar Interneuron
+MEC LV Multipolar-Pyramidal,MEC LIII Superficial Multipolar Interneuron
+MEC LV Multipolar-Pyramidal,LIII Pyramidal-Looking Interneuron
+MEC LV Multipolar-Pyramidal,MEC LIII Superficial Trilayered Interneuron
+LV Deep Pyramidal,LEC LIII Multipolar Principal
+LV Deep Pyramidal,LIII-V Bipolar Pyramidal
+LV Deep Pyramidal,LIV-V Pyramidal-Horizontal
+LV Deep Pyramidal,LIV-VI Deep Multipolar Principal
+LV Deep Pyramidal,MEC LV Multipolar-Pyramidal
+LV Deep Pyramidal,LV Deep Pyramidal
+LV Deep Pyramidal,MEC LV Pyramidal
+LV Deep Pyramidal,MEC LV Superficial Pyramidal
+LV Deep Pyramidal,MEC LV-VI Pyramidal-Polymorphic
+LV Deep Pyramidal,LEC LVI Multipolar-Pyramidal
+LV Deep Pyramidal,MEC LIII Multipolar Interneuron
+MEC LV Pyramidal,Granule
+MEC LV Pyramidal,Hilar Ectopic Granule
+MEC LV Pyramidal,Semilunar Granule
+MEC LV Pyramidal,Mossy MOLDEN
+MEC LV Pyramidal,AIPRIM
+MEC LV Pyramidal,DG Axo-axonic
+MEC LV Pyramidal,DG Basket
+MEC LV Pyramidal,DG Basket CCK+
+MEC LV Pyramidal,HICAP
+MEC LV Pyramidal,HIPROM
+MEC LV Pyramidal,MOCAP
+MEC LV Pyramidal,MOLAX
+MEC LV Pyramidal,MOPP
+MEC LV Pyramidal,DG Neurogliaform
+MEC LV Pyramidal,Outer Molecular Layer
+MEC LV Pyramidal,Total Molecular Layer
+MEC LV Pyramidal,CA1 Neurogliaform Projecting
+MEC LV Pyramidal,SUB EC-Projecting Pyramidal
+MEC LV Pyramidal,SUB CA1-Projecting Pyramidal
+MEC LV Pyramidal,SUB Axo-axonic
+MEC LV Pyramidal,LI-II Multipolar-Pyramidal
+MEC LV Pyramidal,LI-II Pyramidal-Fan
+MEC LV Pyramidal,MEC LII-III Pyramidal-Multiform
+MEC LV Pyramidal,MEC LII Oblique Pyramidal
+MEC LV Pyramidal,MEC LII Stellate
+MEC LV Pyramidal,LII-III Pyramidal-Tripolar
+MEC LV Pyramidal,LEC LIII Multipolar Principal
+MEC LV Pyramidal,MEC LIII Multipolar Principal
+MEC LV Pyramidal,LIII Pyramidal
+MEC LV Pyramidal,LEC LIII Complex Pyramidal
+MEC LV Pyramidal,MEC LIII Complex Pyramidal
+MEC LV Pyramidal,MEC LIII Bipolar Complex Pyramidal
+MEC LV Pyramidal,LIII Pyramidal-Stellate
+MEC LV Pyramidal,LIII Stellate
+MEC LV Pyramidal,LIII-V Bipolar Pyramidal
+MEC LV Pyramidal,LIV-V Pyramidal-Horizontal
+MEC LV Pyramidal,LIV-VI Deep Multipolar Principal
+MEC LV Pyramidal,MEC LV Multipolar-Pyramidal
+MEC LV Pyramidal,LV Deep Pyramidal
+MEC LV Pyramidal,MEC LV Pyramidal
+MEC LV Pyramidal,MEC LV Superficial Pyramidal
+MEC LV Pyramidal,MEC LV-VI Pyramidal-Polymorphic
+MEC LV Pyramidal,LEC LVI Multipolar-Pyramidal
+MEC LV Pyramidal,LII Axo-axonic
+MEC LV Pyramidal,MEC LII Basket
+MEC LV Pyramidal,LII Basket-Multipolar Interneuron
+MEC LV Pyramidal,LEC LIII Multipolar Interneuron
+MEC LV Pyramidal,MEC LIII Multipolar Interneuron
+MEC LV Pyramidal,MEC LIII Superficial Multipolar Interneuron
+MEC LV Pyramidal,LIII Pyramidal-Looking Interneuron
+MEC LV Pyramidal,MEC LIII Superficial Trilayered Interneuron
+MEC LV Superficial Pyramidal,LI-II Multipolar-Pyramidal
+MEC LV Superficial Pyramidal,LI-II Pyramidal-Fan
+MEC LV Superficial Pyramidal,MEC LII-III Pyramidal-Multiform
+MEC LV Superficial Pyramidal,MEC LII Oblique Pyramidal
+MEC LV Superficial Pyramidal,MEC LII Stellate
+MEC LV Superficial Pyramidal,LII-III Pyramidal-Tripolar
+MEC LV Superficial Pyramidal,LEC LIII Multipolar Principal
+MEC LV Superficial Pyramidal,MEC LIII Multipolar Principal
+MEC LV Superficial Pyramidal,LIII Pyramidal
+MEC LV Superficial Pyramidal,LEC LIII Complex Pyramidal
+MEC LV Superficial Pyramidal,MEC LIII Complex Pyramidal
+MEC LV Superficial Pyramidal,MEC LIII Bipolar Complex Pyramidal
+MEC LV Superficial Pyramidal,LIII Pyramidal-Stellate
+MEC LV Superficial Pyramidal,LIII Stellate
+MEC LV Superficial Pyramidal,LIII-V Bipolar Pyramidal
+MEC LV Superficial Pyramidal,LIV-V Pyramidal-Horizontal
+MEC LV Superficial Pyramidal,LIV-VI Deep Multipolar Principal
+MEC LV Superficial Pyramidal,MEC LV Multipolar-Pyramidal
+MEC LV Superficial Pyramidal,LV Deep Pyramidal
+MEC LV Superficial Pyramidal,MEC LV Pyramidal
+MEC LV Superficial Pyramidal,MEC LV Superficial Pyramidal
+MEC LV Superficial Pyramidal,MEC LV-VI Pyramidal-Polymorphic
+MEC LV Superficial Pyramidal,LEC LVI Multipolar-Pyramidal
+MEC LV Superficial Pyramidal,LII Axo-axonic
+MEC LV Superficial Pyramidal,MEC LII Basket
+MEC LV Superficial Pyramidal,LII Basket-Multipolar Interneuron
+MEC LV Superficial Pyramidal,LEC LIII Multipolar Interneuron
+MEC LV Superficial Pyramidal,MEC LIII Multipolar Interneuron
+MEC LV Superficial Pyramidal,MEC LIII Superficial Multipolar Interneuron
+MEC LV Superficial Pyramidal,LIII Pyramidal-Looking Interneuron
+MEC LV Superficial Pyramidal,MEC LIII Superficial Trilayered Interneuron
+MEC LV-VI Pyramidal-Polymorphic,LIV-V Pyramidal-Horizontal
+MEC LV-VI Pyramidal-Polymorphic,LIV-VI Deep Multipolar Principal
+MEC LV-VI Pyramidal-Polymorphic,LV Deep Pyramidal
+MEC LV-VI Pyramidal-Polymorphic,MEC LV-VI Pyramidal-Polymorphic
+MEC LV-VI Pyramidal-Polymorphic,LEC LVI Multipolar-Pyramidal
+LEC LVI Multipolar-Pyramidal,MEC LII-III Pyramidal-Multiform
+LEC LVI Multipolar-Pyramidal,LII-III Pyramidal-Tripolar
+LEC LVI Multipolar-Pyramidal,LEC LIII Multipolar Principal
+LEC LVI Multipolar-Pyramidal,MEC LIII Multipolar Principal
+LEC LVI Multipolar-Pyramidal,LIII Pyramidal
+LEC LVI Multipolar-Pyramidal,LEC LIII Complex Pyramidal
+LEC LVI Multipolar-Pyramidal,MEC LIII Complex Pyramidal
+LEC LVI Multipolar-Pyramidal,MEC LIII Bipolar Complex Pyramidal
+LEC LVI Multipolar-Pyramidal,LIII Pyramidal-Stellate
+LEC LVI Multipolar-Pyramidal,LIII Stellate
+LEC LVI Multipolar-Pyramidal,LIII-V Bipolar Pyramidal
+LEC LVI Multipolar-Pyramidal,LIV-V Pyramidal-Horizontal
+LEC LVI Multipolar-Pyramidal,LIV-VI Deep Multipolar Principal
+LEC LVI Multipolar-Pyramidal,MEC LV Multipolar-Pyramidal
+LEC LVI Multipolar-Pyramidal,LV Deep Pyramidal
+LEC LVI Multipolar-Pyramidal,MEC LV Pyramidal
+LEC LVI Multipolar-Pyramidal,MEC LV Superficial Pyramidal
+LEC LVI Multipolar-Pyramidal,MEC LV-VI Pyramidal-Polymorphic
+LEC LVI Multipolar-Pyramidal,LEC LVI Multipolar-Pyramidal
+LEC LVI Multipolar-Pyramidal,LEC LIII Multipolar Interneuron
+LEC LVI Multipolar-Pyramidal,MEC LIII Multipolar Interneuron
+LEC LVI Multipolar-Pyramidal,MEC LIII Superficial Multipolar Interneuron
+LEC LVI Multipolar-Pyramidal,LIII Pyramidal-Looking Interneuron
+LEC LVI Multipolar-Pyramidal,MEC LIII Superficial Trilayered Interneuron
+LII Axo-axonic,LI-II Multipolar-Pyramidal
+LII Axo-axonic,LI-II Pyramidal-Fan
+LII Axo-axonic,MEC LII-III Pyramidal-Multiform
+LII Axo-axonic,MEC LII Oblique Pyramidal
+LII Axo-axonic,MEC LII Stellate
+LII Axo-axonic,LII-III Pyramidal-Tripolar
+LII Axo-axonic,LIII Pyramidal
+LII Axo-axonic,LEC LIII Complex Pyramidal
+LII Axo-axonic,MEC LIII Bipolar Complex Pyramidal
+LII Axo-axonic,LIII Pyramidal-Stellate
+LII Axo-axonic,LIII Stellate
+LII Axo-axonic,LIII-V Bipolar Pyramidal
+LII Axo-axonic,LIV-V Pyramidal-Horizontal
+LII Axo-axonic,LV Deep Pyramidal
+LII Axo-axonic,MEC LV Pyramidal
+LII Axo-axonic,LII Axo-axonic
+LII Axo-axonic,MEC LII Basket
+LII Axo-axonic,LII Basket-Multipolar Interneuron
+LII Axo-axonic,LEC LIII Multipolar Interneuron
+LII Axo-axonic,MEC LIII Superficial Multipolar Interneuron
+LII Axo-axonic,LIII Pyramidal-Looking Interneuron
+LII Axo-axonic,MEC LIII Superficial Trilayered Interneuron
+MEC LII Basket,LI-II Multipolar-Pyramidal
+MEC LII Basket,LI-II Pyramidal-Fan
+MEC LII Basket,MEC LII-III Pyramidal-Multiform
+MEC LII Basket,MEC LII Oblique Pyramidal
+MEC LII Basket,MEC LII Stellate
+MEC LII Basket,LII-III Pyramidal-Tripolar
+MEC LII Basket,LEC LIII Multipolar Principal
+MEC LII Basket,MEC LIII Multipolar Principal
+MEC LII Basket,LIII Pyramidal
+MEC LII Basket,LEC LIII Complex Pyramidal
+MEC LII Basket,MEC LIII Complex Pyramidal
+MEC LII Basket,MEC LIII Bipolar Complex Pyramidal
+MEC LII Basket,LIII Pyramidal-Stellate
+MEC LII Basket,LIII Stellate
+MEC LII Basket,LIII-V Bipolar Pyramidal
+MEC LII Basket,LIV-V Pyramidal-Horizontal
+MEC LII Basket,LV Deep Pyramidal
+MEC LII Basket,MEC LV Pyramidal
+MEC LII Basket,MEC LV Superficial Pyramidal
+MEC LII Basket,LII Axo-axonic
+MEC LII Basket,MEC LII Basket
+MEC LII Basket,LII Basket-Multipolar Interneuron
+MEC LII Basket,LEC LIII Multipolar Interneuron
+MEC LII Basket,MEC LIII Multipolar Interneuron
+MEC LII Basket,MEC LIII Superficial Multipolar Interneuron
+MEC LII Basket,LIII Pyramidal-Looking Interneuron
+MEC LII Basket,MEC LIII Superficial Trilayered Interneuron
+LII Basket-Multipolar Interneuron,LI-II Multipolar-Pyramidal
+LII Basket-Multipolar Interneuron,LI-II Pyramidal-Fan
+LII Basket-Multipolar Interneuron,MEC LII-III Pyramidal-Multiform
+LII Basket-Multipolar Interneuron,MEC LII Oblique Pyramidal
+LII Basket-Multipolar Interneuron,MEC LII Stellate
+LII Basket-Multipolar Interneuron,LII-III Pyramidal-Tripolar
+LII Basket-Multipolar Interneuron,LIII Pyramidal
+LII Basket-Multipolar Interneuron,LEC LIII Complex Pyramidal
+LII Basket-Multipolar Interneuron,MEC LIII Bipolar Complex Pyramidal
+LII Basket-Multipolar Interneuron,LIII Pyramidal-Stellate
+LII Basket-Multipolar Interneuron,LIII Stellate
+LII Basket-Multipolar Interneuron,LIII-V Bipolar Pyramidal
+LII Basket-Multipolar Interneuron,LIV-V Pyramidal-Horizontal
+LII Basket-Multipolar Interneuron,LV Deep Pyramidal
+LII Basket-Multipolar Interneuron,MEC LV Pyramidal
+LII Basket-Multipolar Interneuron,LII Axo-axonic
+LII Basket-Multipolar Interneuron,MEC LII Basket
+LII Basket-Multipolar Interneuron,LII Basket-Multipolar Interneuron
+LII Basket-Multipolar Interneuron,LEC LIII Multipolar Interneuron
+LII Basket-Multipolar Interneuron,MEC LIII Superficial Multipolar Interneuron
+LII Basket-Multipolar Interneuron,LIII Pyramidal-Looking Interneuron
+LII Basket-Multipolar Interneuron,MEC LIII Superficial Trilayered Interneuron
+LEC LIII Multipolar Interneuron,MEC LII-III Pyramidal-Multiform
+LEC LIII Multipolar Interneuron,LII-III Pyramidal-Tripolar
+LEC LIII Multipolar Interneuron,LEC LIII Multipolar Principal
+LEC LIII Multipolar Interneuron,MEC LIII Multipolar Principal
+LEC LIII Multipolar Interneuron,LIII Pyramidal
+LEC LIII Multipolar Interneuron,LEC LIII Complex Pyramidal
+LEC LIII Multipolar Interneuron,MEC LIII Complex Pyramidal
+LEC LIII Multipolar Interneuron,MEC LIII Bipolar Complex Pyramidal
+LEC LIII Multipolar Interneuron,LIII Pyramidal-Stellate
+LEC LIII Multipolar Interneuron,LIII Stellate
+LEC LIII Multipolar Interneuron,LIII-V Bipolar Pyramidal
+LEC LIII Multipolar Interneuron,MEC LV Superficial Pyramidal
+LEC LIII Multipolar Interneuron,LEC LIII Multipolar Interneuron
+LEC LIII Multipolar Interneuron,MEC LIII Multipolar Interneuron
+LEC LIII Multipolar Interneuron,MEC LIII Superficial Multipolar Interneuron
+LEC LIII Multipolar Interneuron,LIII Pyramidal-Looking Interneuron
+LEC LIII Multipolar Interneuron,MEC LIII Superficial Trilayered Interneuron
+MEC LIII Multipolar Interneuron,LI-II Multipolar-Pyramidal
+MEC LIII Multipolar Interneuron,LI-II Pyramidal-Fan
+MEC LIII Multipolar Interneuron,MEC LII-III Pyramidal-Multiform
+MEC LIII Multipolar Interneuron,MEC LII Oblique Pyramidal
+MEC LIII Multipolar Interneuron,MEC LII Stellate
+MEC LIII Multipolar Interneuron,LII-III Pyramidal-Tripolar
+MEC LIII Multipolar Interneuron,LEC LIII Multipolar Principal
+MEC LIII Multipolar Interneuron,MEC LIII Multipolar Principal
+MEC LIII Multipolar Interneuron,LIII Pyramidal
+MEC LIII Multipolar Interneuron,LEC LIII Complex Pyramidal
+MEC LIII Multipolar Interneuron,MEC LIII Complex Pyramidal
+MEC LIII Multipolar Interneuron,MEC LIII Bipolar Complex Pyramidal
+MEC LIII Multipolar Interneuron,LIII Pyramidal-Stellate
+MEC LIII Multipolar Interneuron,LIII Stellate
+MEC LIII Multipolar Interneuron,LIII-V Bipolar Pyramidal
+MEC LIII Multipolar Interneuron,LIV-V Pyramidal-Horizontal
+MEC LIII Multipolar Interneuron,LV Deep Pyramidal
+MEC LIII Multipolar Interneuron,MEC LV Pyramidal
+MEC LIII Multipolar Interneuron,MEC LV Superficial Pyramidal
+MEC LIII Multipolar Interneuron,LII Axo-axonic
+MEC LIII Multipolar Interneuron,MEC LII Basket
+MEC LIII Multipolar Interneuron,LII Basket-Multipolar Interneuron
+MEC LIII Multipolar Interneuron,LEC LIII Multipolar Interneuron
+MEC LIII Multipolar Interneuron,MEC LIII Multipolar Interneuron
+MEC LIII Multipolar Interneuron,MEC LIII Superficial Multipolar Interneuron
+MEC LIII Multipolar Interneuron,LIII Pyramidal-Looking Interneuron
+MEC LIII Multipolar Interneuron,MEC LIII Superficial Trilayered Interneuron
+MEC LIII Superficial Multipolar Interneuron,LI-II Multipolar-Pyramidal
+MEC LIII Superficial Multipolar Interneuron,LI-II Pyramidal-Fan
+MEC LIII Superficial Multipolar Interneuron,MEC LII-III Pyramidal-Multiform
+MEC LIII Superficial Multipolar Interneuron,MEC LII Oblique Pyramidal
+MEC LIII Superficial Multipolar Interneuron,MEC LII Stellate
+MEC LIII Superficial Multipolar Interneuron,LII-III Pyramidal-Tripolar
+MEC LIII Superficial Multipolar Interneuron,LEC LIII Multipolar Principal
+MEC LIII Superficial Multipolar Interneuron,MEC LIII Multipolar Principal
+MEC LIII Superficial Multipolar Interneuron,LIII Pyramidal
+MEC LIII Superficial Multipolar Interneuron,LEC LIII Complex Pyramidal
+MEC LIII Superficial Multipolar Interneuron,MEC LIII Complex Pyramidal
+MEC LIII Superficial Multipolar Interneuron,MEC LIII Bipolar Complex Pyramidal
+MEC LIII Superficial Multipolar Interneuron,LIII Pyramidal-Stellate
+MEC LIII Superficial Multipolar Interneuron,LIII Stellate
+MEC LIII Superficial Multipolar Interneuron,LIII-V Bipolar Pyramidal
+MEC LIII Superficial Multipolar Interneuron,LIV-V Pyramidal-Horizontal
+MEC LIII Superficial Multipolar Interneuron,LV Deep Pyramidal
+MEC LIII Superficial Multipolar Interneuron,MEC LV Pyramidal
+MEC LIII Superficial Multipolar Interneuron,MEC LV Superficial Pyramidal
+MEC LIII Superficial Multipolar Interneuron,LII Axo-axonic
+MEC LIII Superficial Multipolar Interneuron,MEC LII Basket
+MEC LIII Superficial Multipolar Interneuron,LII Basket-Multipolar Interneuron
+MEC LIII Superficial Multipolar Interneuron,LEC LIII Multipolar Interneuron
+MEC LIII Superficial Multipolar Interneuron,MEC LIII Multipolar Interneuron
+MEC LIII Superficial Multipolar Interneuron,MEC LIII Superficial Multipolar Interneuron
+MEC LIII Superficial Multipolar Interneuron,LIII Pyramidal-Looking Interneuron
+MEC LIII Superficial Multipolar Interneuron,MEC LIII Superficial Trilayered Interneuron
+LIII Pyramidal-Looking Interneuron,MEC LII-III Pyramidal-Multiform
+LIII Pyramidal-Looking Interneuron,LII-III Pyramidal-Tripolar
+LIII Pyramidal-Looking Interneuron,LEC LIII Multipolar Principal
+LIII Pyramidal-Looking Interneuron,MEC LIII Multipolar Principal
+LIII Pyramidal-Looking Interneuron,LIII Pyramidal
+LIII Pyramidal-Looking Interneuron,LEC LIII Complex Pyramidal
+LIII Pyramidal-Looking Interneuron,MEC LIII Complex Pyramidal
+LIII Pyramidal-Looking Interneuron,MEC LIII Bipolar Complex Pyramidal
+LIII Pyramidal-Looking Interneuron,LIII Pyramidal-Stellate
+LIII Pyramidal-Looking Interneuron,LIII Stellate
+LIII Pyramidal-Looking Interneuron,LIII-V Bipolar Pyramidal
+LIII Pyramidal-Looking Interneuron,LIV-V Pyramidal-Horizontal
+LIII Pyramidal-Looking Interneuron,LIV-VI Deep Multipolar Principal
+LIII Pyramidal-Looking Interneuron,MEC LV Multipolar-Pyramidal
+LIII Pyramidal-Looking Interneuron,MEC LV Superficial Pyramidal
+LIII Pyramidal-Looking Interneuron,LEC LIII Multipolar Interneuron
+LIII Pyramidal-Looking Interneuron,MEC LIII Multipolar Interneuron
+LIII Pyramidal-Looking Interneuron,MEC LIII Superficial Multipolar Interneuron
+LIII Pyramidal-Looking Interneuron,LIII Pyramidal-Looking Interneuron
+LIII Pyramidal-Looking Interneuron,MEC LIII Superficial Trilayered Interneuron
+MEC LIII Superficial Trilayered Interneuron,LI-II Multipolar-Pyramidal
+MEC LIII Superficial Trilayered Interneuron,LI-II Pyramidal-Fan
+MEC LIII Superficial Trilayered Interneuron,MEC LII-III Pyramidal-Multiform
+MEC LIII Superficial Trilayered Interneuron,MEC LII Oblique Pyramidal
+MEC LIII Superficial Trilayered Interneuron,MEC LII Stellate
+MEC LIII Superficial Trilayered Interneuron,LII-III Pyramidal-Tripolar
+MEC LIII Superficial Trilayered Interneuron,LEC LIII Multipolar Principal
+MEC LIII Superficial Trilayered Interneuron,MEC LIII Multipolar Principal
+MEC LIII Superficial Trilayered Interneuron,LIII Pyramidal
+MEC LIII Superficial Trilayered Interneuron,LEC LIII Complex Pyramidal
+MEC LIII Superficial Trilayered Interneuron,MEC LIII Complex Pyramidal
+MEC LIII Superficial Trilayered Interneuron,MEC LIII Bipolar Complex Pyramidal
+MEC LIII Superficial Trilayered Interneuron,LIII Pyramidal-Stellate
+MEC LIII Superficial Trilayered Interneuron,LIII Stellate
+MEC LIII Superficial Trilayered Interneuron,LIII-V Bipolar Pyramidal
+MEC LIII Superficial Trilayered Interneuron,LIV-V Pyramidal-Horizontal
+MEC LIII Superficial Trilayered Interneuron,LV Deep Pyramidal
+MEC LIII Superficial Trilayered Interneuron,MEC LV Pyramidal
+MEC LIII Superficial Trilayered Interneuron,MEC LV Superficial Pyramidal
+MEC LIII Superficial Trilayered Interneuron,LII Axo-axonic
+MEC LIII Superficial Trilayered Interneuron,MEC LII Basket
+MEC LIII Superficial Trilayered Interneuron,LII Basket-Multipolar Interneuron
+MEC LIII Superficial Trilayered Interneuron,LEC LIII Multipolar Interneuron
+MEC LIII Superficial Trilayered Interneuron,MEC LIII Multipolar Interneuron
+MEC LIII Superficial Trilayered Interneuron,MEC LIII Superficial Multipolar Interneuron
+MEC LIII Superficial Trilayered Interneuron,LIII Pyramidal-Looking Interneuron
+MEC LIII Superficial Trilayered Interneuron,MEC LIII Superficial Trilayered Interneuron

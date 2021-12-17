@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<jnlp spec="1.0+" codebase="http://hippocampome.org/php/connectivity/applications/" href="connectivity_map.jnlp">
+
+  <information>
+    <title>Potential Connectivity Map</title>
+    <vendor>Krasnow Institute</vendor>
+    <description>Clickable map showing the potential connectome among neuron types in the rodent hippocampus.</description>
+    <offline-allowed/>
+  </information>
+
+  <resources>    
+    <jar href="connectivity.jar" main="true" />
+    <j2se version="1.5+" href="http://java.sun.com/products/autodl/j2se" />
+  </resources>
+
+  <application-desc main-class="hippocampome.TypeConnectivityWithListeners">
+  </application-desc>
+
+  <security>
+    <!-- <all-permissions /> -->
+  </security>
+
+</jnlp>

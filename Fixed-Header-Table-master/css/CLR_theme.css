@@ -1,0 +1,41 @@
+.clr_container {
+	margin-left: auto;
+	margin-right: auto;
+	width: 960px;
+}
+
+.clr_grid {
+	display: inline;
+	float: left;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+.clr_container .clr_grid {
+	max-width: 900px;
+}
+
+.divider {
+	margin-top: 10px;
+	margin-left: 25px;
+	}
+
+.clr_table_position {
+	position:absolute; top: 180px; left: 30px;
+	width:auto;
+	border:none;
+}
+	
+.height600 {
+        height: 600px;
+	width: 1000px;
+        overflow-x: auto;
+        overflow-y: auto;
+}
+
+.fancyTable td, .fancyTable th {
+	max-width: 900px;
+	table-layout: fixed;
+	border: 1px solid #778899;
+	padding: 3px;
+}

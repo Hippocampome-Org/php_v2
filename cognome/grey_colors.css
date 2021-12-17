@@ -1,0 +1,40 @@
+html {
+  color: black;
+  background-image: none;
+  background-repeat: repeat;
+  background-attachment: scroll;
+  background-clip: border-box;
+  background-origin: padding-box;
+  background-position-x: 0%;
+  background-position-y: 0%;
+  background-size: auto auto;
+  background-color: #999999;
+}
+
+a {
+  color: #1d3e70 !important;
+}
+
+hr {
+  color: black !important;
+  border: 0.5px solid black !important;
+  background-color: black !important; height: 0.5px !important;
+}
+
+/* collabsible section */
+.lbl-toggle {
+  color: #A77B0E;
+  background: #FAE042;
+}
+
+.lbl-toggle:hover {
+  color: #7C5A0B;
+}
+
+.collapsible-content .content-inner {
+  background: rgb(209, 209, 209);
+  border-bottom: 1px solid rgba(250, 224, 66, .45);
+  border-bottom-left-radius: 7px;
+  border-bottom-right-radius: 7px;
+  padding: .5rem 1rem;
+}
