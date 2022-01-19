@@ -107,7 +107,6 @@ $epdata = new epdata($class_epdata);
 .ui-jqgrid tr.jqgrow td 
 {
 	height:auto !important;
-	text-align:center;
 }
 .ui-jqgrid tr.jqgrow td:nth-child(2)
 {
@@ -216,7 +215,7 @@ $(function(){
 	  {name:'type', index:'type', width:50,sortable:false,cellattr: function (rowId, tv, rawObject, cm, rdata) {
           return 'id=\'type' + rowId + "\'";   
       } },
-      {name:'Neuron type', index:'nickname', width:175,sortable:false},
+      {name:'Neuron type', index:'nickname', width:275,sortable:false},
 	  {name:'NeuritePattern', index:'NeuritePattern', width:80,sortable:false, hidden: true},
           //,searchoptions: {sopt: ['bw','bn','cn','in','ni','ew','en','nc']}},
       {name:'Vrest', index:'Vrest', width:75,height:130,search:false,sortable:false},
@@ -250,8 +249,8 @@ $(function(){
       {name:'SlowAhp', index:'SlowAhp', width:75,height:150,search:false,sortable:false},
       {name:'Sagratio', index:'CR', width:75,height:150,search:false,sortable:false}
     ], 
-   	rowNum:125,
-    rowList:[125],
+   	rowNum:176,
+    rowList:[176],
     viewrecords: true, 
     gridview: true,
     jsonReader : {
@@ -476,6 +475,9 @@ function HideShowColumns ()
 		&nbsp; &nbsp; 
 		<font face="Verdana, Arial, Helvetica, sans-serif" color="#CC0000" size="2"> -/red: </font> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> Inhibitory</font>
 		<br />
+		&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+    <font face="Verdana, Arial, Helvetica, sans-serif" color="#FF0000" size="2">* indicates new v2.0 neuron type</font>
+		<br/>
 		&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 		<font class='font5'>Values are selected from the source with the greatest number of measurements taken at preferred experimental conditions (rats, patch clamp, & body temperature, when available).</font>
 		<br />

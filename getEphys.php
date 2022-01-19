@@ -117,7 +117,7 @@ else
 // get how many rows we want to have into the grid - rowNum parameter in the grid
 if (!isset($_GET['rows']))
 {
-	$limit = 122;
+	$limit = 176;
 }
 else
 {
@@ -251,8 +251,8 @@ if ($research != "1")
 	$type->retrive_id();
 	$number_type = $type->getNumber_type();
 }
-$neuron = array("DG"=>'DG(18)',"CA3"=>'CA3(25)',"CA3c"=>'CA3(25)',"CA2"=>'CA2(5)',"CA1"=>'CA1(42)',"SUB"=>'SUB(3)',"EC"=>'EC(31)');
-$neuronColor = array("DG"=>'#770000',"CA3"=>'#C08181',"CA3c"=>'#C08181',"CA2"=>'#FFCC00',"CA1"=>'#FF6103',"SUB"=>'#FFCC33',"EC"=>'#336633');
+$neuron = array("DG"=>'DG(36)',"CA3"=>'CA3(35)',"CA3c"=>'CA3(35)',"CA2"=>'CA2(5)',"CA1"=>'CA1(60)',"Sub"=>'Sub(7)',"EC"=>'EC(33)');
+$neuronColor = array("DG"=>'#770000',"CA3"=>'#C08181',"CA3c"=>'#C08181',"CA2"=>'#FFCC00',"CA1"=>'#FF6103',"Sub"=>'#FFCC33',"EC"=>'#336633');
 $ephys = array("0"=>"Vrest", "1"=>"Rin","2"=>"tm","3"=>"Vthresh", "4"=>"fast_AHP",
 		"5" =>"AP_ampl", "6" =>"AP_width", "7" =>"max_fr", "8" =>"slow_AHP", "9" =>"sag_ratio");
 for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the number of active neuron types to print each row in the data table
@@ -532,7 +532,7 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
 		if ($excit_inhib == 'i')
 			$fontColor='#CC5500';
 		$rows[$i]['cell'] =
-			array(	'<span style="color:'.$neuronColor[$subregion].'"><strong>'.$neuron[$subregion].'</strong></span>',
+			array('<span style="color:'.$neuronColor[$subregion].'"><strong>'.$neuron[$subregion].'</strong></span>',
 				"    ".'<a href="neuron_page.php?id='.$id.'" target="blank" title="'.$type->getName().'"><font color="'.$fontColor.'">'.$nickname.'</font></a>',
 				'<span style="color:black">'.$neurite_pattern_new.'</span>',
 				print_ephys_value_and_hover('Vrest'    , $i, $number_type, $id_ephys2, $id, $unvetted_ephys2, $ephys2, $nn_ephys2, $tot_n1_ephys2, $error_ephys2, $protocol_ephys2, $gt_ephys2),
