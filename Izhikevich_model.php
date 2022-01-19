@@ -280,7 +280,7 @@ $(function(){
 	   {name:'type', index:'type', width:50,sortable:false, cellattr: function (rowId, tv, rawObject, cm, rdata) {
           return 'id=\'type' + rowId + "\'";   
       } },
-      {name:'NeuronType', index:'nickname', width:175,sortable:false},
+      {name:'NeuronType', index:'nickname', width:300,sortable:false},
       {name:'k', index:'k', width:75,search:false,sortable:false},
       {name:'a', index:'a', width:75,search:false,sortable:false},
       {name:'b', index:'b', width:75,search:false,sortable:false},
@@ -334,8 +334,8 @@ $(function(){
 ,{name:'P2', index:'P2', width:75, search:false,sortable:false,hidden: true}
 	], 
    
-    rowNum:125,
-    rowList:[125],
+    rowNum:175,
+    rowList:[175],
   
     viewrecords: true, 
     gridview: true,
@@ -354,7 +354,7 @@ $(function(){
     //caption: 'Morphology Matrix',
     scrollerbar:false,
     height:"450",
-    width:"900",
+    width:"1000",
     shrinkToFit: true,
     gridComplete: function () {
     	var gridName = "nGrid"; // p the grid Name
@@ -444,11 +444,11 @@ function HideShowColumns ()
     $(document).ready(function() {
     myGrid.jqGrid('setGridParam', {scrollerbar: true});
     myGrid.jqGrid('setColProp', 'type', {frozen: true });
-    myGrid.jqGrid('setColProp', 'NeuronType', {frozen: true })
+    myGrid.jqGrid('setColProp', 'NeuronType', {frozen: true });
     myGrid.jqGrid('setFrozenColumns');
     myGrid.jqGrid('setGridParam', {shrinkToFit: false});
   
-  //myGrid.jqGrid('setGridParam', {autowidth: true});
+    //myGrid.jqGrid('setGridParam', {autowidth: true});
 });
   $("#checkbox1").click(function() {
   
@@ -475,7 +475,7 @@ function HideShowColumns ()
       
     }
     else {
-      myGrid.jqGrid('destroyFrozenColumns')
+      myGrid.jqGrid('destroyFrozenColumns');
       myGrid.jqGrid('showCol', ["k"]);
       myGrid.jqGrid('showCol', ["a"]);
       myGrid.jqGrid('showCol', ["b"]);
@@ -486,9 +486,9 @@ function HideShowColumns ()
       myGrid.jqGrid('showCol', ["Vpeak"]);
       myGrid.jqGrid('showCol', ["Vmin"]);
       myGrid.jqGrid('hideCol', ["k0","a0","b0","d0","C0","Vr0","Vt0","Vpeak0","Vmin0","k1","a1","b1","d1","C1","Vr1","Vt1","Vpeak1","Vmin1","G0","P0","k2","a2","b2","d2","C2","Vr2","Vt2","Vpeak2","Vmin2","G1","P1","k3","a3","b3","d3","C3","Vr3","Vt3","Vpeak3","Vmin3","G2","P2"]);
-      myGrid.setGridWidth("900",true);
-      //myGrid.jqGrid('setGridParam', {autowidth: true});
-      myGrid.jqGrid('setGridParam', {shrinkToFit: true});
+      myGrid.setGridWidth("1000", true);
+      myGrid.jqGrid('setGridParam', {autowidth: true});
+      myGrid.jqGrid('setGridParam', {shrinkToFit: false});
       myGrid.jqGrid('setGridParam', {scrollerbar: true});
      
     }
@@ -513,8 +513,8 @@ function HideShowColumns ()
 
 <div class='title_area'>
   <form id='supertypeForm'>
-    <font id= "title" class="font1">Browse Izhikevich matrix</font>
-    <input type="checkbox" value="check1" name="check1" id="checkbox1"><span>Multi Compartment Model</span>
+    <font id= "title" class="font1">Browse Izhikevich matrix</font> &emsp;
+    <input type="checkbox" value="check1" name="check1" id="checkbox1"><span>Multi-compartment Model</span>
   </form>
 </div>
 
@@ -528,16 +528,24 @@ function HideShowColumns ()
 </table>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class='body_table'>  
-  <tr>
-    <td>
-		  <font class='font5'><strong>Legend:</strong> </font>&nbsp; &nbsp;
-    </td>
-	   <!-- &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; -->
-		<td><font face="Verdana, Arial, Helvetica, sans-serif" color="#339900" size="2"> +/green: </font> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> Excitatory</font></td>
-		&nbsp; &nbsp; 
-		<td><font face="Verdana, Arial, Helvetica, sans-serif" color="#CC0000" size="2"> -/red: </font> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> Inhibitory</font></td>
-  </tr>
-	
+    <tr>
+        <td width="60">
+    		<font class='font5'><strong>Legend:</strong> </font>
+        </td>
+		<td>
+            <font face="Verdana, Arial, Helvetica, sans-serif" color="#339900" size="2"> +/green: </font> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> Excitatory</font>
+    		&emsp; &emsp;
+		    <font face="Verdana, Arial, Helvetica, sans-serif" color="#CC0000" size="2"> -/red: </font> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> Inhibitory</font>
+        </td>
+    </tr>
+    <tr>  	
+        <td width="60">
+            <font class='font5'><strong></strong> </font>
+        </td>
+        <td>
+            <font face="Verdana, Arial, Helvetica, sans-serif" color="#FF0000" size="2">* indicates new v2.0 neuron type</font>
+        </td>
+    </tr>
 </table>
 </div>
 </body>
