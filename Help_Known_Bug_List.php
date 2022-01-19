@@ -96,7 +96,7 @@ ul
 
 <p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span
 style='font-size:16.0pt;line-height:115%;font-family:"Arial","sans-serif"'>Known
-Issues in v1.4<o:p></o:p></span></b></p>
+Issues in v2.0<o:p></o:p></span></b></p>
 
 <p class=MsoNormal><span style='font-family:"Arial","sans-serif"'>A Neuron page
 summarizes all of the known properties of a given neuronal type, including its
@@ -108,25 +108,13 @@ lists the quoted text passages and/or figures and associated captions with full
 bibliographic annotations that support a particular piece of knowledge. <o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='font-size:14.0pt;line-height:115%;font-family:
-"Arial","sans-serif"'>Issue #85 - From a Neuron page, if you right click on two
-links, such as first A<span class=GramE>:DG:SG</span> and second D:DG:H, in
-order to open them in separate tabs, and you click on the first tab, A:DG:SG,
-when you go to expand any of the citations, the contents of the tab immediately
-switch over to the second tab's contents, D:DG:H.<o:p></o:p></span></p>
+"Arial","sans-serif"'>Some of the new morphology figures and tables are too small.<o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='font-size:14.0pt;line-height:115%;font-family:
-"Arial","sans-serif"'>Issue #364 - The word "trace" is misspelled in the quoted
-captions on several Firing Pattern Evidence pages.<o:p></o:p></span></p>
+"Arial","sans-serif"'>The connectivity Java applet needs to be updated with all of the new neuron types.<o:p></o:p></span></p>
 
 <p class=MsoNormal><span style='font-size:14.0pt;line-height:115%;font-family:
-"Arial","sans-serif"'>Issue #379 - In the connectivity matrix, there are
-certain connections between cell types that are marked with a large red X,
-which indicates that the two cell types are not connected to each other. These
-refuted connections should also appear listed on the Neuron Page. For example, according
-to the connectivity matrix, CA3 Axo-axonic neurons do not make contact with 11
-other neuron types. These 11 types are being listed on the Neuron Page as being
-connected, whereas they should be in the column for "Potential targets
-known to be avoided."<o:p></o:p></span></p>
+"Arial","sans-serif"'>In the firing patterns and firing pattern parameters matrices, the red horizontal dividing lines are not displaying properly.<o:p></o:p></span></p>
 
 </div>
 
