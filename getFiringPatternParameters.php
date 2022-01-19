@@ -119,7 +119,7 @@ if(!isset($_GET['page'])) $page=1;
 else $page = $_GET['page'];
 //page=1&rows=5&sidx=1&sord=asc
 // get how many rows we want to have into the grid - rowNum parameter in the grid
-if(!isset($_GET['rows'])) $limit=122;
+if(!isset($_GET['rows'])) $limit=175;
 else $limit = $_GET['rows'];
 
 // get index row - i.e. user click to sort. At first time sortname parameter -
@@ -241,7 +241,7 @@ if($research!="1")
 	$type -> retrive_id();
 	$number_type = $type->getNumber_type();
 }
-$neuron = array("DG"=>'DG(18)',"CA3"=>'CA3(25)',"CA3c"=>'CA3(25)',"CA2"=>'CA2(5)',"CA1"=>'CA1(40)',"SUB"=>'SUB(3)',"EC"=>'EC(31)');
+$neuron = array("DG"=>'DG(36)',"CA3"=>'CA3(35)',"CA3c"=>'CA3(35)',"CA2"=>'CA2(5)',"CA1"=>'CA1(60)',"SUB"=>'SUB(7)',"EC"=>'EC(33)');
 $neuronColor = array("DG"=>'#770000',"CA3"=>'#C08181',"CA3c"=>'#C08181',"CA2"=>'#FFCC00',"CA1"=>'#FF6103',"SUB"=>'#FFCC33',"EC"=>'#336633');
 $hippo = array("ASP."=>NULL, "ASP.ASP."=>NULL, "ASP.NASP"=>NULL, "ASP.SLN"=>NULL, "D."=>NULL, "D.ASP."=>NULL, "D.RASP.NASP"=>NULL, "D.NASP."=>NULL, "D.PSTUT"=>NULL, "D.TSWB.NASP"=>NULL, "RASP."=>NULL, "RASP.ASP."=>NULL, "RASP.NASP"=>NULL, "RASP.SLN"=>NULL, "NASP"=>NULL, "PSTUT"=>NULL, "PSWB"=>NULL, "TSTUT."=>NULL, "TSTUT.ASP."=>NULL, "TSTUT.NASP"=>NULL, "TSTUT.SLN"=>NULL, "TSWB.NASP"=>NULL, "TSWB.SLN"=>NULL,  "-"=>NULL);
 $name_firing = array("0"=>"ASP.", "1"=>"ASP.ASP.", "2"=>"ASP.NASP", "3"=>"ASP.SLN", "4"=>"D.", "5"=>"D.ASP.", "6"=>"D.RASP.NASP", "7"=>"D.NASP", "8"=>"D.PSTUT", "9"=>"D.TSWB.NASP", "10"=>"RASP.", "11"=>"RASP.ASP.", "12"=>"RASP.NASP", "13"=>"RASP.SLN", "14"=>"NASP", "15"=>"PSTUT", "16"=>"PSWB", "17"=>"TSTUT.", "18"=>"TSTUT.ASP.", "19"=>"TSTUT.NASP", "20"=>"TSTUT.SLN", "21"=>"TSWB.NASP",  "22"=>"TSWB.SLN", "23"=>"-");

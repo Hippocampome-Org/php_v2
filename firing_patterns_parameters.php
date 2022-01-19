@@ -179,7 +179,7 @@ $(function(){
 	  {name:'type', index:'type', width:50,sortable:false,frozen: true,cellattr: function (rowId, tv, rawObject, cm, rdata) {
           return 'id=\'type' + rowId + "\'";   
       } },
-      {name:'Neuron type', index:'nickname', width:175,sortable:false,frozen: true},
+      {name:'Neuron type', index:'nickname', width:275,sortable:false,frozen: true},
     ];
     for( var index=0;index<value.length;index++){
     	var headers={};
@@ -237,8 +237,8 @@ $(function(){
 	datastr: dataStr,
     colNames:columnNames,
     colModel :columnHeader, 
-   	rowNum:122,
-    rowList:[122],
+   	rowNum:175,
+    rowList:[175],
     viewrecords: true, 
     gridview: true,
     jsonReader : {

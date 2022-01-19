@@ -18,7 +18,7 @@
 /*  
  * $id - Type id
  * $img - img path
- * $key - DG_Smo For Type SMo 0f DG
+ * $key - DG_Smo For Type SMo of DG
  * $color - red/blue or violet 
  * */
 function getUrlForLink($id,$img,$key,$count1) 
@@ -39,7 +39,7 @@ if(!isset($_GET['page'])) $page=1;
 else $page = $_GET['page'];
 //page=1&rows=5&sidx=1&sord=asc
 // get how many rows we want to have into the grid - rowNum parameter in the grid
-if(!isset($_GET['rows'])) $limit=122;
+if(!isset($_GET['rows'])) $limit=175;
 else $limit = $_GET['rows'];
 
 // get index row - i.e. user click to sort. At first time sortname parameter -
@@ -163,8 +163,8 @@ if($research!="1")
 	$number_type = $type->getNumber_type();
 }
 //$number_type=$number_type+6;
-$neuron = array("DG"=>'DG(18)',"CA3"=>'CA3(25)',"CA3c"=>'CA3(25)',"CA2"=>'CA2(5)',"CA1"=>'CA1(40)',"SUB"=>'SUB(3)',"EC"=>'EC(31)');
-$neuronColor = array("DG"=>'#770000',"CA3"=>'#C08181',"CA3c"=>'#C08181',"CA2"=>'#FFCC00',"CA1"=>'#FF6103',"SUB"=>'#FFCC33',"EC"=>'#336633');
+$neuron = array("DG"=>'DG(36)',"CA3"=>'CA3(35)',"CA3c"=>'CA3(35)',"CA2"=>'CA2(5)',"CA1"=>'CA1(60)',"Sub"=>'Sub(7)',"EC"=>'EC(33)');
+$neuronColor = array("DG"=>'#770000',"CA3"=>'#C08181',"CA3c"=>'#C08181',"CA2"=>'#FFCC00',"CA1"=>'#FF6103',"Sub"=>'#FFCC33',"EC"=>'#336633');
 //$prev_subregion="NONE";
 
 $n_firing = 22;

@@ -170,12 +170,12 @@ else
 	border:none;
 }
 .title_area_par {
-	position:absolute; top: 80px; left: 635px;
+	position:absolute; top: 80px; left: 794px;
 	width: 500px;
 	border:none;
 }
 .title_area_par_tab {
-	position:absolute; top: 195px; left: 630px;
+	position:absolute; top: 195px; left: 791px;
 	width: 500px;
 	border:none;
 }
@@ -321,8 +321,8 @@ $(function()
 		colNames:['','Neuron Type','<a href="neuron_by_pattern.php?pattern=ASP." title="adapting spiking" onClick="OpenInNewTab(this);">ASP.</a>','<a title="adapting spiking followed by (slower) adapting spiking" href="neuron_by_pattern.php?pattern=ASP.ASP." onClick="OpenInNewTab(this);">ASP.ASP.</a>','<a title="non-adapting spiking preceded by adapting spiking" href="neuron_by_pattern.php?pattern=ASP.NASP" onClick="OpenInNewTab(this);">ASP.NASP</a>','<a title="silence preceded by adapting spiking" href="neuron_by_pattern.php?pattern=ASP.SLN" onClick="OpenInNewTab(this);">ASP.SLN</a>','<a title="delayed spiking" href="neuron_by_pattern.php?pattern=D." onClick="OpenInNewTab(this);">D.</a>','<a title="delayed adapting spiking" href="neuron_by_pattern.php?pattern=D.ASP." onClick="OpenInNewTab(this);">D.ASP.</a>','<a title="non-adapting spiking preceded by delayed fast-adapting spiking" href="neuron_by_pattern.php?pattern=D.RASP.NASP" onClick="OpenInNewTab(this);">D.RASP.NASP</a>','<a title="delayed non-adapting spiking" href="neuron_by_pattern.php?pattern=D.NASP" onClick="OpenInNewTab(this);">D.NASP</a>','<a title="delayed persistent stuttering" href="neuron_by_pattern.php?pattern=D.PSTUT" onClick="OpenInNewTab(this);">D.PSTUT</a>','<a title="non-adapting spiking preceded by delayed transient slow-wave bursting" href="neuron_by_pattern.php?pattern=D.TSWB.NASP" onClick="OpenInNewTab(this);">D.TSWB.NASP</a>','<a title="fast-adapting spiking" href="neuron_by_pattern.php?pattern=RASP." onClick="OpenInNewTab(this);">RASP.</a>','<a title="fast-adapting spiking followed by adapting spiking" href="neuron_by_pattern.php?pattern=RASP.ASP." onClick="OpenInNewTab(this);">RASP.ASP.</a>','<a title="non-adapting spiking preceded by fast-adapting spiking" href="neuron_by_pattern.php?pattern=RASP.NASP" onClick="OpenInNewTab(this);">RASP.NASP</a>','<a title="silence preceded by fast-adapting spiking" href="neuron_by_pattern.php?pattern=RASP.SLN" onClick="OpenInNewTab(this);">RASP.SLN</a>','<a title="non-adapting spiking" href="neuron_by_pattern.php?pattern=NASP" onClick="OpenInNewTab(this);">NASP</a>','<a title="persistent stuttering" href="neuron_by_pattern.php?pattern=PSTUT" onClick="OpenInNewTab(this);">PSTUT</a>','<a title="persistent slow-wave bursting" href="neuron_by_pattern.php?pattern=PSWB" onClick="OpenInNewTab(this);">PSWB</a>','<a title="transient stuttering" href="neuron_by_pattern.php?pattern=TSTUT." onClick="OpenInNewTab(this);">TSTUT.</a>','<a title="transient stuttering followed by adapting spiking" href="neuron_by_pattern.php?pattern=TSTUT.ASP." onClick="OpenInNewTab(this);">TSTUT.ASP.</a>','<a title="non-adapting spiking preceded by transient stuttering" href="neuron_by_pattern.php?pattern=TSTUT.NASP" onClick="OpenInNewTab(this);">TSTUT.NASP</a>','<a title="silence preceded by transient stuttering" href="neuron_by_pattern.php?pattern=TSTUT.SLN" onClick="OpenInNewTab(this);">TSTUT.SLN</a>','<a title="non-adapting spiking preceded by transient slow-wave bursting" href="neuron_by_pattern.php?pattern=TSWB.NASP" onClick="OpenInNewTab(this);">TSWB.NASP</a>','<a title="silence preceded by transient slow-wave bursting" href="neuron_by_pattern.php?pattern=TSWB.SLN" onClick="OpenInNewTab(this);">TSWB.SLN</a>'],	
 		colModel :
 		[
-			{name:'type', index:'type', width:50,sortable:false,cellattr: function (rowId, tv, rawObject, cm, rdata) {return 'id=\'type' + rowId + "\'";}},
-			{name:'NeuronType', index:'nickname', width:150,sortable:false},
+			{name:'type', index:'type', width:55,sortable:false,cellattr: function (rowId, tv, rawObject, cm, rdata) {return 'id=\'type' + rowId + "\'";}},
+			{name:'NeuronType', index:'nickname', width:335,sortable:false},
 			{name:'ASP', index:'ASP', width:15,height:50,search:false,sortable:false},
 			{name:'ASPASP', index:'ASPASP', width:15,height:50,search:false,sortable:false},
 			{name:'ASPNASP', index:'ASPNASP', width:15,height:50,search:false,sortable:false},
@@ -347,8 +347,8 @@ $(function()
 			{name:'TSWBNASP', index:'TSWBNASP', width:15,height:50,search:false,sortable:false},
 			{name:'TSWBSLN', index:'TSWBSLN', width:15,height:50,search:false,sortable:false}
 			], 
-		rowNum: 125,
-		rowList:[125],
+		rowNum: 175,
+		rowList:[175],
 		viewrecords: true, 
 		gridview: true,
 		jsonReader:
@@ -364,7 +364,7 @@ $(function()
 		},
 		scrollerbar: false,
 		height: "402",
-		width: "580",
+		width: "740",
 		shrinkToFit: true,
 		gridComplete: function ()
 		{
@@ -389,7 +389,7 @@ $(function()
 	  {name:'type', index:'type', width:50,sortable:false,frozen: true,cellattr: function (rowId, tv, rawObject, cm, rdata) {
           return 'id=\'type' + rowId + "\'";   
       } },
-      {name:'Neuron type', index:'nickname', width:150,sortable:false,frozen: true},
+      {name:'Neuron type', index:'nickname', width:275,sortable:false,frozen: true},
     ];
     for( var index=0;index<value.length;index++){
     	var headers={};
@@ -408,8 +408,8 @@ $(function()
 	datastr: dataStr,
     colNames:columnNames,
     colModel :columnHeader, 
-   	rowNum:122,
-    rowList:[122],
+   	rowNum:175,
+    rowList:[175],
     viewrecords: true, 
     gridview: true,
     jsonReader : {
@@ -426,7 +426,7 @@ $(function()
    },
     scrollerbar:true,
     height:"402",
-    width: "580",
+    width: "680",
     shrinkToFit: false,
     gridComplete: function () {
     	var gridName = "nGridPar"; // Access the grid Name
@@ -507,40 +507,50 @@ include ("function/title.php");
 include ("function/menu_main.php");
 ?>	
 <div class="title_area_marker">   
-      <font class="font1">Browse Firing Patterns Matrix&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font>       
+      <font class="font1">Browse Firing Patterns and Firing Pattern Parameters Matrices</font>       
 </div>
 <div class="table_position">
-<table border="0" cellspacing="0" cellpadding="0" class="tabellauno">
-	<tr>
-		<td>
-			<table id="nGrid"></table>
-			<div id="pager"></div>
-		</td>
-	</tr>
-</table>
+	<table border="0" cellspacing="0" cellpadding="0" class="tabellauno">
+		<tr>
+			<td>
+				<table id="nGrid"></table>
+				<div id="pager"></div>
+			</td>
+		</tr>
+	</table>
 
 
-<table width="50%" border="0" cellspacing="0" style="border-width:10px; border-color:white">
-	<tr>
-		<td><font class='font5' style="width=20%;"><strong>Legend:</strong></font></td>
-		<td><font class='font5' style="width=40%"># of pattern occurences in reference(s)</font></td>
-		<td bgcolor="#FF8C00" class='legendClass'><font color="#FF8C00"> <font size='2' color='white'> &nbsp;1</font></font></td>
-		<td style="height:100%; width:5%;"><font class='font5'>1</font></td>
+	<table width="50%" border="0" cellspacing="0" style="border-width:10px; border-color:white">
+		<tr>
+			<td width="10%"><font class='font5'><strong>Legend:</strong></font></td>
+			<td width="50%"><font class='font5'>colored # indicates number of pattern occurrences in reference(s)</font></td>
+			<td><font class='font5'>&nbsp;</font></td>
+	<!--		<td><font class='font5' style="width=20%"># of pattern occurences in reference(s)</font></td>
+			<td bgcolor="#FF8C00" class='legendClass'><font size='2' color='white'> &nbsp;1</font></td>
+			<td style="height:100%; width:5%;"><font class='font5'>1</font></td>
+			
+			<td bgcolor="#0000FF" class='legendClass'><font color="#0000FF"> <font size='2' color='white'> &nbsp;2</font></font></td>
+			<td style="height:100%; width:5%;"><font class='font5'>2</font></td>
+			
+			<td bgcolor="#7A5230" class='legendClass'><font color="#7A5230"><font size='2' color='white'> &nbsp;3</font> </font></td>
+			<td style="height:100%; width:5%;"><font class='font5'>3</font></td>
 		
-		<td bgcolor="#0000FF" class='legendClass'><font color="#0000FF"> <font size='2' color='white'> &nbsp;2</font></font></td>
-		<td style="height:100%; width:5%;"><font class='font5'>2</font></td>
-		
-		<td bgcolor="#7A5230" class='legendClass'><font color="#7A5230"><font size='2' color='white'> &nbsp;3</font> </font></td>
-		<td style="height:100%; width:5%;"><font class='font5'>3</font></td>
-	
-		<td bgcolor="#808080" class='legendClass'><font color="#808080"><font size='2' color='white'> &nbsp;4</font> </font></td>
-		<td style="height:100%; width:5%;"><font class='font5'>4</font></td>	
-	</tr>
-</table>
+			<td bgcolor="#808080" class='legendClass'><font color="#808080"><font size='2' color='white'> &nbsp;4</font> </font></td>
+			<td style="height:100%; width:5%;"><font class='font5'>4</font></td> -->
+		</tr>
+		<tr>
+			<td width="10%"><font class='font5' ><strong></strong></font></td>
+			<td width="50%"><font face="Verdana, Arial, Helvetica, sans-serif" color="#339900" size="2"> +/green: </font> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> Excitatory</font>&emsp;<font face="Verdana, Arial, Helvetica, sans-serif" color="#CC0000" size="2"> -/red: </font> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> Inhibitory</font></td>
+		</tr>
+		<tr>
+			<td width="10%"><font class='font5' ><strong></strong></font></td>
+			<td width="50%"><font face="Verdana, Arial, Helvetica, sans-serif" color="#FF0000" size="2"> * indicates new v2.0 neuron type </font></td>
+		</tr>
+	</table>
 </div>
 <div class="title_area_par">
 	<form id="myform">
-		<font class="font1"> Browse Firing Pattern Parameters Matrix&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font>   
+		<font class="font1"></font>   
 		</br>    
 		</br>
 		</br>
@@ -567,13 +577,19 @@ include ("function/menu_main.php");
 		</td>
 	</tr>
 </table>	
+<!--
 <table width="100%" border="0" cellspacing="0" style="border-width:10px; border-color:white">
 	<tr>
 		<td width="10%"><font class='font5' ><strong>Legend:</strong></font></td>
 		<td width="20%"><font face="Verdana, Arial, Helvetica, sans-serif" color="#339900" size="2"> +/green: </font> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> Excitatory</font></td>
 		<td width="20%"><font face="Verdana, Arial, Helvetica, sans-serif" color="#CC0000" size="2"> -/red: </font> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> Inhibitory</font></td>
 	</tr>
+	<tr>
+		<td width="10%"><font class='font5' ><strong></strong></font></td>
+		<td width="20%"><font face="Verdana, Arial, Helvetica, sans-serif" color="#FF0000" size="2"> * indicates new v2.0 neuron type </font></td>
+	</tr>
 </table>
+-->
 </div>
 </body>
 </html>
