@@ -509,21 +509,78 @@ function HideShowColumns ()
     <span style="position:relative;left:570px;top:-3px;"><font class='font5'>View the Theta and SWR</a></font></span><span style="position:relative;left:445px;top:7px;"><font class='font5'>Ratio values as an <a href='images/Theta_and_SWR_Ratio.jpg' target='_blank'>image</a></font></span>
     <br>
     <table style='width:1000px;font-family:arial;font-size:18px'>
-    <tr><td style="width:131px">&nbsp;&nbsp;<u>Animal</u></td><td style="width:200px">&nbsp;&nbsp;<u>Age</u></td><td style="width:150px">&nbsp;&nbsp;<u>Sex</u></td><td style="width:250px">&nbsp;&nbsp;<u>Method</u></td><td style="width:450px">&nbsp;&nbsp;<u>Behavior</u></td></tr>
-    <tr><td><input type="checkbox" name="species_check1" value="checked" id="species_check1" <?php is_checked("species_check1") ?>><span>rats</span></td><td><input type="checkbox" name="age_check1" value="checked" id="age_check1" <?php is_checked("age_check1") ?>><span>adult</span></td><td><input type="checkbox" name="sex_check1" value="checked" id="sex_check1" <?php is_checked("sex_check1") ?>><span>male</span></td><td><input type="checkbox" name="method_check1" value="checked" id="method_check1" <?php is_checked("method_check1") ?>><span>sharp pipette</span></td><td><input type="checkbox" name="behavior_check1" value="checked" id="behavior_check1" <?php is_checked("behavior_check1") ?>><span>freely moving</span></td></tr>
-    <tr><td><input type="checkbox" name="species_check2" value="checked" id="species_check2" <?php is_checked("species_check2") ?>><span>mice</span></td><td><input type="checkbox" name="age_check2" value="checked" id="age_check2" <?php is_checked("age_check2") ?>><span>young adult</span></td><td><input type="checkbox" name="sex_check2" value="checked" id="sex_check2" <?php is_checked("sex_check2") ?>><span>female</span></td><td><input type="checkbox" name="method_check2" value="checked" id="method_check2" <?php is_checked("method_check2") ?>><span>whole-cell patch clamp</span></td><td><input type="checkbox" name="behavior_check2" value="checked" id="behavior_check2" <?php is_checked("behavior_check2") ?>><span>head-fixed awake</span></td></tr>
-    <tr><td></td><td><input type="checkbox" name="age_check3" value="checked" id="age_check3" <?php is_checked("age_check3") ?>><span><a title='age not reported' style='text-decoration:none'>age not reported</a></span></td><td><input type="checkbox" name="sex_check3" value="checked" id="sex_check3" <?php is_checked("sex_check3") ?>><span><a title='unknown sex' style='text-decoration:none'>unknown sex</a></span></td><td><input type="checkbox" name="method_check3" value="checked" id="method_check3" <?php is_checked("method_check3") ?>><span>juxtacellular</span></td><td><input type="checkbox" name="behavior_check3" value="checked" id="behavior_check3" <?php is_checked("behavior_check3") ?>><span>sleep</span></td></tr>
-    <tr><td></td><td></td><td></td><td><input type="checkbox" name="method_check4" value="checked" id="method_check4" <?php is_checked("method_check4") ?>><span>optotagging</span></td><td><input type="checkbox" name="behavior_check4" value="checked" id="behavior_check4" <?php is_checked("behavior_check4") ?>><span>urethane</span></td></tr>
-    <tr><td></td><td></td><td></td><td><input type="checkbox" name="method_check5" value="checked" id="method_check5" <?php is_checked("method_check5") ?>><span>silicon probe</span></td><td><input type="checkbox" name="behavior_check5" value="checked" id="behavior_check5" <?php is_checked("behavior_check5") ?>><span>urethane plus ketamine + xylazine</span></td></tr>
-    <tr><td><input type="checkbox" name="select_check2" value="checked" id="select_check2"><span><a title="Show the most preferred conditions for all values in the matrix." style="text-decoration: none">select most</a></span></td><td><a title="Show the most preferred conditions for all values in the matrix." style="text-decoration: none">preferred conditions</a></td><td></td><td><input type="checkbox" name="method_check6" value="checked" id="method_check6" <?php is_checked("method_check6") ?>><span>tetrode</span></td><td><input type="checkbox" name="behavior_check6" value="checked" id="behavior_check6" <?php is_checked("behavior_check6") ?>><span>ketamine + xylazine</span></td></tr>
-    <tr><td><input type="checkbox" name="select_check1" value="checked" id="select_check1" <?php is_checked("select_check1") ?>><span>select all</span></td><td></td><td></td><td></td><td><input type="checkbox" name="behavior_check7" value="checked" id="behavior_check7" <?php is_checked("behavior_check7") ?>><span>ketamine + xylazine plus acepromazine</span></td></tr>
-    <tr><td><input type="checkbox" name="select_check3" value="checked" id="select_check3" <?php is_checked("select_check3") ?>><span>deselect all</span></td><td></td><td></td><td></td><td><input type="checkbox" name="behavior_check8" value="checked" id="behavior_check8" <?php is_checked("behavior_check8") ?>><span>head-fixed running</span></td></tr>
+      <tr>
+        <td style="width:131px">&nbsp;&nbsp;<u>Animal</u></td>
+        <td style="width:200px">&nbsp;&nbsp;<u>Age</u></td>
+        <td style="width:150px">&nbsp;&nbsp;<u>Sex</u></td>
+        <td style="width:250px">&nbsp;&nbsp;<u>Method</u></td>
+        <td style="width:450px">&nbsp;&nbsp;<u>Behavior</u></td>
+      </tr>
+      <tr>
+        <td><input type="checkbox" name="species_check1" value="checked" id="species_check1" <?php is_checked("species_check1") ?>><span>rats</span></td>
+        <td><input type="checkbox" name="age_check1" value="checked" id="age_check1" <?php is_checked("age_check1") ?>><span>adult</span></td>
+        <td><input type="checkbox" name="sex_check1" value="checked" id="sex_check1" <?php is_checked("sex_check1") ?>><span>male</span></td>
+        <td><input type="checkbox" name="method_check1" value="checked" id="method_check1" <?php is_checked("method_check1") ?>><span>sharp pipette</span></td>
+        <td><input type="checkbox" name="behavior_check1" value="checked" id="behavior_check1" <?php is_checked("behavior_check1") ?>><span>freely moving</span></td>
+      </tr>
+      <tr>
+        <td><input type="checkbox" name="species_check2" value="checked" id="species_check2" <?php is_checked("species_check2") ?>><span>mice</span></td>
+        <td><input type="checkbox" name="age_check2" value="checked" id="age_check2" <?php is_checked("age_check2") ?>><span>young adult</span></td>
+        <td><input type="checkbox" name="sex_check2" value="checked" id="sex_check2" <?php is_checked("sex_check2") ?>><span>female</span></td>
+        <td><input type="checkbox" name="method_check2" value="checked" id="method_check2" <?php is_checked("method_check2") ?>><span>whole-cell patch clamp</span></td>
+        <td><input type="checkbox" name="behavior_check2" value="checked" id="behavior_check2" <?php is_checked("behavior_check2") ?>><span>head-fixed awake</span></td>
+      </tr>
+      <tr>
+        <td></td> <!-- skip Animal column -->
+        <td><input type="checkbox" name="age_check3" value="checked" id="age_check3" <?php is_checked("age_check3") ?>><span><a title='age not reported' style='text-decoration:none'>age not reported</a></span></td>
+        <td><input type="checkbox" name="sex_check3" value="checked" id="sex_check3" <?php is_checked("sex_check3") ?>><span><a title='unknown sex' style='text-decoration:none'>unknown sex</a></span></td>
+        <td><input type="checkbox" name="method_check3" value="checked" id="method_check3" <?php is_checked("method_check3") ?>><span>juxtacellular</span></td>
+        <td><input type="checkbox" name="behavior_check3" value="checked" id="behavior_check3" <?php is_checked("behavior_check3") ?>><span>sleep</span></td>
+      </tr>
+      <tr>
+        <td></td> <!-- skip Animal column -->
+        <td></td> <!-- skip Age column -->
+        <td></td> <!-- skip Sex column -->
+        <td><input type="checkbox" name="method_check4" value="checked" id="method_check4" <?php is_checked("method_check4") ?>><span>optotagging</span></td>
+        <td><input type="checkbox" name="behavior_check4" value="checked" id="behavior_check4" <?php is_checked("behavior_check4") ?>><span>urethane</span></td>
+      </tr>
+      <tr>
+        <td></td> <!-- skip Animal column -->
+        <td></td> <!-- skip Age column -->
+        <td></td> <!-- skip Sex column -->
+        <td><input type="checkbox" name="method_check5" value="checked" id="method_check5" <?php is_checked("method_check5") ?>><span>silicon probe</span></td>
+        <td><input type="checkbox" name="behavior_check5" value="checked" id="behavior_check5" <?php is_checked("behavior_check5") ?>><span>urethane plus ketamine + xylazine</span></td>
+      </tr>
+      <tr>
+        <td><input type="checkbox" name="select_check2" value="checked" id="select_check2"><span><a title="Show the most preferred conditions for all values in the matrix." style="text-decoration: none">select most</a></span></td>
+        <td><a title="Show the most preferred conditions for all values in the matrix." style="text-decoration: none">preferred conditions</a></td>
+        <td></td> <!-- skip Sex column -->
+        <td><input type="checkbox" name="method_check6" value="checked" id="method_check6" <?php is_checked("method_check6") ?>><span>tetrode</span></td>
+        td><input type="checkbox" name="behavior_check6" value="checked" id="behavior_check6" <?php is_checked("behavior_check6") ?>><span>ketamine + xylazine</span></td>
+      </tr>
+      <tr>
+        <td><input type="checkbox" name="select_check1" value="checked" id="select_check1" <?php is_checked("select_check1") ?>><span>select all</span></td>
+        <td></td> <!-- skip Age column -->
+        <td></td> <!-- skip Sex column -->
+        <td></td> <!-- skip Method column -->
+        <td><input type="checkbox" name="behavior_check7" value="checked" id="behavior_check7" <?php is_checked("behavior_check7") ?>><span>ketamine + xylazine plus acepromazine</span></td>
+      </tr>
+      <tr>
+        <td><input type="checkbox" name="select_check3" value="checked" id="select_check3" <?php is_checked("select_check3") ?>><span>deselect all</span></td>
+        <td></td> <!-- skip Age column -->
+        <td></td> <!-- skip Sex column -->
+        <td></td> <!-- skip Method column -->
+        <td><input type="checkbox" name="behavior_check8" value="checked" id="behavior_check8" <?php is_checked("behavior_check8") ?>><span>head-fixed running</span></td>
+      </tr>
     </table>
     <span style='width:1000px'><input type='button' value='update' onclick='javascript:subform()' style='position:relative;left:410px' /></span>
     <input type="hidden" name="page" id="page" value="main_page" />
     <input type="hidden" name="row_select" id="row_select" value="<?php if(isset($_GET['row_select'])) {echo $_GET['row_select'];} ?>" />
     <table style='width:1000px;font-family:arial;font-size:12px'>
-      <tr><td style="width:1000px">&nbsp;&nbsp;<br>The median value of the set of most relevant values for each neuron type in the matrix is shown. For even numbered sets, the lower value closest to the set’s center is <br> displayed, rather than the average of the two center values.<br><br></td>
+      <tr>
+        <td style="width:1000px">&nbsp;&nbsp;
+          <br>The median value of the set of most relevant values for each neuron type in the matrix is shown. For even numbered sets, the lower value closest to the set’s center is <br> displayed, rather than the average of the two center values.<br><br>
+        </td>
       </tr>
   </form>
 </div>
@@ -540,19 +597,24 @@ function HideShowColumns ()
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class='body_table'>  
   <tr>
     <td>
-      <font class='font5'><strong>Legend:</strong> </font>
+      <font class='font5'><strong>Legend:</strong></font>
     </td>
      <!-- &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; -->
-    <td><font face="Verdana, Arial, Helvetica, sans-serif" color="#339900" size="2"> +/green: </font> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> Excitatory</font><font face="Verdana, Arial, Helvetica, sans-serif" color="#CC0000" size="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-/red: </font> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> Inhibitory</font></td>
+    <td>
+      <font face="Verdana, Arial, Helvetica, sans-serif" color="#339900" size="2"> +/green: </font>
+      <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> Excitatory </font>
+      <font face="Verdana, Arial, Helvetica, sans-serif" color="#CC0000" size="2">&emsp;&nbsp;-/red: </font>
+      <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> Inhibitory </font>
+    </td>
     &nbsp; &nbsp; 
     <td>
     </td>
-     <tr></tr>
-      <tr>
-        <td></td>
-    <tr>
-    </tr>
-	
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+    <td></td>
+  </tr>
 </table>
 
 </div>
