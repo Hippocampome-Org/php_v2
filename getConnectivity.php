@@ -117,7 +117,7 @@ if(!isset($_GET['page'])) $page=1;
 else $page = $_GET['page'];
 //page=1&rows=5&sidx=1&sord=asc
 // get how many rows we want to have into the grid - rowNum parameter in the grid
-if(!isset($_GET['rows'])) $limit=122;
+if(!isset($_GET['rows'])) $limit=175;
 else $limit = $_GET['rows'];
 
 // get index row - i.e. user click to sort. At first time sortname parameter -
@@ -235,8 +235,8 @@ $unknowncount =0;
 //$count123 = (object) array('knowncount' => $knowncount, 'hello' => $unknowncount);
 
 
-$neuron = array("DG"=>'DG(18)',"CA3"=>'CA3(25)',"CA3c"=>'CA3(25)',"CA2"=>'CA2(5)',"CA1"=>'CA1(42)',"SUB"=>'SUB(3)',"EC"=>'EC(31)');
-$neuronColor = array("DG"=>'#770000',"CA3"=>'#C08181',"CA3c"=>'#C08181',"CA2"=>'#FFCC00',"CA1"=>'#FF6103',"SUB"=>'#FFCC33',"EC"=>'#336633');
+$neuron = array("DG"=>'DG(36)',"CA3"=>'CA3(35)',"CA3c"=>'CA3(35)',"CA2"=>'CA2(5)',"CA1"=>'CA1(60)',"Sub"=>'Sub(7)',"EC"=>'EC(33)');
+$neuronColor = array("DG"=>'#770000',"CA3"=>'#C08181',"CA3c"=>'#C08181',"CA2"=>'#FFCC00',"CA1"=>'#FF6103',"Sub"=>'#FFCC33',"EC"=>'#336633');
 
 //The source query for Retriving the known and known non connections
 $explicit_target_and_source_base_query = "SELECT 
