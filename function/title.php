@@ -13,24 +13,27 @@
 <div class='main_bar'>
 	<div class='hippocampo_immage'>
 		<script type="text/javascript">
-		if ((w == 1280) && (h == 1024))
-		{
-			 document.write("<a href='<?php echo $menuaddr ?>index.php'><img src='<?php echo $menuaddr ?>images/hippo_title.gif' height='70px' border=0/></a>");
-		}
-		else if ((w == 1152) && (h == 864))
-		{
-			  document.write("<a href='<?php echo $menuaddr ?>index.php'><img src='<?php echo $menuaddr ?>images/hippo_title.gif' height='70px' border=0/></a>");
-		}	
-		else if ((w == 1024) && (h == 768))
-		{
-			  document.write("<a href='<?php echo $menuaddr ?>index.php'><img src='<?php echo $menuaddr ?>images/hippo_title.gif' height='70px' border=0/></a>");
-		}			
-		else
-		{
-			 document.write("<a href='<?php echo $menuaddr ?>index.php'><img src='<?php echo $menuaddr ?>images/hippo_title1.gif' height='70px' border=0/></a>");
-		}
+			if ((w == 1280) && (h == 1024))
+			{
+				 document.write("<a href='<?php echo $menuaddr ?>index.php'><img src='<?php echo $menuaddr ?>images/hippo_title.gif' height='70px' border=0/></a>");
+			}
+			else if ((w == 1152) && (h == 864))
+			{
+				  document.write("<a href='<?php echo $menuaddr ?>index.php'><img src='<?php echo $menuaddr ?>images/hippo_title.gif' height='70px' border=0/></a>");
+			}	
+			else if ((w == 1024) && (h == 768))
+			{
+				  document.write("<a href='<?php echo $menuaddr ?>index.php'><img src='<?php echo $menuaddr ?>images/hippo_title.gif' height='70px' border=0/></a>");
+			}			
+			else
+			{
+
+				 document.write("<a href='<?php echo $menuaddr ?>index.php'><img src='<?php echo $menuaddr ?>images/hippo_title1.gif' height='70px' border=0/></a>");
+			}
+			document.write("&ensp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<a href='<?php echo $menuaddr ?>Help_v1p0_vs_v2p0.php'><img src='<?php echo $menuaddr ?>images/v2p0_icon.jpg' height='70px' border=0/></a>");
 		</script>
 	</div>
+
 </div>
 </body>
 </html>

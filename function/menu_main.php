@@ -81,6 +81,9 @@ session_start();
 		</ul></li>
 	
 	</ul>
+
+	<a href="<?php echo $menuaddr ?>Help_Known_Bug_List.php" style="height:32px;line-height:32px;"><img src="<?php echo $menuaddr ?>function/menu_support_files/v2p0_icon.jpg" alt=""/></a>
+
 	</div>  
 
 </body>
