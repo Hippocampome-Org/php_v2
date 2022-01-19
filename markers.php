@@ -458,8 +458,13 @@ $(function()
 
 		colModel :
 		[
-			{name:'type', index:'type', width:50,sortable:false,cellattr: function (rowId, tv, rawObject, cm, rdata) {return 'id=\'type' + rowId + "\'";}},
-			{name:'NeuronType', index:'nickname', width:175, sortable:false},
+			{name:'type', index:'type', width:50,sortable:false,
+				cellattr: function (rowId, tv, rawObject, cm, rdata)
+					{
+						return 'id=\'type' + rowId + "\'";
+					}
+			},
+			{name:'NeuronType', index:'nickname', width:285, sortable:false},
 			{name:'NeuritePattern', index:'NeuritePattern', width:50,hidden:true},
 			{name:'CB',index:'CB',width:15, search:false,sortable:false},
 			{name:'CR',index:'CR',width:15,search:false,sortable:false},
@@ -595,8 +600,8 @@ $(function()
 			{name:'Y1',index:'Y1',width:15,search:false,sortable:false,hidden:true},
 			{name:'Y2',index:'Y2',width:15,search:false,sortable:false,hidden:true}
 		],
-		rowNum: 125,
-		rowList:[125],
+		rowNum: 176,
+		rowList:[176],
 		viewrecords: true,
 		gridview: true,
 		jsonReader:
@@ -977,6 +982,9 @@ include ("function/menu_main.php");
 			<font face="Verdana, Arial, Helvetica, sans-serif" color="#CC0000" size="2"> red: </font> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> Inhibitory</font>
 
 			<br/>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+	        <font face="Verdana, Arial, Helvetica, sans-serif" color="#FF0000" size="2">* indicates new v2.0 neuron type</font>
+			<br/>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+
 			<font class='font5'>Pale versions of the colors in the matrix indicate interpretations of neuronal property information that have not yet been fully verified.</font>
 
 			</br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
