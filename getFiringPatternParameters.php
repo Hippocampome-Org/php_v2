@@ -240,8 +240,22 @@ if($research!="1")
 {
 	$type -> retrive_id();
 	$number_type = $type->getNumber_type();
+
+	$type -> retrieve_id_by_subregion('DG');
+	$nDG = $type->getNumber_subregion_type();
+	$type -> retrieve_id_by_subregion('CA3');
+	$nCA3 = $type->getNumber_subregion_type();
+	$type -> retrieve_id_by_subregion('CA2');
+	$nCA2 = $type->getNumber_subregion_type();
+	$type -> retrieve_id_by_subregion('CA1');
+	$nCA1 = $type->getNumber_subregion_type();
+	$type -> retrieve_id_by_subregion('Sub');
+	$nSub = $type->getNumber_subregion_type();
+	$type -> retrieve_id_by_subregion('EC');
+	$nEC = $type->getNumber_subregion_type();
 }
-$neuron = array("DG"=>'DG(36)',"CA3"=>'CA3(35)',"CA3c"=>'CA3(35)',"CA2"=>'CA2(5)',"CA1"=>'CA1(60)',"SUB"=>'SUB(7)',"EC"=>'EC(33)');
+$neuron = array("DG"=>'DG('.$nDG.')',"CA3"=>'CA3('.$nCA3.')',"CA3c"=>'CA3('.$nCA3.')',"CA2"=>'CA2('.$nCA2.')',"CA1"=>'CA1('.$nCA1.')',"Sub"=>'Sub('.$nSub.')',"EC"=>'EC('.$nEC.')');
+//$neuron = array("DG"=>'DG(36)',"CA3"=>'CA3(35)',"CA3c"=>'CA3(35)',"CA2"=>'CA2(5)',"CA1"=>'CA1(60)',"SUB"=>'SUB(7)',"EC"=>'EC(33)');
 $neuronColor = array("DG"=>'#770000',"CA3"=>'#C08181',"CA3c"=>'#C08181',"CA2"=>'#FFCC00',"CA1"=>'#FF6103',"SUB"=>'#FFCC33',"EC"=>'#336633');
 $hippo = array("ASP."=>NULL, "ASP.ASP."=>NULL, "ASP.NASP"=>NULL, "ASP.SLN"=>NULL, "D."=>NULL, "D.ASP."=>NULL, "D.RASP.NASP"=>NULL, "D.NASP."=>NULL, "D.PSTUT"=>NULL, "D.TSWB.NASP"=>NULL, "RASP."=>NULL, "RASP.ASP."=>NULL, "RASP.NASP"=>NULL, "RASP.SLN"=>NULL, "NASP"=>NULL, "PSTUT"=>NULL, "PSWB"=>NULL, "TSTUT."=>NULL, "TSTUT.ASP."=>NULL, "TSTUT.NASP"=>NULL, "TSTUT.SLN"=>NULL, "TSWB.NASP"=>NULL, "TSWB.SLN"=>NULL,  "-"=>NULL);
 $name_firing = array("0"=>"ASP.", "1"=>"ASP.ASP.", "2"=>"ASP.NASP", "3"=>"ASP.SLN", "4"=>"D.", "5"=>"D.ASP.", "6"=>"D.RASP.NASP", "7"=>"D.NASP", "8"=>"D.PSTUT", "9"=>"D.TSWB.NASP", "10"=>"RASP.", "11"=>"RASP.ASP.", "12"=>"RASP.NASP", "13"=>"RASP.SLN", "14"=>"NASP", "15"=>"PSTUT", "16"=>"PSWB", "17"=>"TSTUT.", "18"=>"TSTUT.ASP.", "19"=>"TSTUT.NASP", "20"=>"TSTUT.SLN", "21"=>"TSWB.NASP",  "22"=>"TSWB.SLN", "23"=>"-");

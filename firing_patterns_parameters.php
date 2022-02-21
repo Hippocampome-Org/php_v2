@@ -79,6 +79,8 @@ else
 	$indexFP = 0;
 
 $type = new type($class_type);
+$type -> retrive_id();
+$nTypes = $type->getNumber_type();
 
 $research = "";
 if(isset($_REQUEST['research']))
@@ -237,8 +239,10 @@ $(function(){
 	datastr: dataStr,
     colNames:columnNames,
     colModel :columnHeader, 
-   	rowNum:175,
-    rowList:[175],
+    rowNum:<?php echo $nTypes ?>,
+    rowList:[<?php echo $nTypes ?>],
+//   	rowNum:175,
+//    rowList:[175],
     viewrecords: true, 
     gridview: true,
     jsonReader : {
