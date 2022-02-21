@@ -10,6 +10,7 @@ class type
 	private $_excit_inhib;
 	private $_status;
 	private $_number_type;
+	private $_number_subregion_type;
 	private $_id_array;	
 	private $_position;
 	private $_notes;
@@ -38,6 +39,22 @@ class type
 			$n = $n + 1;
 		}
 		$this->setNumber_type($n);
+	}
+	
+	
+	public function retrieve_id_by_subregion($subregion) // Retrive the data from table: 'TYPE' by ID (only with STATUS = active):
+    {
+		$table=$this->getName_table();	
+	
+		$query = "SELECT id FROM $table WHERE status = 'active' AND subregion = '$subregion'";
+		$rs = mysqli_query($GLOBALS['conn'],$query);
+		$n=0;
+		while(list($id) = mysqli_fetch_row($rs))
+		{	
+//			$this->setID_array($id, $n);
+			$n = $n + 1;
+		}
+		$this->setNumber_subregion_type($n);
 	}
 	
 	
@@ -357,6 +374,11 @@ public function retrive_nickname()   // Retrieve all the nicknames in the table 
 		  $this->_number_type = $n;
     }		
 	
+ 	public function setNumber_subregion_type($n)
+    {
+		  $this->_number_subregion_type = $n;
+    }		
+	
  	public function setID_array($var, $n)
     {
 		  $this->_id_array[$n] = $var;
@@ -446,6 +468,11 @@ public function retrive_nickname()   // Retrieve all the nicknames in the table 
     public function getNumber_type()
     {
     	return $this->_number_type;
+    }	
+	
+    public function getNumber_subregion_type()
+    {
+    	return $this->_number_subregion_type;
     }	
 	
     public function getNickname()
