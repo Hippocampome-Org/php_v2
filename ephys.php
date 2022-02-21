@@ -77,6 +77,8 @@ require_once('class/class.temporary_result_neurons.php');
 
 
 $type = new type($class_type);
+$type -> retrive_id();
+$nTypes = $type->getNumber_type();
 
 $research = "";
 if(isset($_REQUEST['research']))
@@ -249,8 +251,10 @@ $(function(){
       {name:'SlowAhp', index:'SlowAhp', width:75,height:150,search:false,sortable:false},
       {name:'Sagratio', index:'CR', width:75,height:150,search:false,sortable:false}
     ], 
-   	rowNum:176,
-    rowList:[176],
+    rowNum:<?php echo $nTypes ?>,
+    rowList:[<?php echo $nTypes ?>],
+//   	rowNum:176,
+//    rowList:[176],
     viewrecords: true, 
     gridview: true,
     jsonReader : {
