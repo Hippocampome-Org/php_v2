@@ -76,6 +76,11 @@ require_once('class/class.evidencepropertyyperel.php');
 require_once('class/class.temporary_result_neurons.php');
 $width1='25%';
 $width2='2%';
+
+$type = new type($class_type);
+$type -> retrive_id();
+$nTypes = $type->getNumber_type();
+
 $research = "";
 if(isset($_REQUEST['research']))
 	$research = $_REQUEST['research'];
@@ -347,8 +352,10 @@ $(function()
 			{name:'TSWBNASP', index:'TSWBNASP', width:15,height:50,search:false,sortable:false},
 			{name:'TSWBSLN', index:'TSWBSLN', width:15,height:50,search:false,sortable:false}
 			], 
-		rowNum: 175,
-		rowList:[175],
+    rowNum:<?php echo $nTypes ?>,
+    rowList:[<?php echo $nTypes ?>],
+//		rowNum: 175,
+//		rowList:[175],
 		viewrecords: true, 
 		gridview: true,
 		jsonReader:

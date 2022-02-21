@@ -108,6 +108,19 @@ else // not from search page --------------
 		}
 }
 
+$type -> retrieve_id_by_subregion('DG');
+$nDG = $type->getNumber_subregion_type();
+$type -> retrieve_id_by_subregion('CA3');
+$nCA3 = $type->getNumber_subregion_type();
+$type -> retrieve_id_by_subregion('CA2');
+$nCA2 = $type->getNumber_subregion_type();
+$type -> retrieve_id_by_subregion('CA1');
+$nCA1 = $type->getNumber_subregion_type();
+$type -> retrieve_id_by_subregion('Sub');
+$nSub = $type->getNumber_subregion_type();
+$type -> retrieve_id_by_subregion('EC');
+$nEC = $type->getNumber_subregion_type();
+
 $property = new property($class_property);
 
 $evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
@@ -163,7 +176,8 @@ if($research!="1")
 	$number_type = $type->getNumber_type();
 }
 //$number_type=$number_type+6;
-$neuron = array("DG"=>'DG(36)',"CA3"=>'CA3(35)',"CA3c"=>'CA3(35)',"CA2"=>'CA2(5)',"CA1"=>'CA1(60)',"Sub"=>'Sub(7)',"EC"=>'EC(33)');
+$neuron = array("DG"=>'DG('.$nDG.')',"CA3"=>'CA3('.$nCA3.')',"CA3c"=>'CA3('.$nCA3.')',"CA2"=>'CA2('.$nCA2.')',"CA1"=>'CA1('.$nCA1.')',"Sub"=>'Sub('.$nSub.')',"EC"=>'EC('.$nEC.')');
+//$neuron = array("DG"=>'DG(36)',"CA3"=>'CA3(35)',"CA3c"=>'CA3(35)',"CA2"=>'CA2(5)',"CA1"=>'CA1(60)',"Sub"=>'Sub(7)',"EC"=>'EC(33)');
 $neuronColor = array("DG"=>'#770000',"CA3"=>'#C08181',"CA3c"=>'#C08181',"CA2"=>'#FFCC00',"CA1"=>'#FF6103',"Sub"=>'#FFCC33',"EC"=>'#336633');
 //$prev_subregion="NONE";
 
