@@ -81,6 +81,11 @@ require_once('class/class.temporary_result_neurons.php');
 include("function/markers/marker_helper.php");
 $width1='25%';
 $width2='2%';
+
+$type = new type($class_type);
+$type -> retrive_id();
+$nTypes = $type->getNumber_type();
+
 $research = "";
 if(isset($_REQUEST['research']))
 	$research = $_REQUEST['research'];
@@ -600,8 +605,10 @@ $(function()
 			{name:'Y1',index:'Y1',width:15,search:false,sortable:false,hidden:true},
 			{name:'Y2',index:'Y2',width:15,search:false,sortable:false,hidden:true}
 		],
-		rowNum: 176,
-		rowList:[176],
+	    rowNum:<?php echo $nTypes ?>,
+	    rowList:[<?php echo $nTypes ?>],
+//		rowNum: 176,
+//		rowList:[176],
 		viewrecords: true,
 		gridview: true,
 		jsonReader:
