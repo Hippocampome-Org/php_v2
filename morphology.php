@@ -135,6 +135,9 @@ function check_axon_dendrite($variable, $hippo_axon, $hippo_dendrite)
 // ------------------------------------------------------------------------------------------
 $color_selected ='#EBF283';
 $type = new type($class_type);
+$type -> retrive_id();
+$nTypes = $type->getNumber_type();
+
 $research = $_REQUEST['research'];
 /* if ($research) // From page of search; retrieve the id from search_table (temporary) -----------------------
 {
@@ -469,8 +472,10 @@ $(function(){
  	], 
     //multiselect: true,
    /* pager: '#pager',*/
-    rowNum:176,
-    rowList:[176],
+    rowNum:<?php echo $nTypes ?>,
+    rowList:[<?php echo $nTypes ?>],
+//    rowNum:176,
+//    rowList:[176],
    /*  sortname: 'invid',
     sortorder: 'desc',*/
     viewrecords: true, 
