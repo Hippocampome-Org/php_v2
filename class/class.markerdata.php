@@ -5,6 +5,7 @@ class markerdata
 	private $_expression;
 	private $_animal;
 	private $_protocol;
+	private $_number_expression;
 
 	function __construct ($name)
 	{
@@ -25,7 +26,19 @@ class markerdata
 		}
 	}
 
-
+	public function retrieve_expression()   // Retrive the data from table: 'TYPE' by ID (only with STATUS = active):
+    {
+		$query = "SELECT subject FROM Property WHERE predicate = 'has name'";
+		$rs = mysqli_query($GLOBALS['conn'],$query);
+		$n=0;
+		while(list($subject) = mysqli_fetch_row($rs))
+		{	
+			$this->setExpression($subject);
+			$n = $n + 1;
+		}
+		$this->setNumber_expression($n);
+	}
+	
 
 
 	// SET -------------------------------------
@@ -43,6 +56,12 @@ class markerdata
     {
 		  $this->_animal = $val1;
     }			
+
+ 	public function setNumber_expression($n)
+    {
+		  $this->_number_expression = $n;
+    }		
+	
 
 	// GET ++++++++++++++++++++++++++++++++++++++	
     public function getProtocol()
@@ -64,5 +83,11 @@ class markerdata
     {
     	return $this->_name_table;
     }	
+
+    public function getNumber_expression()
+    {
+    	return $this->_number_expression;
+    }	
+	
 }
 ?>
