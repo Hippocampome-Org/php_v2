@@ -22,6 +22,8 @@ include ("function/ephys_unit_table.php");
 
 require_once('class/class.type.php');
 
+require_once('class/class.markerdata.php');
+
 require_once('class/class.epdata.php');
 
 require_once('class/class.property.php');
@@ -37,6 +39,8 @@ require_once('class/class.temporary_search.php');
 $type = new type($class_type);
 
 $number_type = $type->getNumber_type();
+
+$markerdata = new markerdata($class_markerdata);
 
 $epdata = new epdata($class_epdata);
 
@@ -696,7 +700,11 @@ include ("function/icon.html");
 
 				getSubject_untracked();	// Function to store all the untracked Subjects from the property table (function/part.php)
 
-				$n_part = 96;
+				$expressiondata = $markerdata -> retrieve_expression();
+
+				$n_part = $expressiondata -> getNumber_expression();
+
+//				$n_part = 113; // see csv2db_import/csv2db/lib/markerdata_string_field.py
 
 			}
 
