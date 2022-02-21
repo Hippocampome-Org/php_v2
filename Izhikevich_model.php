@@ -73,6 +73,11 @@ jQuery(document).ready(function() {
 require_once("load_matrix_session_izhikevich_model.php");
 $jsonStr = $_SESSION['Izhikevich_model'];
 $color_selected ='#EBF283';
+
+$type = new type($class_type);
+$type -> retrive_id();
+$nTypes = $type->getNumber_type();
+
 $research = $_REQUEST['research'];
 $hippo_select = $_SESSION['hippo_select'];
 ?>
@@ -334,8 +339,10 @@ $(function(){
 ,{name:'P2', index:'P2', width:75, search:false,sortable:false,hidden: true}
 	], 
    
-    rowNum:175,
-    rowList:[175],
+    rowNum:<?php echo $nTypes ?>,
+    rowList:[<?php echo $nTypes ?>],
+//    rowNum:175,
+//    rowList:[175],
   
     viewrecords: true, 
     gridview: true,
