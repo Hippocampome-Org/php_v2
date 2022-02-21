@@ -158,6 +158,8 @@ $(document).ready(function(){
 	
 	
 	$type = new type($class_type);
+    $type -> retrive_id();
+    $nTypes = $type->getNumber_type();
 	
 	$research = $_REQUEST['research'];
 	
@@ -505,7 +507,7 @@ $(function(){
     $grid.jqGrid({
     datatype: "jsonstring",
     datastr: dataStr,
-    colNames:[<?php echo $connheaderStr?>], 
+    colNames:[<?php echo $connheaderStr ?>], 
 	colModel :[
 	  {name:'type', index:'type', width:50,sortable:false,frozen:true,cellattr: function (rowId, tv, rawObject, cm, rdata) {
           return 'id=\'type' + rowId + "\'";   
@@ -526,17 +528,16 @@ $(function(){
       {name:'dg_com_mopp_3300', index:'dg_com_mopp_3300', width:20,height:150,search:false,sortable:false},
       {name:'dg_outer_molecular_3222', index:'dg_outer_molecular_3222', width:20,height:150,search:false,sortable:false},
       {name:'dg_molecular_3200', index:'dg_molecular_3200', width:20,height:150,search:false,sortable:false},
-      {name:'dg_mohipp_3002', index:'dg_mohipp_3002', width:20,height:150,search:false,sortable:false},
       {name:'dg_neurogliaform_3000p', index:'dg_neurogliaform_3000p', width:20,height:150,search:false,sortable:false},
       {name:'dg_mopp_3000p', index:'dg_mopp_3000p', width:20,height:150,search:false,sortable:false},
       {name:'dg_aiprim_2333', index:'dg_aiprim_2333', width:20,height:150,search:false,sortable:false},
       {name:'dg_hicap_2322', index:'dg_hicap_2322', width:20,height:150,search:false,sortable:false},
-      {name:'dg_is_hicap_2322', index:'dg_is_hicap_2322', width:20,height:150,search:false,sortable:false},
+      {name:'dg_is_imot_2322', index:'dg_is_imot_2322', width:20,height:150,search:false,sortable:false},
       {name:'dg_axo_axonic_2233', index:'dg_axo_axonic_2233', width:20,height:150,search:false,sortable:false},
       {name:'dg_basket_pv_2232', index:'dg_basket_pv_2232', width:20,height:150,search:false,sortable:false},
       {name:'dg_basket_cck_2232', index:'dg_basket_cck_2232', width:20,height:150,search:false,sortable:false},
-      {name:'dg_hilden_basket_2210', index:'dg_hilden_basket_2210', width:20,height:150,search:false,sortable:false},
-      {name:'dg_tml_axo_axonic_2210', index:'dg_tml_axo_axonic_2210', width:20,height:150,search:false,sortable:false},
+      {name:'dg_basket_gralden_2210', index:'dg_basket_gralden_2210', width:20,height:150,search:false,sortable:false},
+      {name:'dg_axo_axonic_gralden_2210', index:'dg_axo_axonic_gralden_2210', width:20,height:150,search:false,sortable:false},
       {name:'dg_is_himold_2203', index:'dg_is_himold_2203', width:20,height:150,search:false,sortable:false},
       {name:'dg_is_hipro_2201', index:'dg_is_hipro_2201', width:20,height:150,search:false,sortable:false},
       {name:'dg_is_coltar_2101', index:'dg_is_coltar_2101', width:20,height:150,search:false,sortable:false},
@@ -576,7 +577,6 @@ $(function(){
       {name:'ca3_radiatum_03000', index:'ca3_radiatum_03000', width:20,height:150,search:false,sortable:false},
       {name:'ca3_mossy_fiber_orden_02332p', index:'ca3_mossy_fiber_orden_02332p', width:20,height:130,search:false,sortable:false},
       {name:'ca3_mfa_basket_cck_02332', index:'ca3_mfa_basket_cck_02332', width:20,height:130,search:false,sortable:false},
-      {name:'ca3_lucidum_mfa_02322', index:'ca3_lucidum_mfa_02322', width:20,height:130,search:false,sortable:false},
       {name:'ca3_lucidum_lax_02310', index:'ca3_lucidum_lax_02310', width:20,height:130,search:false,sortable:false},
       {name:'ca3_spiny_lucidum_01320p', index:'ca3_spiny_lucidum_01320p', width:20,height:150,search:false,sortable:false},
       {name:'ca3_trilaminar_01113p', index:'ca3_trilaminar_01113p', width:20,height:150,search:false,sortable:false},
@@ -630,7 +630,7 @@ $(function(){
       {name:'ca1_r_apical_1300', index:'ca1_r_apical_1300', width:20,height:130,search:false,sortable:false},
       {name:'ca1_or_lm_1202', index:'ca1_or_lm_1202', width:20,height:150,search:false,sortable:false},
       {name:'ca1_back_proj_1133p', index:'ca1_back_proj_1133p', width:20,height:150,search:false,sortable:false},
-      {name:'ca1_oriens_bistratified_proj_1113p', index:'ca1_oriens_bistratified_proj_1113p', width:20,height:150,search:false,sortable:false},
+      {name:'ca1_oriens_quada_proj_1113p', index:'ca1_oriens_quada_proj_1113p', width:20,height:150,search:false,sortable:false},
       {name:'ca1_recurrent_o_lmr_1103', index:'ca1_recurrent_o_lmr_1103', width:20,height:150,search:false,sortable:false},
       {name:'ca1_o_lmr_1102', index:'ca1_o_lmr_1102', width:20,height:150,search:false,sortable:false},
       {name:'ca1_recurrent_o_lm_1003', index:'ca1_recurrent_o_lm_1003', width:20,height:150,search:false,sortable:false},
@@ -640,7 +640,7 @@ $(function(){
       {name:'ca1_rp_rpo_0331', index:'ca1_rp_rpo_0331', width:20,height:150,search:false,sortable:false},
       {name:'ca1_hippocampo_subicular_proj_0313p', index:'ca1_hippocampo_subicular_proj_0313p', width:20,height:150,search:false,sortable:false},
       {name:'ca1_schaffer_collateral_correlated_0303', index:'ca1_schaffer_collateral_correlated_0303', width:20,height:150,search:false,sortable:false},
-      {name:'ca1_c_bistratified_0302', index:'ca1_c_bistratified_0302', width:20,height:150,search:false,sortable:false},
+      {name:'ca1_scr_r_target_0322', index:'ca1_scr_r_target_0322', width:20,height:150,search:false,sortable:false},
       {name:'ca1_r_ro_0301', index:'ca1_r_ro_0301', width:20,height:150,search:false,sortable:false},
       {name:'ca1_radiatum_0300', index:'ca1_radiatum_0300', width:20,height:150,search:false,sortable:false},
       {name:'ca1_trilayer_basket_0232', index:'ca1_trilayer_basket_0232', width:20,height:150,search:false,sortable:false},
@@ -686,8 +686,8 @@ $(function(){
       {name:'ec_pyramidal_multiform_mec_II_III_233111', index:'ec_pyramidal_multiform_mec_II_III_233111', width:20,height:150,search:false,sortable:false},
       {name:'ec_multipolar_pyramidal_I_II_231000', index:'ec_multipolar_pyramidal_I_II_231000', width:20,height:150,search:false,sortable:false},
       {name:'ec_bipolar_pyramidal_III_V_223331', index:'ec_bipolar_pyramidal_III_V_223331', width:20,height:150,search:false,sortable:false},
-      {name:'ec_pyramidal_stellate_III_223200p', index:'ec_pyramidal_stellate_III_223200p', width:20,height:150,search:false,sortable:false},
-      {name:'ec_pyramidal_III_223111p', index:'ec_pyramidal_III_223111p', width:20,height:150,search:false,sortable:false},
+      {name:'ec_pyramidal_III_223200p', index:'ec_pyramidal_III_223200p', width:20,height:150,search:false,sortable:false},
+      {name:'ec_small_pyramidal_III_223111p', index:'ec_small_pyramidal_III_223111p', width:20,height:150,search:false,sortable:false},
       {name:'ec_stellate_III_223000', index:'ec_stellate_III_223000', width:20,height:150,search:false,sortable:false},
       {name:'ec_oblique_pyramidal_mec_II_221100', index:'ec_oblique_pyramidal_mec_II_221100', width:20,height:150,search:false,sortable:false},
       {name:'ec_pyramidal_horizontal_IV_V_220233p', index:'ec_pyramidal_horizontal_IV_V_220233p', width:20,height:150,search:false,sortable:false},
@@ -703,16 +703,18 @@ $(function(){
       {name:'ec_superficial_trilayered_mec_III_333000', index:'ec_superficial_trilayered_mec_III_333000', width:20,height:130,search:false,sortable:false},
       {name:'ec_superficial_polymorphic_II_III_332000', index:'ec_superficial_polymorphic_II_III_332000', width:20,height:130,search:false,sortable:false},
       {name:'ec_superficial_multipolar_mec_III_233000', index:'ec_superficial_multipolar_mec_III_233000', width:20,height:150,search:false,sortable:false},
-      {name:'ec_basket_multipolar_II_230000', index:'ec_basket_multipolar_II_230000', width:20,height:150,search:false,sortable:false},
-      {name:'ec_bipolar_I_II_120000', index:'ec_bipolar_I_II_120000', width:20,height:150,search:false,sortable:false},
+      {name:'ec_basket_ngf_II_230000', index:'ec_basket_ngf_II_230000', width:20,height:150,search:false,sortable:false},
+      {name:'ec_polar_I_II_120000', index:'ec_polar_I_II_120000', width:20,height:150,search:false,sortable:false},
       {name:'ec_multipolar_mec_III_113220', index:'ec_multipolar_mec_III_113220', width:20,height:150,search:false,sortable:false},
       {name:'ec_basket_mec_II_031000', index:'ec_basket_mec_II_031000', width:20,height:150,search:false,sortable:false},
       {name:'ec_axo_axonic_II_030000', index:'ec_axo_axonic_II_030000', width:20,height:150,search:false,sortable:false},
       {name:'ec_pyramidal_looking_III_023300', index:'ec_pyramidal_looking_III_023300', width:20,height:150,search:false,sortable:false},
       {name:'ec_multipolar_lec_III_023000', index:'ec_multiform_III_023000', width:20,height:150,search:false,sortable:false} 
      ], 
-    rowNum:175,
-    rowList:[175],
+    rowNum:<?php echo $nTypes ?>,
+    rowList:[<?php echo $nTypes ?>],
+//    rowNum:173,
+//    rowList:[173],
     viewrecords: true, 
     gridview: true,
     jsonReader : {
@@ -799,7 +801,7 @@ $(function(){
 
 <div class='title_area'>
 	<font class="font1">Browse connectivity matrix</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<?php 
+	<?php
 			if ($research){
 				$full_search_string = $_SESSION['full_search_string'];
 				if ($number_type == 1)
