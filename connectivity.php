@@ -1,14 +1,14 @@
 <?php
   include ("permission_check.php");
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="https://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html" />
 <script type="text/javascript" src="style/resolution.js"></script>
 <link rel="stylesheet" href="function/menu_support_files/menu_main_style.css" type="text/css" />
 <script src="jqGrid-4/js/jquery-1.11.0.min.js" type="text/javascript"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.2.1.js"></script>
+<script src="https://code.jquery.com/jquery-migrate-1.2.1.js"></script>
 <script src="jqGrid-4/js/i18n/grid.locale-en.js" type="text/javascript"></script>
 <script src="jqGrid-4/js/jquery.jqGrid.src.js" type="text/javascript"></script>
 
@@ -96,10 +96,10 @@ $(document).ready(function(){
         neuronId[row-1]=id_val;
       }
 
-      for(var row=1;row<=122;row++){
+      for(var row=1;row<=170;row++){
         trs = $("#"+row);
         tds = trs.find("td");
-        for(var column=2;column<124;column++){
+        for(var column=2;column<172;column++){
             link = $(tds[column]).find("div");
             if(link.length!=0){
               var image=$(link[0]).find("img");
@@ -107,13 +107,13 @@ $(document).ready(function(){
               var img_name=img.substring(img.lastIndexOf('/')+1,img.length);
               var column_back_colour=$(link[0]).css('background-color');
               if((matrixName=="CN" || matrixName=="KN") &&img_name=="known_connection.png"){
-                  knownConnection[index++]=neuronName[row-1]+","+neuronName[column-2];
+                knownConnection[index++]=neuronName[row-1]+","+neuronName[column-2];
               }
               else if((matrixName=="CN" || matrixName=="PE") && column_back_colour==BLACK){
-                    knownConnection[index++]=neuronName[row-1]+","+neuronName[column-2];
+                knownConnection[index++]=neuronName[row-1]+","+neuronName[column-2];
               }
               else if((matrixName=="CN" || matrixName=="PI") && column_back_colour==GRAY){
-                  knownConnection[index++]=neuronName[row-1]+","+neuronName[column-2];
+                knownConnection[index++]=neuronName[row-1]+","+neuronName[column-2];
               }
             }
         }
@@ -249,10 +249,10 @@ margin-bottom:5px;}
 text-align:centre !important;
 margin-bottom:0px !important;}
 
-#nGrid_dg_non_ivy_ngf_0331,#nGrid_ca3_oriens_oriens_00003,#nGrid_ca2_sp_sr_0302,#nGrid_ca2_sp_sr_0302,#nGrid_ca1_oriens_oriens_0003,#nGrid_sub_pyramidal_ca1_331p
+#nGrid_dg_hilus_associated_0003,#nGrid_ca3_so_so_00003,#nGrid_ca2_sp_sr_0302,#nGrid_ca1_so_so_0003,#nGrid_sub_wide_polymorphic_023
 {
-	width:auto !important;
-	border-right:solid medium red !important;
+    width:auto !important;
+    border-right:solid medium red !important;
 }
 
 .ui-jqgrid tr.jqgrow td 
@@ -319,7 +319,7 @@ checkVersion();
 
 </script>
 <script src="jqGrid-4/js/jquery-1.11.0.min.js" type="text/javascript"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.2.1.js"></script>
+<script src="https://code.jquery.com/jquery-migrate-1.2.1.js"></script>
 <script src="jqGrid-4/js/i18n/grid.locale-en.js" type="text/javascript"></script>
 <script src="jqGrid-4/js/jquery.jqGrid.src.js" type="text/javascript"></script>
 
@@ -553,7 +553,7 @@ $(function(){
           {
              return 'style="border-right:medium solid red;"';
           }},
-      {name:'ca3_pyramidal_a_b_23223p', index:'ca3_pyramidal_a_b_23223p', width:20,height:130,search:false,sortable:false,formatoptions:{baseLinkUrl:'http://goodle.com', addParam: '&action=edit'}},
+      {name:'ca3_pyramidal_a_b_23223p', index:'ca3_pyramidal_a_b_23223p', width:20,height:130,search:false,sortable:false,formatoptions:{baseLinkUrl:'https://goodle.com', addParam: '&action=edit'}},
       {name:'ca3_c_umbrella_pyramidal_23223p', index:'ca3_c_umbrella_pyramidal_23223p', width:20,height:130,search:false,sortable:false},
       {name:'ca3_athorny_pyramidal_22223', index:'ca3_athorny_pyramidal_22223', width:20,height:130,search:false,sortable:false},
       {name:'ca3_ca3_granule_22100', index:'ca3_ca3_granule_22100', width:20,height:150,search:false,sortable:false},
@@ -600,7 +600,7 @@ $(function(){
           return 'style="border-right:medium solid red;"';
        }
       },
-      {name:'ca1_pyramidal_2223p', index:'ca1_pyramidal_2223p', width:20,height:130,search:false,sortable:false,formatoptions:{baseLinkUrl:'http://goodle.com', addParam: '&action=edit'}},
+      {name:'ca1_pyramidal_2223p', index:'ca1_pyramidal_2223p', width:20,height:130,search:false,sortable:false,formatoptions:{baseLinkUrl:'https://goodle.com', addParam: '&action=edit'}},
       {name:'ca1_superficial_pyramidal_2223p', index:'ca1_superficial_pyramidal_2223p', width:20,height:130,search:false,sortable:false},
       {name:'ca1_deep_pyramidal_2223p', index:'ca1_deep_pyramidal_2223p', width:20,height:130,search:false,sortable:false},
       {name:'ca1_lp_cajal_retzius_3000p', index:'ca1_lp_cajal_retzius_3000p', width:20,height:130,search:false,sortable:false},
@@ -645,7 +645,6 @@ $(function(){
       {name:'ca1_radiatum_0300', index:'ca1_radiatum_0300', width:20,height:150,search:false,sortable:false},
       {name:'ca1_trilayer_basket_0232', index:'ca1_trilayer_basket_0232', width:20,height:150,search:false,sortable:false},
       {name:'ca1_trilayer_basket_cck_0232', index:'ca1_trilayer_basket_cck_0232', width:20,height:150,search:false,sortable:false},
-      {name:'ca1_trilayer_axo_axonic_0232', index:'ca1_trilayer_axo_axonic_0232', width:20,height:150,search:false,sortable:false},
       {name:'ca1_is_r_o_0221', index:'ca1_is_r_o_0221', width:20,height:150,search:false,sortable:false},
       {name:'ca1_r_p_basket_0210', index:'ca1_r_p_basket_0210', width:20,height:150,search:false,sortable:false},
       {name:'ca1_is_ro_o_0203', index:'ca1_is_ro_o_0203', width:20,height:150,search:false,sortable:false},
@@ -653,7 +652,6 @@ $(function(){
       {name:'ca1_trilaminar_0113p', index:'ca1_trilaminar_0113p', width:20,height:150,search:false,sortable:false},
       {name:'ca1_o_rp_0112', index:'ca1_o_rp_0112', width:20,height:150,search:false,sortable:false},
       {name:'ca1_oriens_bistratified_0103', index:'ca1_oriens_bistratified_0103', width:20,height:150,search:false,sortable:false},
-      {name:'ca1_o_r_0102', index:'ca1_o_r_0102', width:20,height:150,search:false,sortable:false},
       {name:'ca1_is_o_r_0102', index:'ca1_is_o_r_0102', width:20,height:130,search:false,sortable:false},
       {name:'ca1_horiz_basket_0012', index:'ca1_horiz_basket_0012', width:20,height:130,search:false,sortable:false},
       {name:'ca1_horiz_basket_cck_0012', index:'ca1_horiz_basket_cck_0012', width:20,height:130,search:false,sortable:false},
@@ -667,7 +665,6 @@ $(function(){
        },
       {name:'sub_pyramidal_EC_331p', index:'sub_pyramidal_EC_331p', width:20,height:130,search:false,sortable:false},
       {name:'sub_pyramidal_ca1_331p', index:'sub_pyramidal_ca1_331p', width:20,height:150,search:false,sortable:false},
-      {name:'sub_bursting_pyramidal_231', index:'sub_bursting_pyramidal_231', width:20,height:150,search:false,sortable:false},
       {name:'sub_axo_axonic_210', index:'sub_axo_axonic_210', width:20,height:150,search:false,sortable:false},
       {name:'sub_recurr_poly_moleculare_133', index:'sub_recurr_poly_moleculare_133', width:20,height:150,search:false,sortable:false},
       {name:'sub_pyramidale_multipolar_030', index:'sub_pyramidale_multipolar_030', width:20,height:150,search:false,sortable:false},
@@ -677,11 +674,11 @@ $(function(){
          return 'style="border-right:medium solid red;"';
        }
       },
-	  {name:'ec_pyramidal_tripolar_II_III_333000p', index:'ec_pyramidal_tripolar_II_III_333000p', width:20,height:130,search:false,sortable:false,formatoptions:{baseLinkUrl:'http://goodle.com', addParam: '&action=edit'}},
+	  {name:'ec_pyramidal_tripolar_II_III_333000p', index:'ec_pyramidal_tripolar_II_III_333000p', width:20,height:130,search:false,sortable:false,formatoptions:{baseLinkUrl:'https://goodle.com', addParam: '&action=edit'}},
       {name:'ec_pyramidal_mec_V_331131p', index:'ec_pyramidal_mec_V_331131p', width:20,height:130,search:false,sortable:false},
       {name:'ec_stellate_mec_II_331111p', index:'ec_stellate_mec_II_331111p', width:20,height:150,search:false,sortable:false},
       {name:'ec_pyramidal_fan_I_II_331000p', index:'ec_pyramidal_fan_I_II_331000p', width:20,height:150,search:false,sortable:false},
-      {name:'ec_complex_pyramidal_mec_III_313300', index:'ec_complex_pyramidal_mec_III_313300', width:20,height:130,search:false,sortable:false,formatoptions:{baseLinkUrl:'http://goodle.com', addParam: '&action=edit'}},
+      {name:'ec_complex_pyramidal_mec_III_313300', index:'ec_complex_pyramidal_mec_III_313300', width:20,height:130,search:false,sortable:false,formatoptions:{baseLinkUrl:'https://goodle.com', addParam: '&action=edit'}},
       {name:'ec_complex_pyramidal_lec_III_233310', index:'ec_complex_pyramidal_lec_III_233310', width:20,height:130,search:false,sortable:false},
       {name:'ec_pyramidal_multiform_mec_II_III_233111', index:'ec_pyramidal_multiform_mec_II_III_233111', width:20,height:150,search:false,sortable:false},
       {name:'ec_multipolar_pyramidal_I_II_231000', index:'ec_multipolar_pyramidal_I_II_231000', width:20,height:150,search:false,sortable:false},
@@ -699,7 +696,7 @@ $(function(){
       {name:'ec_multipolar_pyramidal_mec_V_001331', index:'ec_multipolar_pyramidal_mec_V_001331', width:20,height:150,search:false,sortable:false},
       {name:'ec_multipolar_pyramidal_lec_VI_001133', index:'ec_multipolar_pyramidal_lec_VI_001133', width:20,height:150,search:false,sortable:false},
       {name:'ec_deep_multipolar_IV_VI_000333p', index:'ec_deep_multipolar_IV_VI_000333p', width:20,height:150,search:false,sortable:false},
-      {name:'ec_pyramidal_polymorphic_mec_V_VI_000023', index:'ec_pyramidal_polymorphic_mec_V_VI_000023', width:20,height:130,search:false,sortable:false,formatoptions:{baseLinkUrl:'http://goodle.com', addParam: '&action=edit'}},
+      {name:'ec_pyramidal_polymorphic_mec_V_VI_000023', index:'ec_pyramidal_polymorphic_mec_V_VI_000023', width:20,height:130,search:false,sortable:false,formatoptions:{baseLinkUrl:'https://goodle.com', addParam: '&action=edit'}},
       {name:'ec_superficial_trilayered_mec_III_333000', index:'ec_superficial_trilayered_mec_III_333000', width:20,height:130,search:false,sortable:false},
       {name:'ec_superficial_polymorphic_II_III_332000', index:'ec_superficial_polymorphic_II_III_332000', width:20,height:130,search:false,sortable:false},
       {name:'ec_superficial_multipolar_mec_III_233000', index:'ec_superficial_multipolar_mec_III_233000', width:20,height:150,search:false,sortable:false},
@@ -850,9 +847,18 @@ $(function(){
         <td colspan="2" style="text-align:center"><font class='font7'>Download</font></td>
       </tr>
       <tr height="20">
-        <td style="text-align:center"><a href="#"><img id="csvCN" src='images/ExportCSV.png' width="30px" border="0"/></a></td>
+<!--        <td style="text-align:center"><a href="#"><img id="csvCN" src='images/ExportCSV.png' width="30px" border="0"/></a></td>
         <td><font class='font5'>Netlist</font></td>
-        <td></font></td> 
+-->
+        <td style="text-align:center">
+            <img id="csvCN" src='images/ExportCSV.png' width="30px" border="0"/>
+        </td>
+        <td>
+            <a href="data/netlist.csv">
+                <font class='font5'>Netlist</font>
+            </a>
+        </td>
+        <td><font></font></td> 
         <!--td align="right"><font class='font5'><p id="cle2"></p></font></td-->
       </tr>
      
