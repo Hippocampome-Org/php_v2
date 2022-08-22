@@ -513,7 +513,7 @@ $("#nGrid").mouseout(function(e) {
 
 <!-- COPY IN ALL PAGES -->
 <?php 
-	include ("function/title.php");
+	include ("function/title_v1.php");
 	include ("function/menu_main.php");
 ?>		
 

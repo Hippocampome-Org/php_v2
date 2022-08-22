@@ -197,7 +197,7 @@ $(function(){
 	  {name:'type', index:'type', width:50,sortable:false,frozen:true,cellattr: function (rowId, tv, rawObject, cm, rdata) {
           return 'id=\'type' + rowId + "\'" + ' style="height:75px;"';  
       }, frozen:true},
-      {name:'Neuron_Type', index:'Neuron_Type', width:200,sortable:false,frozen:true,
+      {name:'Neuron_Type', index:'Neuron_Type', width:275,sortable:false,frozen:true,
       cellattr: function(rowId, tv, rawObject, cm, rdata) 
        {
           return 'style="height:75px;"';
@@ -275,8 +275,8 @@ $(function(){
  	], 
     //multiselect: true,
    /* pager: '#pager',*/
-    rowNum:122,
-    rowList:[122],
+    rowNum:175,
+    rowList:[175],
    /*  sortname: 'invid',
     sortorder: 'desc',*/
     viewrecords: true, 
@@ -513,7 +513,7 @@ $("#nGrid").mouseout(function(e) {
 
 <!-- COPY IN ALL PAGES -->
 <?php 
-	include ("function/title.php");
+	include ("function/title_v1.php");
 	include ("function/menu_main.php");
 ?>		
 
