@@ -161,6 +161,7 @@ $neuron = array("DG"=>'DG('.$nDG.')',"CA3"=>'CA3('.$nCA3.')',"CA3c"=>'CA3('.$nCA
 $neuronColor = array("DG"=>'#770000',"CA3"=>'#C08181',"CA3c"=>'#C08181',"CA2"=>'#FFCC00',"CA1"=>'#FF6103',"Sub"=>'#FFCC33',"EC"=>'#336633');
 echo("<script>console.log('PHP: In getizhikevich.php');</script>");
 // main logic for calculating anf filling json starts here -->
+$ii = -1;
 for($i = 0; $i<$number_type; $i++)
 {
 	if(isset($id_search))
@@ -173,6 +174,7 @@ for($i = 0; $i<$number_type; $i++)
 	}
 
 	$type -> retrive_by_id($id); // Retrieve id
+	$name = $type -> getName(); // Retrieve name
 	$nickname = $type->getNickname(); // Retrieve nick name
 	$position = $type->getPosition(); // Retrieve the position
 	$subregion = $type -> getSubregion(); // Retrieve the sub region
@@ -236,55 +238,61 @@ for($i = 0; $i<$number_type; $i++)
 		}
 	}
 
-    
+	$type -> retrieve_v2p0_by_id($id);
+	$v2p0 = $type -> getV2p0();
 
-	//Code for Json generation starts...
-	if ($excit_inhib == 'e')
-		$fontColor='#339900';
-	elseif ($excit_inhib == 'i')
-		$fontColor='#CC0000';
-
-	if ($type->get_type_subtype($id) == 'subtype')
+	if ($v2p0 == 0)
 	{
-		$fontColor='#000099';
-		if ($excit_inhib == 'i')
-			$fontColor='#CC5500';
-	
-		$rows[$i]['cell'][0] = '<span style="color:'.$neuronColor[$subregion].'"><strong>'.$neuron[$subregion].'</strong></span>';
-		$rows[$i]['cell'][1] = "    ".'<a href="neuron_page.php?id='.$id.'" target="blank" title="'.$nickname.'"'.$type->getName().'"><font color="'.$fontColor.'">'.$nickname.'</font></a>';
+		$ii = $ii + 1;
+		//Code for Json generation starts...
+		if ($excit_inhib == 'e')
+			$fontColor='#339900';
+		elseif ($excit_inhib == 'i')
+			$fontColor='#CC0000';
 
-		for($j = 0; $j<count($izhmodelsmodelArray); $j++)
+		if ($type->get_type_subtype($id) == 'subtype')
 		{
-			if($mean[$izhmodelsmodelArray[$j]] == -99999)
-			{
-				$rows[$i]['cell'][$j+2] = '';
+			$fontColor='#000099';
+			if ($excit_inhib == 'i')
+				$fontColor='#CC5500';
+		
+			$rows[$ii]['cell'][0] = '<span style="color:'.$neuronColor[$subregion].'"><strong>'.$neuron[$subregion].'</strong></span>';
+			$rows[$ii]['cell'][1] = "    ".'<a href="neuron_page.php?id='.$id.'" target="blank" title="'.$type->getName().'"><font color="'.$fontColor.'">'.$nickname.'</font></a>';
 
-			}
-			else
+			for($j = 0; $j<count($izhmodelsmodelArray); $j++)
 			{
-				$rows[$i]['cell'][$j+2] = '<span class="link_left font4"><a href = "#">'.$mean[$izhmodelsmodelArray[$j]].'<span class = "link_left">&#10;('.$min[$izhmodelsmodelArray[$j]].') To ('.$max[$izhmodelsmodelArray[$j]].')</span></a></span>';
+				if($mean[$izhmodelsmodelArray[$j]] == -99999)
+				{
+					$rows[$ii]['cell'][$j+2] = '';
 
+				}
+				else
+				{
+					$rows[$ii]['cell'][$j+2] = '<span class="link_left font4"><a href = "#">'.$mean[$izhmodelsmodelArray[$j]].'<span class = "link_left">&#10;('.$min[$izhmodelsmodelArray[$j]].') To ('.$max[$izhmodelsmodelArray[$j]].')</span></a></span>';
+
+				}
 			}
 		}
-	}
-	else
-	{
-		$rows[$i]['cell'][0] = '<span style="color:'.$neuronColor[$subregion].'"><strong>'.$neuron[$subregion].'</strong></span>';
-		$rows[$i]['cell'][1] = '<a href="neuron_page.php?id='.$id.'" target="blank" title="'.$nickname.'"'.$type->getName().'"><font color="'.$fontColor.'">'.$nickname.'</font></a>';
-
-		for($j = 0; $j<count($izhmodelsmodelArray); $j++)
+		else
 		{
-			if($mean[$izhmodelsmodelArray[$j]] == -99999)
-			{
-				$rows[$i]['cell'][$j+2] = '';
+			$rows[$ii]['cell'][0] = '<span style="color:'.$neuronColor[$subregion].'"><strong>'.$neuron[$subregion].'</strong></span>';
+			$rows[$ii]['cell'][1] = '<a href="neuron_page.php?id='.$id.'" target="blank" title="'.$type->getName().'"><font color="'.$fontColor.'">'.$nickname.'</font></a>';
 
-			}
-			else
+			for($j = 0; $j<count($izhmodelsmodelArray); $j++)
 			{
-				$rows[$i]['cell'][$j+2] = '<span class="link_left font4"><a href = "#">'.$mean[$izhmodelsmodelArray[$j]].'<span class = "link_left">&#10;('.$min[$izhmodelsmodelArray[$j]].') To ('.$max[$izhmodelsmodelArray[$j]].')</span></a></span>';
+				if($mean[$izhmodelsmodelArray[$j]] == -99999)
+				{
+					$rows[$ii]['cell'][$j+2] = '';
 
+				}
+				else
+				{
+					$rows[$ii]['cell'][$j+2] = '<span class="link_left font4"><a href = "#">'.$mean[$izhmodelsmodelArray[$j]].'<span class = "link_left">&#10;('.$min[$izhmodelsmodelArray[$j]].') To ('.$max[$izhmodelsmodelArray[$j]].')</span></a></span>';
+
+				}
 			}
 		}
+
 	}
 
 	$responce->rows = $rows;
