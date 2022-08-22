@@ -7,12 +7,19 @@
   require_once('class/class.temporary_result_neurons.php');
   define('KNOWN_CONNECTION', 1);
   define('KNOWN_NON_CONNECTION', -1);
+  define('MEC_LEC_NON_CONNECTION', 1);
+  define('INTERNEURON_SPECIFIC_NON_CONNECTION', 1);
   define('P_INHIBITORY_CONN',1);
   define('P_EXCITATORY_CONN',2);
+  define('MEC_TYPE', 1);
+  define('LEC_TYPE', -1);
+  define('INTERNEURON_SPECIFIC_TYPE', 1);
   define('BLACK','#000000');
   define('GRAY', '#AAAAAA');
   define('ORANGE', '#FF8C00');
   define('WHITE','#FFFFFF');
+  define('RED', '#FF0000');
+  define('PURPLE', '#800080');
   define('EXCIT_FONT_COLOR','#339900');
   define('INHIBIT_FONT_COLOR','#CC0000');
 ?>
@@ -99,9 +106,7 @@ function getUrlForLink($id_type_row,$id_type_col,$link_parameter,$img,$know_unkn
 		elseif(in_array($id_type_row, $special_neuron_id_basket)){
 			$axonic_basket_flag=2;
 		}
-		$url ='<a href="property_page_connectivity.php?id1_neuron='.$id_type_row.'&val1_property='.$link_parameter[1].'&color1='.$link_parameter[2].
-		'&id2_neuron='.$id_type_col.'&val2_property='.$link_parameter[4].'&color2='.$link_parameter[5].
-		'&connection_type='.$link_parameter[6].'&known_conn_flag='.$know_unknow_flag.'&axonic_basket_flag='.$axonic_basket_flag.'&page=1" target="_blank"><img src="images/connectivity/'.$img.'" height="20px" width="20px" border="0"/></a>';
+		$url ='<a href="property_page_connectivity.php?id1_neuron='.$id_type_row.'&val1_property='.$link_parameter[1].'&color1='.$link_parameter[2].'&id2_neuron='.$id_type_col.'&val2_property='.$link_parameter[4].'&color2='.$link_parameter[5].'&connection_type='.$link_parameter[6].'&known_conn_flag='.$know_unknow_flag.'&axonic_basket_flag='.$axonic_basket_flag.'&page=1" target="_blank"><img src="images/connectivity/'.$img.'" height="20px" width="20px" border="0"/></a>';
 	}
 	#}
 	/*
@@ -113,11 +118,19 @@ function getUrlForLink($id_type_row,$id_type_col,$link_parameter,$img,$know_unkn
 	*/
 	return ($url);	
 }
+
+$type = new type($class_type);
+$type ->retrive_id();
+
+$number_type = $type ->getNumber_type();
+$total_neurons=$number_type;
+
 if(!isset($_GET['page'])) $page=1;
 else $page = $_GET['page'];
 //page=1&rows=5&sidx=1&sord=asc
 // get how many rows we want to have into the grid - rowNum parameter in the grid
-if(!isset($_GET['rows'])) $limit=175;
+//if(!isset($_GET['rows'])) $limit=175;
+if(!isset($_GET['rows'])) $limit=$total_neurons;
 else $limit = $_GET['rows'];
 
 // get index row - i.e. user click to sort. At first time sortname parameter -
@@ -133,12 +146,6 @@ else $sord = $_GET['sord'];
 if(!$sidx) $sidx =1;
 
 $research = $_REQUEST['research'];
-
-$type = new type($class_type);
-$type ->retrive_id();
-
-$number_type = $type ->getNumber_type();
-$total_neurons=$number_type;
 
 $type -> retrieve_id_by_subregion('DG');
 $nDG = $type->getNumber_subregion_type();
@@ -281,14 +288,14 @@ $count_known_non=0;
 //retrived connection from conndata
 
 for ($r = 0; $r < $total_neurons; $r++) {
-    $explicit_target_query = "SELECT  Type2_id FROM Conndata WHERE Type1_id='$id_array[$r]' AND connection_status= 'positive'";
+    $explicit_target_query = "SELECT Type2_id FROM Conndata WHERE Type1_id='$id_array[$r]' AND connection_status= 'positive'";
 
-    $explicit_nontarget_query = "SELECT  Type2_id FROM Conndata WHERE Type1_id='$id_array[$r]' AND connection_status= 'negative'";
+    $explicit_nontarget_query = "SELECT Type2_id FROM Conndata WHERE Type1_id='$id_array[$r]' AND connection_status= 'negative'";
 
     $explicit_target_result = mysqli_query($GLOBALS['conn'], $explicit_target_query);
     $result_target = result_set_to_array($explicit_target_result, "Type2_id");
 
-    $explicit_nontarget_result  = mysqli_query($GLOBALS['conn'], $explicit_nontarget_query);
+    $explicit_nontarget_result = mysqli_query($GLOBALS['conn'], $explicit_nontarget_query);
     $result_nontarget = result_set_to_array($explicit_nontarget_result, "Type2_id");
 
     for ($c = 0; $c < $total_neurons; $c++) {
@@ -310,7 +317,7 @@ for ($r = 0; $r < $total_neurons; $r++) {
     }
 }
 
-// Get the information fo potential connectivity from morphology
+// Get the information for potential connectivity from morphology
 /* LEGEND
 0-blank
 1-gray -Potential Inhibitory Connections
@@ -337,7 +344,7 @@ for ($i=0; $i < $total_neurons; $i++) {
         elseif ($excit_inhib=="e")
         {
           $potential_conn_display_array[$i][$j]=P_EXCITATORY_CONN;
-        }
+        }        
       }
     }
   }
@@ -357,134 +364,130 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 
 // create link and image for each connection
 for ($row=0; $row<$number_type; $row++) {
-			for($i = 0; $i < $number_type; $i++){
-		    $hippo_nickname[$i]=NULL;
-		  }		
-		  			$actual_row=$row;
-					// retrieve the id_type from Type
-					if (isset($research))
-						$id_type_row = $id_search[$row];
-					else
-						$id_type_row = $type->getID_array($row);
-					
-					$type -> retrive_by_id($id_type_row);
-					$nickname_type_row = $type->getNickname();
-					$name = $type->getName();
-					
-					$subregion_type_row = $type->getSubregion();
-					$position = $type->getPosition(); // Retrieve the position
-					$subregion = $type -> getSubregion(); // Retrieve the sub region 
-					$excit_inhib =$type-> getExcit_Inhib();
-					
-					$nickname_type_row = str_replace('_', ' ', $nickname_type_row);
-					$subregion_nickname_type_row = $subregion_type_row . ":" . $nickname_type_row;
-					$position_row = $type->getPosition();
-				
-					if ($excit_inhib == 'e')
-						$fontColor=EXCIT_FONT_COLOR;
-					if ($excit_inhib == 'i')
-						$fontColor=INHIBIT_FONT_COLOR;
-						
-				for ($col=0; $col<$total_neurons; $col++) {
-						$image ="";
-						$id_type_col = $type->getID_array($col);
-						
-						$type -> retrive_by_id($id_type_col);
-						$nickname_type_col = $type->getNickname();
-						$subregion_type_col = $type->getSubregion();
-					
-						$nickname_type_col = str_replace('_', ' ', $nickname_type_col);
-						$subregion_nickname_type = $subregion_type_col . " " . $nickname_type_col;
-						$position_col = $type->getPosition();
-						// retrive search neuron information
-						if(isset($research)){
-							$row=$neuron_map[$id_type_row];
-							$link_parameter=explode(",",$potn_conn_neuron_pcl_array[$row][$col]);
-							
-						}
-						// get link parameters	
-						else{
-							$link_parameter=explode(",",$potn_conn_neuron_pcl_array[$row][$col]);
-						}
-						if ($known_matrix_array[$row][$col] == KNOWN_NON_CONNECTION) 
-						{
-							$presynaptic_bg_color = WHITE;
-						}
-						else {
-							// Potential connections determine background color
-							switch ($potential_conn_display_array[$row][$col]) {
-								case P_INHIBITORY_CONN:
-									$presynaptic_bg_color = GRAY;
-									$responce->gray++;	
-									break;
-								case P_EXCITATORY_CONN:
-									$presynaptic_bg_color = BLACK;
-									$responce->black++;
-									break;
-								case 9:
-									$presynaptic_bg_color = ORANGE;
-									$responce->orange++;
-									break;
-								default:
-									$presynaptic_bg_color = WHITE;
-									break;
-							}
-						}
-						// potential connection determines image to be displayed					
-						if ($known_matrix_array[$row][$col] == KNOWN_NON_CONNECTION)
-						{
-							$responce->Unknowncount++;
-							$url=getUrlForLink($id_type_row,$id_type_col,$link_parameter,"known_nonconnection.png",KNOWN_NON_CONNECTION,$special_neuron_id_axo_axonic,$special_neuron_id_basket);
-							$image = "<div style='background-color:" . $presynaptic_bg_color . ";padding:0 2px;'>".$url."</div>";
-						}
-						elseif ($known_matrix_array[$row][$col] == KNOWN_CONNECTION)
-						{
-							$responce->knowncount++;
-							$url=getUrlForLink($id_type_row,$id_type_col,$link_parameter,"known_connection.png",KNOWN_CONNECTION,$special_neuron_id_axo_axonic,$special_neuron_id_basket);
-							$image = "<div style='background-color:" . $presynaptic_bg_color . ";padding:0 2px;'>".$url."</div>";
-						}
-						else if ($potential_conn_display_array[$row][$col] != 0) 
-						{
-							if($presynaptic_bg_color==BLACK)
-							{
-								$url=getUrlForLink($id_type_row,$id_type_col,$link_parameter,"spacer_black.png",0,$special_neuron_id_axo_axonic,$special_neuron_id_basket);
-								$image = "<div style='background-color:" . $presynaptic_bg_color . ";padding:0 2px;'>".$url."</div>";
-							}
-							else if($presynaptic_bg_color==ORANGE)
-							{
-								
-								$url=getUrlForLink($id_type_row,$id_type_col,$link_parameter,"spacer_orange.png",0,$special_neuron_id_axo_axonic,$special_neuron_id_basket);
-								$image = "<div style='background-color:" . $presynaptic_bg_color . ";padding:0 2px;'>".$url."</div>";
-							}
-							if($presynaptic_bg_color == GRAY)
-							{	
-								$url=getUrlForLink($id_type_row,$id_type_col,$link_parameter,"spacer_gray.png",0,$special_neuron_id_axo_axonic,$special_neuron_id_basket);
-								$image = "<div style='background-color:" . $presynaptic_bg_color . ";padding:0 2px;'>".$url."</div>";
-							}
-						} 
-						$hippo_nickname[$col] = $image;
-					}
-					// create connectivity matrix array
-					if ($type->get_type_subtype($id_type_row) == 'subtype'){
-						$fontColor='#000099';
-						if ($excit_inhib == 'i')
-							$fontColor='#CC5500';
-						$hippo_array=array('&nbsp;<span style="color:'.$neuronColor[$subregion_type_row].'"><strong>'.$neuron[$subregion_type_row].'</strong></span>',"    ".'&nbsp;<a href="neuron_page.php?id='.$id_type_row.'" target="blank" title="'.$name.'"><font color="'.$fontColor.'">'.$nickname_type_row.'</font></a>');
-					    for($i=0; $i<$total_neurons; $i++){
-					      	array_push($hippo_array,$hippo_nickname[$i]);
-					    }
-					}
-					else{ // type_subtype = 'type' OR type_subtype = 'None'
-						$hippo_array=array('&nbsp;<span style="color:'.$neuronColor[$subregion_type_row].'"><strong>'.$neuron[$subregion_type_row].'</strong></span>','&nbsp;<a href="neuron_page.php?id='.$id_type_row.'" target="blank" title="'.$name.'"><font color="'.$fontColor.'">'.$nickname_type_row.'</font></a>');
-					    for($i=0; $i<$total_neurons; $i++){
-					      	array_push($hippo_array,$hippo_nickname[$i]);
-					    }						
-					}
-				    $row=$actual_row;
-				    $rows[$row]['cell']=$hippo_array;
-				    $responce->rows = $rows;
-				    
+	for($i = 0; $i < $number_type; $i++){
+		$hippo_nickname[$i]=NULL;
+	}		
+	$actual_row=$row;
 
+	// retrieve the id_type from Type
+	if (isset($research))
+		$id_type_row = $id_search[$row];
+	else
+		$id_type_row = $type->getID_array($row);
+	
+	$type -> retrive_by_id($id_type_row);
+	$nickname_type_row = $type->getNickname();
+	$name = $type->getName();
+	
+	$subregion_type_row = $type->getSubregion();
+	$position = $type->getPosition(); // Retrieve the position
+	$subregion = $type -> getSubregion(); // Retrieve the sub region 
+	$excit_inhib =$type-> getExcit_Inhib();
+	
+	$nickname_type_row = str_replace('_', ' ', $nickname_type_row);
+	$subregion_nickname_type_row = $subregion_type_row . ":" . $nickname_type_row;
+	$position_row = $type->getPosition();
 
-}
+	if ($excit_inhib == 'e')
+		$fontColor=EXCIT_FONT_COLOR;
+	if ($excit_inhib == 'i')
+		$fontColor=INHIBIT_FONT_COLOR;
+						
+	for ($col=0; $col<$total_neurons; $col++) {
+		$image ="";
+		$id_type_col = $type->getID_array($col);
+		
+		$type -> retrive_by_id($id_type_col);
+		$nickname_type_col = $type->getNickname();
+		$subregion_type_col = $type->getSubregion();
+	
+		$nickname_type_col = str_replace('_', ' ', $nickname_type_col);
+		$subregion_nickname_type = $subregion_type_col . " " . $nickname_type_col;
+		$position_col = $type->getPosition();
+
+		// retrieve search neuron information
+		if(isset($research)){
+			$row=$neuron_map[$id_type_row];
+			$link_parameter=explode(",",$potn_conn_neuron_pcl_array[$row][$col]);
+			
+		}
+		// get link parameters	
+		else{
+			$link_parameter=explode(",",$potn_conn_neuron_pcl_array[$row][$col]);
+		}
+		
+		if ($known_matrix_array[$row][$col] == KNOWN_NON_CONNECTION) 
+		{
+			$presynaptic_bg_color = WHITE;
+		}
+		else {
+			// Potential connections determine background color
+			switch ($potential_conn_display_array[$row][$col]) {
+				case P_INHIBITORY_CONN:
+					$presynaptic_bg_color = GRAY;
+//										$responce->gray++;
+					break;
+				case P_EXCITATORY_CONN:
+					$presynaptic_bg_color = BLACK;
+//										$responce->black++;
+					break;
+				case 9:
+					$presynaptic_bg_color = ORANGE;
+					$responce->orange++;
+					break;
+				default:
+					$presynaptic_bg_color = WHITE;
+					break;
+			}
+		}
+
+		// potential connection determines image to be displayed	
+		if ($known_matrix_array[$row][$col] == KNOWN_NON_CONNECTION)
+		{
+			$responce->Unknowncount++;
+			$url=getUrlForLink($id_type_row,$id_type_col,$link_parameter,"known_nonconnection.png",KNOWN_NON_CONNECTION,$special_neuron_id_axo_axonic,$special_neuron_id_basket);
+			$image = "<div style='background-color:" . $presynaptic_bg_color . ";padding:0 2px;'>".$url."</div>";
+		}
+		elseif ($known_matrix_array[$row][$col] == KNOWN_CONNECTION)
+		{
+			$responce->knowncount++;
+			$url=getUrlForLink($id_type_row,$id_type_col,$link_parameter,"known_connection.png",KNOWN_CONNECTION,$special_neuron_id_axo_axonic,$special_neuron_id_basket);
+			$image = "<div style='background-color:" . $presynaptic_bg_color . ";padding:0 2px;'>".$url."</div>";
+		}
+		elseif ($potential_conn_display_array[$row][$col] != 0) 
+		{
+			if ($presynaptic_bg_color==BLACK){
+				$responce->black++;
+				$url=getUrlForLink($id_type_row,$id_type_col,$link_parameter,"spacer_black.png",0,$special_neuron_id_axo_axonic,$special_neuron_id_basket);
+			}elseif ($presynaptic_bg_color==ORANGE){
+				$url=getUrlForLink($id_type_row,$id_type_col,$link_parameter,"spacer_orange.png",0,$special_neuron_id_axo_axonic,$special_neuron_id_basket);
+			}elseif ($presynaptic_bg_color == GRAY){	
+				$responce->gray++;
+				$url=getUrlForLink($id_type_row,$id_type_col,$link_parameter,"spacer_gray.png",0,$special_neuron_id_axo_axonic,$special_neuron_id_basket);
+			}
+			$image = "<div style='background-color:" . $presynaptic_bg_color . ";padding:0 2px;'>".$url."</div>";								
+		} 
+		$hippo_nickname[$col] = $image;
+	} // for $col
+
+	// create connectivity matrix array
+	if ($type->get_type_subtype($id_type_row) == 'subtype'){
+		$fontColor='#000099';
+		if ($excit_inhib == 'i')
+			$fontColor='#CC5500';
+		$hippo_array=array('&nbsp;<span style="color:'.$neuronColor[$subregion_type_row].'"><strong>'.$neuron[$subregion_type_row].'</strong></span>',"    ".'&nbsp;<a href="neuron_page.php?id='.$id_type_row.'" target="blank" title="'.$name.'"><font color="'.$fontColor.'">'.$nickname_type_row.'</font></a>');
+	    for($i=0; $i<$total_neurons; $i++){
+	      	array_push($hippo_array,$hippo_nickname[$i]);
+	    }
+	}
+	else{ // type_subtype = 'type' OR type_subtype = 'None'
+		$hippo_array=array('&nbsp;<span style="color:'.$neuronColor[$subregion_type_row].'"><strong>'.$neuron[$subregion_type_row].'</strong></span>','&nbsp;<a href="neuron_page.php?id='.$id_type_row.'" target="blank" title="'.$name.'"><font color="'.$fontColor.'">'.$nickname_type_row.'</font></a>');
+	    for($i=0; $i<$total_neurons; $i++){
+	      	array_push($hippo_array,$hippo_nickname[$i]);
+	    }						
+	}
+    $row=$actual_row;
+    $rows[$row]['cell']=$hippo_array;
+    $responce->rows = $rows;
+} // for $row
 ?>
