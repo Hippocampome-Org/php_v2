@@ -153,6 +153,8 @@ include("function/icon.html");
 
 <title id="title_id">Hippocampome</title>
 
+<link rel="icon" href="images/Hippocampome Logo.png">
+
 </head>
 
 <body>
@@ -178,73 +180,80 @@ jQuery(document).ready(function() {
       <font class='font1' color='#000000'>
       WELCOME TO THE HIPPOCAMPOME PORTAL
       </font>
-      <BR>
-      <font class='font2' color='#000000'>
-      v1.10 - Released: 08/03/2021
-      <br>
-      28,481 Pieces of Knowledge (PoK) and 36,858 Pieces of Evidence (PoE)
-      <br>
-      <br>
-      The Hippocampome is a curated knowledge base of the circuitry
-      of the hippocampus of normal adult, or adolescent, rodents at
-      the mesoscopic level of neuronal types. Knowledge concerning
-      dentate gyrus, CA3, CA2, CA1, subiculum, and entorhinal cortex
-      is distilled from published evidence and is continuously updated
-      as new information becomes available. Each reported neuronal
-      property is documented with a pointer to, and excerpt from,
-      relevant published evidence, such as citation quotes or illustrations.
-      <br><br>
-      The goal of the Hippocampome is dense coverage of available data
-      characterizing neuronal types. The Hippocampome is a public and
-      free resource for the neuroscience community, and the knowledge
-      is presented for user-friendly browsing and searching and for
-      machine-readable downloading.
-      <br><br>
-      If you have feedback on either functionality or content, or if you
-      would like to be informed when the first official version is released,
-      please fill out the
-      <a href="user_feedback_form_entry.php">feedback form</a>
-      or email us at
-      <a href="mailto:Hippocampome.org@gmail.com">Hippocampome.org@gmail.com</a>.
-      <br><br>
-      The release of v1.0 on 09/23/2015 includes 3,697 PoK and 13,888 PoE. Reference: <b>Wheeler et al., 2015</b>.
-      <a href="http://elifesciences.org/content/4/e09960">
-      <i>Hippocampome.org: A knowledge base of neuron types in the rodent hippocampus</i></a>.
-      eLife 2015;4:e09960.
-      <br><br>
-      The release of v1.1 on 10/17/2016 includes 3,697 PoK, 13,888 PoE, and the Neuron Term Portal, which allows one to view definitions for 
-      terms and phrases used on this website. Reference: <b>Hamilton et al., 2016</b>
-      <a href="http://link.springer.com/article/10.1007/s40708-016-0053-3">
-      <i>Name-calling in the hippocampus (and beyond): coming to terms with neuron types and properties</i></a>.
-      Brain Informatics 2017 Mar;4(1):1-12; doi:10.1007/s40708-016-0053-3.
-      <br><br>
-      The release of v1.2 on 11/06/2016 includes 3,936 PoK, 14,399 PoE, and a clickable Connectivity Matrix, an interactive Connectivity Navigator, and the
-      ability to Search by Connectivity. Reference: <b>Rees et al., 2016</b>
-      <a href="http://www.eneuro.org/content/3/6/ENEURO.0205-16.2016">
-      <i>Graph theoretic and motif analyses of the hippocampal neuron type
-      potential connectome</i></a>. eNeuro Nov 2016, ENEURO.0205-16.2016; DOI: 10.1523/ENEURO.0205-16.2016.
-      <br><br>
-      The release of v1.3 on 06/30/2017 includes 10,822 PoK, 21,285 PoE, and a downloadable list of Allen Brain Atlas (ABA) predictions of marker
-      expressions and a utility for viewing the effects of thresholds on ABA marker expression predictions.
-      Reference: <b>Hamilton et al., 2017</b>
-      <a href = "http://www.sciencedirect.com/science/article/pii/S073170851730794X">
-      <i>Molecular fingerprinting of principal neurons in the rodent hippocampus: a neuroinformatics approach.</i></a>
-      Journal of Pharmaceutical and Biomedical Analysis 2017 Sep 10;144:269-278; doi: 10.1016/j.jpba.2017.03.062.
-      <br><br>
-      The release of v1.4 on 08/15/2019 includes an additional 7,946 PoK, 8,486 PoE, and the ability to
-      access the Synapse Knowledge Base.
-      Reference: <b>Moradi and Ascoli, 2019</b>
-      <a href = "https://doi.org/10.1002/hipo.23148">
-      <i>A comprehensive knowledge base of synaptic electrophysiology in the rodent hippocampal formation.</i></a>
-      Hippocampus 2020 Apr;30(4):314-331; doi: https://doi.org/10.1002/hipo.23148.
-      <br><br>
-      The release of v1.5 on 09/06/2019 includes an additional 830 PoK, 77 PoE, and relational
-      expression inferences in the knowledge base.
-      Reference: <b>White, et al., 2019</b>
-      <a href = "https://onlinelibrary.wiley.com/doi/full/10.1002/hipo.23165">
-      <i>Molecular Expression Profiles of Morphologically Defined Hippocampal Neuron Types: Empirical Evidence and
-      Relational Inferences.</i></a>
-      Hippocampus 2020 May;30(5):472-487; doi: 10.1002/hipo.23165.
+        <BR>
+        <font class='font2' color='#000000'>
+        v1.12 - Released: 05/05/2022
+        <br>
+        527,802 Pieces of Knowledge (PoK) & 46,004 Pieces of Evidence (PoE)
+        <br>
+        <br>
+        The Hippocampome is a curated knowledge base of the circuitry
+        of the hippocampus of normal adult, or adolescent, rodents at
+        the mesoscopic level of neuronal types. Knowledge concerning
+        dentate gyrus, CA3, CA2, CA1, subiculum, and entorhinal cortex
+        is distilled from published evidence and is continuously updated
+        as new information becomes available. Each reported neuronal
+        property is documented with a pointer to, and excerpt from,
+        relevant published evidence, such as citation quotes or illustrations.
+        <br><br>
+        The goal of the Hippocampome is dense coverage of available data
+        characterizing neuronal types. The Hippocampome is a public and
+        free resource for the neuroscience community, and the knowledge
+        is presented for user-friendly browsing and searching and for
+        machine-readable downloading.
+        <br><br>
+        If you have feedback on either functionality or content, or if you
+        would like to be informed when the first official version is released,
+        please fill out the
+        <a href="user_feedback_form_entry.php">feedback form</a>
+        or email us at
+        <a href="mailto:Hippocampome.org@gmail.com">Hippocampome.org@gmail.com</a>.
+        <br><br>
+        The release of v1.0 on 09/23/2015 includes 3,697 PoK and 13,888 PoE. Reference: <b>Wheeler et al., 2015</b>.
+        <a href="http://elifesciences.org/content/4/e09960">
+        <i>Hippocampome.org: A knowledge base of neuron types in the rodent hippocampus</i></a>.
+        eLife 2015;4:e09960.
+        <br><br>
+        The release of v1.1 on 10/17/2016 includes 3,697 PoK, 13,888 PoE, and the Neuron Term Portal, which allows one to view definitions for 
+        terms and phrases used on this website. Reference: <b>Hamilton et al., 2016</b>
+        <a href="http://link.springer.com/article/10.1007/s40708-016-0053-3">
+        <i>Name-calling in the hippocampus (and beyond): coming to terms with neuron types and properties</i></a>.
+        Brain Informatics 2017 Mar;4(1):1-12; doi:10.1007/s40708-016-0053-3.
+        <br><br>
+        The release of v1.2 on 11/06/2016 includes 3,936 PoK, 14,399 PoE, and a clickable Connectivity Matrix, an interactive Connectivity Navigator, and the
+        ability to Search by Connectivity. Reference: <b>Rees et al., 2016</b>
+        <a href="http://www.eneuro.org/content/3/6/ENEURO.0205-16.2016">
+        <i>Graph theoretic and motif analyses of the hippocampal neuron type
+        potential connectome</i></a>. eNeuro Nov 2016, ENEURO.0205-16.2016; DOI: 10.1523/ENEURO.0205-16.2016.
+        <br><br>
+        The release of v1.3 on 06/30/2017 includes 10,822 PoK, 21,285 PoE, and a downloadable list of Allen Brain Atlas (ABA) predictions of marker
+        expressions and a utility for viewing the effects of thresholds on ABA marker expression predictions.
+        Reference: <b>Hamilton et al., 2017</b>
+        <a href = "http://www.sciencedirect.com/science/article/pii/S073170851730794X">
+        <i>Molecular fingerprinting of principal neurons in the rodent hippocampus: a neuroinformatics approach.</i></a>
+        Journal of Pharmaceutical and Biomedical Analysis 2017 Sep 10;144:269-278; doi: 10.1016/j.jpba.2017.03.062.
+        <br><br>
+        The release of v1.4 on 08/15/2019 includes an additional 7,946 PoK, 8,486 PoE, and the ability to
+        access the Synapse Knowledge Base.
+        Reference: <b>Moradi and Ascoli, 2019</b>
+        <a href = "https://doi.org/10.1002/hipo.23148">
+        <i>A comprehensive knowledge base of synaptic electrophysiology in the rodent hippocampal formation.</i></a>
+        Hippocampus 2020 Apr;30(4):314-331; doi: https://doi.org/10.1002/hipo.23148.
+        <br><br>
+        The release of v1.5 on 09/06/2019 includes an additional 830 PoK, 77 PoE, and relational
+        expression inferences in the knowledge base.
+        Reference: <b>White, et al., 2019</b>
+        <a href = "https://onlinelibrary.wiley.com/doi/full/10.1002/hipo.23165">
+        <i>Molecular Expression Profiles of Morphologically Defined Hippocampal Neuron Types: Empirical Evidence and
+        Relational Inferences.</i></a>
+        Hippocampus 2020 May;30(5):472-487; doi: 10.1002/hipo.23165.
+        <br><br>
+        The release of v1.6 on 09/20/2019 includes an additional 3,640 PoK, 187 PoE, and firing pattern
+        phenotypes in the knowledge base.
+        Reference: <b>Komendantov, et al., 2019</b>
+        <a href = "https://www.nature.com/articles/s41598-019-52611-w">
+        <i>Quantitative firing pattern phenotyping of hippocampal neuron type.</i></a>
+        Scientific Reports 2019 Nov 29;9(1):17915; doi: 10.1038/s41598-019-52611-w.
       </font>
 
       <br><br>
@@ -267,43 +276,48 @@ jQuery(document).ready(function() {
       <br>
     </td>
 
-    <td width="50%" style='vertical-align:top; padding-top:85px; padding-left:50px'>
+    <td width="50%" style='vertical-align:top; padding-top:50px; padding-left:50px'>
       <img src='images/brain6.png' width='450px' id="image_brain"/>
       <font class='font2' color='#000000'>
-      <br><br><br><br>
-      The release of v1.6 on 09/20/2019 includes an additional 3,640 PoK, 187 PoE, and firing pattern
-      phenotypes in the knowledge base.
-      Reference: <b>Komendantov, et al., 2019</b>
-      <a href = "https://www.nature.com/articles/s41598-019-52611-w">
-      <i>Quantitative firing pattern phenotyping of hippocampal neuron type.</i></a>
-      Scientific Reports 2019 Nov 29;9(1):17915; doi: 10.1038/s41598-019-52611-w.
-      <br><br>
-      The release of v1.7 on 10/08/2019 includes Izhikevich models for most of the neuron types,
-      downloadable parameter and CARLSim4-simulation files, and the ability to perform simulations of the firing
-      patterns.
-      Reference: <b>Venkadesh, et al., 2019</b>
-      <a href = "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007462">
-      <i>Simple models of quantitative firing phenotypes in hippocampal neurons: comprehensive coverage of intrinsic
-      diversity.</i></a>
-      PLOS Computational Biology 2019 Oct 28;15(10):e1007462; doi: 10.1371/journal.pcbi.1007462.
-      <br><br>
-      The release of v1.8 on 12/28/2020 includes an additional 5,152 PoK, 6,055 PoE, and new browsable matrices for neurite lengths, somatic path distances, numbers of potential synapses, numbers of contacts, and connection probabilities. 
-      Reference: <b>Tecuatl, et al., 2020</b>
-      <a href = "https://www.jneurosci.org/content/41/8/1665">
-      <i>Comprehensive estimates of potential synaptic connections in local circuits of the rodent hippocampal formation by axonal-dendritic overlap.</i></a>
-      Journal of Neuroscience 2021 Feb 24;41(8):1665-1683; doi: 10.1523/JNEUROSCI.1193-20.2020.
-      <br><br>
-      The release of v1.9 on 02/27/2021 includes an additional 91 PoK, 768 PoE, and a new browsable matrix for in vivo recordings. 
-      Reference: <b>Sanchez-Aguilera, et al., 2021</b>
-      <a href = "https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001213">
-      <i>An update to Hippocampome.org by integrating single-cell phenotypes with circuit function in vivo.</i></a>
-      PLoS Biology 2021 May 6;19(5):e3001213; doi: 10.1371/journal.pbio.3001213.
-      <br><br>
-      <b>*NEW*</b> The release of v1.10 on 08/03/2021 includes the Cognome, a literature review and knowledge base of spiking neural circuit and network simulations of the hippocampal formation. 
-      Reference: <b>Sutton and Ascoli, 2021</b>
-      <a href = "https://www.sciencedirect.com/science/article/abs/pii/S1389041721000589">
-      <i>Spiking neural networks and hippocampal function: A web-accessible survey of simulations, modeling methods, and underlying theories.</i></a>
-      Cognitive Systems Research 2021 (in press).
+        <br><br><br>
+        The release of v1.7 on 10/08/2019 includes Izhikevich models for most of the neuron types,
+        downloadable parameter and CARLSim4-simulation files, and the ability to perform simulations of the firing
+        patterns.
+        Reference: <b>Venkadesh, et al., 2019</b>
+        <a href = "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007462">
+        <i>Simple models of quantitative firing phenotypes in hippocampal neurons: comprehensive coverage of intrinsic
+        diversity.</i></a>
+        PLOS Computational Biology 2019 Oct 28;15(10):e1007462; doi: 10.1371/journal.pcbi.1007462.
+        <br><br>
+        The release of v1.8 on 12/28/2020 includes an additional 5,152 PoK, 6,055 PoE, and new browsable matrices for neurite lengths, somatic path distances, numbers of potential synapses, numbers of contacts, and connection probabilities. 
+        Reference: <b>Tecuatl, et al., 2020</b>
+        <a href = "https://www.jneurosci.org/content/41/8/1665">
+        <i>Comprehensive estimates of potential synaptic connections in local circuits of the rodent hippocampal formation by axonal-dendritic overlap.</i></a>
+        Journal of Neuroscience 2021 Feb 24;41(8):1665-1683; doi: 10.1523/JNEUROSCI.1193-20.2020.
+        <br><br>
+        The release of v1.9 on 02/27/2021 includes an additional 91 PoK, 768 PoE, and a new browsable matrix for in vivo recordings. 
+        Reference: <b>Sanchez-Aguilera, et al., 2021</b>
+        <a href = "https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001213">
+        <i>An update to Hippocampome.org by integrating single-cell phenotypes with circuit function in vivo.</i></a>
+        PLoS Biology 2021 May 6;19(5):e3001213; doi: 10.1371/journal.pbio.3001213.
+        <br><br>
+        The release of v1.10 on 08/03/2021 includes the Cognome, a literature review and knowledge base of spiking neural circuit and network simulations of the hippocampal formation. 
+        Reference: <b>Sutton and Ascoli, 2021</b>
+        <a href = "https://www.sciencedirect.com/science/article/abs/pii/S1389041721000589">
+        <i>Spiking neural networks and hippocampal function: A web-accessible survey of simulations, modeling methods, and underlying theories.</i></a>
+        Cognitive Systems Research 2021 70:80-92. doi: 10.1016/j.cogsys.2021.07.008.
+        <br><br>
+        The release of v1.11 on 03/01/2022 includes 121 PoK, 651 PoE, and a new browsable matrix of neuron type census values for rat and mouse. 
+        Reference: <b>Attili et al., 2022</b>
+        <a href = "https://onlinelibrary.wiley.com/doi/10.1111/ejn.15639">
+        <i>Quantification of neuron types in the rodent hippocampal formation by data mining and numerical optimization.</i></a>
+        European Journal of Neuroscience 2022 55:1724-1741. doi: 10.1111/ejn.15639.
+        <br><br>
+        <b>*NEW*</b> The release of v1.12 on 05/05/2022 includes 499,200 PoK, 8,495 PoE, and new browsable matrices of synaptic physiology parameter values for combinations of species, sex, age, temperature, and recording mode. 
+        Reference: <b>Moradi et al., 2022</b>
+        <a href = "https://www.nature.com/articles/s42003-022-03329-5">
+        <i>Normalized unitary synaptic signaling of the hippocampus and entorhinal cortex predicted by deep learning of experimental recordings.</i></a>
+        Communications Biology 2022 5(418):1-19. doi: 10.1038/s42003-022-03329-5.
       </font>
     </td>
   </tr>
@@ -322,15 +336,15 @@ jQuery(document).ready(function() {
             portal was vetted using the "fair use" criteria defined in
             <a href="http://www.copyright.gov/title17/92chap1.html#107" target="_blank">Title 17 of the U.S. Code,
             &sect; 107</a>. This content, cited throughout this portal, may be protected by Copyright Law and unavailable
-            for reuse.  Except otherwise noted, this web portal is &copy; 2015-2021 by George Mason University, under a
+            for reuse.  Except otherwise noted, this web portal is &copy; 2015-2022 by George Mason University, under a
             <a href =' http://creativecommons.org/licenses/by-sa/3.0/' target="_blank">Creative Commons
             Attribution-ShareAlike [CC BY-SA] license</a>. 
 
           <!-- <br /><p><?php echo $info; ?> -->
           <br /><p><?php $webpage_id_number = 1; include('report_hits.php'); ?>
           <br>
-          28,481 Pieces of Knowledge (PoK) and 36,858 Pieces of Evidence (PoE)
-          <br />Last Update: 11 Nov 2021 (<a href="Help_Release_Notes.php">v1.10 R 1C</a>)</font>
+          527,802 Pieces of Knowledge (PoK) and 46,004 Pieces of Evidence (PoE)
+          <br />Last Update: 05 May 2022 (<a href="Help_Release_Notes.php">v2.0&alpha; R 1P</a>)</font>
           <br />
         </div>
     </td>   
