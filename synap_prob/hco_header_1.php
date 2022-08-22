@@ -2,7 +2,7 @@
 	echo "<script type='text/javascript' src='style/resolution.js'></script>
 	<link rel='stylesheet' href='function/menu_support_files/menu_main_style.css' type='text/css' />
 	<script src='jqGrid-4/js/jquery-1.11.0.min.js' type='text/javascript'></script>
-	<script src='http://code.jquery.com/jquery-migrate-1.2.1.js'></script>
+	<script src='https://code.jquery.com/jquery-migrate-1.2.1.js'></script>
 	<script src='jqGrid-4/js/i18n/grid.locale-en.js' type='text/javascript'></script>
 	<script src='jqGrid-4/js/jquery.jqGrid.src.js' type='text/javascript'></script>
 	<script src='synap_prob/js/main.js' type='text/javascript'></script>";
