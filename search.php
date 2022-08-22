@@ -1,97 +1,53 @@
-<?php
-
+<?ph
   include ("permission_check.php");
-
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <?php
-
 session_start();
 
 include ("function/property.php");
-
 include ("function/part.php");
-
 include ("function/relation.php");
-
 include ("function/value.php");
-
 include ("function/ephys_unit_table.php");
 
 require_once('class/class.type.php');
-
 require_once('class/class.markerdata.php');
-
 require_once('class/class.epdata.php');
-
 require_once('class/class.property.php');
-
 require_once('class/class.evidencepropertyyperel.php');
-
 require_once('class/class.epdataevidencerel.php');
-
 require_once('class/class.temporary_search.php');
 
-
-
 $type = new type($class_type);
-
 $number_type = $type->getNumber_type();
-
 $markerdata = new markerdata($class_markerdata);
-
 $epdata = new epdata($class_epdata);
-
 $property_ob = new property($class_property);
-
 $evidencepropertyyperel =  new evidencepropertyyperel($class_evidence_property_type_rel);
-
 $epdataevidencerel =  new epdataevidencerel($class_epdataevidencerel);
-
 $temporary_search = new temporary_search();
-
-
 
 $full_search_string="";
 
-
-
-
-
 // Comes from INDEX:PHP and in this case the program creates the temporary table:
-
 if ($_REQUEST['searching'])
-
 {
-
 	$ip_address = $_SERVER['REMOTE_ADDR'];
-
 	$ip_address = str_replace('.', '_', $ip_address);
 
 	$time_t = time();
 
-	
-
 	$name_temporary_table ='search1_'.$ip_address."__".$time_t;
-
 	echo " Temporary Table Name : ".$name_temporary_table;
-
 	$_SESSION['name_temporary_table'] = $name_temporary_table;
 
-
-
 	// Creates the temporary table:
-
 	$temporary_search -> setName_table($name_temporary_table);
-
 	$temporary_search -> create_temp_table();
-
-	
-
 	$temporary_search -> insert_temporary('1', NULL, NULL, NULL, NULL, NULL);	
-
 }
 
 
@@ -695,17 +651,11 @@ include ("function/icon.html");
 				$n_part = 3;
 
 			if ($property1 == 'Molecular markers')
-
 			{
-
 				getSubject_untracked();	// Function to store all the untracked Subjects from the property table (function/part.php)
-
 				$expressiondata = $markerdata -> retrieve_expression();
-
 				$n_part = $expressiondata -> getNumber_expression();
-
 //				$n_part = 113; // see csv2db_import/csv2db/lib/markerdata_string_field.py
-
 			}
 
 			if ($property1 == 'Electrophysiology')
@@ -753,11 +703,8 @@ include ("function/icon.html");
 			}
 
 			else{
-
 				for ($i=0; $i<$n_part; $i++)
-
 					$value_part[$i] = part($i, $property1); 
-
 			}
 
 								
@@ -779,185 +726,98 @@ include ("function/icon.html");
 			print ("<OPTION VALUE='-'>-</OPTION>");
 
 			
-
 			if ($property1 == 'Molecular markers')
-
 			{
-
 				// Store the first 20 Tracked markers(part) in a separate array
-
-				// and conver into lower case
-
+				// and convert into lower case
 				for($iter = 0; $iter < 20; $iter++)
-
 				{
-
 					$value_part_tracked[$iter] = $value_part[$iter];
-
 					$lowercase = strtolower($value_part_tracked[$iter]);
-
 					$value_part_tracked[$iter] = $lowercase;
-
 				}	
-
 				
-
 				// Store the Untracked markers(part) - untracked markers start from 20th index
-
-				// and conver into lower case
-
+				// and convert into lower case
 				for($j_iter = 20; $j_iter < count($value_part); $j_iter++)
-
 				{
-
 					$value_part_untracked[$j_iter] = $value_part[$j_iter];
-
 					$lowercase = strtolower($value_part_untracked[$iter]);
-
 					$value_part_untracked[$iter] = $lowercase;
-
 				}
-
-				
 
 				// Copy all the Part to a temporary arrary
-
 				for ($c = 0; $c < count($value_part); $c++) {
-
 						$value_part_temp[$c] = $value_part[$c];
-
 				}
 
-				
-
 				// Sort the Tracker Markers (Part)
-
 				sort($value_part_tracked);
 
-				
-
 				// --------------------------------------------------------
-
 				// --------------------------------------------------------
-
 				// Since "value_part_untracked" array starts from 20th index
-
 				// and sort() function doesn't correctly sort this array
-
 				// Hence a temp array has been used to store the untracked marker starting from 0th index
-
 				// After sorting the temp array is used to store back to "value_part_untracked" array that 
-
 				// begins from 20th index for further processing
-
 				$counter = 20;
 
 				for($k_iter = 0; $k_iter < count($value_part_untracked); $k_iter++)
-
 				{
-
 					$value_part_untracked_temp[$k_iter] = $value_part_untracked[$counter];
-
 					$counter++;
-
 				}
 
-	
-
 				sort($value_part_untracked_temp);
-
-				
 
 				$counter = 20;
 
 				for($k_iter = 0; $k_iter < count($value_part_untracked_temp); $k_iter++)
-
 				{
-
 					$value_part_untracked[$counter] = $value_part_untracked_temp[$k_iter];
-
 					$counter++;
-
 				}
 
 				// --------------------------------------------------------
-
 				// --------------------------------------------------------
-
-				
 
 				for ($c = 0; $c < count($value_part); $c++) 
-
 				{
-
 					// Add a Delimeter after all the tracked markers
-
 					if($c == 20)
-
 						print ("<OPTION VALUE='--'>-------------------</OPTION>");
 
-						
-
 					for($cc=0;$cc<count($value_part_temp);$cc++)
-
 					{
-
 						if($c < 20)
-
 						{
-
 							// Check all the Tracked Markers have correct names
-
 							if(strcasecmp($value_part_tracked[$c],$value_part_temp[$cc])==0)
-
 							{
-
 								$value_part_tracked[$c] = $value_part_temp[$cc];
 
-								
-
 								// Check if Part is already used by the user; if not print
-
 								if ($value_part_tracked[$c] != $part1)
-
 									print ("<OPTION VALUE='$value_part_tracked[$c]'>$value_part_tracked[$c]</OPTION>");
-
 							}
-
 						}
-
 						else	
-
 						{
-
 							// Check all the Untracked Markers have correct names
-
 							if(strcasecmp($value_part_untracked[$c],$value_part_temp[$cc])==0)
-
 							{
-
 								$value_part_untracked[$c] = $value_part_temp[$cc];
-
 								
-
 								// Check if Part is already used by the user; if not print
-
 								if ($value_part_untracked[$c] != $part1)
-
 									print ("<OPTION VALUE='$value_part_untracked[$c]'>$value_part_untracked[$c]</OPTION>");
-
 							}
-
 						}
-
 					}
-
 				}
-
 			}
-
 			else // if ($property1 != 'Molecular markers')
-
 			{
 
 				if($property1 !='Firing Pattern Parameter'){
