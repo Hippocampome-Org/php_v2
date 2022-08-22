@@ -136,9 +136,10 @@ border:none;
 }
 
 .index_table {
-	position:absolute; top: 90px; left: 88px;
+/*	position:absolute; top: 90px; left: 88px;*/
+	position:absolute; top: 90px; left: 0px;
 	border:none;
-	margin:auto;
+/*	margin:auto;*/
 }
 
 
