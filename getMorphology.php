@@ -1,26 +1,27 @@
 <?php
-  include ("permission_check.php");
-  include("function/stm_lib.php");
-  //$research = $_REQUEST['research'];
-  // Define all the necessary classes needed for the application
-  require_once('class/class.type.php');
-  require_once('class/class.property.php');
-  require_once('class/class.evidencepropertyyperel.php');
-  require_once('class/class.temporary_result_neurons.php');
-  // total parcles in layers in morphology
-  define('NO_CONNECTION',0);
-  define('P_INHIBITORY_CONN',1);
-  define('P_EXCITATORY_CONN',2);
-  define('NON_PRESENT',0);
+include ("permission_check.php");
+include("function/stm_lib.php");
+//$research = $_REQUEST['research'];
+// Define all the necessary classes needed for the application
+require_once('class/class.type.php');
+require_once('class/class.property.php');
+require_once('class/class.evidencepropertyyperel.php');
+require_once('class/class.temporary_result_neurons.php');
+// total parcles in layers in morphology
+define('NO_CONNECTION',0);
+define('P_INHIBITORY_CONN',1);
+define('P_EXCITATORY_CONN',2);
+define('NON_PRESENT',0);
 
-  define('DENDRITES_PRESENT',2);
-  define('AXONS_PRESENT',1);
-  define('AXONS_DENDRITES_PRESENT',3);
-  define('ONLY_SOMA_PRESENT',4);
+define('DENDRITES_PRESENT',2);
+define('AXONS_PRESENT',1);
+define('AXONS_DENDRITES_PRESENT',3);
+define('ONLY_SOMA_PRESENT',4);
 
-  define('AXONS_SOMA_PRESENT',14);
-  define('DENDRITES_SOMA_PRESENT',24);
-  define('AXONS_DENDRITES_SOMA_PRESENT',34);
+define('AXONS_SOMA_PRESENT',14);
+define('DENDRITES_SOMA_PRESENT',24);
+define('AXONS_DENDRITES_SOMA_PRESENT',34);
+  
 $research = $_REQUEST['research'];
 $table = $_REQUEST['table_result'];
 // $h = fopen('log_test.txt', 'a');
@@ -425,16 +426,16 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
 			{
 				$unvetted = check_unvetted1($id, $id_p[$ii], $evidencepropertyyperel); // Checks if a particular property is vetted or unvetted
 				$neuronType ='somata';
-				$img_somata = check_color_somata($id,$neuronType, $unvetted,$val[$ii],$part[$ii]);
+				$img_somata = check_color_somata($id, $neuronType, $unvetted, $val[$ii], $part[$ii]);
 				if($img_somata!=''){
 				 	$hippo[$val[$ii]] = $img_somata[0];
-                    //$hippo_color[$val[$ii]] = $img_somata[1];	
-                    $hippo_color_copy[$val[$ii]] = 'pcl_soma';
-			        if($val[$ii]=='DG:SG' || $val[$ii]=='CA3:SP' || $val[$ii]=='CA2:SP' || $val[$ii]=='CA1:SP' || $val[$ii]=='SUB:SP')
-			        {
-			            $soma_pcl[$id]=$val[$ii];
-			            $soma_ids[$i]=$id;
-			        	}	
+          //$hippo_color[$val[$ii]] = $img_somata[1];	
+          $hippo_color_copy[$val[$ii]] = 'pcl_soma';
+	        if($val[$ii]=='DG:SG' || $val[$ii]=='CA3:SP' || $val[$ii]=='CA2:SP' || $val[$ii]=='CA1:SP' || $val[$ii]=='SUB:SP')
+	        {
+            $soma_pcl[$id]=$val[$ii];
+            $soma_ids[$i]=$id;
+        	}	
 				} 
 			}
 		}
@@ -519,7 +520,7 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
 /*Legend  for $pot_conn_array
 0-blank
 1-axon
-2-dedrites
+2-dendrites
 3-axon and Dendrite
 4-soma present
 */
@@ -580,30 +581,33 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 
 // query to get pc and soma_pcl flag associated with all types
 // portions of the query that formerly accessed the mec_lec and is flags have been removed 03/26/2020 DWW
-$query_pc_and_somapcl_flag="SELECT DISTINCT e.Type_id,e.pc_flag,e.soma_pcl_flag 
-FROM EvidencePropertyTypeRel e, Type t
-WHERE t.id=e.Type_id and e.pc_flag is not null and e.soma_pcl_flag is not null
-GROUP BY t.id
-ORDER BY t.position";
+$query_pc_and_somapcl_flag = "SELECT DISTINCT e.Type_id, e.pc_flag, e.soma_pcl_flag
+	FROM EvidencePropertyTypeRel e, Type t
+	WHERE t.id=e.Type_id and e.pc_flag is not null and e.soma_pcl_flag is not null
+	GROUP BY t.id
+	ORDER BY t.position";
 $result_pc_and_somapcl_flag = mysqli_query($GLOBALS['conn'], $query_pc_and_somapcl_flag);
 
 $index=0;
 if (!$result_pc_and_somapcl_flag) {
-    print("<p>Error occured in Listing Connectivity Records.</p>");
+  print("<p>Error occured in Listing Connectivity Records.</p>");
 }
-// store pc and soma pcl flag values for each type in pc_flag and soma_pcl_flag_array.
-// mec_lec and is flag-related code has been commented out 03/26/2020 DWW
-while($row=mysqli_fetch_array($result_pc_and_somapcl_flag, MYSQLI_ASSOC))
+else
 {
-    $pc_flag = $row['pc_flag'];
-    $soma_pcl_flag=$row['soma_pcl_flag'];
-//    $mec_lec_flag = $row['mec_lec_flag'];
-//    $is_flag = $row['is_flag'];
-    $pc_flag_array[$index]=$pc_flag;
-    $soma_pcl_flag_array[$index]=$soma_pcl_flag;
-//    $mec_lec_flag_array[$index]=$mec_lec_flag;
-//    $is_flag_array[$index] = $is_flag;
-    $index++;   
+	// store pc and soma pcl flag values for each type in pc_flag and soma_pcl_flag_array.
+	// mec_lec and is flag-related code has been commented out 03/26/2020 DWW
+	while ($row=mysqli_fetch_array($result_pc_and_somapcl_flag, MYSQLI_ASSOC))
+	{
+	  $pc_flag = $row['pc_flag'];
+	  $soma_pcl_flag=$row['soma_pcl_flag'];
+	//    $mec_lec_flag = $row['mec_lec_flag'];
+	//    $is_flag = $row['is_flag'];
+	  $pc_flag_array[$index]=$pc_flag;
+	  $soma_pcl_flag_array[$index]=$soma_pcl_flag;
+	//    $mec_lec_flag_array[$index]=$mec_lec_flag;
+	//    $is_flag_array[$index] = $is_flag;
+	  $index++;   
+	}
 }
 
 // @nmsutton This is where a new query of TypeTypeRel accessing connection_status needs to be written
@@ -624,18 +628,17 @@ while(list($Type1_id,$Type2_id,$connection_status) = mysqli_fetch_row($connectio
 }
 
 // create map
-$color_map=array(AXONS_PRESENT => "red",AXONS_SOMA_PRESENT => "redSoma",DENDRITES_PRESENT => "blue",DENDRITES_SOMA_PRESENT => "blueSoma",
-AXONS_DENDRITES_PRESENT => "violet",AXONS_DENDRITES_SOMA_PRESENT => "violetSoma", ONLY_SOMA_PRESENT=> "somata");
+$color_map=array(AXONS_PRESENT => "red",AXONS_SOMA_PRESENT => "redSoma",DENDRITES_PRESENT => "blue",DENDRITES_SOMA_PRESENT => "blueSoma",AXONS_DENDRITES_PRESENT => "violet",AXONS_DENDRITES_SOMA_PRESENT => "violetSoma", ONLY_SOMA_PRESENT => "somata");
 // create connectivity matrix using morphology data
 for ($i = 0; $i < $number_type; $i++) {
-    if (isset($id_search))
-        $id = $id_search[$i];
-    else
-        $id = $type->getID_array($i);
+  if (isset($id_search))
+      $id = $id_search[$i];
+  else
+      $id = $type->getID_array($i);
 
-    $type->retrive_by_id($id); // Retrieve id
-    $excit_inhib = $type->getExcit_Inhib(); //Retrieve the Excit or Inhib
-    if (!(in_array($id, $special_neuron_id_basket) or in_array($id, $special_neuron_id_axo_axonic))){
+  $type->retrive_by_id($id); // Retrieve id
+  $excit_inhib = $type->getExcit_Inhib(); //Retrieve the Excit or Inhib
+  if (!(in_array($id, $special_neuron_id_basket) or in_array($id, $special_neuron_id_axo_axonic))){
 		for ($j = 0; $j < $layer_col_count; $j++) {
 			if ($pot_conn_array[$i][$j] == AXONS_PRESENT || $pot_conn_array[$i][$j] == AXONS_DENDRITES_PRESENT || $pot_conn_array[$i][$j] == AXONS_SOMA_PRESENT || $pot_conn_array[$i][$j] == AXONS_DENDRITES_SOMA_PRESENT) {
 				$src_column = $j;
@@ -657,152 +660,52 @@ for ($i = 0; $i < $number_type; $i++) {
 						    $type->getID_array($k).",".str_replace(":","_",$col_array[$j]).",".$color_map[$pot_conn_array[$k][$src_column]].",".
 						    P_EXCITATORY_CONN;
 						    $potn_conn_neuron_pcl[$i][$k]=$data;
-						}
-					}
-					if ($i == $k && ($pot_conn_array[$i][$j] == AXONS_DENDRITES_PRESENT || $pot_conn_array[$i][$j] == AXONS_DENDRITES_SOMA_PRESENT)) {
-						if ($excit_inhib == "i" && $pon_conn_display_array[$i][$k]==0) {
-							$pon_conn_display_array[$i][$k] = P_INHIBITORY_CONN; //gray
+						} // if ($excit_inhib == "i"
+					} // if ($pot_conn_array[$k][$src_column]
+				} // $k
+			} // if ($pot_conn_array[$i][$j]
+		} // $j
+	} // if (!(in_array($id, $special_neuron_id_basket) 
 
-							// Link code
-						    $data=$type->getID_array($i).",".str_replace(":","_",$col_array[$j]).",".$color_map[$pot_conn_array[$i][$j]].",".
-						    $type->getID_array($k).",".str_replace(":","_",$col_array[$j]).",".$color_map[$pot_conn_array[$k][$src_column]].",".
-						    P_INHIBITORY_CONN;
-						    $potn_conn_neuron_pcl[$i][$k]=$data;
-
-						} else if ($excit_inhib == "e" && $pon_conn_display_array[$i][$k]==0) {
-							$pon_conn_display_array[$i][$k] = P_EXCITATORY_CONN; //black
-
-							// Link code
-						    $data=$type->getID_array($i).",".str_replace(":","_",$col_array[$j]).",".$color_map[$pot_conn_array[$i][$j]].",".
-						    $type->getID_array($k).",".str_replace(":","_",$col_array[$j]).",".$color_map[$pot_conn_array[$k][$src_column]].",".
-						    P_EXCITATORY_CONN;
-						    $potn_conn_neuron_pcl[$i][$k]=$data;
-
-						}
-					}
-				}
-			}
-			/*
-			// code for potential connections
-			if ($connection_status_array[$i][$j]=='negative') {
-				$pon_conn_display_array[$i][$k] = P_INHIBITORY_CONN;
-			}
-			else if ($connection_status_array[$i][$j]=='positive') {
-				$pon_conn_display_array[$i][$k] = P_EXCITATORY_CONN;
-			}
-			else if ($connection_status_array[$i][$j]=='potential') {
-				$pon_conn_display_array[$i][$k] = P_EXCITATORY_CONN;
-			}
-			*/
-		}
-	}
 	// check axon to soma link for axonic and basket neurons
 	else{
 		for ($j = 0; $j < $layer_col_count; $j++) {
 			$src_column = $j;
-		    if ($pot_conn_array[$i][$src_column] == AXONS_PRESENT || $pot_conn_array[$i][$src_column] == AXONS_DENDRITES_PRESENT || $pot_conn_array[$i][$src_column] == AXONS_SOMA_PRESENT || $pot_conn_array[$i][$src_column] == AXONS_DENDRITES_SOMA_PRESENT) { 
-		        for ($k = 0; $k < $number_type; $k++) {
-		            if ($pot_conn_array[$k][$src_column] == ONLY_SOMA_PRESENT || $pot_conn_array[$k][$src_column] == DENDRITES_SOMA_PRESENT || $pot_conn_array[$k][$src_column] == AXONS_SOMA_PRESENT || $pot_conn_array[$k][$src_column] == AXONS_DENDRITES_SOMA_PRESENT) {
-						if ($excit_inhib == "i" && $pon_conn_display_array[$i][$k]==0) {
-						  $pon_conn_display_array[$i][$k] = P_INHIBITORY_CONN; //gray
+	    if ($pot_conn_array[$i][$src_column] == AXONS_PRESENT || $pot_conn_array[$i][$src_column] == AXONS_DENDRITES_PRESENT || $pot_conn_array[$i][$src_column] == AXONS_SOMA_PRESENT || $pot_conn_array[$i][$src_column] == AXONS_DENDRITES_SOMA_PRESENT) { 
+        for ($k = 0; $k < $number_type; $k++) {
+          if ($pot_conn_array[$k][$src_column] == ONLY_SOMA_PRESENT || $pot_conn_array[$k][$src_column] == DENDRITES_SOMA_PRESENT || $pot_conn_array[$k][$src_column] == AXONS_SOMA_PRESENT || $pot_conn_array[$k][$src_column] == AXONS_DENDRITES_SOMA_PRESENT) {
+						if ($pon_conn_display_array[$i][$k] == 0) {
+						  $pon_conn_display_array[$i][$k] = P_INHIBITORY_CONN; //gray								
 
-						  // Link code
-						    $data=$type->getID_array($i).",".str_replace(":","_",$col_array[$j]).",".$color_map[$pot_conn_array[$i][$j]].",".
-						    $type->getID_array($k).",".str_replace(":","_",$col_array[$j]).",".$color_map[$pot_conn_array[$k][$src_column]].",".
-						    P_INHIBITORY_CONN;
-						    $potn_conn_neuron_pcl[$i][$k]=$data;
-/* This code has been commented out because axo-axonic and basket connections are never excitatoty
-// 03/26/2020 DWW
-						} elseif($excit_inhib == "e" && $pon_conn_display_array[$i][$k]==0) {
-						  $pon_conn_display_array[$i][$k] = P_EXCITATORY_CONN; //black
-
-						  // Link code
-						    $data=$type->getID_array($i).",".str_replace(":","_",$col_array[$j]).",".$color_map[$pot_conn_array[$i][$j]].",".
-						    $type->getID_array($k).",".str_replace(":","_",$col_array[$j]).",".$color_map[$pot_conn_array[$k][$src_column]].",".
-						    P_EXCITATORY_CONN;
-						    $potn_conn_neuron_pcl[$i][$k]=$data;
-*/
+					  	// Link code
+					    $data=$type->getID_array($i).",".str_replace(":","_",$col_array[$j]).",".$color_map[$pot_conn_array[$i][$j]].",".$type->getID_array($k).",".str_replace(":","_",$col_array[$j]).",".$color_map[$pot_conn_array[$k][$src_column]].",".P_INHIBITORY_CONN;
+					    $potn_conn_neuron_pcl[$i][$k]=$data;
 						}
-		            }
-		        }
-		    }
-		}
-	}
-}
+		      }
+		   	} // $k
+		  } // if ($pot_conn_array
+		} // $j
+	} // if (!(in_array
+} // $i
+
 // Logic for axonic and basket neurons
 for ($row_index = 0; $row_index < $number_type; $row_index++) {
-    if (isset($id_search))
-        $id = $id_search[$row_index];
-    else
-        $id = $type->getID_array($row_index);
-    if (in_array($id, $special_neuron_id_basket) or in_array($id, $special_neuron_id_axo_axonic)) {
-	    for ($col_index = 0; $col_index < $number_type; $col_index++) {
-	    	
-	    	
-	    	if(in_array($id, $special_neuron_id_basket) and $soma_pcl_flag_array[$col_index]!=1){
-	            $pon_conn_display_array[$row_index][$col_index]=NO_CONNECTION;
-		   }
-		   else if(in_array($id, $special_neuron_id_axo_axonic) and $pc_flag_array[$col_index]!=1) {
-		   		$pon_conn_display_array[$row_index][$col_index]=NO_CONNECTION;
-		   }
-		     
-		   
-	    }
-    }
-}
+  if (isset($id_search))
+      $id = $id_search[$row_index];
+  else
+      $id = $type->getID_array($row_index);
 
-/* @nmsutton This is the section of code that needs to be rewritten to access the connection_status variable*/
- for ($row_index = 0; $row_index < $number_type; $row_index++) {
-    //$row_value = $mec_lec_flag_array[$row_index];
-    //$is_row_value = $is_flag_array[$row_index];
-    $row_id = $type->getID_array($row_index);
+  if (in_array($id, $special_neuron_id_basket) or in_array($id, $special_neuron_id_axo_axonic)) {
     for ($col_index = 0; $col_index < $number_type; $col_index++) {
-    	//$col_value = $mec_lec_flag_array[$col_index];
-    	//$is_col_value = $is_flag_array[$col_index];
-        $col_id = $type->getID_array($col_index);
-        if(($row_id==4056&&$col_id==4036)||($row_id==4056&&$col_id==4078)||($row_id==4031&&$col_id==4036)||($row_id==4031&&$col_id==4078)){
-        	$pon_conn_display_array[$row_index][$col_index]=NO_CONNECTION;
-        }
-        if ($connection_status_array[$row_id][$col_id]=='negative') {
-			$pon_conn_display_array[$row_index][$col_index] = 0;//NO_CONNECTION;
-			//echo "<br>".$row_id." ".$col_id;
-		}
-		//echo "<br>".$connection_status_array[$row_id][$col_id];
-        /*
-    	if($row_value*$col_value==-1){
-            $pon_conn_display_array[$row_index][$col_index]=NO_CONNECTION;
-	    }
-	    if($is_row_value==1 && $is_col_value==-1){
-	    	$pon_conn_display_array[$row_index][$col_index]=NO_CONNECTION;    
-	    }
-	    */
-    }
-}
-
-
-
-
-/* This code section has been commented out due to disuse 03/26/2020 DWW
-// Save potential connection to database
-for ($row_index = 0; $row_index < $number_type; $row_index++) {
-    for ($col_index = 0; $col_index < $number_type; $col_index++) {
-    	 $source = $type->getID_array($row_index);
-    	 $destination = $type->getID_array($col_index);
-    	 if($pon_conn_display_array[$row_index][$col_index]!=0){
-    	 	$query="SELECT * FROM Conndata WHERE Type1_id='$source' AND Type2_id='$destination' AND connection_status='potential'";
-			$result=mysqli_query($GLOBALS['conn'], $query);
-			if(mysqli_num_rows($result)==0){
-			 	#set time zone
-			 	date_default_timezone_set('America/New_York');
-				$date_curr=date('Y-m-d H:i:s');
-				$query="INSERT INTO Conndata VALUES (NULL,'$date_curr','$source','$destination','potential',NULL)";
-				mysqli_query($GLOBALS['conn'], $query);
-			}
-    	 }
-    }
-}
-*/
-
+    	if (in_array($id, $special_neuron_id_basket) and $soma_pcl_flag_array[$col_index]!=1) {
+        $pon_conn_display_array[$row_index][$col_index]=NO_CONNECTION;
+	   	}
+	   	elseif(in_array($id, $special_neuron_id_axo_axonic) and $pc_flag_array[$col_index]!=1) {
+	   		$pon_conn_display_array[$row_index][$col_index]=NO_CONNECTION;
+	   	} 
+    } // $col_index
+  }
+} // $row_index
 
 $responce->potential_array=$pon_conn_display_array;
 $responce->potn_conn_neuron_pcl_array=$potn_conn_neuron_pcl;
