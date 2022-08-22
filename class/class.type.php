@@ -21,6 +21,8 @@ class type
 	private $_nickname_neuron_array;
 	private $_name_neuron;
 	private $_nickname_neuron;
+	private $_v2p0;
+
 	function __construct ($name)
 	{
 		$this->_name_table = $name;
@@ -107,6 +109,18 @@ class type
 			$this->setPosition($position);
 			$this->setSubregion($subregion);
 			$this->setExcit_Inhib($excit_inhib);
+		}	
+	}
+
+	public function retrieve_v2p0_by_id($id)
+	{
+		$table=$this->getName_table();	
+		
+		$query = "SELECT v2p0 FROM $table WHERE id = '$id'";
+		$rs = mysqli_query($GLOBALS['conn'],$query);
+		while(list($v2p0) = mysqli_fetch_row($rs))
+		{	
+			$this->setV2p0($v2p0);
 		}	
 	}
 
@@ -427,6 +441,12 @@ public function retrive_nickname()   // Retrieve all the nicknames in the table 
     {
 		  $this->_subregion = $var;
     }
+
+	public function setV2p0($var)
+    {
+		  $this->_v2p0 = $var;
+    }	
+	
 //----------------new setmethods------------------
 	
 	public function setN_id($var)
@@ -523,6 +543,11 @@ public function retrive_nickname()   // Retrieve all the nicknames in the table 
     public function getSubregion()
     {
     	return $this->_subregion;
+    }	
+
+    public function getV2p0()
+    {
+    	return $this->_v2p0;
     }	
 
 //---------------------new get methods------------------------------------------------------------
