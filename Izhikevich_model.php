@@ -514,7 +514,7 @@ function HideShowColumns ()
 
 <!-- COPY IN ALL PAGES -->
 <?php 
-	include ("function/title.php");
+	include ("function/title_v1.php");
 	include ("function/menu_main.php");
 ?>		
 
@@ -543,14 +543,6 @@ function HideShowColumns ()
             <font face="Verdana, Arial, Helvetica, sans-serif" color="#339900" size="2"> +/green: </font> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> Excitatory</font>
     		&emsp; &emsp;
 		    <font face="Verdana, Arial, Helvetica, sans-serif" color="#CC0000" size="2"> -/red: </font> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> Inhibitory</font>
-        </td>
-    </tr>
-    <tr>  	
-        <td width="60">
-            <font class='font5'><strong></strong> </font>
-        </td>
-        <td>
-            <font face="Verdana, Arial, Helvetica, sans-serif" color="#FF0000" size="2">* indicates new v2.0 neuron type</font>
         </td>
     </tr>
 </table>
