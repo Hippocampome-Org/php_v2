@@ -499,7 +499,7 @@ function HideShowColumns ()
 <body>
 <!-- COPY IN ALL PAGES -->
 <?php 
-	include ("function/title.php");
+	include ("function/title_v1.php");
 	include ("function/menu_main.php");
 ?>		
 
@@ -556,7 +556,7 @@ function HideShowColumns ()
         <td><a title="Show the most preferred conditions for all values in the matrix." style="text-decoration: none">preferred conditions</a></td>
         <td></td> <!-- skip Sex column -->
         <td><input type="checkbox" name="method_check6" value="checked" id="method_check6" <?php is_checked("method_check6") ?>><span>tetrode</span></td>
-        td><input type="checkbox" name="behavior_check6" value="checked" id="behavior_check6" <?php is_checked("behavior_check6") ?>><span>ketamine + xylazine</span></td>
+        <td><input type="checkbox" name="behavior_check6" value="checked" id="behavior_check6" <?php is_checked("behavior_check6") ?>><span>ketamine + xylazine</span></td>
       </tr>
       <tr>
         <td><input type="checkbox" name="select_check1" value="checked" id="select_check1" <?php is_checked("select_check1") ?>><span>select all</span></td>
