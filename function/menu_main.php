@@ -42,6 +42,7 @@ session_start();
             <li><a href="<?php echo $menuaddr ?>synapse_probabilities.php">Synapse probabilities</a></li>
             <li><a href="<?php echo $menuaddr ?>phases.php">In vivo recordings</a></li>
 	        <li><a href="<?php echo $menuaddr ?>cognome/index.php">Cognome</a></li>
+	        <li><a href="<?php echo $menuaddr ?>counts.php">Neuron type census</a></li>
 		</ul></li>
 	
 		<li class="topmenu"><a href="<?php echo $menuaddr ?>search.php?searching=1" style="height:32px;line-height:32px;"><span><img src="<?php echo $menuaddr ?>function/menu_support_files/find.png" alt="" id="image_find"/>Search</span></a>
@@ -50,7 +51,9 @@ session_start();
 	
 			<li><a href="<?php echo $menuaddr ?>find_author.php?searching=1">Author</a></li>
 			<li><a href="<?php echo $menuaddr ?>find_neuron_name.php?searching=1">Neuron Name/Synonym</a></li>
+<!--
 			<li><a href="<?php echo $menuaddr ?>find_neuron_fp.php?searching=1">Original Firing Pattern</a></li>
+-->
 			<li><a href="<?php echo $menuaddr ?>find_neuron_term.php?searching=1">Neuron Term (Neuron ID)</a></li>
 			<li class="subfirst"><a href="<?php echo $menuaddr ?>search.php?searching=1">Neuron Type</a></li>
 			<li><a href="<?php echo $menuaddr ?>find_pmid.php?searching=1">PMID/ISBN</a></li>
@@ -81,9 +84,6 @@ session_start();
 		</ul></li>
 	
 	</ul>
-
-	<a href="<?php echo $menuaddr ?>Help_Known_Bug_List.php" style="height:32px;line-height:32px;"><img src="<?php echo $menuaddr ?>function/menu_support_files/v2p0_icon.jpg" alt=""/></a>
-
 	</div>  
 
 </body>
