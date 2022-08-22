@@ -303,6 +303,8 @@ $(function()
 				} 
 				else 
 				{
+					// Draws red horizontal dividing lines separating the various subregions
+					// Does not properly distinguish between the FP parameters matrix and the FP matrix
 					$("tr#"+j).css("border-bottom", "2px red");
 					countRows = rowSpanCount;
 					rowSpanCount = 1;
