@@ -40,6 +40,7 @@ $('#jqgh_nGrid_Lucidum_ORAX').attr('style', 'width: 260px; left:-100px; top: 71p
 $('#jqgh_nGrid_Lucidum-Radiatum').attr('style', 'width: 260px; left:-100px; top: 59px !important;position:relative;');
 $('#jqgh_nGrid_Spiny_Lucidum').attr('style', 'width: 260px; left:-100px; top: 72px !important;position:relative;');
 $('#jqgh_nGrid_Mossy_Fiber-Associated').attr('style', 'width: 260px; left:-100px; top: 46px !important;position:relative;');
+$('#jqgh_nGrid_Lucidum_MFA').attr('style', 'width: 260px; left:-100px; top: 76px !important;position:relative;');
 $('#jqgh_nGrid_MFA_ORDEN').attr('style', 'width: 260px; left:-100px; top: 24px !important;position:relative;');
 $('#jqgh_nGrid_CA3_O-LM').attr('style', 'width: 260px; left:-100px; top: 84px !important;position:relative;');
 $('#jqgh_nGrid_CA3_QuadD-LM').attr('style', 'width: 260px; left:-100px; top: 69px !important;position:relative;');
