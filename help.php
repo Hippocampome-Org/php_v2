@@ -129,6 +129,7 @@
   			<li><a href='Help_Use_Case_Scenario.php'><font class="font7"> Usage Scenario</font></a></li>
   			<li><a href='Hippocampome_Video_Overview/Hippocampome_Video_Overview_player.html' target="_blank"><font class="font7"> Hippocampome Video Overview</font></a></li>
   			<li><a href='Help_Bibliography.php'><font class="font7"> Bibliography</font></a></li>
+  			<li><a href='Help_usage_citations.php'><font class="font7"> Hippocampome.org Usage Citations</font></a></li>
   			<li><a href='https://github.com/Hippocampome-Org/'><font class="font7"> Hippocampome.org GitHub code repository</font></a></li>
   			<li><a href='Help_Other_Useful_Links.php'><font class="font7"> Other Useful Links</font></a></li>
   			<li><a href='Help_Acknowledgements.php'><font class="font7"> Acknowledgements</font></a></li>
