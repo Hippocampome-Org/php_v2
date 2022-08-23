@@ -698,7 +698,7 @@ for ($row_index = 0; $row_index < $number_type; $row_index++) {
   if (in_array($id, $special_neuron_id_basket) or in_array($id, $special_neuron_id_axo_axonic)) {
     for ($col_index = 0; $col_index < $number_type; $col_index++) {
     	if (in_array($id, $special_neuron_id_basket) and $soma_pcl_flag_array[$col_index]!=1) {
-        $pon_conn_display_array[$row_index][$col_index]=NO_CONNECTION;
+        	$pon_conn_display_array[$row_index][$col_index]=NO_CONNECTION;
 	   	}
 	   	elseif(in_array($id, $special_neuron_id_axo_axonic) and $pc_flag_array[$col_index]!=1) {
 	   		$pon_conn_display_array[$row_index][$col_index]=NO_CONNECTION;

@@ -2462,7 +2462,7 @@ function show_only_ephys(link, start1, stop1)
 							if ($value2)
 							{
 								$mean_value = ($value1 + $value2) / 2;
-								$range = "[$value1 - $value2]";
+								$range = "[$value1, $value2]";
 							}
 							else
 							{
