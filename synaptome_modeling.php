@@ -492,56 +492,128 @@ $("#nGrid").mouseout(function(e) {
 
 <div class='title_area' style='width:1500px !important'>
 <form name="main_matrix_selection" id="main_matrix_selection" method="post" action=""> 
-  <table><tr><td><font class="font1">Browse synaptic parameters</font></td><td>&nbsp;&nbsp;</td><td><font class="font3"><center><a href="https://github.com/k1moradi/SynapseModelersWorkshop" target="_blank" title="4-state Tsodyks and Markram synapse model parameters" style="color:black">Model Parameters</a>:</font></td><td></td><td><font class="font3"><center>Species:</center></font></td><td><font class="font3"><center>Sex:</center></font></td><td><font class="font3"><center>Age:</center></font></td><td><font class="font3"><center>Temperature:</center></font></td><td><font class="font3"><center>Recording Mode (-60 mV):</center></font></td><td><font class="font3"><center>Submit:</center></font></td></tr>
-  	<tr><td></td><td>&nbsp;&nbsp;</td><td><center>
+  <table>
+    <tr>
+        <td>
+            <font class="font1">Browse synaptic parameters</font>
+        </td>
+        <td>&nbsp;&nbsp;</td>
+        <td>
+            <font class="font3">
+                <center>
+                    <a href="https://github.com/k1moradi/SynapseModelersWorkshop" target="_blank" title="4-state Tsodyks and Markram synapse model parameters" style="color:black">Model Parameters</a>:
+                </center>
+            </font>
+        </td>
+        <td></td>
+        <td></td>
+        <td>
+            <font class="font3"><center>Species:</center></font>
+        </td>
+        <td>
+            <font class="font3"><center>Sex:</center></font>
+        </td>
+        <td>
+            <font class="font3"><center>Age:</center></font>
+        </td>
+        <td>
+            <font class="font3"><center>Temperature:</center></font>
+        </td>
+        <td>
+            <font class="font3"><center>Recording Mode (-60 mV):</center></font>
+        </td>
+        <td>
+            <font class="font3"><center>Submit:</center></font>
+        </td>
+    </tr>
+  	<tr>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+    </tr>
+    <tr>
+        <td>&nbsp;&nbsp;</td>
+        <td>
+            <center>
 <?php
-echo "</center><nav style='z-index:100;position:relative;top:-23px;'>
-   <ul style='z-index:100'>
-      <li style='z-index:100;
-   background: linear-gradient(180deg, rgba(247,247,247,1) 0%, rgba(221,221,221,1) 100%);border:1px solid;border-color:rgb(100,100,100)'>";
-   $current_value = '';
+// echo "</center><nav style='z-index:100;position:relative;top:-23px;'>
+//    <ul style='z-index:100'>
+//       <li style='z-index:100;
+//    background: linear-gradient(180deg, rgba(247,247,247,1) 0%, rgba(221,221,221,1) 100%);border:1px solid;border-color:rgb(100,100,100)'>";
+echo "</center></td><td><center>";
+//$current_value = '';
 if (isset($_REQUEST['value_selection'])) {
 	$current_value = $_REQUEST['value_selection'];
 }
 if ($current_value == '' || $current_value == 'g') {
-    echo "
-        <span style='position:relative;top:-2px;left:10px;' id='model_par_val'>
-            g (nS)
-        </span>
-        <span style='position:relative;float:right;top:-3px;'>
-            <img src='synap_model/media/down_arrow.jpg' style='width:6px;' />&nbsp;&nbsp;
-        </span>";
+    $sel11 = 'selected';
 }
 else if ($current_value == 'tau_d') {
-    echo "
-        <span style='position:relative;top:-2px;left:5px' id='model_par_val'>
-            &tau;<sub>d</sub> (ms)
-        </span>
-        <span style='position:relative;float:right;top:-3px;'>
-            <img src='synap_model/media/down_arrow.jpg' style='width:6px;' />&nbsp;&nbsp;
-        </span>";
+    $sel12 = 'selected';
 }
-else if ($current_value == 'tau_r') {echo "<span style='position:relative;top:-2px;left:5px' id='model_par_val'>&tau;<sub>r</sub> (ms)</span><span style='position:relative;float:right;top:-3px;'><img src='synap_model/media/down_arrow.jpg' style='width:6px;' />&nbsp;&nbsp;</span>";}
-else if ($current_value == 'tau_f') {echo "<span style='position:relative;top:-2px;left:5px' id='model_par_val'>&tau;<sub>f</sub> (ms)</span><span style='position:relative;float:right;top:-3px;'><img src='synap_model/media/down_arrow.jpg' style='width:6px;' />&nbsp;&nbsp;</span>";}
+else if ($current_value == 'tau_r') {
+    $sel13 = 'selected';
+}
+else if ($current_value == 'tau_f') {
+    $sel14 = 'selected';
+}
 else if ($current_value == 'u') {
-    echo "<span style='position:relative;top:0px;left:31px' id='model_par_val'>
-            U
-        </span>
-        <span style='position:relative;float:right;top:-3px;'>
-            <img src='synap_model/media/down_arrow.jpg' style='width:6px;' />&nbsp;&nbsp;
-        </span>";
+    $sel15 = 'selected';
 }
-   echo "
-         <ul style='z-index:100;border:4px;border-left-color:black;'>
-            <li style='z-index:100;width:70px;background: rgb(247,247,247);border:1px solid;'><a href=\"javascript:set_value_selection('g', 'g')\" style='text-decoration:none'>g</a></li>
-            <li style='z-index:100;width:70px;background: rgb(247,247,247);border:1px solid;border-top-color:rgb(247,247,247);'><a href=\"javascript:set_value_selection('tau_d', '&tau;<sub>d</sub>')\" style='text-decoration:none'>&tau;<sub>d</sub></a></li>
-            <li style='z-index:100;width:70px;background: rgb(247,247,247);border:1px solid;border-top-color:rgb(247,247,247);'><a href=\"javascript:set_value_selection('tau_r', '&tau;<sub>r</sub>')\" style='text-decoration:none'>&tau;<sub>r</sub></a></li>
-            <li style='z-index:100;width:70px;background: rgb(247,247,247);border:1px solid;border-top-color:rgb(247,247,247);'><a href=\"javascript:set_value_selection('tau_f', '&tau;<sub>f</sub>')\" style='text-decoration:none'>&tau;<sub>f</sub></a></li>
-            <li style='z-index:100;width:70px;background: rgb(247,247,247);border:1px solid;border-top-color:rgb(247,247,247);'><a href=\"javascript:set_value_selection('u', 'U')\" style='text-decoration:none'>U</a></li>
-         </ul>
-      </li>
-   </ul>
-</nav>";
+echo "<select name='value_selection' size='1' style='height:25px;position:relative;top:-23px;'>";
+echo "<option value='g' $sel11>g (nS)</option>";
+echo "<option value='tau_d' $sel12>&tau;_d (ms)</option>";
+echo "<option value='tau_r' $sel13>&tau;_r (ms)</option>";
+echo "<option value='tau_f' $sel14>&tau;_f (ms)</option>";
+echo "<option value='u' $sel15>U</option>";
+echo "</select></center></td><td><center>";
+
+// if ($current_value == '' || $current_value == 'g') {
+//     echo "
+//         <span style='position:relative;top:-2px;left:10px;' id='model_par_val'>
+//             g (nS)
+//         </span>
+//         <span style='position:relative;float:right;top:-3px;'>
+//             <img src='synap_model/media/down_arrow.jpg' style='width:6px;' />&nbsp;&nbsp;
+//         </span>";
+// }
+// else if ($current_value == 'tau_d') {
+//     echo "
+//         <span style='position:relative;top:-2px;left:5px' id='model_par_val'>
+//             &tau;<sub>d</sub> (ms)
+//         </span>
+//         <span style='position:relative;float:right;top:-3px;'>
+//             <img src='synap_model/media/down_arrow.jpg' style='width:6px;' />&nbsp;&nbsp;
+//         </span>";
+// }
+// else if ($current_value == 'tau_r') {echo "<span style='position:relative;top:-2px;left:5px' id='model_par_val'>&tau;<sub>r</sub> (ms)</span><span style='position:relative;float:right;top:-3px;'><img src='synap_model/media/down_arrow.jpg' style='width:6px;' />&nbsp;&nbsp;</span>";}
+// else if ($current_value == 'tau_f') {echo "<span style='position:relative;top:-2px;left:5px' id='model_par_val'>&tau;<sub>f</sub> (ms)</span><span style='position:relative;float:right;top:-3px;'><img src='synap_model/media/down_arrow.jpg' style='width:6px;' />&nbsp;&nbsp;</span>";}
+// else if ($current_value == 'u') {
+//     echo "<span style='position:relative;top:0px;left:31px' id='model_par_val'>
+//             U
+//         </span>
+//         <span style='position:relative;float:right;top:-3px;'>
+//             <img src='synap_model/media/down_arrow.jpg' style='width:6px;' />&nbsp;&nbsp;
+//         </span>";
+// }
+//    echo "
+//          <ul style='z-index:100;border:4px;border-left-color:black;'>
+//             <li style='z-index:100;width:70px;background: rgb(247,247,247);border:1px solid;'><a href=\"javascript:set_value_selection('g', 'g')\" style='text-decoration:none'>g</a></li>
+//             <li style='z-index:100;width:70px;background: rgb(247,247,247);border:1px solid;border-top-color:rgb(247,247,247);'><a href=\"javascript:set_value_selection('tau_d', '&tau;<sub>d</sub>')\" style='text-decoration:none'>&tau;<sub>d</sub></a></li>
+//             <li style='z-index:100;width:70px;background: rgb(247,247,247);border:1px solid;border-top-color:rgb(247,247,247);'><a href=\"javascript:set_value_selection('tau_r', '&tau;<sub>r</sub>')\" style='text-decoration:none'>&tau;<sub>r</sub></a></li>
+//             <li style='z-index:100;width:70px;background: rgb(247,247,247);border:1px solid;border-top-color:rgb(247,247,247);'><a href=\"javascript:set_value_selection('tau_f', '&tau;<sub>f</sub>')\" style='text-decoration:none'>&tau;<sub>f</sub></a></li>
+//             <li style='z-index:100;width:70px;background: rgb(247,247,247);border:1px solid;border-top-color:rgb(247,247,247);'><a href=\"javascript:set_value_selection('u', 'U')\" style='text-decoration:none'>U</a></li>
+//          </ul>
+//       </li>
+//    </ul>
+// </nav>";
 echo "</td><td><span style='position:relative;top:-23px;'><font class='font3'><center>Conditions:</center></font></span></td><td><center>";
 if (isset($_REQUEST['param_1'])) {
 	$param1_value = $_REQUEST['param_1'];
@@ -593,8 +665,8 @@ echo "<input type='submit' value='Update' style='height:25px;position:relative;t
 </td></tr>
 </table>
 </div>
-<?php
-$current_value = '';
+<!-- <?php
+// $current_value = '';
 if (isset($_REQUEST['value_selection'])) {
   $current_value = $_REQUEST['value_selection'];
 }
@@ -611,7 +683,7 @@ echo "<option value='tau_f' $sel4B>𝛕<sub>F</sub></option>";
 echo "<option value='u' $sel5B>U</option>";
 echo "</select>";
 ?>
-</form>
+ --></form>
 
 <?php
 $final_synaptic_data_filename = $param5_value . '_P0_ISI50_' . $param4_value . '_Th350_' . $param2_value . '_' . $param3_value . '_' . $param1_value . '_Cli=4_gluconatei=0.zip';
