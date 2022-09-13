@@ -202,10 +202,11 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
 	 $position = $type->getPosition(); // Retrieve the position
 	 $subregion = $type -> getSubregion(); // Retrieve the sub region
 	 $excit_inhib =$type-> getExcit_Inhib();
-	
+
 	$evidencepropertyyperel -> retrive_Property_id_by_Type_id($id); // Retrieve distinct Property ids for each type id
 	$n_property = $evidencepropertyyperel -> getN_Property_id(); // Count of the number of properties for a given type id
 	
+	$soma_positions = [];
 	for($j=0 ; $j<$n_property ; $j++)  //To obtain soma location
 	{
 		$prop_id = $evidencepropertyyperel -> getProperty_id_array($j);
@@ -215,7 +216,7 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
 		if(($property->getPart() == 'somata') && ($property->getRel() == 'in'))
 		{
 			$object_value = $property->getVal();
-			$soma_position = $soma_location["$object_value"];
+			array_push($soma_positions, $soma_location["$object_value"]);
 		}	
 	}
 	
@@ -273,13 +274,18 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
 		else	
 			$hippo_color[$name_markers[$f1]] = $img[1];
 	}
-	
 		
 	preg_match('!\d+!',substr($type->getName(),strpos($type->getName(), ')')),$matches);
 	$neurite_pattern=str_split($matches[0]);
-	$neurite_pattern_temp = str_replace($neurite_pattern[$soma_position], "<strong>".$neurite_pattern[$soma_position]."</strong>", $neurite_pattern);
+	$neurite_pattern_temp= [];
+	for ($np=0; $np<sizeof($neurite_pattern); $np++){
+		if(in_array($np, $soma_positions)){
+			array_push($neurite_pattern_temp, "<strong>".intval($neurite_pattern[$np])."</strong>");
+		}else{
+			array_push($neurite_pattern_temp, intval($neurite_pattern[$np]));
+		}
+	}
 	$neurite_pattern_soma_location = implode('',$neurite_pattern_temp);
-	
 	if ($excit_inhib == 'e')
 		$fontColor='#339900';
 	elseif ($excit_inhib == 'i')
