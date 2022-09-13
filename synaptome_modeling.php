@@ -389,7 +389,7 @@ $(function(){
     //caption: 'Morphology Matrix',
     scrollerbar:true,
     shrinkToFit:false,
-    height:"440",
+    height:"445",
     //width:"60%",
     width:"1050",
     gridComplete: function () {
