@@ -206,7 +206,7 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
 	$evidencepropertyyperel -> retrive_Property_id_by_Type_id($id); // Retrieve distinct Property ids for each type id
 	$n_property = $evidencepropertyyperel -> getN_Property_id(); // Count of the number of properties for a given type id
 	
-	$soma_positions = [];
+	$soma_positions = array();
 	for($j=0 ; $j<$n_property ; $j++)  //To obtain soma location
 	{
 		$prop_id = $evidencepropertyyperel -> getProperty_id_array($j);
@@ -277,7 +277,7 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
 		
 	preg_match('!\d+!',substr($type->getName(),strpos($type->getName(), ')')),$matches);
 	$neurite_pattern=str_split($matches[0]);
-	$neurite_pattern_temp= [];
+	$neurite_pattern_temp= array();
 	for ($np=0; $np<sizeof($neurite_pattern); $np++){
 		if(in_array($np, $soma_positions)){
 			array_push($neurite_pattern_temp, "<strong>".intval($neurite_pattern[$np])."</strong>");
