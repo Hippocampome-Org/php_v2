@@ -91,6 +91,60 @@ td, th {
   <span style='position:relative;top:100px'><font class="font1">Summary of Synaptic Modeling Values</font><br><font style='font-size: 5px'><br></font>
   <font>Presynaptic neuron: <?php echo "<a href='neuron_page.php?id=$pre_id' target='_blank'>$pre_name</a>"; ?>&nbsp;&nbsp;&nbsp;&nbsp;Postsynaptic neuron: <?php echo "<a href='neuron_page.php?id=$post_id' target='_blank'>$post_name</a>"; ?></font></span>
 <span style='position:relative;top:125px'>
+<div>
+	<table border="0" cellspacing="3" cellpadding="0" class='table_result'>
+		<tr>
+			<td align='center' class='table_neuron_page1'>Species</td>
+			<td align='center' class='table_neuron_page1'>Sex</td>
+			<td align='center' class='table_neuron_page1'>Age</td>
+			<td align='center' class='table_neuron_page1'>Temperature</td>
+			<td align='center' class='table_neuron_page1'>Recording<br>Mode (mV)</td>
+			<td align='center' class='table_neuron_page1'>g (nS)</td>
+			<td align='center' class='table_neuron_page1'>
+				<font style='font-family: Times,"Times New Roman",monospace;'>&tau;</font><sub>d</sub> (ms)
+			</td>
+			<td align='center' class='table_neuron_page1'>
+				<font style='font-family: Times,"Times New Roman",monospace;'>&tau;</font><sub>r</sub> (ms)
+			</td>
+			<td align='center' class='table_neuron_page1'>
+				<font style='font-family: Times,"Times New Roman",monospace;'>&tau;</font><sub>f</sub> (ms)
+			</td>
+			<td align='center' class='table_neuron_page1'>U</td>
+		</tr>
+		<?php
+		for ($i = 1; $i <= $num_conditions; $i++) {
+			$query = "SELECT species, sex, age, temp, rec_mode FROM conditions WHERE id=$i;";
+			$rs = mysqli_query($conn2,$query);
+			while(list($species, $sex, $age, $temp, $rec_mode) = mysqli_fetch_row($rs))
+			{	
+				echo "<td align='center' class='table_neuron_page2'><font size='2pt'>".$species."</font></td>";
+				echo "<td align='center' class='table_neuron_page2'><font size='2pt'>".$sex."</font></td>";
+				echo "<td align='center' class='table_neuron_page2'><font size='2pt'>".$age."</font></td>";
+				echo "<td align='center' class='table_neuron_page2'><font size='2pt'>".$temp."</font></td>";
+				echo "<td align='center' class='table_neuron_page2'><font size='2pt'>".$rec_mode."</font></td>";
+			}
+
+			$query = "SELECT means_g, means_tau_d, means_tau_r, means_tau_f, means_u FROM tm_cond$i WHERE pre='$pre_name' AND post='$post_name';";
+
+			$rs = mysqli_query($conn2,$query);
+			while(list($means_g, $means_tau_d, $means_tau_r, $means_tau_f, $means_u) = mysqli_fetch_row($rs))
+			{	
+				echo "<td align='center' class='table_neuron_page2'><font size='2pt'>".toPrecision($means_g,4)."</font></td>";
+				echo "<td align='center' class='table_neuron_page2'><font size='2pt'>".toPrecision($means_tau_d,4)."</font></td>";
+				echo "<td align='center' class='table_neuron_page2'><font size='2pt'>".toPrecision($means_tau_r,4)."</font></td>";
+				echo "<td align='center' class='table_neuron_page2'><font size='2pt'>".toPrecision($means_tau_f,4)."</font></td>";
+				echo "<td align='center' class='table_neuron_page2'><font size='2pt'>".toPrecision($means_u,4)."</font></td>";
+			}
+			echo "</tr>";
+		}
+		?>
+	</table>
+</div>
+
+<!-- <center>
+  <span style='position:relative;top:100px'><font class="font1">Summary of Synaptic Modeling Values</font><br><font style='font-size: 5px'><br></font>
+  <font>Presynaptic neuron: <?php echo "<a href='neuron_page.php?id=$pre_id' target='_blank'>$pre_name</a>"; ?>&nbsp;&nbsp;&nbsp;&nbsp;Postsynaptic neuron: <?php echo "<a href='neuron_page.php?id=$post_id' target='_blank'>$post_name</a>"; ?></font></span>
+<span style='position:relative;top:125px'>
 <table>
 	<tr>
 		<td>Species</td>
@@ -131,7 +185,7 @@ td, th {
 		echo "</tr>";
 	}
 	?>
-</table>
+</table> -->
 <br>
 <br>
 </center>
