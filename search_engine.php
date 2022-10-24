@@ -3,7 +3,7 @@
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <?php
-//include ("access_db.php");
+include ("access_db.php");
 session_start();
 require_once('class/class.type.php');
 require_once('class/class.property.php');
@@ -36,6 +36,7 @@ $morphology_properties_query =
 
  //to hide Firing Pattern button at the bottom page
 $query = "SELECT permission FROM user WHERE id=2"; // id=2 is anonymous user
+//echo $query;
 $rs = mysqli_query($conn,$query);
 list($permission) = mysqli_fetch_row($rs);
 
@@ -43,31 +44,57 @@ list($permission) = mysqli_fetch_row($rs);
 function create_result_table_result ($name_temporary_table)
 {	
 	$drop_table ="DROP TABLE $name_temporary_table";
-	$query = mysqli_query($GLOBALS['conn'],$drop_table);
+	//$query = mysqli_query($GLOBALS['conn'],$drop_table);
 	
 	$creatable=	"CREATE TABLE IF NOT EXISTS $name_temporary_table (
 				   id int(4) NOT NULL AUTO_INCREMENT,
+				   subject varchar(200), -- Added on Oct 23
 				   id_type varchar(200),
+				   conflict varchar(200), -- Added on Oct 23
 				   PRIMARY KEY (id));";
+	//echo $creatable;
 	$query = mysqli_query($GLOBALS['conn'],$creatable);
 }	
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
 // Function to insert the type_id in the temporary table AND: ++++++++++++++++++++++++++++++++++++++
-function insert_result_table_result($table, $id_type, $n_type_id)
+function insert_result_table_result($table, $id_type, $n_type_id, $markers = NULL)
 {
-	for ($i=0; $i<$n_type_id; $i++)
-	{
-		$query_i = "INSERT INTO $table
-		  (id,
+	//echo "TEMP TABLE IS:".$table;//var_dump($id_type);exit;
+	if(isset($markers)){
+		for ($i=0; $i<count($id_type); $i++){
+			$subject = $id_type[$i][0];
+			$id = $id_type[$i][1];
+			$conflict = $id_type[$i][2];
+
+			$query_i = "INSERT INTO $table
+				(id,
+				 subject,
+					id_type,
+					conflict
+				)
+				VALUES
+				(NULL,
+				'$subject',
+					'$id',
+					'$conflict'
+				)";
+			$rs2 = mysqli_query($GLOBALS['conn'],$query_i);
+		  }
+	}else{
+		for ($i=0; $i<$n_type_id; $i++)
+		{
+			$query_i = "INSERT INTO $table
+		  	(id,
 			id_type
-		   )
-		VALUES
-		  (NULL,
+		   	)
+			VALUES
+		  	(NULL,
 			'$id_type[$i]'
-		   )";
-		$rs2 = mysqli_query($GLOBALS['conn'],$query_i);	
+		   	)";
+			$rs2 = mysqli_query($GLOBALS['conn'],$query_i);	
+		}
 	}
 }
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -94,6 +121,7 @@ function unique_ids_search($relation,$value){
 	$part=array();
 	$index=0;
 	$query_to_get_unique_ids = "SELECT DISTINCT id FROM Type WHERE id $relation $value";
+	//echo "**** IN unique_ids_search Line 100 -----".$query_to_get_unique_ids;
 	$rs_unique_ids = mysqli_query($GLOBALS['conn'],$query_to_get_unique_ids);	
 	while(list($unique_ids) = mysqli_fetch_row($rs_unique_ids))						
 		$part[$index++] = $unique_ids;
@@ -128,7 +156,6 @@ function morphology_search_for_hippocampal_formation ($evidencepropertyyperel, $
 	for ($i1=0; $i1<$n_property_id; $i1++)
 	{
 		$property_id = $property_1 -> getProperty_id($i1);    
-
 	     ///changes for ""Not IN" typse search. Issue 151
 		 if ($rel == "in")			
 		     $evidencepropertyyperel -> retrive_Type_id_by_Property_id($property_id);			
@@ -152,15 +179,16 @@ function morphology_search_for_hippocampal_formation ($evidencepropertyyperel, $
 				$evidencepropertyyperel -> retrive_for_Not_In(1,$property_id, $val, $rel, $part); 
 			}
 		$n_type_id = $evidencepropertyyperel -> getN_Type_id();
-
+	
 		for ($i2=0; $i2<$n_type_id; $i2++)
 		{	
 			$type_id[$n_tot] = $evidencepropertyyperel -> getType_id_array($i2);
 
 			// Use the id only if the id is present in Type table
 			// Retrieve the Type id from type table
-			$type -> retrive_by_id(intval($type_id[$n_tot]));
+			$type -> retrieve_by_id(intval($type_id[$n_tot]));
 			$id_type = $type->getId();	// Get the id
+			
 			// Increment only if the id is present in both the tables
 			if($id_type == $type_id[$n_tot])
 				$n_tot = $n_tot + 1;
@@ -171,6 +199,7 @@ function morphology_search_for_hippocampal_formation ($evidencepropertyyperel, $
 	// Now, the program must remove the double or more type_id:	
 	if ($type_id != NULL)
 		$new_type_id=array_unique($type_id);
+	
 	return $new_type_id;
 }
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -224,43 +253,60 @@ function markers_search($evidencepropertyyperel, $property_1, $type, $subject, $
 
 	$n_tot = 0;				// Variable to be used as an index for storing the resultant Type ID
 	$new_type_id = NULL;	// Variable to store and return the complete list of Matched and Unmatched IDs
+	$new_kas_id = NULL;
+	$kas_id = [];
 	for ($i=1; $i<=$nn; $i++)
 	{
 		if(($i == 1) && ($predicate3[$i] != 'unknown'))
 		{
 			// Call the function to search for the appropriate Type Ids
-			$evidencepropertyyperel -> retrive_Type_id_by_Subject_overrideIn($subject, $predicate3[$i]);
+			$evidencepropertyyperel -> retrieve_type_id_withoutRestrictions($subject, NULL, $predicate3[$i]);
 		}
 		else // if it unknown
 		{
-			$evidencepropertyyperel -> retrive_Type_id_by_Subject_Object($subject, $predicate3[$i]);
+			$evidencepropertyyperel -> retrieve_type_id_withoutRestrictions($subject, $predicate3[$i], NULL);
 		}
 		$n_type_id = $evidencepropertyyperel -> getN_Type_id();		// Get the total number of the search result Type IDs
-		
+
 		// Get the total number of Type Ids in Type table
 		$number_type= $type -> getNumber_type();
-		
 		// Iterate through the result of the conflict override searched Type Ids
 		for ($i1=0; $i1<$n_type_id; $i1++)
 		{
 			if($i == 1)
 			{				
 				$type_id[$n_tot] = $evidencepropertyyperel -> getType_id_array($i1);
+				$id_array = $evidencepropertyyperel -> getConflict_subject_typeid_array($i1+1);
+
+				for ($i1=0; $i1<count($id_array); $i1++){
+					list($conflict, $subject) = explode(", ",$id_array[$i1][1]);
+					$id = $id_array[$i1][0];
+					array_push($kas_id, array($subject, $id, $conflict));
+				}
 			}
 			else if($i == 2)
 			{
 				$type_r = $evidencepropertyyperel -> getType_id_array($i1);
 				$type_id[$n_tot] = "10_".$type_r;
+				$id_array = $evidencepropertyyperel -> getConflict_subject_typeid_array($i1+1);
+				for ($i1=0; $i1<count($id_array); $i1++){
+					list($conflict, $subject) = explode(", ",$id_array[$i1][1]);
+					$id = "10_".$id_array[$i1][0];
+					array_push($kas_id, array($subject, $id, $conflict));
+				}
 			}
 			
 			$n_tot = $n_tot + 1;
 		}
-		
 		// Check if Type_id arrary is not null
 		if ($type_id != NULL)
 				$new_type_id=array_unique($type_id);
-	}	
-	return $new_type_id;
+
+		if ($kas_id != NULL)
+				$new_kas_id=$kas_id; //Array unique does not work as we have ENK, id and conflict
+		
+	}
+	return array($new_type_id, $new_kas_id);
 }
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -632,6 +678,7 @@ for ($i=0; $i<$n_line; $i++)
 
 // Creates $a table to insert the results for each AND:
 $ip_address = $_SERVER['REMOTE_ADDR'];
+$ip_address = '192.168.1.1';
 $ip_address = str_replace('.', '_', $ip_address);
 $time_t = time();
 
@@ -650,7 +697,8 @@ $n_res1 = 0;
 for ($i=0; $i<=$a; $i++)   // Count for each OR
 {
 	$id_type_res = array(); // Arrays where will be inserted the results of ID TYPE
-
+	// Added on Oct 22 2022 
+	$kasid_type_res = array(); // Arrays where will be inserted the results of ID TYPE
 	$n_b = count($id_res[$i]);
 	//MY DELETE
 //print("...n_b:-".$n_b);
@@ -701,11 +749,13 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 		if ($property == 'Morphology')
 		{
 			$res = morphology_search_for_hippocampal_formation ($evidencepropertyyperel, $property_1, $subject, $predicate, $value, $type);	
+			
 			if ($res != NULL)
 				$id_type_res = array_merge($id_type_res, $res); 	
 	
 		}
 		// END Script for MORPHOLOGY +++++++++++++++++++++++++++++++++++++++
+		
 		
 		// Script for MARKERS +++++++++++++++++++++++++++++++++++++++++++		
 		if ($property == 'Molecular markers')
@@ -718,15 +768,15 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 			if (strpos($subject, '-act2') == 6)
 				$subject='alpha-actinin-2';				
 
-			$res_marker = markers_search($evidencepropertyyperel, $property_1, $type, $subject, $predicate);
-		
+			//$res_marker = markers_search($evidencepropertyyperel, $property_1, $type, $subject, $predicate);
+			list($res_marker, $res_kas) = markers_search($evidencepropertyyperel, $property_1, $type, $subject, $predicate);
 			if ($res_marker != NULL)
 				$id_type_res = array_merge($id_type_res, $res_marker);
-				
-				//MY DELETE
-			//	print("...id_type_res:-");
-		//print_r($id_type_res);
-		//MyDelete ends	
+			
+			//Added on Oct 22 2022
+			if($res_kas != NULL)
+				$kasid_type_res = array_merge($kasid_type_res, $res_kas);	
+			//Till Here
 		}
 		// END Script for MARKERS +++++++++++++++++++++++++++++++++++++++		
 		
@@ -805,8 +855,8 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 			
 			while ( !(($aSubregion == $theSubregion) And ($aNickname == $theNickname)) And ($aType < $number_type)) {
 				$id_type_row = $type->getID_array($aType);
-				$type -> retrive_by_id($id_type_row);
-				//$type -> retrieve_by_id($id_type_row);
+				//$type -> retrive_by_id($id_type_row);
+				$type -> retrieve_by_id($id_type_row);
 				$aSubregion = $type->getSubregion();
 				$aNickname = $type->getNickname();
 				$aType = $aType + 1;
@@ -819,33 +869,46 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 		}
 		// END Script for CONNECTIVITY +++++++++++++++++++++++++++++++++++++++
 		//Unque Ids
+		//echo "LINE 849";echo "REALATION ---:".$relation." --- VALUE: ".$value;
 		if ($property == 'Unique Id')
 		{
 			$res_ids = unique_ids_search($relation,$value);
 				
-			if ($res_ids != NULL)
+			if ($res_ids != NULL){
 				$id_type_res = array_merge($id_type_res, $res_ids); 	
+				//Need to test this one as new array will be multi array and res_ids will be normal array with ids
+				//$id_type_res = array_merge($kasid_type_res, $res_ids); 	
+			} 
 		}		
 	}  // End FOR $i1 (AND)
 
 
-	// The program do the AND in the temporary table (in $n_b):
-	$n1 = count($id_type_res);
+	// The program do the AND in the temporary table (in $n_b)
+	$markers = NULL;
+	if(isset($kasid_type_res)){
+		$markers = 'true';
+		$n_res1 = count($kasid_type_res);
+		$id_result = $kasid_type_res;
+	}else{
+		$n1 = count($id_type_res);
 
-	for ($q=0; $q<$n1; $q++)
-	{
-		$ww=$id_type_res[$q];
-		$count_result = array_count_values($id_type_res);
-		
-		if ($count_result[$ww] == $n_b)
+		for ($q=0; $q<$n1; $q++)
 		{
-			$id_result[$n_res1] = $ww;
-			$n_res1 = $n_res1 + 1;
+			$ww=$id_type_res[$q];
+			$count_result = array_count_values($id_type_res);
+			
+			if ($count_result[$ww] == $n_b)
+			{
+				$id_result[$n_res1] = $ww;
+				$n_res1 = $n_res1 + 1;
+			}
 		}
 	}
-	
+
 	// Insert the result AND & OR in the temporary results table:
-	insert_result_table_result($name_temporary_table_result, $id_result, $n_res1);
+	//insert_result_table_result($name_temporary_table_result, $id_result, $n_res1);
+	//modified on OCt 23 2022
+	insert_result_table_result($name_temporary_table_result, $id_result, $n_res1, $markers);
 
 } // END for count OR($i)
 // END The research +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -920,9 +983,9 @@ include ("function/icon.html");
 				{
 					$id = str_replace('10_', '', $id);
 				
-					//$type -> retrive_by_id($id);
-					$type -> retrive_by_id($id);
+					$type -> retrieve_by_id($id);
 					$status = $type -> getStatus();	
+								
 					if ($status == 'active')
 					{
 						$id_t_unknown[$n_result_tot_unknown] = $id;
@@ -960,7 +1023,7 @@ include ("function/icon.html");
 						$rs_up_temp = mysqli_query($GLOBALS['conn'],$up_temp);
 					}
 					//$type -> retrive_by_id($id);
-					$type -> retrive_by_id($id);
+					$type -> retrieve_by_id($id);
 					$status = $type -> getStatus();		
 									
 					if ($status == 'active')
@@ -993,7 +1056,7 @@ include ("function/icon.html");
 			$full_search_string = $_SESSION['full_search_string'];
 			$full_search_string_to_print = str_replace('OR', '<br>OR', $full_search_string);
 			$full_search_string_to_print = str_replace('AND', '<br>AND', $full_search_string_to_print);
-			
+			$full_search_string_to_print .= " Table is: ".$name_temporary_table_result;
 			print ("" . $full_search_string_to_print . "<br>");
 			
 				
