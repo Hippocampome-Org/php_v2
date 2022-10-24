@@ -17,6 +17,7 @@ class evidencepropertyyperel
 	private $_property_type_explanation;
 	private $_n_linking_quote_array;
 	private $_n_interpretation_notes_array;
+	private $_conflict_subject_typeid_array;
 
 	function __construct ($name)
 	{
@@ -98,17 +99,75 @@ class evidencepropertyyperel
 		}
 		$this->setN_Type_id($n);
 	}
-	
+	//Added for enhancement 712
+	public function retrieve_type_id_withoutRestrictions($Subject, $Object=NULL, $Conflict_note=NULL, $ival)
+	{
+		$table 	= $this->getName_table();
+		$table1 = "Property";
+		$inferences=array("confirmed positive","positive inference","confirmed positive inference","confirmed negative","negative inference","confirmed negative inference","unresolved inferential conflict");
+
+		$query = "SELECT 
+			 GROUP_CONCAT(DISTINCT(ev.Type_id) SEPARATOR ', '), 
+			 GROUP_CONCAT(DISTINCT(ev.conflict_note) SEPARATOR ', '),
+			 pr.subject  
+			FROM $table ev
+			JOIN $table1 pr
+			ON (ev.Property_id = pr.id) 
+		 	WHERE pr.subject in ('$Subject') ";
+		
+		if(!empty($Conflict_note) && empty($Object)){
+			$query .= " AND ev.conflict_note in ($Conflict_note) ";
+		}
+
+		if(!empty($Object) && empty($Conflict_note)){
+			$query .=  " AND pr.object = '$Object' 
+						AND (conflict_note is null or conflict_note ='') ";
+		}
+		$query .= " GROUP BY ev.conflict_note  ORDER By ev.conflict_note asc";
+		
+		//echo $query;
+		$rs = mysqli_query($GLOBALS['conn'],$query);
+		$n=0;
+		//Created id, Conflict
+		$id_vals = $conflict_vals = [];
+		while(list($id,$conflict, $subject) = mysqli_fetch_row($rs))
+		{	
+			$idArray = explode(', ', $id);
+			$i=0;
+			foreach($idArray as $id){
+				if(in_array($conflict, $inferences)){
+					$type_conflict="_".$id."_".$conflict;
+					array_push($id_vals, array($type_conflict, $conflict.", ".$Subject));
+				}
+				else{
+					$this->setType_id_array($id, $n); // Original array
+					if(is_null($conflict)){
+						$conflict = "nullunknown";
+					}
+					array_push($id_vals, array($id, $conflict.", ".$Subject));
+				}
+			}
+			$n = $n +1;
+		}
+		//echo "LINE 153:";var_dump($id_vals);//exit;
+		//$this->setConflict_subject_typeid_array($id_vals, $n);
+		$this->setConflict_subject_typeid_array($id_vals, $Subject.$ival);
+
+		$this->setN_Type_id($n);
+	}
+	//Till Here
+
 	public function retrive_Type_id_by_Subject_Object($Subject, $Object)
 	{
 		$table 	= $this->getName_table();
 		$table1 = "Property";
-		
+
 		$query = "SELECT DISTINCT ev.Type_id
 			FROM $table ev
 			JOIN $table1 pr
 			ON (ev.Property_id = pr.id)
-			WHERE pr.object = '$Object' and (conflict_note is null or conflict_note ='') and pr.subject = '$Subject'";
+			WHERE pr.object = '$Object' and (conflict_note is null or conflict_note ='') 
+			and pr.subject = '$Subject'";
 			
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
@@ -356,7 +415,17 @@ class evidencepropertyyperel
 	{
 		$this->_n_interpretation_notes_array[$n] = $val1;
 	}
-		 	
+
+	/*public function setConflict_subject_typeid_array($val1, $n)
+	{
+		$this->_conflict_subject_typeid_array[$n] = $val1;
+	}*/
+	
+	public function setConflict_subject_typeid_array($val1, $n)
+	{
+		$this->_conflict_subject_typeid_array[$n] = $val1;
+	}
+	
 	// GET ++++++++++++++++++++++++++++++++++++++	
 	public function getType_id_array($i)
 	{
@@ -417,5 +486,11 @@ class evidencepropertyyperel
 	{
 		return $this->_n_interpretation_notes_array[$i];
 	}
+
+	public function getConflict_subject_typeid_array($i)
+	{
+        return $this->_conflict_subject_typeid_array[$i];
+    }
+
 }
 ?>	
