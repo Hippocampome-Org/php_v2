@@ -100,7 +100,7 @@ class evidencepropertyyperel
 		$this->setN_Type_id($n);
 	}
 	//Added for enhancement 712
-	public function retrieve_type_id_withoutRestrictions($Subject, $Object=NULL, $Conflict_note=NULL)
+	public function retrieve_type_id_withoutRestrictions($Subject, $Object=NULL, $Conflict_note=NULL, $ival)
 	{
 		$table 	= $this->getName_table();
 		$table1 = "Property";
@@ -135,22 +135,24 @@ class evidencepropertyyperel
 			$idArray = explode(', ', $id);
 			$i=0;
 			foreach($idArray as $id){
-			if(in_array($conflict, $inferences)){
-				$type_conflict="_".$id."_".$conflict;
-				array_push($id_vals, array($type_conflict, $conflict.", ".$Subject));
-			}
-			else{
-				$this->setType_id_array($id, $n); // Original array
-				if(is_null($conflict)){
-					$conflict = "nullunknown";
+				if(in_array($conflict, $inferences)){
+					$type_conflict="_".$id."_".$conflict;
+					array_push($id_vals, array($type_conflict, $conflict.", ".$Subject));
 				}
-				array_push($id_vals, array($id, $conflict.", ".$Subject));
-			}
-			
+				else{
+					$this->setType_id_array($id, $n); // Original array
+					if(is_null($conflict)){
+						$conflict = "nullunknown";
+					}
+					array_push($id_vals, array($id, $conflict.", ".$Subject));
+				}
 			}
 			$n = $n +1;
 		}
-		$this->setConflict_subject_typeid_array($id_vals, $n);
+		//echo "LINE 153:";var_dump($id_vals);//exit;
+		//$this->setConflict_subject_typeid_array($id_vals, $n);
+		$this->setConflict_subject_typeid_array($id_vals, $Subject.$ival);
+
 		$this->setN_Type_id($n);
 	}
 	//Till Here
@@ -484,11 +486,6 @@ class evidencepropertyyperel
 	{
 		return $this->_n_interpretation_notes_array[$i];
 	}
-
-	/*public function getConflict_subject_typeid_array($i)
-	{
-		return $this->_conflict_subject_typeid_array[$i];
-	}*/
 
 	public function getConflict_subject_typeid_array($i)
 	{
