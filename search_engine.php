@@ -40,6 +40,16 @@ $query = "SELECT permission FROM user WHERE id=2"; // id=2 is anonymous user
 $rs = mysqli_query($conn,$query);
 list($permission) = mysqli_fetch_row($rs);
 
+function update_arrayHash($conflict_tables, $key, $result_subject, $id_t, $name_type, $subregion_type, $position_type, $n_result_tot)
+{
+	$conflict_tables[$key]['table_header'] = $result_subject;
+	$conflict_tables[$key]['id_t'] = $id_t;
+	$conflict_tables[$key]['name_type'] = $name_type;
+	$conflict_tables[$key]['subregion_type'] = $subregion_type;
+	$conflict_tables[$key]['position_type'] = $position_type;
+	$conflict_tables[$key]['n_result_tot'] = $n_result_tot;	
+	return $conflict_tables[$key];
+}
 function get_UItable($id, $subject, $conflict, $type, $name_temporary_table_result){
 	$n_result_tot_unknown = $n_result_tot=0;
 	$id_t = $name_type = $subregion_type = $position_type = $id_t_unknown = 
@@ -332,8 +342,8 @@ function markers_search($evidencepropertyyperel, $property_1, $type, $subject, $
 
 	$n_tot = 0;				// Variable to be used as an index for storing the resultant Type ID
 	$new_type_id = NULL;	// Variable to store and return the complete list of Matched and Unmatched IDs
-	$new_kas_id = NULL;
-	$kas_id = [];
+	$new_type_id_latest = NULL;
+	$type_id_latest = [];
 	for ($i=1; $i<=$nn; $i++)
 	{
 		if(($i == 1) && ($predicate3[$i] != 'unknown'))
@@ -360,7 +370,7 @@ function markers_search($evidencepropertyyperel, $property_1, $type, $subject, $
 				for ($i1=0; $i1<count($id_array); $i1++){
 					list($conflict, $subject) = explode(", ",$id_array[$i1][1]);
 					$id = $id_array[$i1][0];
-					array_push($kas_id, array($subject, $id, $conflict));
+					array_push($type_id_latest, array($subject, $id, $conflict));
 				}
 			}
 			else if($i == 2)
@@ -372,7 +382,7 @@ function markers_search($evidencepropertyyperel, $property_1, $type, $subject, $
 				for ($i1=0; $i1<count($id_array); $i1++){
 					list($conflict, $subject) = explode(", ",$id_array[$i1][1]);
 					$id = "10_".$id_array[$i1][0];
-					array_push($kas_id, array($subject, $id, $conflict));
+					array_push($type_id_latest, array($subject, $id, $conflict));
 				}
 			}
 			
@@ -382,11 +392,11 @@ function markers_search($evidencepropertyyperel, $property_1, $type, $subject, $
 		if ($type_id != NULL)
 				$new_type_id=array_unique($type_id);
 
-		if ($kas_id != NULL)
-				$new_kas_id=$kas_id; //Array unique does not work as we have ENK, id and conflict
+		if ($type_id_latest != NULL)
+				$new_type_id_latest=$type_id_latest; //Array unique does not work as we have ENK, id and conflict
 		
 	}
-	return array($new_type_id, $new_kas_id);
+	return array($new_type_id, $new_type_id_latest);
 }
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -778,7 +788,7 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 {
 	$id_type_res = array(); // Arrays where will be inserted the results of ID TYPE
 	// Added on Oct 22 2022 
-	$kasid_type_res = array(); // Arrays where will be inserted the results of ID TYPE
+	$id_type_res_latest = array(); // Arrays where will be inserted the results of ID TYPE
 	$n_b = count($id_res[$i]);
 	//MY DELETE
 //print("...n_b:-".$n_b);
@@ -849,13 +859,13 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 				$subject='alpha-actinin-2';				
 
 			//$res_marker = markers_search($evidencepropertyyperel, $property_1, $type, $subject, $predicate);
-			list($res_marker, $res_kas) = markers_search($evidencepropertyyperel, $property_1, $type, $subject, $predicate);
+			list($res_marker, $res_marker_latest) = markers_search($evidencepropertyyperel, $property_1, $type, $subject, $predicate);
 			if ($res_marker != NULL)
 				$id_type_res = array_merge($id_type_res, $res_marker);
 			
 			//Added on Oct 22 2022
-			if($res_kas != NULL)
-				$kasid_type_res = array_merge($kasid_type_res, $res_kas);	
+			if($res_marker_latest != NULL)
+				$id_type_res_latest = array_merge($id_type_res_latest, $res_marker_latest);	
 			//Till Here
 		}
 		// END Script for MARKERS +++++++++++++++++++++++++++++++++++++++		
@@ -957,7 +967,7 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 			if ($res_ids != NULL){
 				$id_type_res = array_merge($id_type_res, $res_ids); 	
 				//Need to test this one as new array will be multi array and res_ids will be normal array with ids
-				//$id_type_res = array_merge($kasid_type_res, $res_ids); 	
+				//$id_type_res = array_merge($id_type_res_latest, $res_ids); 	
 			} 
 		}		
 	}  // End FOR $i1 (AND)
@@ -965,10 +975,10 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 
 	// The program do the AND in the temporary table (in $n_b)
 	$markers = NULL;
-	if(isset($kasid_type_res)){
+	if(isset($id_type_res_latest)){
 		$markers = 'true';
-		$n_res1 = count($kasid_type_res);
-		$id_result = $kasid_type_res;
+		$n_res1 = count($id_type_res_latest);
+		$id_result = $id_type_res_latest;
 	}else{
 		$n1 = count($id_type_res);
 
@@ -1089,96 +1099,71 @@ include ("function/icon.html");
 				//call the function and everything in the for loop has to be done there, send the table name also
 				$subj_arr = explode(', ', $subject);
 				$conflict_note  = str_replace(' ', '_', $conflict);
-
-				if($conflict == 'positive' && ($subject_count == count($id_res[0]))){ 
+				if($conflict == 'positive'){
+					$result_subject = "Expressed ".$conflict." in ".$subject;
 					list($id_t, $name_type, $subregion_type, $position_type, $n_result_tot)= get_UItable($id, $subject, $conflict, $type, $name_temporary_table_result);
-					$conflict_tables[$conflict_note]['table_header'] = "Expressed in $subject";
-					$conflict_tables[$conflict_note]['id_t'] = $id_t;
-					$conflict_tables[$conflict_note]['name_type'] = $name_type;
-					$conflict_tables[$conflict_note]['subregion_type'] = $subregion_type;
-					$conflict_tables[$conflict_note]['position_type'] = $position_type;
-					$conflict_tables[$conflict_note]['n_result_tot'] = $n_result_tot;
+					$conflict_tables[$conflict_note] = update_arrayHash($conflict_tables, $conflict_note, $result_subject, $id_t, $name_type, $subregion_type, $position_type, $n_result_tot);
 				}
-				else if($conflict == 'negative' && ($subject_count == count($id_res[1]))){ 
+				else if($conflict == 'negative'){//&& ($subject_count == count($id_res[1]))){ 
+					$result_subject = "Expressed $conflict in $subject";
 					list($id_t, $name_type, $subregion_type, $position_type, $n_result_tot)= get_UItable($id, $subject, $conflict, $type, $name_temporary_table_result);
-					$conflict_tables[$conflict_note]['table_header'] = "Expressed in $subject";
-					$conflict_tables[$conflict_note]['id_t'] = $id_t;
-					$conflict_tables[$conflict_note]['name_type'] = $name_type;
-					$conflict_tables[$conflict_note]['subregion_type'] = $subregion_type;
-					$conflict_tables[$conflict_note]['position_type'] = $position_type;
-					$conflict_tables[$conflict_note]['n_result_tot'] = $n_result_tot;
+					$conflict_tables[$conflict_note] = update_arrayHash($conflict_tables, $conflict_note, $result_subject, $id_t, $name_type, $subregion_type, $position_type, $n_result_tot);
 				}
-				else if($conflict == 'nullunknown' && ($subject_count == count($id_res[0]))){  
-					$conflict_tables[$conflict_note]['table_header'] = "Unconfirmed in $subject";
-					//echo $conflict_tables[$conflict_note]['table_header'];
-
+				else if($conflict == 'nullunknown'){
+					$result_subject = "Unconfirmed in $subject";
 					list($id_t, $name_type, $subregion_type, $position_type, $n_result_tot)= get_UItable($id, $subject, $conflict, $type, $name_temporary_table_result);
-					$conflict_tables[$conflict_note]['id_t'] = $id_t;
-					$conflict_tables[$conflict_note]['name_type'] = $name_type;
-					$conflict_tables[$conflict_note]['subregion_type'] = $subregion_type;
-					$conflict_tables[$conflict_note]['position_type'] = $position_type;
-					$conflict_tables[$conflict_note]['n_result_tot'] = $n_result_tot;
-
+					$conflict_tables[$conflict_note] = update_arrayHash($conflict_tables, $conflict_note, $result_subject, $id_t, $name_type, $subregion_type, $position_type, $n_result_tot);
 				}
-				else if((($subject_count < count($id_res[0])) && ($subject_count > 1)) ){  
-				//else if(($conflict != 'positive') && (count($subj_arr) == count($is_res))) { 
-					//even positive and other strings should be dynamic
-					//need to get this value from another table so that I know what is N vlaue and I can compare 
-					//which means all markers these ids are unexpressed, here am testing 2 so am hard coding it but change it
-					 //get_UItable($id, $subject, $conflict, $tablepositive_expressedinOne); 
-					 //We will insert all into one tbale expressed in one
+				else if($subject_count > 1){ 
+					$result_subject =  "Confirmed in $subject";
+					list($id_t, $name_type, $subregion_type, $position_type, $n_result_tot)= get_UItable($id, $subject, $conflict, $type, $name_temporary_table_result);
+					$conflict_tables[$conflict_note] = update_arrayHash($conflict_tables, $conflict_note, $result_subject, $id_t, $name_type, $subregion_type, $position_type, $n_result_tot);
 				}
 				else if(($subject_count == 1)){
-
 					$pcount = strpos($conflict_note,"positive");
 					$ncount = strpos($conflict_note,"negative");
-					if ($pcount > 0)
+					$conflict_note = NULL;
+					if ($pcount > -1)
   					{
   						$conflict_note = "positive".$subject;
  					}
-					if ($ncount > 0)
+					if ($ncount > -1)
   					{
 						$conflict_note = "negative".$subject;
   					}
-					  //var_dump($conflict_tables[$conflict_note]);
-					if(isset($conflict_tables[$conflict_note]) && count($conflict_tables[$conflict_note]) > 0){
-						//need to append
+					if(!isset($conflict_tables[$conflict_note])){
+						$conflict_tables[$conflict_note] = [];
+						list($id_t, $name_type, $subregion_type, $position_type, $n_result_tot)= get_UItable($id, $subject, $conflict, $type, $name_temporary_table_result);
+					}
+					if(isset($conflict_tables[$conflict_note]) && (count($conflict_tables[$conflict_note]) > 0)){
+						//need to append so get the existing ones
 						$id_t = $conflict_tables[$conflict_note]['id_t'];
 						$name_type = $conflict_tables[$conflict_note]['name_type'];
 						$subregion_type =$conflict_tables[$conflict_note]['subregion_type'];
 						$position_type = $conflict_tables[$conflict_note]['position_type'];
 						$n_result_tot = $conflict_tables[$conflict_note]['n_result_tot'];
+						//Get new ones
 						list($id_t1, $name_type1, $subregion_type1, $position_type1, $n_result_tot1)= get_UItable($id, $subject, $conflict, $type, $name_temporary_table_result);
+
+						//Merge them
 						$id_t = array_merge($id_t, $id_t1);
 						$name_type = array_merge($name_type, $name_type1);
 						$subregion_type = array_merge($subregion_type, $subregion_type1);
 						$position_type = array_merge($position_type, $position_type1);
 						$n_result_tot = $n_result_tot + $n_result_tot1;
-					}else{
-						$conflict_tables[$conflict_note] = [];
-
-						list($id_t, $name_type, $subregion_type, $position_type, $n_result_tot)= get_UItable($id, $subject, $conflict, $type, $name_temporary_table_result);
-
 					}
 					//$conflict will have that value positive inference or anything
-					//echo $conflict_tables[$conflict_note]['table_header'];
 
-					$conflict_tables[$conflict_note]['table_header'] = "Expressed only in $subject";
-					$conflict_tables[$conflict_note]['id_t'] = $id_t;
-					$conflict_tables[$conflict_note]['name_type'] = $name_type;
-					$conflict_tables[$conflict_note]['subregion_type'] = $subregion_type;
-					$conflict_tables[$conflict_note]['position_type'] = $position_type;
-					$conflict_tables[$conflict_note]['n_result_tot'] = $n_result_tot;
+					$result_subject = "Expressed only in $subject";
+					$conflict_tables[$conflict_note] = update_arrayHash($conflict_tables, $conflict_note, $result_subject, $id_t, $name_type, $subregion_type, $position_type, $n_result_tot);
 				}
 			} // END While
 			
 			$full_search_string = $_SESSION['full_search_string'];
 			$full_search_string_to_print = str_replace('OR', '<br>OR', $full_search_string);
 			$full_search_string_to_print = str_replace('AND', '<br>AND', $full_search_string_to_print);
-			$full_search_string_to_print .= " Table is: ".$name_temporary_table_result;
+			//$full_search_string_to_print .= " Table is: ".$name_temporary_table_result;
 			print ("" . $full_search_string_to_print . "<br>");
-			
-				
 		?>
 
 		<?php
@@ -1188,7 +1173,7 @@ include ("function/icon.html");
 			print ("
 					<table border='0' cellspacing='3' cellpadding='0' class='table_result'>
 						<tr>
-						<td align='center' width='90%' class='table_neuron_page3'>".$conflict_table["table_header"]."</td>
+						<td align='center' width='80%' class='table_neuron_page3'>".$conflict_table["table_header"]."</td>
 						</tr>
 					</table>
 					<table border='0' cellspacing='3' cellpadding='0' class='table_result'>
@@ -1228,12 +1213,6 @@ include ("function/icon.html");
 				print ("</table>");
 			} 
 		}?>
-
-
-		
-		
-		
-
 		<?php
 		if ($n_result_tot == 0);
 		else {
