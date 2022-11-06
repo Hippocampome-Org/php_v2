@@ -242,7 +242,17 @@
             $connStart=0;
             $error=true;
             $query=$this->searchQuery;
-            $p = new ParenthesisParser();
+            //Code added on nov 6 2022 to handle
+            //Neuron:(Morphology:(Axons:DG:1000 NOT Soma:DG:0000) NOT Name:(Neurogliaform))
+            //To replace () and extract the word
+            if((strpos($query, 'Name:') !== false) && 
+               (strpos($query, 'Morphology:') !== false) ){
+                $nmspl_text = explode('Name:', $query);
+                preg_match('#\((.*?)\)#', $nmspl_text[1], $match);
+                $query = $nmspl_text[0]."Name:".$match[1].")";
+            }
+            //Till Here
+	    $p = new ParenthesisParser();
             $parsedQuery = $p->parseParenthesis($query);
             //print("<pre>".print_r($parsedQuery,true)."</pre>");
             if(count($parsedQuery)==$fillLengthConn){
