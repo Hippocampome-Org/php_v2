@@ -249,7 +249,9 @@
                (strpos($query, 'Morphology:') !== false) ){
                 $nmspl_text = explode('Name:', $query);
                 preg_match('#\((.*?)\)#', $nmspl_text[1], $match);
-                $query = $nmspl_text[0]."Name:".$match[1].")";
+                if(count($match) > 0){
+        			$query = $nmspl_text[0]."Name:".$match[1].")";
+                }
             }
             //Till Here
 	    $p = new ParenthesisParser();
