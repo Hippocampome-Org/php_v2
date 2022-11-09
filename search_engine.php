@@ -3,7 +3,7 @@
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <?php
-include ("access_db.php");
+//include ("access_db.php");
 session_start();
 require_once('class/class.type.php');
 require_once('class/class.property.php');
@@ -36,7 +36,6 @@ $morphology_properties_query =
 
  //to hide Firing Pattern button at the bottom page
 $query = "SELECT permission FROM user WHERE id=2"; // id=2 is anonymous user
-//echo $query;
 $rs = mysqli_query($conn,$query);
 list($permission) = mysqli_fetch_row($rs);
 
@@ -57,7 +56,6 @@ function get_UItable($id, $subject, $conflict, $type, $name_temporary_table_resu
 	$name_type_unknown = $subregion_type_unknown = $position_type_unknown = [];
 
 	$idVals = explode(', ', $id);//looping as I printed but some error?
-	//var_dump($idVals);exit;
 	foreach($idVals as $id){
 		if (strpos($id, '0_') == 1)
 		{
@@ -211,7 +209,6 @@ function unique_ids_search($relation,$value){
 	$part=array();
 	$index=0;
 	$query_to_get_unique_ids = "SELECT DISTINCT id FROM Type WHERE id $relation $value";
-	//echo "**** IN unique_ids_search Line 100 -----".$query_to_get_unique_ids;
 	$rs_unique_ids = mysqli_query($GLOBALS['conn'],$query_to_get_unique_ids);	
 	while(list($unique_ids) = mysqli_fetch_row($rs_unique_ids))						
 		$part[$index++] = $unique_ids;
@@ -222,7 +219,6 @@ function unique_ids_search($relation,$value){
 // SEARCH Function for MORPHOLOGY: ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 function morphology_search_for_hippocampal_formation ($evidencepropertyyperel, $property_1, $part, $rel, $val, $type)
 {	
-	echo $rel."---Val is:".$val;
 	if ($val == 'Hippocampal formation')
 		$property_1 -> retrive_ID(4, $part, $rel, NULL);
 	else if ($val == 'DG')
@@ -958,7 +954,6 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 		}
 		// END Script for CONNECTIVITY +++++++++++++++++++++++++++++++++++++++
 		//Unque Ids
-		//echo "LINE 849";echo "REALATION ---:".$relation." --- VALUE: ".$value;
 		if ($property == 'Unique Id')
 		{
 			$res_ids = unique_ids_search($relation,$value);
@@ -994,7 +989,6 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 			}
 		}
 	}
-	//var_dump($id_result);exit;
 	// Insert the result AND & OR in the temporary results table:
 	//insert_result_table_result($name_temporary_table_result, $id_result, $n_res1);
 	//modified on OCt 23 2022
@@ -1081,15 +1075,12 @@ include ("function/icon.html");
 
 				//$conflict_tables[$conflict_note] = "table_".$cn;
 			}
-			//var_dump($conflict_tables);
-			//$query = "SELECT DISTINCT id_type, subject, conflict FROM $name_temporary_table_result";
 			$query = "SELECT GROUP_CONCAT(distinct(id_type) SEPARATOR ', '), 
 							 GROUP_CONCAT(distinct(subject) SEPARATOR ', ') as subject,
 							 COUNT(distinct(subject)) as subject_count, 
 							 GROUP_CONCAT(distinct(conflict) SEPARATOR ', ') 
 	 				  FROM $name_temporary_table_result group by conflict ORDER BY subject_count DESC";
 
-			//echo $query;
 			$rs = mysqli_query($GLOBALS['conn'],$query);
 			
 			//Define tables positive table, unknwon table, table1, table2, table3[]
@@ -1173,7 +1164,6 @@ include ("function/icon.html");
 			$conflict_tables["NotExpressed"] = [];
 
 			$query = "SELECT DISTINCT id_type FROM $name_temporary_table_result";
-			//echo $query;
 
 			$rs = mysqli_query($GLOBALS['conn'],$query);
 			$n_result_tot=0;
