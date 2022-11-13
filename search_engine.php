@@ -50,10 +50,71 @@ function update_arrayHash($conflict_tables, $key, $result_subject, $id_t, $name_
 	return $conflict_tables[$key];
 }
 
+//Added on Nov 12 2022
+function dbresultsconsolidated($rs){
+	$array_conflict_ids = array();
+	while(list($id, $subject, $subject_count, $conflict) = mysqli_fetch_row($rs))
+	{
+		if (strpos($conflict, "positive") !== false) {
+			if(CheckIfArrNotEmpty($array_conflict_ids, "positive")){
+				if(intval($subject_count) == intval($array_conflict_ids["positive"][2])){
+					$old_ids = explode(", ", $array_conflict_ids["positive"][0]);
+					$idval = explode(", ", $id);
+					$ids = array_merge($old_ids, $idval);
+					$id = implode(", ", $ids);
+					$array_conflict_ids["positive"] = array($id, $subject, $subject_count, $conflict);
+				}else{
+					$array_conflict_ids[$conflict] = array($id, $subject, $subject_count, $conflict);
+				}
+			}else{
+				$array_conflict_ids["positive"] = array($id, $subject, $subject_count, $conflict);
+			}
+		}
+		else if (strpos($conflict, "negative") !== false) {
+			if(CheckIfArrNotEmpty($array_conflict_ids, "negative")){
+				if(intval($subject_count) == intval($array_conflict_ids["negative"][2])){
+					$old_ids = explode(", ", $array_conflict_ids["negative"][0]);
+					$idval = explode(", ", $id);
+					$ids = array_merge($old_ids, $idval);
+					$id = implode(", ", $ids);
+					$array_conflict_ids["negative"] = array($id, $subject, $subject_count, $conflict);
+				}else{
+					$array_conflict_ids[$conflict] = array($id, $subject, $subject_count, $conflict);
+				}
+			}else{
+				$array_conflict_ids["negative"] = array($id, $subject, $subject_count, $conflict);
+			}
+		}
+		else{
+			$array_conflict_ids[$conflict] = array($id, $subject, $subject_count, $conflict);
+		}
+	}
+	return $array_conflict_ids;
+}
+
+function CheckIfArrNotEmpty($array = array(), $key = null)
+{
+    if (array_key_exists($key, $array) && !empty($array[$key])) {
+        return true;
+    }
+    if (is_array($array)) {
+        foreach ((array)$array as $arrKey => $arrValue) {
+            if (is_array($arrValue)) {
+                return CheckIfArrNotEmpty($arrValue, $key);
+            }
+            if ($arrKey == $key && !empty($arrValue)) {
+                return $arrValue;
+            }
+        }
+    }
+    return false;
+}
+//Till Here
+
 function get_UItable($id, $subject, $conflict, $type, $name_temporary_table_result){
 	$n_result_tot_unknown = $n_result_tot=0;
 	$id_t = $name_type = $subregion_type = $position_type = $id_t_unknown = 
-	$name_type_unknown = $subregion_type_unknown = $position_type_unknown = [];
+	$name_type_unknown = $subregion_type_unknown = $position_type_unknown = array();
 
 	$idVals = explode(', ', $id);//looping as I printed but some error?
 	foreach($idVals as $id){
@@ -86,6 +147,7 @@ function get_UItable($id, $subject, $conflict, $type, $name_temporary_table_resu
 		}
 		else
 		{
+			$conflictNote = NULL;
 			if (strpos($id, '_') === 0)
 			{
 				$old_id=$id;
@@ -114,7 +176,9 @@ function get_UItable($id, $subject, $conflict, $type, $name_temporary_table_resu
 				if($pos!== false)
 				{
 					$name_type[$n_result_tot]= str_replace($subregion_type[$n_result_tot],"", $name_type[$n_result_tot]);
-					//print(substr_replace($subregion_type[$n_result_tot_unknown],"",$pos));
+				}
+				if($conflictNote){
+					$name_type[$n_result_tot] .= "(".$conflictNote.")";
 				}
 				$n_result_tot = $n_result_tot +1;
 			}
@@ -132,7 +196,7 @@ function get_UItable($id, $subject, $conflict, $type, $name_temporary_table_resu
 function create_result_table_result ($name_temporary_table)
 {	
 	$drop_table ="DROP TABLE $name_temporary_table";
-	//$query = mysqli_query($GLOBALS['conn'],$drop_table);
+	$query = mysqli_query($GLOBALS['conn'],$drop_table);
 	
 	$creatable=	"CREATE TABLE IF NOT EXISTS $name_temporary_table (
 				   id int(4) NOT NULL AUTO_INCREMENT,
@@ -140,7 +204,6 @@ function create_result_table_result ($name_temporary_table)
 				   id_type varchar(200),
 				   conflict varchar(200), -- Added on Oct 23
 				   PRIMARY KEY (id));";
-	//echo $creatable;
 	$query = mysqli_query($GLOBALS['conn'],$creatable);
 }	
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -149,7 +212,6 @@ function create_result_table_result ($name_temporary_table)
 // Function to insert the type_id in the temporary table AND: ++++++++++++++++++++++++++++++++++++++
 function insert_result_table_result($table, $id_type, $n_type_id, $markers = NULL)
 {
-	//echo "TEMP TABLE IS:".$table;//var_dump($id_type);exit;
 	if(isset($markers)){
 		for ($i=0; $i<count($id_type); $i++){
 			$subject = $id_type[$i][0];
@@ -340,7 +402,7 @@ function markers_search($evidencepropertyyperel, $property_1, $type, $subject, $
 	$n_tot = 0;				// Variable to be used as an index for storing the resultant Type ID
 	$new_type_id = NULL;	// Variable to store and return the complete list of Matched and Unmatched IDs
 	$new_type_id_latest = NULL;
-	$type_id_latest = [];
+	$type_id_latest = array();
 	for ($i=1; $i<=$nn; $i++)
 	{
 		if(($i == 1) && ($predicate3[$i] != 'unknown'))
@@ -765,7 +827,6 @@ for ($i=0; $i<$n_line; $i++)
 
 // Creates $a table to insert the results for each AND:
 $ip_address = $_SERVER['REMOTE_ADDR'];
-$ip_address = '192.168.1.1';
 $ip_address = str_replace('.', '_', $ip_address);
 $time_t = time();
 
@@ -971,7 +1032,7 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 
 	// The program do the AND in the temporary table (in $n_b)
 	$markers_search_temp = NULL;
-	$id_result = [];
+	$id_result = array();
 	if(isset($id_type_res_latest) && (count($id_type_res_latest) > 0)){
 		$markers_search_temp = 'true';
 		$n_res1 = count($id_type_res_latest);
@@ -1064,7 +1125,7 @@ include ("function/icon.html");
 			if($markers_search_temp){
 			$queryList = "select distinct conflict_note  from EvidencePropertyTypeRel eptr";			
 			$rsqueryList = mysqli_query($GLOBALS['conn'],$queryList);
-			$conflict_tables = [];
+			$conflict_tables = array();
 			while(list($conflict_note) = mysqli_fetch_row($rsqueryList)){
 				//Create Empty Tables;
 				if(!$conflict_note){
@@ -1074,7 +1135,7 @@ include ("function/icon.html");
 				}
 				$cn  = str_replace(' ', '_', $cn);
 
-				$conflict_tables[$conflict_note] = [];
+				$conflict_tables[$conflict_note] = array();
 
 				//$conflict_tables[$conflict_note] = "table_".$cn;
 			}
@@ -1085,12 +1146,13 @@ include ("function/icon.html");
 	 				  FROM $name_temporary_table_result group by conflict ORDER BY subject_count DESC";
 
 			$rs = mysqli_query($GLOBALS['conn'],$query);
-			
-			//Define tables positive table, unknwon table, table1, table2, table3[]
+			$array_conflict_ids = dbresultsconsolidated($rs);
+			//Define tables positive table, unknwon table, table1, table2, table3array()
 			//At this point $conflict_tables will have empty row for every conflict
 			//In next while we are looping and inserting data and header into that array
-			while(list($id, $subject, $subject_count, $conflict) = mysqli_fetch_row($rs))
+			foreach($array_conflict_ids as $array_conflict_id)
 			{
+				list($id, $subject, $subject_count, $conflict) = $array_conflict_id;	
 				//call the function and everything in the for loop has to be done there, send the table name also
 				$subj_arr = explode(', ', $subject);
 				$conflict_note  = str_replace(' ', '_', $conflict);
@@ -1131,9 +1193,8 @@ include ("function/icon.html");
 						$result_subject .= "negative";
   					}
 					if(!isset($conflict_tables[$conflict_note])){
-						$conflict_tables[$conflict_note] = [];
+						$conflict_tables[$conflict_note] = array();
 						list($id_t, $name_type, $subregion_type, $position_type, $n_result_tot)= get_UItable($id, $subject, $conflict, $type, $name_temporary_table_result, $conflict);
-						array_walk($name_type, function(&$value, $key)  use ($conflict) { $value = $value." (".$conflict.")"; } );
 					}
 					else if(isset($conflict_tables[$conflict_note]) && (count($conflict_tables[$conflict_note]) > 0)){
 						//need to append so get the existing ones
@@ -1145,7 +1206,6 @@ include ("function/icon.html");
 
 						//Get new ones
 						list($id_t1, $name_type1, $subregion_type1, $position_type1, $n_result_tot1)= get_UItable($id, $subject, $conflict, $type, $name_temporary_table_result, $conflict);
-						array_walk($name_type1, function(&$value, $key)  use ($conflict) { $value = $value." (".$conflict.")"; } );
 						//Merge them
 						$id_t = array_merge($id_t, $id_t1);
 						$name_type = array_merge($name_type, $name_type1);
@@ -1162,16 +1222,16 @@ include ("function/icon.html");
 		
 		}
 		else{
-			$conflict_tables = [];
-			$conflict_tables["Expressed"] = [];
-			$conflict_tables["NotExpressed"] = [];
+			$conflict_tables = array();
+			$conflict_tables["Expressed"] = array();
+			$conflict_tables["NotExpressed"] = array();
 
 			$query = "SELECT DISTINCT id_type FROM $name_temporary_table_result";
 
 			$rs = mysqli_query($GLOBALS['conn'],$query);
 			$n_result_tot=0;
 			$n_result_tot_unknown=0;
-			$id_array = [];
+			$id_array = array();
 			while(list($id) = mysqli_fetch_row($rs))
 			{
 				array_push($id_array, $id);
