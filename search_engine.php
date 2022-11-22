@@ -1261,8 +1261,8 @@ include ("function/icon.html");
 						<table border='0' cellspacing='3' cellpadding='0' class='table_result'>
 							<tr>
 							<td align='center' width='5%'>  </td>
-							<td align='center' width='40%' class='table_neuron_page3'>".$conflict_table["table_header"]."</td>
-							<td align='right' width='55%'> </td>
+							<td align='center' width='60%' class='table_neuron_page3'>".$conflict_table["table_header"]."</td>
+							<td align='right' width='35%'> </td>
 							</tr>
 						</table>");
 				}else{
@@ -1272,8 +1272,8 @@ include ("function/icon.html");
 						<tr>
 							<td align='center' width='5%'>  </td>
 							<td align='center' width='10%' class='table_neuron_page3'> Index </td>
-							<td align='center' width='30%' class='table_neuron_page3'> ".$colHead." </td>
-							<td align='right' width='55%'> </td>
+							<td align='center' width='50%' class='table_neuron_page3'> ".$colHead." </td>
+							<td align='right' width='35%'> </td>
 						</tr>
 						</table>");
 				}
@@ -1292,12 +1292,12 @@ include ("function/icon.html");
 								<tr>
 									<td align='center' width='5%'>  </td>
 									<td align='center' width='10%' class='table_neuron_page4'> $i9 </td>
-									<td align='center' width='30%' class='table_neuron_page4'> 
+									<td align='center' width='50%' class='table_neuron_page4'> 
 										<a href='neuron_page.php?id=$id_t[$i]'>
 											<font class='font13'>$subregion_type[$i]  $name_type[$i] </font>
 										</a>
 									</td>
-									<td align='right' width='55%'> </td>
+									<td align='right' width='35%'> </td>
 								</tr>				
 						");
 					}		
