@@ -68,7 +68,6 @@ var vpeak=<?php echo $_GET["paramVpeak"]; ?>;//0.5706428111684687;
 var v0=vr;
 var u0=0;
 
- 
 function rk4(index,x, y, dx, derivs, inputCurrent) {
  
 		
@@ -104,24 +103,20 @@ function rk4(index,x, y, dx, derivs, inputCurrent) {
         return y;
 }
 
-		
-
 var derives2 = function(x, y, inputCurrent) {
     var dydx = [];
 
-	
 	
 	//console.log("INPUT CURRENT>>>>>>>"+inputCurrent);
  
 	dydx[0] = (k*(y[0]-vr)*(y[0]-vt)-y[1]+inputCurrent)/Cm;
 	
-
 	
 	dydx[1] = a*(b*(y[0]-vr) - y[1]);
 	
 	if(y[0]>vpeak) {
 		//console.log("WARNING"+y[0]);
-		y[0]=vmin;
+		// y[0]=vmin;
 		y[1]+=d;
 	}
 
@@ -129,20 +124,18 @@ var derives2 = function(x, y, inputCurrent) {
 
     return dydx;
 }
- 
 
- 
- 
+var xStart = 0.0;
+var yStart = [v0, u0];
  
 var   x1 = 0.0;
 var    step = 0.001;
 var    steps = 0;
 var    maxSteps = 1000001;
 
+var refrac = 2000;
+var refrac_c = 0;
 
-var xStart = 0.0;
-var yStart = [v0, u0];
- 
 function calculate(inputCurrent,startIndex,endIndex) {
 	//console.log("TEST RANDOM="+inputCurrent);
 	
@@ -180,7 +173,14 @@ function calculate(inputCurrent,startIndex,endIndex) {
 	 
 		var returnedVal = rk4(steps,xStart, yStart, step, derives2, inputCurrent);
 
-		
+		if (returnedVal[0] >= vpeak) {
+			refrac_c = refrac;
+		}
+		if (refrac_c > 0) {
+			refrac_c -= 1;
+			returnedVal[0] = vmin;
+		}
+
 		//y=v_prev;
 	 
 		//console.log("END=============================== y(" + x1 + ") =  \t" + JSON.stringify(returnedVal)  );
