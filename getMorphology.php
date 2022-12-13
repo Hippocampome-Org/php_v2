@@ -707,6 +707,53 @@ for ($row_index = 0; $row_index < $number_type; $row_index++) {
   }
 } // $row_index
 
+/* @nmsutton This is the section of code that needs to be rewritten to access the connection_status variable*/
+ for ($row_index = 0; $row_index < $number_type; $row_index++) {
+    //$row_value = $mec_lec_flag_array[$row_index];
+    //$is_row_value = $is_flag_array[$row_index];
+    $row_id = $type->getID_array($row_index);
+    for ($col_index = 0; $col_index < $number_type; $col_index++) {
+    	//$col_value = $mec_lec_flag_array[$col_index];
+    	//$is_col_value = $is_flag_array[$col_index];
+        $col_id = $type->getID_array($col_index);
+        if(($row_id==4056&&$col_id==4036)||($row_id==4056&&$col_id==4078)||($row_id==4031&&$col_id==4036)||($row_id==4031&&$col_id==4078)){
+        	$pon_conn_display_array[$row_index][$col_index]=NO_CONNECTION;
+        }
+        if ($connection_status_array[$row_id][$col_id]=='negative') {
+			$pon_conn_display_array[$row_index][$col_index] = 0;//NO_CONNECTION;
+			//echo "<br>".$row_id." ".$col_id;
+		}
+		//echo "<br>".$connection_status_array[$row_id][$col_id];
+        /*
+    	if($row_value*$col_value==-1){
+            $pon_conn_display_array[$row_index][$col_index]=NO_CONNECTION;
+	    }
+	    if($is_row_value==1 && $is_col_value==-1){
+	    	$pon_conn_display_array[$row_index][$col_index]=NO_CONNECTION;    
+	    }
+	    */
+    }
+}
+
+// Save potential connections to database, to be used by other functions such as the advanced search engine
+for ($row_index = 0; $row_index < $number_type; $row_index++) {
+    for ($col_index = 0; $col_index < $number_type; $col_index++) {
+    	 $source = $type->getID_array($row_index);
+    	 $destination = $type->getID_array($col_index);
+    	 if($pon_conn_display_array[$row_index][$col_index]!=0){
+    	 	$query="SELECT * FROM Conndata WHERE Type1_id='$source' AND Type2_id='$destination' AND connection_status='potential'";
+			$result=mysqli_query($GLOBALS['conn'], $query);
+			if(mysqli_num_rows($result)==0){
+			 	#set time zone
+			 	date_default_timezone_set('America/New_York');
+				$date_curr=date('Y-m-d H:i:s');
+				$query="INSERT INTO Conndata VALUES (NULL,'$date_curr','$source','$destination','potential',NULL)";
+				mysqli_query($GLOBALS['conn'], $query);
+			}
+    	 }
+    }
+}
+
 $responce->potential_array=$pon_conn_display_array;
 $responce->potn_conn_neuron_pcl_array=$potn_conn_neuron_pcl;
 ?>
