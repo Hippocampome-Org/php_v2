@@ -78,13 +78,11 @@ function insert_temporary($table, $id_fragment, $id_original, $quote, $authors, 
 		$open_access = -1;
 	if ($citation_count == NULL)
 		$citation_count = -1;
-	////set_magic_quotes_runtime(0);	
-		if (get_magic_quotes_gpc()) {
-        	$publication = stripslashes($publication);  
-        	$quotes = stripslashes($quotes);   
-	$authors = stripslashes($authors);  
-	}
-		$publication= mysqli_real_escape_string($GLOBALS['conn'],$publication);
+
+    $publication = stripslashes($publication);
+    $quotes = stripslashes($quotes);
+	$authors = stripslashes($authors);
+	$publication= mysqli_real_escape_string($GLOBALS['conn'],$publication);
 	$quote = mysqli_real_escape_string($GLOBALS['conn'],$quote);
 	$authors = mysqli_real_escape_string($GLOBALS['conn'],$authors);
 	$query_i = "INSERT INTO $table

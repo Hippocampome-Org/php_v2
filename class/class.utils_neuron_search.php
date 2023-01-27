@@ -62,7 +62,7 @@ class utils_neuron_search{
     { 
         $temp_table=$this->get_table_name();      
         $drop_table ="DROP TABLE $temp_table";
-        $query = mysqli_query($GLOBALS['conn'],$drop_table);
+        //$query = mysqli_query($GLOBALS['conn'],$drop_table);
         $query= "CREATE TABLE IF NOT EXISTS  $temp_table(                    
                        id int(4) NOT NULL AUTO_INCREMENT,
                        type_id varchar(22),
@@ -78,10 +78,8 @@ class utils_neuron_search{
     public function insert_temporary($type_id,$letter, $neuron)
     {
         $temp_table=$this->get_table_name();
-        //set_magic_quotes_runtime(0);
-        if (get_magic_quotes_gpc()) {
-            $neuron = stripslashes($neuron);    
-        }
+        $neuron = stripslashes($neuron);
+        
         $neuron= mysqli_real_escape_string($GLOBALS['conn'],$neuron);            
         $query = "INSERT INTO $temp_table (id,type_id, letter, neuron) VALUES (NULL,'$type_id', '$letter', '$neuron')";
         $rs = mysqli_query($GLOBALS['conn'],$query); 
@@ -93,10 +91,8 @@ class utils_neuron_search{
     public function update_temporary($id,$type_id,$letter, $neuron, $flag)
     {
         $temp_table=$this->get_table_name();
-        //set_magic_quotes_runtime(0);   
-        if (get_magic_quotes_gpc()) {
-            $neuron = stripslashes($neuron);    
-        }
+        $neuron = stripslashes($neuron);
+  
         $neuron= mysqli_real_escape_string($GLOBALS['conn'],$neuron);   
         if ($flag == 1) // Update letter:
         {

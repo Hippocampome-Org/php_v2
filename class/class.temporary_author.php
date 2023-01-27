@@ -69,10 +69,7 @@ class temporary_author
 
 	public function insert_temporary($letter, $author)
 	{
-		//set_magic_quotes_runtime(0);
-		if (get_magic_quotes_gpc()) {
-        	$author = stripslashes($author);    
-    	}
+        $author = stripslashes($author);
 		$author= mysqli_real_escape_string($GLOBALS['conn'],$author);
 		$table=$this->getName_table();
 			
@@ -82,12 +79,7 @@ class temporary_author
 
 	public function update_temporary($letter, $author, $flag, $id)
 	{
-	//set_magic_quotes_runtime(0);
-	
-    	if (get_magic_quotes_gpc()) {
-        	$author = stripslashes($author);    
-    	}
-    
+        $author = stripslashes($author);
 		$author= mysqli_real_escape_string($GLOBALS['conn'],$author);	
 		$table=$this->getName_table();
 	
