@@ -43,6 +43,7 @@ session_start();
             <li><a href="<?php echo $menuaddr ?>phases.php">In vivo recordings</a></li>
 	        <li><a href="<?php echo $menuaddr ?>cognome/index.php">Cognome</a></li>
 	        <li><a href="<?php echo $menuaddr ?>counts.php">Neuron type census</a></li>
+	        <li><a href="<?php echo $menuaddr ?>simulation_parameters.php">Simulation parameters</a></li>
 		</ul></li>
 	
 		<li class="topmenu"><a href="<?php echo $menuaddr ?>search.php?searching=1" style="height:32px;line-height:32px;"><span><img src="<?php echo $menuaddr ?>function/menu_support_files/find.png" alt="" id="image_find"/>Search</span></a>
