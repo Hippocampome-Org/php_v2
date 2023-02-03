@@ -1,0 +1,36 @@
+
+.dg_th_color {
+    background: rgb(119, 0, 0) !important;
+    background-color: rgb(119, 0, 0)!important;
+    color: rgb(255, 255, 255) !important;
+}
+.ca1_th_color {
+    background: rgb(255, 97, 3)!important;
+    background-color: rgb(255, 97, 3) !important;
+    color: rgb(255, 255, 255) !important;
+}
+.ca2_th_color {
+    background: rgb(255, 255, 153) !important;
+    background-color: rgb(255, 255, 153) !important;
+    color: rgb(255, 255, 255) !important;
+}
+.ca3_th_color {
+    background: rgb(192, 129, 129) !important;
+    background-color: rgb(192, 129, 129) !important;
+    color: rgb(255, 255, 255) !important;
+}
+.ec_th_color {
+    background: rgb(51, 102, 51) !important;
+    background-color: rgb(51, 102, 51) !important;
+    color: rgb(0, 0, 0) !important;
+}
+.sub_th_color {
+    background: rgb(255, 204, 51) !important;
+    background-color: rgb(255, 204, 51) !important;
+    color: rgb(0, 0, 0) !important;
+}
+
+#dg_th,#ca1_th,#ca2_th,#ca3_th,#ec_th,#sub_th
+{
+  color:white !important;
+}
