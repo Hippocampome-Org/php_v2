@@ -15,50 +15,23 @@ function retrieve_subregions($result_array)
         if(count($val_arr) == 0){
             continue;
         }
-        //if($key == 'DG'){
-            $return_value.="<table>";
-            $return_value.="<tr><th class='".$class_name."'>";
-            //$return_value.="<tr><th <th bgcolor='#770000'>";
-            //$return_value.="<span style='color:#ffffff'>";
-            $return_value.="<strong>".$key."</strong>";
-            //$return_value.="</span>";
-            $return_value.="</th></tr>";
-            foreach($val_arr as $vals){
-                $return_value.="<tr><td>";
-                if($vals['excit_inhib'] == 'i'){
-                    $return_value.="<span style='color:#800000'>";
-                }
-                if($vals['excit_inhib'] == 'e'){
-                    $return_value.="<span style='color:#558D12'>";
-                }
-                $return_value.=$vals['name'];
-                $return_value.="</span>";
-                $return_value.="</td></tr>";
+        $return_value.="<table>";
+        $return_value.="<tr><th class='".$class_name."'>";
+        $return_value.="<strong>".$key."</strong>";
+        $return_value.="</th></tr>";
+        foreach($val_arr as $vals){
+            $return_value.="<tr><td>";
+            if($vals['excit_inhib'] == 'i'){
+                $return_value.="<span style='color:#800000'>";
             }
-            $return_value.="</table>";
-        //}
-        /*if($key == 'CA1'){
-            $return_value.="<table>";
-            $return_value.="<tr><th class='".$class_name."'>";
-            //$return_value.="<tr><th <th bgcolor='#FF6103'>";
-            //$return_value.="<span style='color:#ffffff'>";
-            $return_value.="<strong>".$key."</strong>";
-            //$return_value.="</span>";
-            $return_value.="</th></tr>";
-            foreach($val_arr as $vals){
-                $return_value.="<tr><td>";
-                if($vals['excit_inhib'] == 'i'){
-                    $return_value.="<span style='color:#800000'>";
-                }
-                if($vals['excit_inhib'] == 'e'){
-                    $return_value.="<span style='color:#558D12'>";
-                }
-                $return_value.=$vals['name'];
-                $return_value.="</span>";
-                $return_value.="</td></tr>";
+            if($vals['excit_inhib'] == 'e'){
+                $return_value.="<span style='color:#558D12'>";
             }
-            $return_value.="</table>";
-        }*/
+            $return_value.=$vals['name'];
+            $return_value.="</span>";
+            $return_value.="</td></tr>";
+        }
+        $return_value.="</table>";
     }
     return $return_value;
 }
