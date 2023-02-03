@@ -12,7 +12,7 @@
 .ca2_th_color {
     background: rgb(255, 255, 153) !important;
     background-color: rgb(255, 255, 153) !important;
-    color: rgb(255, 255, 255) !important;
+    color: rgb(0, 0, 0) !important;
 }
 .ca3_th_color {
     background: rgb(192, 129, 129) !important;
@@ -22,7 +22,7 @@
 .ec_th_color {
     background: rgb(51, 102, 51) !important;
     background-color: rgb(51, 102, 51) !important;
-    color: rgb(0, 0, 0) !important;
+    color: rgb(255, 255, 255) !important;
 }
 .sub_th_color {
     background: rgb(255, 204, 51) !important;

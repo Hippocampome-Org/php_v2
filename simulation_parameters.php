@@ -9,6 +9,7 @@ include ("permission_check.php");
 <script type="text/javascript" src="style/resolution.js"></script>
 <link rel="stylesheet" href="function/menu_support_files/menu_main_style.css" type="text/css" />
 <link rel="stylesheet" href="function/simulation_params.css" type="text/css" />
+<link rel="stylesheet" href="simulation_params/css/main.css" type="text/css" />
 <script src="jqGrid-4/js/jquery-1.11.0.min.js" type="text/javascript"></script>
 <script src="jqGrid-4/js/i18n/grid.locale-en.js" type="text/javascript"></script>
 <script src="jquery-ui-1.10.2.custom/js/jquery.jqGrid.src-custom.js" type="text/javascript"></script>
