@@ -1,80 +1,101 @@
 <?php
 //require_once('simulation_params/class/class.simulation_param.php');
 include ("../access_db.php");
-include('/functions/retrieve_subregions.php');
+include ("../access_synaptome_db.php");
+
+include('./functions/retrieve_subregions.php');
 ?>
-<style>
-<?php include('simulation_params/css/main.css');?>
-</style>
 <?php
-function retrieve_subregions($result_array)
-{	
-    $return_value = '';	
-    foreach($result_array as $key => $val_arr){
-        $class_name = strtolower($key)."_th_color";
-        if(count($val_arr) == 0){
-            continue;
-        }
-        $return_value.="<table>";
-        $return_value.="<tr><th class='".$class_name."'>";
-        $return_value.="<strong>".$key."</strong>";
-        $return_value.="</th></tr>";
-        foreach($val_arr as $vals){
-            $return_value.="<tr><td>";
-            if($vals['excit_inhib'] == 'i'){
-                $return_value.="<span style='color:#800000'>";
-            }
-            if($vals['excit_inhib'] == 'e'){
-                $return_value.="<span style='color:#558D12'>";
-            }
-            $return_value.=$vals['name'];
-            $return_value.="</span>";
-            $return_value.="</td></tr>";
-        }
-        $return_value.="</table>";
-    }
-    return $return_value;
-}
-$select_query = "SELECT name, subregion, excit_inhib, 
+//var_dump($_POST);
+$select_query = "SELECT name, subregion, nickname, excit_inhib, 
 type_subtype, ranks , v2p0 from type ";
 $where = " WHERE status = 'active' ";
 $sub = "";
-foreach($_POST as $key => $postval){
-    //echo $postval;
-    if($postval == 'all_neuron'){
+$sub_synaptome = "";
 
-    }if($postval == 'v1_neurons'){
-        $where .= " and ranks = 1 ";
+if(isset($_POST) && (count($_POST) > 0 )){
+    foreach($_POST as $key => $postval){
+        if($postval == 'v1_neurons'){
+            $where .= " and ranks in (1, 2, 3, 4, 5) ";
+        }
+        else if($postval == 'v13_neurons'){
+            $where .= " and ranks in (1, 2, 3) ";
+        } 
+        else if($postval == 'v1_canonical'){
+            $where .= "and ranks in (1) ";
+        }
+        else if(in_array(strtoupper($postval), array('CA2','SUB','CA3','EC','DG','CA1'))){
+            $sub .= "'".$postval."', ";
+        }
+        else if(in_array($postval, array('mean','median','maximum','minimum'))){
+            $sub_synaptome .= "'".$postval."', ";
+        }
     }
-    if($postval == 'all_neuron'){
-        $where .= "and ranks in (1, 2, 3)";
-    } 
-    if($postval == 'v1_canonical'){
-       // and ranks in (1, 2, 3);
-        //$where .= "and ranks in (1, 2, 3)";
+    if(strlen($sub) > 1){
+        $sub =     substr($sub, 0, -2);
+        $where .= "and subregion in (".$sub.")";
     }
-    else{
-        $sub .= "'".$postval."', ";
+}else{
+    $where .= "and subregion in ('DG')";
+    if(strlen($sub_synaptome) > 1){
+        $select_synaptome_query = "SELECT pre, post, cv_g, cv_tau_d, cv_tau_r, 
+        cv_tau_f, cv_u, max_g, max_tau_d, max_tau_r, max_tau_f, max_u, min_g, 
+        min_tau_d, min_tau_r, min_tau_f, min_u, means_g, means_tau_d, 
+        means_tau_r, means_tau_f, means_u, std_g, std_tau_d, std_tau_r, 
+        std_tau_f, std_u from tm_cond16 ";
+        $where = " WHERE pre like 'DG%' ";
+        echo $select_synaptome_query;exit;
+        $rs = mysqli_query($conn_synaptome,$select_synaptome_query);
+        $n=0;
+        $result_synaptome_array = array();
+        $result_synaptome_array = ["CA2"=>array(),"Sub"=>array(),"CA3"=>array(),"EC"=>array(),
+        "DG"=>array(),"CA1"=>array()];
+
+        while(list($pre, $post, $cv_g, $cv_tau_d, $cv_tau_r, $cv_tau_f, 
+        $cv_u, $max_g, $max_tau_d, $max_tau_r, $max_tau_f,$max_u, 
+        $min_g, $min_tau_d, $min_tau_r, $min_tau_f, $min_u, $means_g, 
+        $means_tau_d, $means_tau_r, $means_tau_f, $means_u, $std_g, 
+        $std_tau_d, $std_tau_r, $std_tau_f, $std_u) 
+        = mysqli_fetch_row($rs))
+        {	
+            array_push($result_synaptome_array[$subregion], 
+            array('pre'=>$pre, 'post'=>$post, 'cv_g' => $cv_g, 
+            'cv_tau_d' =>$cv_tau_d, 'cv_tau_r' =>$cv_tau_r, 'cv_tau_f' =>$cv_tau_f, 
+            'cv_u' =>$cv_u, 'max_g' =>$max_g, 'max_tau_d' =>$max_tau_d, 
+            'max_tau_r' =>$max_tau_r, 'max_tau_f' => $max_tau_f,
+            'max_u' => $max_u, 'min_g' => $min_g, 'min_tau_d' => $min_tau_d, 
+            'min_tau_r' => $min_tau_r, 'min_tau_f' => $min_tau_f, 
+            'min_u' => $min_u, 'means_g' => $means_g, 
+            'means_tau_d' => $means_tau_d, 'means_tau_r' => $means_tau_r, 
+            'means_tau_f' => $means_tau_f, 'means_u' => $means_u, 
+            'std_g' => $std_g, 'std_tau_d' => $std_tau_d, 'std_tau_r' => $std_tau_r, 
+            'std_tau_f' => $std_tau_f, 'std_u' => $std_u));
+        }
     }
-}
-if(strlen($sub) > 1){
-    $sub =     substr($sub, 0, -2);
-    $where .= "and subregion in (".$sub.")";
+    #var_dump($result_synaptome_array);
 }
 $select_query .= $where;
+$select_query .= " ORDER BY position asc";
 //echo $select_query;
-//var_dump($conn);
+
 $rs = mysqli_query($conn,$select_query);
 $n=0;
-$result_array = ['CA2'=>[],'Sub'=>[],'CA3'=>[],'EC'=>[],'DG'=>[],'CA1'=>[]];
+$result_array = array();
+$result_array = ["CA2"=>array(),"Sub"=>array(),"CA3"=>array(),"EC"=>array(),
+"DG"=>array(),"CA1"=>array()];
 
-while(list($name, $subregion, $excit_inhib, $type_subtype, $ranks , $v2p0) = mysqli_fetch_row($rs))
+while(list($name, $subregion, $nickname, $excit_inhib, $type_subtype, $ranks , $v2p0) = mysqli_fetch_row($rs))
 {	
     array_push($result_array[$subregion], 
-    array('name'=>$name, 'excit_inhib'=>$excit_inhib, 'type_subtype'=>$type_subtype, 
+    array('name'=>$subregion." ".$nickname, 'excit_inhib'=>$excit_inhib, 'type_subtype'=>$type_subtype, 
     'ranks'=>$ranks , 'v2p0'=>$v2p0));
 }
-//var_dump($result_array);
-$final_result = retrieve_subregions($result_array);
-echo $final_result;
+if(isset($_POST) && (count($_POST) > 0 )){ //Once we select the Sub regions
+    $sub_count = count(explode(',', $sub));
+    $param_count = ($sub_count*25)+$sub_count; //To get the count
+    echo json_encode(array($param_count, $result_array));
+}else{
+    $final_result = retrieve_subregions($result_array);
+    echo $final_result;
+}
 ?>

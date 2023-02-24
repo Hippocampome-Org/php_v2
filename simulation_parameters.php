@@ -1,6 +1,7 @@
 <?php
 session_start();
 include ("permission_check.php");
+include ("access_db.php");
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -16,41 +17,148 @@ include ("permission_check.php");
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
 <script>
-   $(document).on('change','input[type=checkbox]' ,function(){
-   var postcontent={};
-   var formData = new FormData(); 
-   $('input[type=checkbox]:checked').each(function(){ 
-      var id = $(this).attr('id');
-      var check_name = $(this).attr('name');
-      var check_val = $(this).val();
-
-      postcontent[id] = check_val ;
-      formData.append(check_name, check_val);
+   var selected_arr = [];
+   $(document).ready(function(){
+      console.log('this is run on page load');
+      refreshPage();
    });
-   const url = './simulation_params/simulation_params.php';
 
-   postcontent = JSON.stringify(postcontent);
-   var xmlHttp = new XMLHttpRequest();
-   xmlHttp.onreadystatechange = function()
-   {
-      if(xmlHttp.readyState == 4 && xmlHttp.status == 200)
-      {
-         if(xmlHttp.responseText){
-            var x = document.getElementById("results-table");
-            if (x.style.display === "none") {
-               $("#results-table").html(xmlHttp.responseText);
-               x.style.display = "block";
-            } else {
-               document.getElementById("results-tabl").insertAdjacentHTML("afterend",xmlHttp.responseText);
-               //$("#results-table").html = $("#results-table").html + xmlHttp.responseText;
-              // x.style.display = "none";
+   function refreshPage() {
+      sensordataGet();
+   }
+
+   function sensordataGet() {
+      var xmlHttp = new XMLHttpRequest();
+      const url_call = './simulation_params/simulation_params.php';
+      xmlHttp.open("GET", url_call, true);
+      xmlHttp.onreadystatechange = function () {
+         if (xmlHttp.readyState == 4) {
+            if (xmlHttp.status == 200) {
+               //alert(xmlHttp.responseText);
+               $("#results-table").html("<div>"+xmlHttp.responseText+"</div>");
             }
          }
       }
+      xmlHttp.send();
    }
-   xmlHttp.open("post", url); 
-   xmlHttp.send(formData);
-});
+
+   function clean(obj) {
+      for (var propName in obj) {
+        if(typeof obj[propName]=="object")
+          clean(obj[propName])
+        if (obj[propName] === null || obj[propName] === undefined) 
+          delete obj[propName];      
+       }
+    }
+
+   $(document).on('change','input[type=checkbox]' ,function(){
+      var postcontent={};
+      var formData = new FormData(); 
+      $('input[type=checkbox]:checked').each(function(){ 
+         var id = $(this).attr('id');
+         var check_name = $(this).attr('name');
+         var check_val = $(this).val();
+         postcontent[id] = check_val ;
+         formData.append(check_name, check_val);
+      });
+      const url = './simulation_params/simulation_params.php';
+
+      postcontent = JSON.stringify(postcontent);
+      var xmlHttp = new XMLHttpRequest();
+      xmlHttp.onreadystatechange = function()
+      {
+         if(xmlHttp.readyState == 4 && xmlHttp.status == 200)
+         {
+            if(xmlHttp.responseText){
+               /*if (x.style.display === "none") {
+                  $("#results-table").html(xmlHttp.responseText);
+                  x.style.display = "block";
+               } else {*/
+                  var selected_arr = JSON.parse(xmlHttp.responseText);
+                  document.getElementById('param_count').innerHTML = selected_arr[0];
+                  console.log(typeof(selected_arr[1]));
+                  selected_arr = selected_arr[1];
+                 // selected_arr = selected_arr[1].filter(value => Object.keys(value).length !== 0);
+                 // selected_arr = selected_arr[1].filter(value => JSON.stringify(value) !== '{}');
+                  
+                  console.log("Line 69 selected_arr"+selected_arr);
+                  const  divContent = document.getElementById('results-table');
+
+                  for (const key in selected_arr) {
+                    if(selected_arr[key].length > 0){
+                       var class_name = key.toLowerCase()+"_th_color";
+               
+                       //To update the count next to the sub region
+                       var span_name = "countVal_"+key.toLowerCase();
+                       if(document.getElementById(span_name)){
+                       var span_details = document.getElementById(span_name).textContent;
+                       document.getElementById(span_name).innerHTML = selected_arr[key].length;
+                       //Till Here
+
+                       //To update the grey color if the text matches
+                     console.log(key+"--LINE 83---->"+JSON.stringify(selected_arr[key]));
+                     var rowVal = selected_arr[key];
+                     for (const rowkey in rowVal) {
+                           var name = rowVal[rowkey]["name"];
+                           //console.log(rowkey+"-- Line 87---->"+JSON.stringify(rowVal[rowkey]["name"]));
+                           console.log("Line 88:"+name);
+
+                           const trs = document.querySelectorAll('#results-table table');
+                           const result = [];
+
+                     for(let tr of trs) {
+                     let th_td = tr.getElementsByTagName('td');
+                     if (th_td.length == 0) {
+                        // th_td = tr.getElementsByTagName('th');
+                     }
+                     
+                     let th_td_array = Array.from(th_td); // convert HTMLCollection to an Array
+                     th_td_array = th_td_array.map(tag => tag.innerText); // get the text of each element
+                     result.push(th_td_array);
+                     }
+
+            console.log(result);
+
+                        //const divContArray = Array.from(divContent.children);
+                        //divContArray.forEach((child) => {console.log(child)
+                           //const divChildArray = Array.from(child.children);
+                          // divChildArray.forEach((item) =>  {console.log(item)});
+                          // Array.from(divContent.children).map(child =>{
+                              //hiding all others            
+                              /*console.log("Line 91:"+child.querySelector('td span').innerHTML);
+                                 if(child.querySelector('td span').innerHTML.indexOf(name) === -1){
+                                    // console.log("In If");
+                                    //child.style.display = "none";
+                                 }else{
+                                    console.log("Match is Line 91"+child.querySelector('td span').innerHTML+"Name is:"+name);
+                                    child.querySelector('td span').style.backgroundColor = "#D3D3D3";     
+                                 }*/
+                       // });
+
+
+                           
+                           /*if(divContent.innerHTML.indexOf(name) !== -1) {
+                              alert(name);
+                              alert(divContent.innerHTML.indexOf(name));
+                              //x[0].style.backgroundColor = "#D3D3D3"; 
+                              //console.log(divContent.children.querySelector('td span').innerHTML.indexOf(name));
+
+                              console.log(divContent.innerHTML.indexOf(name).parentNode.innerHTML);//.style='color:#D3D3D3';
+                              //D3D3D3
+                              //document.getElementById("delete").parentElement
+                           }*/
+                        }//for loop
+                       //Till Here
+                       }
+                   }
+                  }
+               //}
+            }
+         }
+      }
+      xmlHttp.open("post", url); 
+      xmlHttp.send(formData);
+   });
 </script>
 <?php
 $query = "SELECT permission FROM user WHERE id=2"; // id=2 is anonymous user
@@ -67,72 +175,173 @@ list($permission) = mysqli_fetch_row($rs);
    ?>
    <div class='title_area' style="width:100%;">
       <div class="div-row">
-      <div class="div-column" style="float:left;width:33.33%;">
-         <font class="font1">Simulation Parameters Selection Screen</font>
-      </div>
-      <div class="div-column" style="float:left;width:33.33%;">
-         <p id="current_params" name="current_params">Current parameters: 15,237</p>
-      </div>
-      <div class="div-column" style="float:left;width:33.33%;">
-         <p><button  type="button" onclick ="evidencetoggle()" >Generate Zip file</button></p>
-      </div>
-      </div>
-      <div class="div-row">
-         <p>
-		   <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="all_neuron" name="all_neuron" id="all_neuron">
-         All neuron types &nbsp;&nbsp;</input>
-         <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="dg" name="dg" id="dg">
-         Dentate Gyrus (DG) &nbsp;&nbsp;</input>
-         <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="ca3" name="ca3" id="ca3">
-         CA3 &nbsp;&nbsp;</input>
-         <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="ca2" name="ca2" id="ca2">
-         CA2 &nbsp;&nbsp;</input>
-         <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="ca1" name="ca1" id="ca1">
-         CA1 &nbsp;&nbsp;</input>
-         <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="sub" name="sub" id="sub">
-         Subiculum (Sub) &nbsp;&nbsp;</input>
-         <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="ec" name="ec" id="ec">
-         Entorhinal Cortex (EC) &nbsp;&nbsp;</input>
-      </p>
-      <p>
-         &nbsp;&nbsp;&nbsp;
-         <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="v1_neurons" name="v1_neurons" id="v1_neurons">
-         All v1.x neuron types &nbsp;&nbsp;</input>
-      </p>
-      <p>
-         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-         <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="v13_neurons" name="v13_neurons" id="v13_neurons">
-         All v1.x rank 1-3 neuron types &nbsp;&nbsp;</input>
-      </p>
-      <p>
-         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-         <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="v1_canonical" name="v1_canonical" id="v1_canonical">
-         All v1.x canonical neuron types &nbsp;&nbsp;</input>
-      </p>
-      <p>* Method for determining undefined Izhikevich parameters:</p>
-      <p>
-         <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="defined_neurons" name="defined_neurons" id="defined_neurons">
-         Average all defined neuron types &nbsp;&nbsp;</input>
-         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-         <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="defined_neurons_glu_gaba" name="defined_neurons_glu_gaba" id="defined_neurons_glu_gaba">
-         Average all defined (glutamatergic/GABAergic)neuron types &nbsp;&nbsp;</input>
-      </p>
-      <p>
-         <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="defined_neurons_sub" name="defined_neurons_sub" id="defined_neurons_sub">
-         Average all defined neuron types from the same subregion &nbsp;&nbsp;</input>
-         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-         <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="defined_neurons_glu_gaba_sub" name="defined_neurons_glu_gaba_sub" id="defined_neurons_glu_gaba_sub">
-         Average all defined (glutamatergic/GABAergic)neuron types from the same subregion&nbsp;&nbsp;</input>
-      </p>
+            <font class="font1">Simulation Parameters Selection Screen</font>
+            <p>Download a pre-computed parameter set zip file: </p>
+         </div>
+         <div class="div-row">
+            <div class="div-column" style="float:left;width:12.28%;">
+            <button  type="button" style="width:97%" ><a href="./data/default_zipfiles/full_scale_DG_snn.zip">DG</a></button>
+            </div>
+            <div class="div-column" style="float:left;width:12.28%;">
+            <button  type="button" style="width:97%" ><a href="./data/default_zipfiles/full_scale_CA3_snn.zip">CA3</a></button>
+            </div>
+            <div class="div-column" style="float:left;width:12.28%;">
+            <button  type="button" style="width:97%" ><a href="./data/default_zipfiles/full_scale_CA2_snn.zip">CA2</a></button>
+            </div>
+            <div class="div-column" style="float:left;width:12.28%;">
+            <button  type="button" style="width:97%" ><a href="./data/default_zipfiles/full_scale_CA1_snn.zip">CA1</a></button>
+            </div>
+            <div class="div-column" style="float:left;width:12.28%;">
+            <button  type="button" style="width:97%" ><a href="./data/default_zipfiles/full_scale_SUB_snn.zip">Sub</a></button>
+            </div>
+            <div class="div-column" style="float:left;width:12.28%;:w
+            ">
+            <button  type="button" style="width:97%" ><a href="./data/default_zipfiles/full_scale_EC_snn.zip">EC</a></button>
+            </div>
+            <div class="div-column" style="float:left;width:12.28%;">
+            <button  type="button" style="width:97%" ><a href="./data/default_zipfiles/full_scale_HPF_snn.zip">ALL</a></button>
+            </div>
+            <div class="div-column" style="float:left;width:12.28%;">
+            <p></p>
+            </div>
+         </div>
+         <div class="div-row">
+            <div class="div-column" style="float:left;width:40.33%;">
+            <p> Select a user-defined parameter set: </p>
+            </div>
+            <div class="div-column" style="float:left;width:40.33%;">
+               <p id="current_params" name="current_params"><b>Current parameters: 
+               <span id="param_count" name="param_count">0</span></b></p>
+            </div>
+            <div class="div-column" style="float:left;width:18.33%;">
+            <p><button  type="button" onclick ="evidencetoggle()" >Generate Zip file</button></p>
+            </div>
+         </div>
+         <div class="div-row">
+            <p>
+            <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="all_neuron" name="all_neuron" id="all_neuron">
+            All neuron types &nbsp;&nbsp;</input>
+            <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="dg" name="dg" id="dg">
+            Dentate Gyrus (DG) &nbsp;&nbsp;</input>
+            <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="ca3" name="ca3" id="ca3">
+            CA3 &nbsp;&nbsp;</input>
+            <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="ca2" name="ca2" id="ca2">
+            CA2 &nbsp;&nbsp;</input>
+            <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="ca1" name="ca1" id="ca1">
+            CA1 &nbsp;&nbsp;</input>
+            <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="sub" name="sub" id="sub">
+            Subiculum (Sub) &nbsp;&nbsp;</input>
+            <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="ec" name="ec" id="ec">
+            Entorhinal Cortex (EC) &nbsp;&nbsp;</input>
+            </p>
+            <p>
+            &nbsp;&nbsp;&nbsp;
+            <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="v1_neurons" name="v1_neurons" id="v1_neurons">
+            All v1.x neuron types &nbsp;&nbsp;</input>
+            </p>
+            <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="v13_neurons" name="v13_neurons" id="v13_neurons">
+            All v1.x rank 1-3 neuron types &nbsp;&nbsp;</input>
+            </p>
+            <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="v1_canonical" name="v1_canonical" id="v1_canonical">
+            All v1.x canonical neuron types &nbsp;&nbsp;</input>
+            </p>
+         </div>
+         <div class="div-row">
+            <p>Method for determining undefined synaptice probabilities for E->E, E->I, I->E, and I->I connections between neuron types based on known values:</p>  
+            <p><div class="div-column" style="float:left;">
+            <input type="checkbox" style="background-color: rgb(0, 0, 153);" 
+            value="mean" name="mean" id="mean">
+            Mean</input>
+            </div>
+            <div class="div-column" style="float:left;">
+            <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="median" name="median" id="median">
+            Median</input>
+            </div>
+            <div class="div-column" style="float:left;">
+            <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="minimum" 
+            name="minimum" id="minimum">
+            Minimum &nbsp;&nbsp;</input>
+            </div>
+            <div class="div-column" style="float:left;">
+            <input type="checkbox" style="background-color: rgb(0, 0, 153);" 
+            value="maximum" name="maximum" id="maximum">
+            Maximum&nbsp;&nbsp;</input>
+            </div>
+            </p>
+         </div>
+      <div>
    </div>
-   <div>
-   <div>
-   <div id="results-table" name="results-table" style="display:none;">
+   <div class="div-row" style="margin-top:80px;width:100%;">
+   <div id="results-table" name="results-table" style="overflow-x: hidden;">
+    <?php
+/*    $select_query = "SELECT name, subregion, nickname, excit_inhib, 
+                     type_subtype, ranks , v2p0 from type ";
+    $where = " WHERE status = 'active' and subregion='DG' ORDER BY position asc";
+    $sub = "";
+    foreach($_POST as $key => $postval){
+       //echo $postval;
+      if($postval == 'all_neuron'){
 
+      }if($postval == 'v1_neurons'){
+         $where .= " and ranks = 1 ";
+      }
+      if($postval == 'all_neuron'){
+         $where .= "and ranks in (1, 2, 3)";
+      } 
+      if($postval == 'v1_canonical'){
+       // and ranks in (1, 2, 3);
+        //$where .= "and ranks in (1, 2, 3)";
+      }
+      else{
+         $sub .= "'".$postval."', ";
+      }
+    }
+    if(strlen($sub) > 1){
+      $sub = substr($sub, 0, -2);
+      $where .= "and subregion in (".$sub.")";
+    }
+    $select_query .= $where;
+    echo $select_query;
+    $rs = mysqli_query($conn,$select_query);
+     $n=0;
+    $result_array = ['DG'=>[], 'CA3'=>[], 'CA1'=>[], 'EC'=>[]];
+    $result_array1 = ['CA2'=>[],'Sub'=>[]];
+
+    while(list($name, $subregion, $nickname, $excit_inhib, $type_subtype, $ranks , $v2p0) = mysqli_fetch_row($rs))
+    {	
+      if (in_array($subregion, array('CA2', 'Sub'))){
+
+         array_push($result_array1[$subregion], 
+            array('name'=>$subregion." ".$nickname, 'excit_inhib'=>$excit_inhib, 
+            'type_subtype'=>$type_subtype, 
+            'ranks'=>$ranks , 'v2p0'=>$v2p0));
+      }else{
+         array_push($result_array[$subregion], 
+            array('name'=>$subregion." ".$nickname, 'excit_inhib'=>$excit_inhib, 
+            'type_subtype'=>$type_subtype, 
+            'ranks'=>$ranks , 'v2p0'=>$v2p0));
+      }
+    }*/
+    /*echo "<div style='margin-left:auto;
+        margin-right:auto;
+        height:auto; 
+        width:auto;'>";
+        $final_result = retrieve_subregions($result_array);
+        echo $final_result;
+    echo "</div>";
+    echo "<div style='height:10px;'>";
+    echo "</div>";*/
+    /*echo "<div style='float:left;margin-top:10px;'>";
+        $final_result1 = retrieve_subregions($result_array1);
+        echo $final_result1;
+    echo "</div>";*/
+    ?>
    </div>
+</div>
+   
    </body>
 </html>
