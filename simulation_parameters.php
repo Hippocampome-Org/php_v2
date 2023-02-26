@@ -1,8 +1,6 @@
 <?php
 session_start();
 include ("permission_check.php");
-include ("access_db.php");
-include ("access_synaptome.php");
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -86,7 +84,7 @@ include ("access_synaptome.php");
 
                   for (const key in selected_arr) {
                      if(selected_arr[key].length > 0){
-                        //var class_name = key.toLowerCase()+"_th_color";              
+                        //var class_name = key.toLowerCase()+"_th_color";        
                         //To update the count next to the sub region
                         var span_name = "countVal_"+key.toLowerCase();
                         if(document.getElementById(span_name)){
@@ -98,9 +96,13 @@ include ("access_synaptome.php");
                            var rowVal = selected_arr[key];
                            for (const rowkey in rowVal) {
                               var td_name = key.toLowerCase()+"_"+rowVal[rowkey]["id"];
+                              var detail_name = "detail_div"+key.toLowerCase()+"_"+rowVal[rowkey]["id"];
 
                               if(document.getElementById(td_name)){
-                                 document.getElementById(td_name).style.backgroundColor = "rgb(211, 211, 211)"
+                                 document.getElementById(td_name).style.backgroundColor = "rgb(211, 211, 211)";
+                                 if(rowVal[rowkey]["synaptome_details"]){
+                                    document.getElementById(detail_name).style.display = "block";
+                                 }
                               }
                            }//for loop
                         }

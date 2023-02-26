@@ -24,11 +24,32 @@ function retrieve_subregions($result_array)
             }
             $return_value.=$vals['name'];
             $return_value.="</span>";
+            $return_value.="<div id='detail_div".$td_name."' name='detail_div".$td_name."' style='display:none;'>";
+            $return_value.="<span style='font-size: 8px; white-space: nowrap;'>";
+            $return_value.="<a clss='tooltip' title='' href='#'>";
+            $return_value.="<sup style='margin-left:4px;color:#930;'>Details</sup></a>";
+            $return_value.="</span>";
+            $return_value.="</div>";
             $return_value.="</td></tr>";
             $i++;
         }
         $return_value.="</table>";
     }
+    return $return_value;
+}
+
+function retrieve_detail($result_array)
+{
+    $return_value = "";
+    $return_value.="<table style='float:left;width:23%;'>";
+    $return_value.="<tr><th>Details";
+    $return_value.="</th></tr>";
+    foreach($result_array as $key => $val){
+        $return_value .= "<tr><td style='font-size:5px' class='default-background' >"; //10 px is all in one line
+        $return_value .= $key.":".$val;
+        $return_value .= "</td></tr>";
+    }
+    $return_value.="</table>";
     return $return_value;
 }
 ?>
