@@ -2,6 +2,8 @@
 session_start();
 include ("permission_check.php");
 include ("access_db.php");
+include ("access_synaptome.php");
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -9,7 +11,6 @@ include ("access_db.php");
 <meta http-equiv="Content-Type" content="text/html" />
 <script type="text/javascript" src="style/resolution.js"></script>
 <link rel="stylesheet" href="function/menu_support_files/menu_main_style.css" type="text/css" />
-<link rel="stylesheet" href="function/simulation_params.css" type="text/css" />
 <link rel="stylesheet" href="simulation_params/css/main.css" type="text/css" />
 <script src="jqGrid-4/js/jquery-1.11.0.min.js" type="text/javascript"></script>
 <script src="jqGrid-4/js/i18n/grid.locale-en.js" type="text/javascript"></script>

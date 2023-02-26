@@ -15,7 +15,7 @@ function retrieve_subregions($result_array)
         $return_value.="</th></tr>";
         foreach($val_arr as $vals){//11 is like 2 to second row but to the right
             $td_name=strtolower($key)."_".$vals['id'];
-            $return_value.="<tr><td id='".$td_name."' name='".$td_name."' style='font-size:11px' class='grey-background' >"; //10 px is all in one line
+            $return_value.="<tr><td id='".$td_name."' name='".$td_name."' style='font-size:11px' class='default-background' >"; //10 px is all in one line
             if($vals['excit_inhib'] == 'i'){
                 $return_value.="<span style='color:#800000'>";
             }
