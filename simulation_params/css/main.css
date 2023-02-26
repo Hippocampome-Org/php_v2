@@ -1,4 +1,13 @@
 
+.default-background {
+    background: white;
+    background-color: white;
+}
+
+.grey-background {
+    background:rgb(211, 211, 211) !important;
+    background-color: rgb(211, 211, 211) !important;
+}
 .dg_th_color {
     background: rgb(119, 0, 0) !important;
     background-color: rgb(119, 0, 0)!important;

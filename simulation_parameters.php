@@ -70,89 +70,41 @@ include ("access_db.php");
          if(xmlHttp.readyState == 4 && xmlHttp.status == 200)
          {
             if(xmlHttp.responseText){
-               /*if (x.style.display === "none") {
-                  $("#results-table").html(xmlHttp.responseText);
-                  x.style.display = "block";
-               } else {*/
                   var selected_arr = JSON.parse(xmlHttp.responseText);
-                  document.getElementById('param_count').innerHTML = selected_arr[0];
-                  console.log(typeof(selected_arr[1]));
+                  document.getElementById('param_count').innerHTML = selected_arr[0];//To update the param count on UI
                   selected_arr = selected_arr[1];
-                 // selected_arr = selected_arr[1].filter(value => Object.keys(value).length !== 0);
-                 // selected_arr = selected_arr[1].filter(value => JSON.stringify(value) !== '{}');
-                  
-                  console.log("Line 69 selected_arr"+selected_arr);
-                  const  divContent = document.getElementById('results-table');
+
+                  //To clear all tds background
+                  const table = document.getElementById("results-table");
+                  const cells = table.getElementsByTagName("td");
+
+                  for (const cell of cells) {
+                     cell.style.backgroundColor = "rgb(255, 255, 255)";
+                  }
+                  //Till Here
 
                   for (const key in selected_arr) {
-                    if(selected_arr[key].length > 0){
-                       var class_name = key.toLowerCase()+"_th_color";
-               
-                       //To update the count next to the sub region
-                       var span_name = "countVal_"+key.toLowerCase();
-                       if(document.getElementById(span_name)){
-                       var span_details = document.getElementById(span_name).textContent;
-                       document.getElementById(span_name).innerHTML = selected_arr[key].length;
-                       //Till Here
+                     if(selected_arr[key].length > 0){
+                        //var class_name = key.toLowerCase()+"_th_color";              
+                        //To update the count next to the sub region
+                        var span_name = "countVal_"+key.toLowerCase();
+                        if(document.getElementById(span_name)){
+                           var span_details = document.getElementById(span_name).textContent;
+                           document.getElementById(span_name).innerHTML = selected_arr[key].length;
+                           //Till Here
 
-                       //To update the grey color if the text matches
-                     console.log(key+"--LINE 83---->"+JSON.stringify(selected_arr[key]));
-                     var rowVal = selected_arr[key];
-                     for (const rowkey in rowVal) {
-                           var name = rowVal[rowkey]["name"];
-                           //console.log(rowkey+"-- Line 87---->"+JSON.stringify(rowVal[rowkey]["name"]));
-                           console.log("Line 88:"+name);
+                           //To update the grey color if the text matches
+                           var rowVal = selected_arr[key];
+                           for (const rowkey in rowVal) {
+                              var td_name = key.toLowerCase()+"_"+rowVal[rowkey]["id"];
 
-                           const trs = document.querySelectorAll('#results-table table');
-                           const result = [];
-
-                     for(let tr of trs) {
-                     let th_td = tr.getElementsByTagName('td');
-                     if (th_td.length == 0) {
-                        // th_td = tr.getElementsByTagName('th');
-                     }
-                     
-                     let th_td_array = Array.from(th_td); // convert HTMLCollection to an Array
-                     th_td_array = th_td_array.map(tag => tag.innerText); // get the text of each element
-                     result.push(th_td_array);
-                     }
-
-            console.log(result);
-
-                        //const divContArray = Array.from(divContent.children);
-                        //divContArray.forEach((child) => {console.log(child)
-                           //const divChildArray = Array.from(child.children);
-                          // divChildArray.forEach((item) =>  {console.log(item)});
-                          // Array.from(divContent.children).map(child =>{
-                              //hiding all others            
-                              /*console.log("Line 91:"+child.querySelector('td span').innerHTML);
-                                 if(child.querySelector('td span').innerHTML.indexOf(name) === -1){
-                                    // console.log("In If");
-                                    //child.style.display = "none";
-                                 }else{
-                                    console.log("Match is Line 91"+child.querySelector('td span').innerHTML+"Name is:"+name);
-                                    child.querySelector('td span').style.backgroundColor = "#D3D3D3";     
-                                 }*/
-                       // });
-
-
-                           
-                           /*if(divContent.innerHTML.indexOf(name) !== -1) {
-                              alert(name);
-                              alert(divContent.innerHTML.indexOf(name));
-                              //x[0].style.backgroundColor = "#D3D3D3"; 
-                              //console.log(divContent.children.querySelector('td span').innerHTML.indexOf(name));
-
-                              console.log(divContent.innerHTML.indexOf(name).parentNode.innerHTML);//.style='color:#D3D3D3';
-                              //D3D3D3
-                              //document.getElementById("delete").parentElement
-                           }*/
-                        }//for loop
-                       //Till Here
-                       }
-                   }
-                  }
-               //}
+                              if(document.getElementById(td_name)){
+                                 document.getElementById(td_name).style.backgroundColor = "rgb(211, 211, 211)"
+                              }
+                           }//for loop
+                        }
+                     }//If ex DG have data or not
+               }//For loop const key
             }
          }
       }
