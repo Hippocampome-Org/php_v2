@@ -25,10 +25,10 @@ function retrieve_subregions($result_array)
             $return_value.=$vals['name'];
             $return_value.="</span>";
             $return_value.="<div id='detail_div".$td_name."' name='detail_div".$td_name."' style='display:none;'>";
-            $return_value.="<span style='font-size: 8px; white-space: nowrap;'>";
-            $return_value.="<a clss='tooltip' title='' href='#'>";
-            $return_value.="<sup style='margin-left:4px;color:#930;'>Details</sup></a>";
-            $return_value.="</span>";
+            $return_value.="<a class='tooltip' title='' href='#'>";
+            $return_value.="<sup style='margin-left:4px;color:#930;'>Details</sup>";
+            $return_value.=$vals['synaptome_details'];
+            $return_value.="</a>";
             $return_value.="</div>";
             $return_value.="</td></tr>";
             $i++;
@@ -50,6 +50,17 @@ function retrieve_detail($result_array)
         $return_value .= "</td></tr>";
     }
     $return_value.="</table>";
+    return $return_value;
+}
+function retrieve_detail_tool($result_array)
+{
+    $return_value = "";
+    $return_value.="<span style='float:left;width:23%;font-size:5px;display:none;'>";
+    $return_value.="ToolTip";
+    /*foreach($result_array as $key => $val){
+        $return_value .= $key.":".$val;
+    }*/
+    $return_value.="</span>";
     return $return_value;
 }
 ?>

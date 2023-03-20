@@ -23,12 +23,27 @@ include ("permission_check.php");
    });
 
    function refreshPage() {
-      sensordataGet();
+      simulationdataGet();
    }
 
-   function sensordataGet() {
+   function simulationdataGet() {
       var xmlHttp = new XMLHttpRequest();
       const url_call = './simulation_params/simulation_params.php';
+      xmlHttp.open("GET", url_call, true);
+      xmlHttp.onreadystatechange = function () {
+         if (xmlHttp.readyState == 4) {
+            if (xmlHttp.status == 200) {
+               //alert(xmlHttp.responseText);
+               $("#results-table").html("<div>"+xmlHttp.responseText+"</div>");
+            }
+         }
+      }
+      xmlHttp.send();
+   }
+
+   function create_or_linkfile(){
+      var xmlHttp = new XMLHttpRequest();
+      const url_call = './simulation_params/temp_zipfile_creation.php';
       xmlHttp.open("GET", url_call, true);
       xmlHttp.onreadystatechange = function () {
          if (xmlHttp.readyState == 4) {
@@ -102,6 +117,7 @@ include ("permission_check.php");
                                  document.getElementById(td_name).style.backgroundColor = "rgb(211, 211, 211)";
                                  if(rowVal[rowkey]["synaptome_details"]){
                                     document.getElementById(detail_name).style.display = "block";
+                                   // document.getElementById(detail_name)
                                  }
                               }
                            }//for loop
@@ -169,7 +185,7 @@ list($permission) = mysqli_fetch_row($rs);
                <span id="param_count" name="param_count">0</span></b></p>
             </div>
             <div class="div-column" style="float:left;width:18.33%;">
-            <p><button  type="button" onclick ="evidencetoggle()" >Generate Zip file</button></p>
+            <p><button  type="button" onclick="create_or_linkfile()" >Generate Zip file</button></p>
             </div>
          </div>
          <div class="div-row">

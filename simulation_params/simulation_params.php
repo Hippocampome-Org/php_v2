@@ -5,40 +5,59 @@
 ?>
 <?php
 function get_synaptome_details($sub_synaptome, $sub, $conn_synaptome, $table_name){
-    //$sub = substr($sub, 0, -2);
-    //$sub_synaptome = substr($sub_synaptome, 0, -2);
-
-    $select_synaptome_query = "SELECT pre, AVG(cv_g), AVG(cv_tau_d), 
-        AVG(cv_tau_r), AVG(cv_tau_f), AVG(cv_u), AVG(max_g), AVG(max_tau_d), 
-        AVG(max_tau_r), AVG(max_tau_f), AVG(max_u), AVG(min_g), 
-        AVG(min_tau_d), AVG(min_tau_r), AVG(min_tau_f), AVG(min_u), 
-        AVG(means_g), AVG(means_tau_d), AVG(means_tau_r), AVG(means_tau_f), 
-        AVG(means_u), AVG(std_g), AVG(std_tau_d), AVG(std_tau_r), 
-        AVG(std_tau_f), AVG(std_u) from ".$table_name." GROUP BY pre";
+    $subs = explode(", ", substr($sub, 0, -2));
+    $sub_synaptomes = explode(", ", substr($sub_synaptome, 0, -2));
+   // var_dump($sub_synaptomes);
+    $columns = array();
+    $columns = ['pre'];
+    $select_synaptome_query = "SELECT pre, ";
+    foreach($sub_synaptomes as $sub_synaptome){
+        if($sub_synaptome == "mean"){
+            $column = "means_g, means_tau_d, means_tau_r, means_tau_f, means_u";
+            $select_synaptome_query .= "AVG(means_g) as means_g, AVG(means_tau_d) as means_tau_d, 
+                                        AVG(means_tau_r) as means_tau_r, 
+                                        AVG(means_tau_f) as means_tau_f, AVG(means_u) 
+                                        as means_u, ";
+        }
+        if($sub_synaptome == "minimum"){
+            $column .= "min_g, min_tau_d, min_tau_r, min_tau_f, min_u";
+            $select_synaptome_query .= " AVG(min_g) as min_g, AVG(min_tau_d) as min_tau_d, 
+                                        AVG(min_tau_r) as min_tau_r, 
+                                        AVG(min_tau_f) as min_tau_f, AVG(min_u) as min_u, ";
+        }
+        if($sub_synaptome == "maximum"){
+            $column .= "max_g, max_tau_d, max_tau_r, max_tau_f, max_u";
+            $select_synaptome_query .= " AVG(max_g) as max_g, AVG(max_tau_d) as max_tau_d, 
+                                        AVG(max_tau_r) as max_tau_r, 
+                                        AVG(max_tau_f) as max_tau_f, AVG(max_u) as max_u, ";
+        }
+        if($sub_synaptome == "median"){
+        //, AVG(std_g), AVG(std_tau_d), AVG(std_tau_r), AVG(std_tau_f), AVG(std_u) ";
+        //AVG(cv_g), AVG(cv_tau_d), AVG(cv_tau_r), AVG(cv_tau_f), AVG(cv_u),
+        }
+    }
+    $select_synaptome_query = substr($select_synaptome_query, 0, -2);
+    $select_synaptome_query .= " from ".$table_name." GROUP BY pre";
+    //echo $select_synaptome_query;
     $rs = mysqli_query($conn_synaptome,$select_synaptome_query);
-    $n=0;
+    $columns += explode(", ", $column);
     $result_synaptome_array = array();
-    while(list($pre, $cv_g, $cv_tau_d, $cv_tau_r, $cv_tau_f, 
-        $cv_u, $max_g, $max_tau_d, $max_tau_r, $max_tau_f,$max_u, 
-        $min_g, $min_tau_d, $min_tau_r, $min_tau_f, $min_u, $means_g, 
-        $means_tau_d, $means_tau_r, $means_tau_f, $means_u, $std_g, 
-        $std_tau_d, $std_tau_r, $std_tau_f, $std_u) 
-        = mysqli_fetch_row($rs))
-        {	
-            $result_synaptome_array[$pre] = 
-            array('cv_g'=>$cv_g,'cv_tau_d'=>$cv_tau_d,'cv_tau_r'=>$cv_tau_r,
-            'cv_tau_f'=>$cv_tau_f,'cv_u'=>$cv_u,'max_g'=>$max_g,'max_tau_d'=>$max_tau_d,
-            'max_tau_r'=>$max_tau_r,'max_tau_f'=> $max_tau_f,'max_u'=> $max_u,
-            'min_g'=>$min_g,'min_tau_d'=>$min_tau_d,'min_tau_r'=>$min_tau_r,
-            'min_tau_f'=>$min_tau_f,'min_u'=>$min_u,'means_g'=>$means_g,
-            'means_tau_d'=> $means_tau_d, 'means_tau_r' => $means_tau_r,
-            'means_tau_f'=>$means_tau_f,'means_u'=>$means_u,
-            'std_g'=>$std_g,'std_tau_d'=>$std_tau_d,'std_tau_r'=>$std_tau_r,
-            'std_tau_f'=>$std_tau_f,'std_u'=>$std_u);
+    while($row = mysqli_fetch_row($rs))
+    {	
+        $arrVal = [];  
+        $i=0;          
+        foreach($columns as $colVal){
+            if($colVal=='pre'){
+                $pre = $row[$i]; //To get the pre value as key
+            }else{
+                $arrVal[$colVal] = $row[$i]; //tp get other values like mean etc as key and value
+            }
+            $i++;
+        }
+        $result_synaptome_array[$pre] = $arrVal;
     }
     return  $result_synaptome_array;
 }
-
 //var_dump($_POST);
 $select_query = "SELECT id, name, subregion, nickname, excit_inhib, 
 type_subtype, ranks , v2p0 from type ";
@@ -61,7 +80,7 @@ if(isset($_POST) && (count($_POST) > 0 )){
             $sub .= "'".$postval."', ";
         }
         else if(in_array($postval, array('mean','median','maximum','minimum'))){
-            $sub_synaptome .= "'".$postval."', ";
+            $sub_synaptome .= $postval.", ";
         }
     }
     if(strlen($sub) > 1){
@@ -94,14 +113,12 @@ while(list($id, $name, $subregion, $nickname, $excit_inhib, $type_subtype, $rank
         foreach($result_synaptome_array as $k=>$v) {
             if(preg_match("/\b$nickname\b/i", $k)) {
                 $results[$nickname] = $v;
-                $value = retrieve_detail($v);
+                //$value = retrieve_detail($v);
                 //var_dump($results[$nickname]);
+                $value = retrieve_detail_tool($v);
             }
         }
     }
-    /*array_push($result_array[$subregion], 
-    array('id'=>$id,'name'=>$subregion." ".$nickname, 'excit_inhib'=>$excit_inhib, 'type_subtype'=>$type_subtype, 
-    'ranks'=>$ranks , 'v2p0'=>$v2p0));*/
     //Using this on Feb 23 2023 as we got new db with nickname updated    
     array_push($result_array[$subregion], 
     array('id'=>$id,'name'=>$nickname, 'excit_inhib'=>$excit_inhib, 'type_subtype'=>$type_subtype, 
@@ -111,7 +128,7 @@ if(isset($_POST) && (count($_POST) > 0 )){ //Once we select the Sub regions
     $sub_count = count(explode(',', $sub));
     $param_count = ($sub_count*25)+$sub_count; //To get the count
     echo json_encode(array($param_count, $result_array));
-}else{
+}else{ //Initial page without any parameters selected
     $final_result = retrieve_subregions($result_array);
     echo $final_result;
 }
