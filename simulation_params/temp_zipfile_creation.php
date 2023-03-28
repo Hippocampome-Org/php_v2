@@ -22,6 +22,23 @@ function create_directory($temp_dir, $dir_path){
 function copy_files($src, $dest){
     shell_exec("cp -r $src $dest");
 }
+function emptyDir($dir) {
+    if (is_dir($dir)) {
+        $scn = scandir($dir);
+        foreach ($scn as $files) {
+            if ($files !== '.') {
+                if ($files !== '..') {
+                    if (!is_dir($dir . '/' . $files)) {
+                        unlink($dir . '/' . $files);
+                    } else {
+                        emptyDir($dir . '/' . $files);
+                        rmdir($dir . '/' . $files);
+                    }
+                }
+            }
+        }
+    }
+}
 
 function delete_old_folders($path){
     $cache_max_age= 86400; # 24h
@@ -31,7 +48,8 @@ function delete_old_folders($path){
             $filectime=stat($path.$file)['ctime'];
             if($filectime and $filectime+$cache_max_age<time()){
               //  echo "unlinking ".$path.$file;
-                unlink($path.$file);
+                emptyDir($path.$file);
+                rmdir($path.$file);
             }
         }
     }
@@ -39,6 +57,7 @@ function delete_old_folders($path){
 
 function download_zip($filepath,$filename){
     header("Pragma: public");
+    header("Content-type: application/zip"); 
     header("Expires: 0");
     header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
     header("Cache-Control: public");
@@ -47,8 +66,15 @@ function download_zip($filepath,$filename){
     header("Content-Disposition: attachment; filename=\"".$filename."\"");
     header("Content-Transfer-Encoding: binary");
     header("Content-Length: ".filesize($filepath.$filename));
-    ob_end_flush();
-    @readfile($filepath.$filename);
+    //ob_end_flush();
+    if(is_readable($filepath.$filename)){
+        readfile($filepath.$filename);
+        exit;
+    }else{
+        echo "Zip file is not readable";
+    }
+
+    //header("Pragma: no-cache");
 }
 
 $name = date('Y-m-d_H-i-s');
@@ -90,7 +116,18 @@ if(is_dir($filepath.$temp_dir.$name)){
             }
         }
         $newzip ->close();
-        download_zip($filepath.$temp_dir.$name."/", $zipcreated);
+        if (file_exists($filepath.$temp_dir.$name."/".$zipcreated)) {
+            header('Content-Type: application/zip');
+            header('Content-Disposition: attachment; filename="'.basename($filepath.$temp_dir.$name."/".$zipcreated).'"');
+            header('Content-Length: ' . filesize($filepath.$temp_dir.$name."/".$zipcreated));
+       
+            flush();
+            readfile($filepath.$temp_dir.$name."/".$zipcreated);
+            // delete file
+           // unlink();
+        
+        }
+        //download_zip($filepath.$temp_dir.$name."/", $zipcreated);
         /*
         header("Content-type: application/zip"); 
         header("Content-Disposition: attachment; filename=$tmp_zip_file"); 
