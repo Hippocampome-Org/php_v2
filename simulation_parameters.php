@@ -16,6 +16,7 @@ include ("permission_check.php");
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
 <script>
+   function newWindow(url, width, height) {     myWindow=window.open(url,'','width=' + width + ',height=' + height); }
    var selected_arr = [];
    $(document).ready(function(){
       console.log('this is run on page load');
@@ -42,8 +43,26 @@ include ("permission_check.php");
    }
 
    function create_or_linkfile(){
+      var selectedsubvalues = document.getElementById('selectedsubvalues').value;
+      alert(selectedsubvalues);
+
+     // selectedsubvalues = JSON.stringify(selectedsubvalues);
+      //alert(selectedsubvalues);
       var xmlHttp = new XMLHttpRequest();
       const url_call = './simulation_params/temp_zipfile_creation.php';
+
+      xmlHttp.onreadystatechange = function () {
+         if (xmlHttp.readyState == 4) {
+            if (xmlHttp.status == 200) {
+               //alert(xmlHttp.responseText);
+               $("#results-table").html("<div>"+xmlHttp.responseText+"</div>");
+            }
+         }
+      }
+      xmlHttp.open("post", url_call, true); 
+      xmlHttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      xmlHttp.send(selectedsubvalues);
+      /*const url_call = './simulation_params/temp_zipfile_creation.php';
       xmlHttp.open("GET", url_call, true);
       xmlHttp.onreadystatechange = function () {
          if (xmlHttp.readyState == 4) {
@@ -53,7 +72,7 @@ include ("permission_check.php");
             }
          }
       }
-      xmlHttp.send();
+      xmlHttp.send();*/
    }
 
    function clean(obj) {
@@ -61,23 +80,23 @@ include ("permission_check.php");
         if(typeof obj[propName]=="object")
           clean(obj[propName])
         if (obj[propName] === null || obj[propName] === undefined) 
-          delete obj[propName];      
+          delete obj[propName];
        }
     }
 
    $(document).on('change','input[type=checkbox]' ,function(){
-      var postcontent={};
+      //var postcontent={};
       var formData = new FormData(); 
       $('input[type=checkbox]:checked').each(function(){ 
          var id = $(this).attr('id');
          var check_name = $(this).attr('name');
          var check_val = $(this).val();
-         postcontent[id] = check_val ;
+        // postcontent[id] = check_val ;
          formData.append(check_name, check_val);
       });
       const url = './simulation_params/simulation_params.php';
 
-      postcontent = JSON.stringify(postcontent);
+     // postcontent = JSON.stringify(postcontent);
       var xmlHttp = new XMLHttpRequest();
       xmlHttp.onreadystatechange = function()
       {
@@ -86,11 +105,26 @@ include ("permission_check.php");
             if(xmlHttp.responseText){
                   var selected_arr = JSON.parse(xmlHttp.responseText);
                   document.getElementById('param_count').innerHTML = selected_arr[0];//To update the param count on UI
+                  result_synaptome_array = selected_arr[2];// So when popup- we need to get data from here
+                  console.log("In line 108 "+result_synaptome_array);
                   selected_arr = selected_arr[1];
 
                   //To clear all tds background
                   const table = document.getElementById("results-table");
                   const cells = table.getElementsByTagName("td");
+                 // const checkboxes =  table.getElementByTagName("check");
+                  var selected_neurons = [];
+                  $('#results-table input:checked').each(function() {
+                     //selected_neurons.push($(this).attr('name'));//getting DG_1000
+                     //alert($(this).attr('name'));
+                     var neuron_name = $(this).closest('td').find('span').first().text();
+                     //var synaptome_vals = <?php $result_default_synaptome_array['tm_cond16']['DG Granule']; ?>
+                    // alert(synaptome_vals);
+                     selected_neurons.push(neuron_name);//Based on neuron name list when creating zip file get the data
+                    // selected_neurons.push({neuron_name: synaptome_vals});
+                  });
+                  document.getElementById('selectedsubvalues').value = selected_neurons;
+                  //alert(selected_neurons);
 
                   for (const cell of cells) {
                      cell.style.backgroundColor = "rgb(255, 255, 255)";
@@ -118,6 +152,8 @@ include ("permission_check.php");
                                  if(rowVal[rowkey]["synaptome_details"]){
                                     document.getElementById(detail_name).style.display = "block";
                                    // document.getElementById(detail_name)
+                                 }else{
+                                    document.getElementById(detail_name).style.display = "none";
                                  }
                               }
                            }//for loop
@@ -135,6 +171,7 @@ include ("permission_check.php");
 $query = "SELECT permission FROM user WHERE id=2"; // id=2 is anonymous user
 $rs = mysqli_query($conn,$query);
 list($permission) = mysqli_fetch_row($rs);
+
 ?>
 
 <title>Simulation Parameters Selection Screen</title>
@@ -184,9 +221,13 @@ list($permission) = mysqli_fetch_row($rs);
                <p id="current_params" name="current_params"><b>Current parameters: 
                <span id="param_count" name="param_count">0</span></b></p>
             </div>
+            
             <div class="div-column" style="float:left;width:18.33%;">
-            <p><button  type="button" onclick="create_or_linkfile()" >Generate Zip file</button></p>
-            </div>
+            <?php $postvalue = array();
+               $postvalue = base64_encode(serialize($array)); 
+               // Your form hidden input ?>
+               <p><input type="hidden" name="selectedsubvalues" id="selectedsubvalues" value="<?php echo $postvalue; ?>"/><button  type="button" onclick="create_or_linkfile()" >Generate Zip file</button></p>
+         </div>
          </div>
          <div class="div-row">
             <p>

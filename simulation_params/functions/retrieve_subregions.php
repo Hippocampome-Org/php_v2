@@ -16,6 +16,7 @@ function retrieve_subregions($result_array)
         foreach($val_arr as $vals){//11 is like 2 to second row but to the right
             $td_name=strtolower($key)."_".$vals['id'];
             $return_value.="<tr><td id='".$td_name."' name='".$td_name."' style='font-size:11px' class='default-background' >"; //10 px is all in one line
+            $return_value.="<input name='".$td_name."' type='checkbox' value='".$vals['name']."' />";//To add checkbox
             if($vals['excit_inhib'] == 'i'){
                 $return_value.="<span style='color:#800000'>";
             }
@@ -25,8 +26,9 @@ function retrieve_subregions($result_array)
             $return_value.=$vals['name'];
             $return_value.="</span>";
             $return_value.="<div id='detail_div".$td_name."' name='detail_div".$td_name."' style='display:none;'>";
-            $return_value.="<a class='tooltip' title='' href='#'>";
-            $return_value.="<sup style='margin-left:4px;color:#930;'>Details</sup>";
+            $return_value.="<a href='#' onclick=\"newWindow('http://google.com', 200, 200)\">";
+            $return_value.="<sup style='margin-left:4px;color:#930;'>
+                Details</sup>";
             $return_value.=$vals['synaptome_details'];
             $return_value.="</a>";
             $return_value.="</div>";
@@ -57,9 +59,9 @@ function retrieve_detail_tool($result_array)
     $return_value = "";
     $return_value.="<span style='float:left;width:23%;font-size:5px;display:none;'>";
     $return_value.="ToolTip";
-    /*foreach($result_array as $key => $val){
+    foreach($result_array as $key => $val){
         $return_value .= $key.":".$val;
-    }*/
+    }
     $return_value.="</span>";
     return $return_value;
 }
