@@ -1,6 +1,7 @@
 <?php
 function retrieve_subregions($result_array)
 {
+    $pathdir = "/hippocampome/php_v2/simulation_params/"; 
     $return_value = "";
     foreach($result_array as $key => $val_arr){
         $class_name = strtolower($key)."_th_color";
@@ -26,7 +27,7 @@ function retrieve_subregions($result_array)
             $return_value.=$vals['name'];
             $return_value.="</span>";
             $return_value.="<div id='detail_div".$td_name."' name='detail_div".$td_name."' style='display:none;'>";
-            $return_value.="<a href='#' onclick=\"newWindow('http://google.com', 200, 200)\">";
+            $return_value.="<a href='#' onclick=\"newWindow('".$pathdir."simulations_popup.php?pre=".$vals['name']."', 200, 200)\">";
             $return_value.="<sup style='margin-left:4px;color:#930;'>
                 Details</sup>";
             $return_value.=$vals['synaptome_details'];
