@@ -26,9 +26,9 @@ function retrieve_subregions($result_array)
             }
             $return_value.=$vals['name'];
             $return_value.="</span>";
-            $return_value.="<div id='detail_div".$td_name."' name='detail_div".$td_name."' style='display:none;'>";
-            $return_value.="<a href='#' onclick=\"newWindow('".$pathdir."simulations_popup.php?pre=".$vals['name']."', 200, 200)\">";
-            $return_value.="<sup style='margin-left:4px;color:#930;'>
+            $return_value.="<div id='detail_div".$td_name."' name='detail_div".$td_name."' style='display:none;float:right;padding-right:20px;'>";
+            $return_value.="<a href='#' onclick=\"newWindow('".$pathdir."simulations_popup.php?pre=".$vals['name']."', 400, 400)\">";
+            $return_value.="<sup style='margin-left:4px;color:#RRGGBB;'>
                 Details</sup>";
             $return_value.=$vals['synaptome_details'];
             $return_value.="</a>";

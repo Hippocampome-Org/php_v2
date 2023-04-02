@@ -45,34 +45,20 @@ include ("permission_check.php");
    function create_or_linkfile(){
       var selectedsubvalues = document.getElementById('selectedsubvalues').value;
       alert(selectedsubvalues);
-
-     // selectedsubvalues = JSON.stringify(selectedsubvalues);
-      //alert(selectedsubvalues);
       var xmlHttp = new XMLHttpRequest();
       const url_call = './simulation_params/temp_zipfile_creation.php';
 
       xmlHttp.onreadystatechange = function () {
          if (xmlHttp.readyState == 4) {
             if (xmlHttp.status == 200) {
-               //alert(xmlHttp.responseText);
-               $("#results-table").html("<div>"+xmlHttp.responseText+"</div>");
+               alert(xmlHttp.responseText);
+               //$("#results-table").html("<div>"+xmlHttp.responseText+"</div>");
             }
          }
       }
       xmlHttp.open("post", url_call, true); 
       xmlHttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
       xmlHttp.send(selectedsubvalues);
-      /*const url_call = './simulation_params/temp_zipfile_creation.php';
-      xmlHttp.open("GET", url_call, true);
-      xmlHttp.onreadystatechange = function () {
-         if (xmlHttp.readyState == 4) {
-            if (xmlHttp.status == 200) {
-               //alert(xmlHttp.responseText);
-               $("#results-table").html("<div>"+xmlHttp.responseText+"</div>");
-            }
-         }
-      }
-      xmlHttp.send();*/
    }
 
    function clean(obj) {
@@ -112,16 +98,11 @@ include ("permission_check.php");
                   //To clear all tds background
                   const table = document.getElementById("results-table");
                   const cells = table.getElementsByTagName("td");
-                 // const checkboxes =  table.getElementByTagName("check");
                   var selected_neurons = [];
                   $('#results-table input:checked').each(function() {
                      //selected_neurons.push($(this).attr('name'));//getting DG_1000
-                     //alert($(this).attr('name'));
                      var neuron_name = $(this).closest('td').find('span').first().text();
-                     //var synaptome_vals = <?php $result_default_synaptome_array['tm_cond16']['DG Granule']; ?>
-                    // alert(synaptome_vals);
                      selected_neurons.push(neuron_name);//Based on neuron name list when creating zip file get the data
-                    // selected_neurons.push({neuron_name: synaptome_vals});
                   });
                   document.getElementById('selectedsubvalues').value = selected_neurons;
                   //alert(selected_neurons);
@@ -148,10 +129,9 @@ include ("permission_check.php");
                               var detail_name = "detail_div"+key.toLowerCase()+"_"+rowVal[rowkey]["id"];
 
                               if(document.getElementById(td_name)){
-                                 document.getElementById(td_name).style.backgroundColor = "rgb(211, 211, 211)";
+                                 //document.getElementById(td_name).style.backgroundColor = "rgb(211, 211, 211)";
                                  if(rowVal[rowkey]["synaptome_details"]){
                                     document.getElementById(detail_name).style.display = "block";
-                                   // document.getElementById(detail_name)
                                  }else{
                                     document.getElementById(detail_name).style.display = "none";
                                  }
@@ -223,10 +203,7 @@ list($permission) = mysqli_fetch_row($rs);
             </div>
             
             <div class="div-column" style="float:left;width:18.33%;">
-            <?php $postvalue = array();
-               $postvalue = base64_encode(serialize($array)); 
-               // Your form hidden input ?>
-               <p><input type="hidden" name="selectedsubvalues" id="selectedsubvalues" value="<?php echo $postvalue; ?>"/><button  type="button" onclick="create_or_linkfile()" >Generate Zip file</button></p>
+            <p><input type="hidden" name="selectedsubvalues" id="selectedsubvalues" value=""/><button  type="button" onclick="create_or_linkfile()" >Generate Zip file</button></p>
          </div>
          </div>
          <div class="div-row">
@@ -289,71 +266,7 @@ list($permission) = mysqli_fetch_row($rs);
    </div>
    <div class="div-row" style="margin-top:80px;width:100%;">
    <div id="results-table" name="results-table" style="overflow-x: hidden;">
-    <?php
-/*    $select_query = "SELECT name, subregion, nickname, excit_inhib, 
-                     type_subtype, ranks , v2p0 from type ";
-    $where = " WHERE status = 'active' and subregion='DG' ORDER BY position asc";
-    $sub = "";
-    foreach($_POST as $key => $postval){
-       //echo $postval;
-      if($postval == 'all_neuron'){
-
-      }if($postval == 'v1_neurons'){
-         $where .= " and ranks = 1 ";
-      }
-      if($postval == 'all_neuron'){
-         $where .= "and ranks in (1, 2, 3)";
-      } 
-      if($postval == 'v1_canonical'){
-       // and ranks in (1, 2, 3);
-        //$where .= "and ranks in (1, 2, 3)";
-      }
-      else{
-         $sub .= "'".$postval."', ";
-      }
-    }
-    if(strlen($sub) > 1){
-      $sub = substr($sub, 0, -2);
-      $where .= "and subregion in (".$sub.")";
-    }
-    $select_query .= $where;
-    echo $select_query;
-    $rs = mysqli_query($conn,$select_query);
-     $n=0;
-    $result_array = ['DG'=>[], 'CA3'=>[], 'CA1'=>[], 'EC'=>[]];
-    $result_array1 = ['CA2'=>[],'Sub'=>[]];
-
-    while(list($name, $subregion, $nickname, $excit_inhib, $type_subtype, $ranks , $v2p0) = mysqli_fetch_row($rs))
-    {	
-      if (in_array($subregion, array('CA2', 'Sub'))){
-
-         array_push($result_array1[$subregion], 
-            array('name'=>$subregion." ".$nickname, 'excit_inhib'=>$excit_inhib, 
-            'type_subtype'=>$type_subtype, 
-            'ranks'=>$ranks , 'v2p0'=>$v2p0));
-      }else{
-         array_push($result_array[$subregion], 
-            array('name'=>$subregion." ".$nickname, 'excit_inhib'=>$excit_inhib, 
-            'type_subtype'=>$type_subtype, 
-            'ranks'=>$ranks , 'v2p0'=>$v2p0));
-      }
-    }*/
-    /*echo "<div style='margin-left:auto;
-        margin-right:auto;
-        height:auto; 
-        width:auto;'>";
-        $final_result = retrieve_subregions($result_array);
-        echo $final_result;
-    echo "</div>";
-    echo "<div style='height:10px;'>";
-    echo "</div>";*/
-    /*echo "<div style='float:left;margin-top:10px;'>";
-        $final_result1 = retrieve_subregions($result_array1);
-        echo $final_result1;
-    echo "</div>";*/
-    ?>
    </div>
-</div>
-   
+   </div>  
    </body>
 </html>

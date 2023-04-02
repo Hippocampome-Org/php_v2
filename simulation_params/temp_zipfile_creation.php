@@ -3,6 +3,10 @@
 include ("../../access_db.php");
 ini_set('display_errors', 'On');
 
+$result_default_synaptome_array = array();
+$excel_file_names = array();
+$excel_data = array();
+
 function get_default_synaptome_details($conn_synaptome, $table_name = NULL){
    $columns = array();
    $columns = ['pre'];
@@ -60,25 +64,75 @@ function get_default_synaptome_details($conn_synaptome, $table_name = NULL){
    return  $result_default_synaptome_array;
 }
 
+function if_filename_exists($str, $excel_file_names){
+    foreach($excel_file_names as $key){
+        $pos = strpos($key, $str);
+        if ($pos === 0) {
+            return true;
+        }
+    }
+    return false;
+}
 
-$result_default_synaptome_array = array();
-$excel_data = array();
-//Including this table name is for future as we know we might need details from different tables
-$result_default_synaptome_array['tm_cond16'] = get_default_synaptome_details($conn_synaptome, 'tm_cond16');
+function generate_file_name($neu_vals, $excel_file_names){
+    //Make sure CA3c – CA3 name
+    //EC, MEC, LEC – – EC name
+    $excel_file_name = NULL;
 
-
+    if (in_array(trim($neu_vals[0]), array('CA3', 'CA3c'))) {
+        if(!if_filename_exists("CA3_",$excel_file_names)){
+        $excel_file_name = "CA3_".date('m-d-Y_H_i_s').".xls";
+        }
+    }
+    else if (in_array(trim($neu_vals[0]), array('EC', 'MEC', 'LEC'))) {
+        if(!if_filename_exists("EC_",$excel_file_names)){
+        $excel_file_name = "EC_".date('m-d-Y_H_i_s').".xls";
+        }
+    }
+    else{
+        if(!if_filename_exists(trim($neu_vals[0]),$excel_file_names)){
+        $excel_file_name = trim($neu_vals[0])."_".date('m-d-Y_H_i_s').".xls";
+        }
+    }
+    return $excel_file_name;
+}
+//var_dump($_POST);exit;
 if($_POST){
     $neurons =  explode(",", array_keys($_POST)[0]);
+
+    //Including this table name is for future as we know we might need details from different tables
+    $result_default_synaptome_array['tm_cond16'] = get_default_synaptome_details($conn_synaptome, 'tm_cond16');
+
     foreach($neurons as $neuron){
         $neu_vals = explode('_', $neuron);
         $neuron = implode(" ", $neu_vals);
-        array_push($excel_data, array($neuron));
+        //To generate the file name dynamically
+        $excel_file_name = generate_file_name($neu_vals, $excel_file_names);
+        if($excel_file_name){
+            array_push($excel_file_names, $excel_file_name);
+        }
+        
+        //Till Here
+       // var_dump($excel_data);
+        //Pushing data into the array
+        /*array_push($excel_data, array($neuron));
         if (array_key_exists($neuron, $result_default_synaptome_array['tm_cond16'])) {
             array_push($excel_data, $result_default_synaptome_array['tm_cond16'][$neuron]);
         }else{
             array_push($excel_data, []);
+        }*/
+        if (array_key_exists($neuron, $result_default_synaptome_array['tm_cond16'])) {
+            $excel_data[$neuron]["key"] =  array($neuron);
+            $excel_data[$neuron]["fields"] = $result_default_synaptome_array['tm_cond16'][$neuron];
+            //array_push($excel_data, $result_default_synaptome_array['tm_cond16'][$neuron]);
+        }else{
+            $excel_data[$neuron]["key"] =  array($neuron);
+            $excel_data[$neuron]["fields"] = [];
+           
+            //array_push($excel_data, []);
+           // $excel_data[$neuron] = [];
         }
-        //var_dump($excel_data);
+        //Till Here
     }
 }else{
     echo "Please select Neurons to create zip file.";
@@ -91,7 +145,6 @@ $root = $_SERVER["DOCUMENT_ROOT"];
 
 $pathdir = "/hippocampome/php_v2/data/"; 
 $filepath = $root . $pathdir;
-$yourcontent = "HElloo Kasturi";
 
 //Create function to create temp directory
 function create_directory($temp_dir, $dir_path){
@@ -108,6 +161,7 @@ function create_directory($temp_dir, $dir_path){
 function copy_files($src, $dest){
     shell_exec("cp -r $src $dest");
 }
+
 function emptyDir($dir) {
     if (is_dir($dir)) {
         $scn = scandir($dir);
@@ -141,9 +195,26 @@ function delete_old_folders($path){
     }
 }
 
+
+function create_excel_file($filepath, $excel_file_names, $excel_data){
+    foreach($excel_file_names as $excel_file_name){
+        $excel_file = $filepath."/".$excel_file_name;
+        $fp = fopen($excel_file, 'w');
+        foreach ($excel_data as $key => $fields) {
+            $excel_file_str = trim(explode("_", $excel_file_name)[0]);
+            $pos = strpos($key, $excel_file_str);
+            if($pos === 0){
+                fputcsv($fp, $fields["key"], "\t", '"');
+                fputcsv($fp, $fields["fields"], "\t", '"');
+            }
+        }
+        fclose($fp);
+    }
+}
+
 function download_zip($filepath,$filename){
     header("Pragma: public");
-    header("Content-type: application/zip"); 
+    //header("Content-type: application/zip"); 
     header("Expires: 0");
     header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
     header("Cache-Control: public");
@@ -152,13 +223,16 @@ function download_zip($filepath,$filename){
     header("Content-Disposition: attachment; filename=\"".$filename."\"");
     header("Content-Transfer-Encoding: binary");
     header("Content-Length: ".filesize($filepath.$filename));
-    //ob_end_flush();
-    if(is_readable($filepath.$filename)){
-        readfile($filepath.$filename);
-        exit;
-    }else{
-        echo "Zip file is not readable";
-    }
+    while (ob_get_level()) {
+        ob_end_clean();
+   }
+
+    //if(is_readable($filepath.$filename)){
+        @readfile($filepath.$filename);
+    //    exit;
+    //}else{
+     //   echo "Zip file is not readable";
+   // }
 
     //header("Pragma: no-cache");
 }
@@ -191,13 +265,7 @@ if(is_dir($filepath.$temp_dir.$name)){
     copy_files($src, $dest);
 
     if($excel_data){
-        $excel_file = $filepath.$temp_dir.$name."/neuron.xls";
-        $fp = fopen($excel_file, 'w');
-    
-        foreach ($excel_data as $fields) {
-            fputcsv($fp, $fields, "\t", '"');
-        }
-        fclose($fp);
+        create_excel_file($filepath.$temp_dir.$name, $excel_file_names, $excel_data);
     }
 
     $tmp_zip_file = $filepath.$temp_dir.$name."/".$zipcreated;
@@ -212,25 +280,8 @@ if(is_dir($filepath.$temp_dir.$name)){
         }
         $newzip ->close();
         if (file_exists($filepath.$temp_dir.$name."/".$zipcreated)) {
-            header('Content-Type: application/zip');
-            header('Content-Disposition: attachment; filename="'.basename($filepath.$temp_dir.$name."/".$zipcreated).'"');
-            header('Content-Length: ' . filesize($filepath.$temp_dir.$name."/".$zipcreated));
-       
-            flush();
-            readfile($filepath.$temp_dir.$name."/".$zipcreated);
-            // delete file
-           // unlink();
-        
+            download_zip($filepath.$temp_dir.$name."/", $zipcreated); 
         }
-        //download_zip($filepath.$temp_dir.$name."/", $zipcreated);
-        /*
-        header("Content-type: application/zip"); 
-        header("Content-Disposition: attachment; filename=$tmp_zip_file"); 
-        header("Content-length: " . filesize($tmp_zip_file));
-        header("Pragma: no-cache"); 
-        header("Expires: 0"); 
-        readfile("$tmp_zip_file");
-        exit;*/
     }
 }
 
