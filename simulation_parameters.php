@@ -72,17 +72,34 @@ include ("permission_check.php");
 
    $(document).on('change','input[type=checkbox]' ,function(){
       //var postcontent={};
-      var formData = new FormData(); 
+      const getFormDataSize = (formData) => [...formData].reduce((size, [name, value]) => size + (typeof value === 'string' ? value.length : value.size), 0);
+
+      const inputFieldsCheckboxes = ["all_neuron", "dg", "ca3", "ca2", "ca1", "sub", "ec",
+                                       "v1_neurons", "v13_neurons", "v1_canonoical",
+                                       "mean", "median", "minimum", "maximum"];
+      var formData = new FormData();
       $('input[type=checkbox]:checked').each(function(){ 
          var id = $(this).attr('id');
          var check_name = $(this).attr('name');
          var check_val = $(this).val();
-        // postcontent[id] = check_val ;
+        if(inputFieldsCheckboxes.includes(check_name)){
          formData.append(check_name, check_val);
+        }
       });
+
+      //To update the neurons selected so that when "generate zip file is created values can be used
+      const table = document.getElementById("results-table");
+      const cells = table.getElementsByTagName("td");
+      var selected_neurons = [];
+      $('#results-table input:checked').each(function() {
+         var neuron_name = $(this).closest('td').find('span').first().text();
+         selected_neurons.push(neuron_name);//Based on neuron name list when creating zip file get the data
+      });
+      document.getElementById('selectedsubvalues').value = selected_neurons;
+      //Till Here
+
       const url = './simulation_params/simulation_params.php';
 
-     // postcontent = JSON.stringify(postcontent);
       var xmlHttp = new XMLHttpRequest();
       xmlHttp.onreadystatechange = function()
       {
@@ -91,34 +108,15 @@ include ("permission_check.php");
             if(xmlHttp.responseText){
                   var selected_arr = JSON.parse(xmlHttp.responseText);
                   document.getElementById('param_count').innerHTML = selected_arr[0];//To update the param count on UI
-                  result_synaptome_array = selected_arr[2];// So when popup- we need to get data from here
-                  console.log("In line 108 "+result_synaptome_array);
                   selected_arr = selected_arr[1];
-
-                  //To clear all tds background
-                  const table = document.getElementById("results-table");
-                  const cells = table.getElementsByTagName("td");
-                  var selected_neurons = [];
-                  $('#results-table input:checked').each(function() {
-                     //selected_neurons.push($(this).attr('name'));//getting DG_1000
-                     var neuron_name = $(this).closest('td').find('span').first().text();
-                     selected_neurons.push(neuron_name);//Based on neuron name list when creating zip file get the data
-                  });
-                  document.getElementById('selectedsubvalues').value = selected_neurons;
-                  //alert(selected_neurons);
-
-                  for (const cell of cells) {
-                     cell.style.backgroundColor = "rgb(255, 255, 255)";
-                  }
-                  //Till Here
 
                   for (const key in selected_arr) {
                      if(selected_arr[key].length > 0){
-                        //var class_name = key.toLowerCase()+"_th_color";        
                         //To update the count next to the sub region
                         var span_name = "countVal_"+key.toLowerCase();
                         if(document.getElementById(span_name)){
                            var span_details = document.getElementById(span_name).textContent;
+                           //alert(selected_arr[key].length);
                            document.getElementById(span_name).innerHTML = selected_arr[key].length;
                            //Till Here
 
@@ -143,8 +141,12 @@ include ("permission_check.php");
             }
          }
       }
-      xmlHttp.open("post", url); 
-      xmlHttp.send(formData);
+      if(getFormDataSize(formData) > 0){ //Kept this condition as if the neurons are selected
+      //this is 0 but we are triggering the ajax call
+      //so to avoid that call we kept this condition
+         xmlHttp.open("post", url);
+         xmlHttp.send(formData);
+      }
    });
 </script>
 <?php
