@@ -78,20 +78,26 @@ function generate_file_name($neu_vals, $excel_file_names){
     //Make sure CA3c – CA3 name
     //EC, MEC, LEC – – EC name
     $excel_file_name = NULL;
-
+    $f1 = $f2 = NULL;
     if (in_array(trim($neu_vals[0]), array('CA3', 'CA3c'))) {
         if(!if_filename_exists("CA3_",$excel_file_names)){
-        $excel_file_name = "CA3_".date('m-d-Y_H_i_s').".xls";
+            $excel_file_name = "CA3_";
+           // $excel_file_name = "CA3_".date('m-d-Y_H_i_s').".xlsx";
         }
     }
     else if (in_array(trim($neu_vals[0]), array('EC', 'MEC', 'LEC'))) {
         if(!if_filename_exists("EC_",$excel_file_names)){
-        $excel_file_name = "EC_".date('m-d-Y_H_i_s').".xls";
+            $excel_file_name = "EC_";
+            //$excel_file_name = "EC_".date('m-d-Y_H_i_s').".xlsx";
         }
     }
     else{
         if(!if_filename_exists(trim($neu_vals[0]),$excel_file_names)){
-        $excel_file_name = trim($neu_vals[0])."_".date('m-d-Y_H_i_s').".xls";
+            $excel_file_name = trim($neu_vals[0])."_";
+            if($f1){$excel_file_name .= $f1;}
+            if($f2){$excel_file_name .= $f2;}
+
+            //$excel_file_name .= date('m-d-Y_H_i_s').".xlsx"; commented for one file name
         }
     }
     return $excel_file_name;
@@ -197,19 +203,25 @@ function delete_old_folders($path){
 
 
 function create_excel_file($filepath, $excel_file_names, $excel_data){
-    foreach($excel_file_names as $excel_file_name){
+    //foreach($excel_file_names as $excel_file_name){
+        //$excel_file = $filepath."/".$excel_file_name;//commented for one file name
+        //Added next two lines on Apr 4 2023
+        $excel_file_name = join('', $excel_file_names);
+        $excel_file_name .= date('m-d-Y_H_i_s').".xlsx"; 
         $excel_file = $filepath."/".$excel_file_name;
+
         $fp = fopen($excel_file, 'w');
         foreach ($excel_data as $key => $fields) {
-            $excel_file_str = trim(explode("_", $excel_file_name)[0]);
+            //Commented to create one file
+           /* $excel_file_str = trim(explode("_", $excel_file_name)[0]);
             $pos = strpos($key, $excel_file_str);
-            if($pos === 0){
+            if($pos === 0){*/
                 fputcsv($fp, $fields["key"], "\t", '"');
                 fputcsv($fp, $fields["fields"], "\t", '"');
-            }
+           // }
         }
         fclose($fp);
-    }
+   // }
 }
 
 function download_zip($filepath,$filename){
