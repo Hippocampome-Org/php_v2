@@ -32,17 +32,17 @@ function get_default_synaptome_details($conn_synaptome, $table_name = NULL, $neu
    if($table_name == NULL){$table_name ='tm_cond16';}
    $select_default_synaptome_query = "SELECT pre, ";
 
-   $column = "means_g, means_tau_d, means_tau_r, means_tau_f, means_u";
+   $column = "means_g, means_tau_d, means_tau_r, means_tau_f, means_u, ";
    $select_default_synaptome_query .= "AVG(means_g) as means_g, AVG(means_tau_d) as means_tau_d, 
                                        AVG(means_tau_r) as means_tau_r, 
                                        AVG(means_tau_f) as means_tau_f, AVG(means_u) 
                                        as means_u, ";
-   $column .= "min_g, min_tau_d, min_tau_r, min_tau_f, min_u";
+   $column .= "min_g, min_tau_d, min_tau_r, min_tau_f, min_u, ";
    $select_default_synaptome_query .= " AVG(min_g) as min_g, AVG(min_tau_d) as min_tau_d, 
                                        AVG(min_tau_r) as min_tau_r, 
                                        AVG(min_tau_f) as min_tau_f, AVG(min_u) as min_u, ";
 
-   $column .= "max_g, max_tau_d, max_tau_r, max_tau_f, max_u";
+   $column .= "max_g, max_tau_d, max_tau_r, max_tau_f, max_u, ";
    $select_default_synaptome_query .= " AVG(max_g) as max_g, AVG(max_tau_d) as max_tau_d, 
                                        AVG(max_tau_r) as max_tau_r, 
                                        AVG(max_tau_f) as max_tau_f, AVG(max_u) as max_u, ";
@@ -53,6 +53,7 @@ function get_default_synaptome_details($conn_synaptome, $table_name = NULL, $neu
    $select_default_synaptome_query .= " GROUP BY pre"; 
   // echo $select_default_synaptome_query;
    $rs = mysqli_query($conn_synaptome,$select_default_synaptome_query);
+   $column = substr($column, 0, -2);
    $columns += explode(", ", $column);
    $result_default_synaptome_array = array();
    while($row = mysqli_fetch_row($rs))

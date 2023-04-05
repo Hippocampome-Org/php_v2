@@ -16,22 +16,60 @@ include ("permission_check.php");
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
 <script>
-   function newWindow(url, width, height) {     myWindow=window.open(url,'','width=' + width + ',height=' + height); }
-   var selected_arr = [];
-   $(document).ready(function(){
-      console.log('this is run on page load');
-      refreshPage();
+
+function clear_checkboxes(){
+   $('#results-table input:checkbox').each(function() {
+      this.checked = '';
    });
+}
 
-   function refreshPage() {
-      simulationdataGet();
-   }
+$(document).ready(function(){
 
-   function simulationdataGet() {
-      var xmlHttp = new XMLHttpRequest();
-      const url_call = './simulation_params/simulation_params.php';
-      xmlHttp.open("GET", url_call, true);
-      xmlHttp.onreadystatechange = function () {
+   $('#selectall_neuron').click(function(event) {
+        var $that = $(this);
+        $('#subregions_div input:checkbox').each(function() {
+           if(this.name=='unselectall_neuron'){
+           }else{
+            this.checked = 'TRUE';
+           }
+        });
+    });
+
+   $('#unselectall_neuron').click(function(event) {
+        var $that = $(this);
+        $('#subregions_div input:checkbox').each(function() {
+         if(this.name=='unselectall_neuron'){
+            if(this.checked =='TRUE'){
+               this.checked =='';
+            }else{
+               this.checked = 'TRUE';
+            }
+         }else{
+            this.checked = '';
+            clear_checkboxes();//To clear checkboxes in Sub regions result table
+         }
+            
+        });
+    });
+});
+
+function newWindow(url, width, height) {     myWindow=window.open(url,'','width=' + width + ',height=' + height); }
+var selected_arr = [];
+
+$(document).ready(function(){
+   console.log('this is run on page load');
+   refreshPage();
+});
+
+function refreshPage() {
+   simulationdataGet();
+}
+
+function simulationdataGet() {
+   var xmlHttp = new XMLHttpRequest();
+   const url_call = './simulation_params/simulation_params.php';
+   xmlHttp.open("GET", url_call, true);
+   xmlHttp.onreadystatechange = function () {
          if (xmlHttp.readyState == 4) {
             if (xmlHttp.status == 200) {
                //alert(xmlHttp.responseText);
@@ -39,38 +77,46 @@ include ("permission_check.php");
             }
          }
       }
-      xmlHttp.send();
-   }
+   xmlHttp.send();
+}
 
-   function create_or_linkfile(){
-      var selectedsubvalues = document.getElementById('selectedsubvalues').value;
-      alert(selectedsubvalues);
-      var xmlHttp = new XMLHttpRequest();
-      const url_call = './simulation_params/temp_zipfile_creation.php';
+function create_or_linkfile(){
+   var selected_neurons = [];
+   $('#results-table input:checked').each(function() {
+      var neuron_name = $(this).closest('td').find('span').first().text();
+      selected_neurons.push(neuron_name);//Based on neuron name list when creating zip file get the data
+   });
+   var selectedsubvalues = selected_neurons;
 
-      xmlHttp.onreadystatechange = function () {
-         if (xmlHttp.readyState == 4) {
-            if (xmlHttp.status == 200) {
-               alert(xmlHttp.responseText);
-               //$("#results-table").html("<div>"+xmlHttp.responseText+"</div>");
-            }
+   //var selectedsubvalues = document.getElementById('selectedsubvalues').value;
+   alert("Selected Sub Values:"+selectedsubvalues);
+   var xmlHttp = new XMLHttpRequest();
+   const url_call = './simulation_params/temp_zipfile_creation.php';
+
+   xmlHttp.onreadystatechange = function () {
+      if (xmlHttp.readyState == 4) {
+         if (xmlHttp.status == 200) {
+            alert(xmlHttp.responseText);
+            //$("#results-table").html("<div>"+xmlHttp.responseText+"</div>");
          }
       }
-      xmlHttp.open("post", url_call, true); 
-      xmlHttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-      xmlHttp.send(selectedsubvalues);
    }
+   xmlHttp.open("post", url_call, true); 
+   xmlHttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+   xmlHttp.send(selectedsubvalues);
+}
 
-   function clean(obj) {
+/*function clean(obj) {
       for (var propName in obj) {
         if(typeof obj[propName]=="object")
           clean(obj[propName])
         if (obj[propName] === null || obj[propName] === undefined) 
           delete obj[propName];
        }
-    }
+    }*/
 
-   $(document).on('change','input[type=checkbox]' ,function(){
+   //$(document).on('change','input[type=checkbox]' ,function(){
+   $(document).on('change',function(){
       //var postcontent={};
       const getFormDataSize = (formData) => [...formData].reduce((size, [name, value]) => size + (typeof value === 'string' ? value.length : value.size), 0);
 
@@ -86,18 +132,27 @@ include ("permission_check.php");
          formData.append(check_name, check_val);
         }
       });
+      //Added on Apr 5 2023
+      $('input[type=radio]:checked').each(function(){ 
+         var id = $(this).attr('id');
+         var check_name = $(this).attr('name');
+         var check_val = $(this).val();
+        if(inputFieldsCheckboxes.includes(check_name)){
+         formData.append(check_name, check_val);
+        }
+      });
 
       //To update the neurons selected so that when "generate zip file is created values can be used
       const table = document.getElementById("results-table");
       const cells = table.getElementsByTagName("td");
-      var selected_neurons = [];
+      /*var selected_neurons = [];
       $('#results-table input:checked').each(function() {
          var neuron_name = $(this).closest('td').find('span').first().text();
          selected_neurons.push(neuron_name);//Based on neuron name list when creating zip file get the data
       });
       document.getElementById('selectedsubvalues').value = selected_neurons;
       //Till Here
-
+      //alert("Selected Neurons:" +selected_neurons);*/
       const url = './simulation_params/simulation_params.php';
 
       var xmlHttp = new XMLHttpRequest();
@@ -106,17 +161,17 @@ include ("permission_check.php");
          if(xmlHttp.readyState == 4 && xmlHttp.status == 200)
          {
             if(xmlHttp.responseText){
+                var selected_neurons =[];
                   var selected_arr = JSON.parse(xmlHttp.responseText);
                   document.getElementById('param_count').innerHTML = selected_arr[0];//To update the param count on UI
                   selected_arr = selected_arr[1];
-
+                  clear_checkboxes();//To clear checkboxes in Sub regions result table
                   for (const key in selected_arr) {
                      if(selected_arr[key].length > 0){
                         //To update the count next to the sub region
                         var span_name = "countVal_"+key.toLowerCase();
                         if(document.getElementById(span_name)){
                            var span_details = document.getElementById(span_name).textContent;
-                           //alert(selected_arr[key].length);
                            document.getElementById(span_name).innerHTML = selected_arr[key].length;
                            //Till Here
 
@@ -124,29 +179,43 @@ include ("permission_check.php");
                            var rowVal = selected_arr[key];
                            for (const rowkey in rowVal) {
                               var td_name = key.toLowerCase()+"_"+rowVal[rowkey]["id"];
+                              var td_name_checkbox = key.toLowerCase()+"_"+rowVal[rowkey]["id"]+"_"+"checkbox";
                               var detail_name = "detail_div"+key.toLowerCase()+"_"+rowVal[rowkey]["id"];
-
                               if(document.getElementById(td_name)){
+                                 //var checkBox = document.getElementById(td_name_checkbox);
+                                 //alert(checkBox.id)
+                                 document.getElementById(td_name_checkbox).checked = true;
+                                 //document.getElementById(td_name).setAttribute('checked', 'checked');
                                  //document.getElementById(td_name).style.backgroundColor = "rgb(211, 211, 211)";
                                  if(rowVal[rowkey]["synaptome_details"]){
                                     document.getElementById(detail_name).style.display = "block";
                                  }else{
                                     document.getElementById(detail_name).style.display = "none";
                                  }
+                                 /*
+                                 //Get the neuron names
+                                var neuron_name = document.getElementById(td_name_checkbox).value;
+                                // alert(document.getElementById(td_name).find('span'));
+                                selected_neurons.push(neuron_name);//Based on neuron name list when creating zip file get the data
+                                */
                               }
                            }//for loop
                         }
                      }//If ex DG have data or not
                }//For loop const key
             }
+            //alert("Selected Neurons:" +selected_neurons);
+            document.getElementById('selectedsubvalues').value = selected_neurons;
          }
       }
+      alert(getFormDataSize(formData));
       if(getFormDataSize(formData) > 0){ //Kept this condition as if the neurons are selected
       //this is 0 but we are triggering the ajax call
       //so to avoid that call we kept this condition
          xmlHttp.open("post", url);
          xmlHttp.send(formData);
       }
+    //  document.getElementById('selectedsubvalues').value = selected_neurons;
    });
 </script>
 <?php
@@ -208,10 +277,16 @@ list($permission) = mysqli_fetch_row($rs);
             <p><input type="hidden" name="selectedsubvalues" id="selectedsubvalues" value=""/><button  type="button" onclick="create_or_linkfile()" >Generate Zip file</button></p>
          </div>
          </div>
-         <div class="div-row">
+         <div class="div-row" id="subregions_div" name="subregions_div">
             <p>
-            <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="all_neuron" name="all_neuron" id="all_neuron">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="selectall_neuron" name="selectall_neuron" id="selectall_neuron">
             All neuron types &nbsp;&nbsp;</input>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="unselectall_neuron" name="unselectall_neuron" id="unselectall_neuron">
+            UnSelect All &nbsp;&nbsp;</input>
+            </p>
+            <p>
             <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="dg" name="dg" id="dg">
             Dentate Gyrus (DG) &nbsp;&nbsp;</input>
             <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="ca3" name="ca3" id="ca3">
@@ -225,24 +300,26 @@ list($permission) = mysqli_fetch_row($rs);
             <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="ec" name="ec" id="ec">
             Entorhinal Cortex (EC) &nbsp;&nbsp;</input>
             </p>
+         </div>
+         <div class="div-row" id="neuron_types_div" name="neuron_types_div">
             <p>
             &nbsp;&nbsp;&nbsp;
-            <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="v1_neurons" name="v1_neurons" id="v1_neurons">
+            <input type="radio" style="background-color: rgb(0, 0, 153);" value="v1_neurons" name="v1_neurons" id="v1_neurons">
             All v1.x neuron types &nbsp;&nbsp;</input>
             </p>
             <p>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="v13_neurons" name="v13_neurons" id="v13_neurons">
+            <input type="radio" style="background-color: rgb(0, 0, 153);" value="v13_neurons" name="v1_neurons" id="v13_neurons">
             All v1.x rank 1-3 neuron types &nbsp;&nbsp;</input>
             </p>
             <p>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="v1_canonical" name="v1_canonical" id="v1_canonical">
+            <input type="radio" style="background-color: rgb(0, 0, 153);" value="v1_canonical" name="v1_neurons" id="v1_canonical">
             All v1.x canonical neuron types &nbsp;&nbsp;</input>
             </p>
          </div>
-         <div class="div-row">
-            <p>Method for determining undefined synaptice probabilities for E->E, E->I, I->E, and I->I connections between neuron types based on known values:</p>  
+         <div class="div-row" id="synaptic_options_div" name="synaptic_options_div">
+            <p>Method for determining undefined synaptic probabilities for E->E, E->I, I->E, and I->I connections between neuron types based on known values:</p>
             <p><div class="div-column" style="float:left;">
             <input type="checkbox" style="background-color: rgb(0, 0, 153);" 
             value="mean" name="mean" id="mean">

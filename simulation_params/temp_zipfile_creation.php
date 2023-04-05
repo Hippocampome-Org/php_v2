@@ -208,9 +208,15 @@ function create_excel_file($filepath, $excel_file_names, $excel_data){
         //Added next two lines on Apr 4 2023
         $excel_file_name = join('', $excel_file_names);
         $excel_file_name .= date('m-d-Y_H_i_s').".xlsx"; 
+        $excel_file_name_xls = join('', $excel_file_names);
+        $excel_file_name_xls .= date('m-d-Y_H_i_s').".xls"; 
         $excel_file = $filepath."/".$excel_file_name;
+        $excel_file_xls = $filepath."/".$excel_file_name_xls;
+
 
         $fp = fopen($excel_file, 'w');
+        $fp_xls = fopen($excel_file_xls, 'w');
+
         foreach ($excel_data as $key => $fields) {
             //Commented to create one file
            /* $excel_file_str = trim(explode("_", $excel_file_name)[0]);
@@ -218,9 +224,12 @@ function create_excel_file($filepath, $excel_file_names, $excel_data){
             if($pos === 0){*/
                 fputcsv($fp, $fields["key"], "\t", '"');
                 fputcsv($fp, $fields["fields"], "\t", '"');
+                fputcsv($fp_xls, $fields["key"], "\t", '"');
+                fputcsv($fp_xls, $fields["fields"], "\t", '"');
            // }
         }
         fclose($fp);
+        fclose($fp_xls);
    // }
 }
 
