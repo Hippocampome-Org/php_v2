@@ -7,59 +7,126 @@ $result_default_synaptome_array = array();
 $excel_file_names = array();
 $excel_data = array();
 
-function get_default_synaptome_details($conn_synaptome, $table_name = NULL){
-   $columns = array();
-   $columns = ['pre'];
-   if($table_name == NULL){$table_name ='tm_cond16';}
-   $select_default_synaptome_query = "SELECT pre, ";
+function neuron_alter(&$item1, $key, $prefix)
+{
+    $neu_vals = explode('_', $item1);
+    $item1 = implode(" ", $neu_vals);
+    $item1 = $item1;
+}
 
-   $column = "means_g, means_tau_d, means_tau_r, means_tau_f, means_u";
-   $select_default_synaptome_query .= "AVG(means_g) as means_g, AVG(means_tau_d) as means_tau_d, 
+function create_query_string($neurons)
+{
+   /* SELECT pre, post from tm_cond16 WHERE  (
+        pre  like 'DG Semilunar Granule%' AND (
+        post like 'DG Semilunar Granule%' 
+            OR post like 'CA3 Axo-axonic%' 
+          OR post like 'CA1 Axo-axonic%'
+         ) )
+         OR 
+         (pre  like 'CA3 Axo-axonic%' AND (
+        post like 'DG Semilunar Granule%' 
+            OR post like 'CA3 Axo-axonic%' 
+          OR post like 'CA1 Axo-axonic%'
+         ) )
+         OR 
+         (pre  like 'CA1 Axo-axonic%' AND (
+        post like 'DG Semilunar Granule%' 
+            OR post like 'CA3 Axo-axonic%' 
+          OR post like 'CA1 Axo-axonic%'
+         ))
+        ; */
+        $post_neuron = NULL;
+        $post_neuron = ' AND (    ';
+        foreach($neurons as $neuron){
+            $post_neuron .= "POST LIKE ";
+            $post_neuron .= "'".$neuron."%' OR ";
+        }
+        $post_neuron =  substr($post_neuron, 0, -3);
+        $post_neuron .= ' ) ';
+        return $post_neuron;
+}
+
+function get_default_synaptome_details($conn_synaptome, $table_name = NULL){
+   //$columns = array();
+   //$columns = ['pre'];
+   if($table_name == NULL){$table_name ='tm_cond16';}
+   $select_default_synaptome_query = "SELECT pre, post, ";
+
+   $column = "pre, post, means_g, means_tau_d, means_tau_r, means_tau_f, means_u, ";
+   $select_default_synaptome_query .= "means_g, means_tau_d, means_tau_r, means_tau_f, means_u, ";
+  /* $select_default_synaptome_query .= "AVG(means_g) as means_g, AVG(means_tau_d) as means_tau_d, 
                                        AVG(means_tau_r) as means_tau_r, 
                                        AVG(means_tau_f) as means_tau_f, AVG(means_u) 
-                                       as means_u, ";
-   $column .= "min_g, min_tau_d, min_tau_r, min_tau_f, min_u";
-   $select_default_synaptome_query .= " AVG(min_g) as min_g, AVG(min_tau_d) as min_tau_d, 
+                                       as means_u, ";*/
+   $column .= "min_g, min_tau_d, min_tau_r, min_tau_f, min_u, ";
+   $select_default_synaptome_query .= "min_g, min_tau_d, min_tau_r, min_tau_f, min_u, ";
+   /*$select_default_synaptome_query .= " AVG(min_g) as min_g, AVG(min_tau_d) as min_tau_d, 
                                        AVG(min_tau_r) as min_tau_r, 
                                        AVG(min_tau_f) as min_tau_f, AVG(min_u) as min_u, ";
-
-   $column .= "max_g, max_tau_d, max_tau_r, max_tau_f, max_u";
-   $select_default_synaptome_query .= " AVG(max_g) as max_g, AVG(max_tau_d) as max_tau_d, 
+*/
+   $column .= "max_g, max_tau_d, max_tau_r, max_tau_f, max_u, ";
+   $select_default_synaptome_query .= "max_g, max_tau_d, max_tau_r, max_tau_f, max_u, ";
+   /*$select_default_synaptome_query .= " AVG(max_g) as max_g, AVG(max_tau_d) as max_tau_d, 
                                        AVG(max_tau_r) as max_tau_r, 
                                        AVG(max_tau_f) as max_tau_f, AVG(max_u) as max_u, ";
-
+*/
+    $column = substr($column, 0, -2);
    $select_default_synaptome_query = substr($select_default_synaptome_query, 0, -2);
    $select_default_synaptome_query .= " from ".$table_name;
    if($_POST){
     $neurons =  explode(",", array_keys($_POST)[0]);
     $select_default_synaptome_query .= " WHERE ";
-    foreach($neurons as $neuron){
-        $neu_vals = explode('_', $neuron);
-        $neuron = implode(" ", $neu_vals);
-        $select_default_synaptome_query .= " pre like '".$neuron."%' OR ";
+    $post_neuron = [];
+    //$b = array_map('cube', $neurons);
+    array_walk($neurons, 'neuron_alter', '');
+    //var_dump($neurons);exit;
+    //foreach($neurons as $neuron){
+    $result_default_synaptome_array = array();
+
+    for ($i = 0; $i < count($neurons); $i++){
+        $neuron = $neurons[$i];
+        $result_default_synaptome_array[$neuron] = [];
+       // $neu_vals = explode('_', $neuron);
+      //  $neuron = implode(" ", $neu_vals);
+     //   array_push($post_neuron, $neuron);
+     /*
+    SELECT pre, post from tm_cond16 WHERE  pre  like 'DG Semilunar Granule%' AND (
+                                       post like 'DG Semilunar Granule%' 
+                                           OR post like 'CA3 Axo-axonic%' 
+                                         OR post like 'CA1 Axo-axonic%'
+                                        ); 
+                                       
+     */
+        if($i != 0){                       
+            $select_default_synaptome_query .= " OR ";
+        }
+        $select_default_synaptome_query .= " ( pre like '".$neuron."%'  ";
+        $select_default_synaptome_query .= create_query_string($neurons);
+        $select_default_synaptome_query .= " )";
     }
-    //echo $select_default_synaptome_query;
-    $select_default_synaptome_query = substr($select_default_synaptome_query, 0, -3);
+
+    //$select_default_synaptome_query = substr($select_default_synaptome_query, 0, -3);
    }
-   $select_default_synaptome_query .= " GROUP BY pre"; 
-   //echo $select_default_synaptome_query;
+   //$select_default_synaptome_query .= " )"; 
+   //echo $select_default_synaptome_query;exit;
    $rs = mysqli_query($conn_synaptome,$select_default_synaptome_query);
-   $columns += explode(", ", $column);
-   $result_default_synaptome_array = array();
+   $columns = explode(", ", $column);
    while($row = mysqli_fetch_row($rs))
    {	
        $arrVal = [];  
-       $i=0;          
+       $i=0;      
        foreach($columns as $colVal){
            if($colVal=='pre'){
                $pre = $row[$i]; //To get the pre value as key
+               $arrVal[$colVal] = $row[$i];
                $pre = trim(substr($row[$i], 0, strpos($row[$i], '('))); //Getting DG Granule from DG Granule (+)2201p
            }else{
                $arrVal[$colVal] = $row[$i]; //tp get other values like mean etc as key and value
            }
            $i++;
        }
-       $result_default_synaptome_array[$pre] = $arrVal;
+       array_push($result_default_synaptome_array[$pre], $arrVal);
+       //$result_default_synaptome_array[$pre] = $arrVal;
    }
    return  $result_default_synaptome_array;
 }
@@ -119,7 +186,7 @@ if($_POST){
         }
         
         //Till Here
-       // var_dump($excel_data);
+        //var_dump($excel_data);
         //Pushing data into the array
         /*array_push($excel_data, array($neuron));
         if (array_key_exists($neuron, $result_default_synaptome_array['tm_cond16'])) {
@@ -216,16 +283,26 @@ function create_excel_file($filepath, $excel_file_names, $excel_data){
 
         $fp = fopen($excel_file, 'w');
         $fp_xls = fopen($excel_file_xls, 'w');
-
+//var_dump($excel_data);exit;
         foreach ($excel_data as $key => $fields) {
             //Commented to create one file
            /* $excel_file_str = trim(explode("_", $excel_file_name)[0]);
             $pos = strpos($key, $excel_file_str);
             if($pos === 0){*/
                 fputcsv($fp, $fields["key"], "\t", '"');
-                fputcsv($fp, $fields["fields"], "\t", '"');
                 fputcsv($fp_xls, $fields["key"], "\t", '"');
-                fputcsv($fp_xls, $fields["fields"], "\t", '"');
+                foreach($fields["fields"] as $key => $field){
+
+                //fputcsv($fp, $fields["key"], "\t", '"');
+               // fputcsv($fp_xls, $fields["key"], "\t", '"');
+                //fputcsv($fp, $key, "\t", '"');
+                //fputcsv($fp_xls, $field, "\t", '"');
+                    fputcsv($fp, $field, "\t", '"');
+                    fputcsv($fp_xls, $field, "\t", '"');
+                }
+                //fputcsv($fp, $fields["fields"], "\t", '"');
+                //fputcsv($fp_xls, $fields["key"], "\t", '"');
+               // fputcsv($fp_xls, $fields["fields"], "\t", '"');
            // }
         }
         fclose($fp);

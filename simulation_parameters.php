@@ -20,7 +20,29 @@ include ("permission_check.php");
 function clear_checkboxes(){
    $('#results-table input:checkbox').each(function() {
       this.checked = '';
+      //var parentId = $('#child').parent().closest('div').attr('id');
+
+  //  this.parent().find('div').style.display = "none";
    });
+   $('#synaptic_options_div input:checkbox').each(function() {
+      this.checked = '';
+      //var parentId = $('#child').parent().closest('div').attr('id');
+
+  //  this.parent().find('div').style.display = "none";
+   });
+}
+
+function clear_radiobuttons(){
+  // $('input[type=radio]:checked')
+   $('#neuron_types_div input:radio').each(function() {
+      this.checked = '';
+      //document.getElementById(detail_name).style.display = "none";
+   });
+}
+
+function hide_details(){
+   //$('#results-table ').each(function() {
+
 }
 
 $(document).ready(function(){
@@ -29,6 +51,7 @@ $(document).ready(function(){
         var $that = $(this);
         $('#subregions_div input:checkbox').each(function() {
            if(this.name=='unselectall_neuron'){
+            this.checked = '';
            }else{
             this.checked = 'TRUE';
            }
@@ -43,10 +66,15 @@ $(document).ready(function(){
                this.checked =='';
             }else{
                this.checked = 'TRUE';
+               clear_checkboxes();//To clear checkboxes in Sub regions result table
+               clear_radiobuttons();
+               refreshPage();
             }
          }else{
             this.checked = '';
+            
             clear_checkboxes();//To clear checkboxes in Sub regions result table
+            clear_radiobuttons();
          }
             
         });
@@ -178,20 +206,21 @@ function create_or_linkfile(){
                            //To update the grey color if the text matches
                            var rowVal = selected_arr[key];
                            for (const rowkey in rowVal) {
+                              
                               var td_name = key.toLowerCase()+"_"+rowVal[rowkey]["id"];
                               var td_name_checkbox = key.toLowerCase()+"_"+rowVal[rowkey]["id"]+"_"+"checkbox";
                               var detail_name = "detail_div"+key.toLowerCase()+"_"+rowVal[rowkey]["id"];
                               if(document.getElementById(td_name)){
                                  //var checkBox = document.getElementById(td_name_checkbox);
-                                 //alert(checkBox.id)
+                                 //alert(document.getElementById(td_name_checkbox));
                                  document.getElementById(td_name_checkbox).checked = true;
                                  //document.getElementById(td_name).setAttribute('checked', 'checked');
                                  //document.getElementById(td_name).style.backgroundColor = "rgb(211, 211, 211)";
-                                 if(rowVal[rowkey]["synaptome_details"]){
+                                /* if(rowVal[rowkey]["synaptome_details"]){
                                     document.getElementById(detail_name).style.display = "block";
                                  }else{
                                     document.getElementById(detail_name).style.display = "none";
-                                 }
+                                 }*/
                                  /*
                                  //Get the neuron names
                                 var neuron_name = document.getElementById(td_name_checkbox).value;
@@ -205,7 +234,7 @@ function create_or_linkfile(){
                }//For loop const key
             }
             //alert("Selected Neurons:" +selected_neurons);
-            document.getElementById('selectedsubvalues').value = selected_neurons;
+           // document.getElementById('selectedsubvalues').value = selected_neurons;
          }
       }
       alert(getFormDataSize(formData));
