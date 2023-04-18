@@ -24,12 +24,12 @@ function clear_checkboxes(){
 
   //  this.parent().find('div').style.display = "none";
    });
-   $('#synaptic_options_div input:checkbox').each(function() {
+  /* $('#synaptic_options_div input:checkbox').each(function() {
       this.checked = '';
       //var parentId = $('#child').parent().closest('div').attr('id');
 
   //  this.parent().find('div').style.display = "none";
-   });
+   });*/
 }
 
 function clear_radiobuttons(){
@@ -56,6 +56,20 @@ $(document).ready(function(){
             this.checked = 'TRUE';
            }
         });
+        $('#synaptic_options_div input:checkbox').each(function() {
+            if(this.name == 'median'){
+               this.checked = ''; //as we don't have data for median
+            }else{
+            this.checked = 'TRUE';
+            }
+        });
+        $('#neuron_types_div input:radio').each(function() {
+           if(this.id == 'v1_neurons'){
+            this.checked = 'TRUE';
+           }else{
+            this.checked = '';
+           }         
+      });
     });
 
    $('#unselectall_neuron').click(function(event) {
@@ -77,6 +91,12 @@ $(document).ready(function(){
             clear_radiobuttons();
          }
             
+        });
+        $('#synaptic_options_div input:checkbox').each(function() {
+            this.checked = ''; //as we don't have data for median
+        });
+        $('#neuron_types_div input:radio').each(function() {
+            this.checked = ''; //as we don't have data for median
         });
     });
 });
@@ -110,10 +130,38 @@ function simulationdataGet() {
 
 function create_or_linkfile(){
    var selected_neurons = [];
+   selected_neurons['neurons'] = [];
+   selected_neurons['synaptic'] = [];
+   //alert("Line 135:"+selected_neurons.length);
+   var neurons = [];
+   var synaptic = [];
+   //alert("Line 114:"+selected_neurons);
+   if(document.getElementById('selectall_neuron').checked){
+      neurons.push("selectall_neuron");
+   }
+   else{
    $('#results-table input:checked').each(function() {
       var neuron_name = $(this).closest('td').find('span').first().text();
-      selected_neurons.push(neuron_name);//Based on neuron name list when creating zip file get the data
+    //  alert(neuron_name);
+      neurons.push(neuron_name);//Based on neuron name list when creating zip file get the data
+      //alert(neurons);
+      //selected_neurons.push(neuron_name);//Based on neuron name list when creating zip file get the data
    });
+   }
+   $('#synaptic_options_div input:checked').each(function() {
+      var synaptic_option = this.name;
+     // alert(synaptic_option);
+      synaptic.push(synaptic_option);
+     // alert(synaptic);
+      //selected_neurons['synaptic'].push(synaptic_option);
+   });
+   //alert("Line 129 Neurons:"+neurons);
+   selected_neurons['neurons'].push(neurons);
+  // alert("Line 131 selected_neurons:"+selected_neurons['neurons']);
+   selected_neurons['synaptic'].push(synaptic);
+  // alert("Line 133 selected_synaptic_neurons:"+selected_neurons['synaptic']);
+ //  alert(selected_neurons['neurons']);
+ selected_neurons = neurons;
    var selectedsubvalues = selected_neurons;
 
    //var selectedsubvalues = document.getElementById('selectedsubvalues').value;
@@ -237,7 +285,7 @@ function create_or_linkfile(){
            // document.getElementById('selectedsubvalues').value = selected_neurons;
          }
       }
-      alert(getFormDataSize(formData));
+      //alert(getFormDataSize(formData));
       if(getFormDataSize(formData) > 0){ //Kept this condition as if the neurons are selected
       //this is 0 but we are triggering the ajax call
       //so to avoid that call we kept this condition

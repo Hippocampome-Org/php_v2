@@ -1,134 +1,23 @@
 <?php
 
 include ("../../access_db.php");
+include ("./CreateExcel.php");
 ini_set('display_errors', 'On');
+include ("./get_connection_parameters.php");
+include ("./get_neuron_parameters.php");
 
-$result_default_synaptome_array = array();
 $excel_file_names = array();
-$excel_data = array();
+$result_default_synaptome_array = array();
+$excel_conn_param_data = array();
+
+$result_default_neuron_params_array = array();
+$excel_neuron_param_data = array();
 
 function neuron_alter(&$item1, $key, $prefix)
 {
     $neu_vals = explode('_', $item1);
     $item1 = implode(" ", $neu_vals);
     $item1 = $item1;
-}
-
-function create_query_string($neurons)
-{
-   /* SELECT pre, post from tm_cond16 WHERE  (
-        pre  like 'DG Semilunar Granule%' AND (
-        post like 'DG Semilunar Granule%' 
-            OR post like 'CA3 Axo-axonic%' 
-          OR post like 'CA1 Axo-axonic%'
-         ) )
-         OR 
-         (pre  like 'CA3 Axo-axonic%' AND (
-        post like 'DG Semilunar Granule%' 
-            OR post like 'CA3 Axo-axonic%' 
-          OR post like 'CA1 Axo-axonic%'
-         ) )
-         OR 
-         (pre  like 'CA1 Axo-axonic%' AND (
-        post like 'DG Semilunar Granule%' 
-            OR post like 'CA3 Axo-axonic%' 
-          OR post like 'CA1 Axo-axonic%'
-         ))
-        ; */
-        $post_neuron = NULL;
-        $post_neuron = ' AND (    ';
-        foreach($neurons as $neuron){
-            $post_neuron .= "POST LIKE ";
-            $post_neuron .= "'".$neuron."%' OR ";
-        }
-        $post_neuron =  substr($post_neuron, 0, -3);
-        $post_neuron .= ' ) ';
-        return $post_neuron;
-}
-
-function get_default_synaptome_details($conn_synaptome, $table_name = NULL){
-   //$columns = array();
-   //$columns = ['pre'];
-   if($table_name == NULL){$table_name ='tm_cond16';}
-   $select_default_synaptome_query = "SELECT pre, post, ";
-
-   $column = "pre, post, means_g, means_tau_d, means_tau_r, means_tau_f, means_u, ";
-   $select_default_synaptome_query .= "means_g, means_tau_d, means_tau_r, means_tau_f, means_u, ";
-  /* $select_default_synaptome_query .= "AVG(means_g) as means_g, AVG(means_tau_d) as means_tau_d, 
-                                       AVG(means_tau_r) as means_tau_r, 
-                                       AVG(means_tau_f) as means_tau_f, AVG(means_u) 
-                                       as means_u, ";*/
-   $column .= "min_g, min_tau_d, min_tau_r, min_tau_f, min_u, ";
-   $select_default_synaptome_query .= "min_g, min_tau_d, min_tau_r, min_tau_f, min_u, ";
-   /*$select_default_synaptome_query .= " AVG(min_g) as min_g, AVG(min_tau_d) as min_tau_d, 
-                                       AVG(min_tau_r) as min_tau_r, 
-                                       AVG(min_tau_f) as min_tau_f, AVG(min_u) as min_u, ";
-*/
-   $column .= "max_g, max_tau_d, max_tau_r, max_tau_f, max_u, ";
-   $select_default_synaptome_query .= "max_g, max_tau_d, max_tau_r, max_tau_f, max_u, ";
-   /*$select_default_synaptome_query .= " AVG(max_g) as max_g, AVG(max_tau_d) as max_tau_d, 
-                                       AVG(max_tau_r) as max_tau_r, 
-                                       AVG(max_tau_f) as max_tau_f, AVG(max_u) as max_u, ";
-*/
-    $column = substr($column, 0, -2);
-   $select_default_synaptome_query = substr($select_default_synaptome_query, 0, -2);
-   $select_default_synaptome_query .= " from ".$table_name;
-   if($_POST){
-    $neurons =  explode(",", array_keys($_POST)[0]);
-    $select_default_synaptome_query .= " WHERE ";
-    $post_neuron = [];
-    //$b = array_map('cube', $neurons);
-    array_walk($neurons, 'neuron_alter', '');
-    //var_dump($neurons);exit;
-    //foreach($neurons as $neuron){
-    $result_default_synaptome_array = array();
-
-    for ($i = 0; $i < count($neurons); $i++){
-        $neuron = $neurons[$i];
-        $result_default_synaptome_array[$neuron] = [];
-       // $neu_vals = explode('_', $neuron);
-      //  $neuron = implode(" ", $neu_vals);
-     //   array_push($post_neuron, $neuron);
-     /*
-    SELECT pre, post from tm_cond16 WHERE  pre  like 'DG Semilunar Granule%' AND (
-                                       post like 'DG Semilunar Granule%' 
-                                           OR post like 'CA3 Axo-axonic%' 
-                                         OR post like 'CA1 Axo-axonic%'
-                                        ); 
-                                       
-     */
-        if($i != 0){                       
-            $select_default_synaptome_query .= " OR ";
-        }
-        $select_default_synaptome_query .= " ( pre like '".$neuron."%'  ";
-        $select_default_synaptome_query .= create_query_string($neurons);
-        $select_default_synaptome_query .= " )";
-    }
-
-    //$select_default_synaptome_query = substr($select_default_synaptome_query, 0, -3);
-   }
-   //$select_default_synaptome_query .= " )"; 
-   //echo $select_default_synaptome_query;exit;
-   $rs = mysqli_query($conn_synaptome,$select_default_synaptome_query);
-   $columns = explode(", ", $column);
-   while($row = mysqli_fetch_row($rs))
-   {	
-       $arrVal = [];  
-       $i=0;      
-       foreach($columns as $colVal){
-           if($colVal=='pre'){
-               $pre = $row[$i]; //To get the pre value as key
-               $arrVal[$colVal] = $row[$i];
-               $pre = trim(substr($row[$i], 0, strpos($row[$i], '('))); //Getting DG Granule from DG Granule (+)2201p
-           }else{
-               $arrVal[$colVal] = $row[$i]; //tp get other values like mean etc as key and value
-           }
-           $i++;
-       }
-       array_push($result_default_synaptome_array[$pre], $arrVal);
-       //$result_default_synaptome_array[$pre] = $arrVal;
-   }
-   return  $result_default_synaptome_array;
 }
 
 function if_filename_exists($str, $excel_file_names){
@@ -163,18 +52,20 @@ function generate_file_name($neu_vals, $excel_file_names){
             $excel_file_name = trim($neu_vals[0])."_";
             if($f1){$excel_file_name .= $f1;}
             if($f2){$excel_file_name .= $f2;}
-
             //$excel_file_name .= date('m-d-Y_H_i_s').".xlsx"; commented for one file name
         }
     }
     return $excel_file_name;
 }
-//var_dump($_POST);exit;
 if($_POST){
     $neurons =  explode(",", array_keys($_POST)[0]);
 
     //Including this table name is for future as we know we might need details from different tables
     $result_default_synaptome_array['tm_cond16'] = get_default_synaptome_details($conn_synaptome, 'tm_cond16');
+    array_push($excel_conn_param_data, $result_default_synaptome_array['tm_cond16']);
+
+    $result_default_neuron_params_array = get_default_neuron_params_details($conn);
+    array_push($excel_neuron_param_data, $result_default_neuron_params_array);
 
     foreach($neurons as $neuron){
         $neu_vals = explode('_', $neuron);
@@ -185,25 +76,9 @@ if($_POST){
             array_push($excel_file_names, $excel_file_name);
         }
         
-        //Till Here
-        //var_dump($excel_data);
-        //Pushing data into the array
-        /*array_push($excel_data, array($neuron));
         if (array_key_exists($neuron, $result_default_synaptome_array['tm_cond16'])) {
-            array_push($excel_data, $result_default_synaptome_array['tm_cond16'][$neuron]);
         }else{
-            array_push($excel_data, []);
-        }*/
-        if (array_key_exists($neuron, $result_default_synaptome_array['tm_cond16'])) {
-            $excel_data[$neuron]["key"] =  array($neuron);
-            $excel_data[$neuron]["fields"] = $result_default_synaptome_array['tm_cond16'][$neuron];
-            //array_push($excel_data, $result_default_synaptome_array['tm_cond16'][$neuron]);
-        }else{
-            $excel_data[$neuron]["key"] =  array($neuron);
-            $excel_data[$neuron]["fields"] = [];
-           
-            //array_push($excel_data, []);
-           // $excel_data[$neuron] = [];
+          
         }
         //Till Here
     }
@@ -211,7 +86,6 @@ if($_POST){
     echo "Please select Neurons to create zip file.";
     return;
 }
-
 
 // Enter the name of directory
 $root = $_SERVER["DOCUMENT_ROOT"];
@@ -233,6 +107,22 @@ function create_directory($temp_dir, $dir_path){
 
 function copy_files($src, $dest){
     shell_exec("cp -r $src $dest");
+}
+
+function get_files($folder){
+    $valid_files = array();
+    $files = scandir($folder);
+    foreach($files as $file) {
+        if(substr($file, 0, 1) == "." || !is_readable($folder . '/' . $file)) {
+            continue;
+        }
+        if(is_dir($file)){
+            array_merge($valid_files, get_files($folder . '/' . $file));
+        } else {
+            $valid_files[] = $folder . '/' . $file;
+        }
+    }
+    return $valid_files;
 }
 
 function emptyDir($dir) {
@@ -268,71 +158,38 @@ function delete_old_folders($path){
     }
 }
 
-
-function create_excel_file($filepath, $excel_file_names, $excel_data){
-    //foreach($excel_file_names as $excel_file_name){
-        //$excel_file = $filepath."/".$excel_file_name;//commented for one file name
-        //Added next two lines on Apr 4 2023
-        $excel_file_name = join('', $excel_file_names);
-        $excel_file_name .= date('m-d-Y_H_i_s').".xlsx"; 
-        $excel_file_name_xls = join('', $excel_file_names);
-        $excel_file_name_xls .= date('m-d-Y_H_i_s').".xls"; 
-        $excel_file = $filepath."/".$excel_file_name;
-        $excel_file_xls = $filepath."/".$excel_file_name_xls;
-
-
-        $fp = fopen($excel_file, 'w');
-        $fp_xls = fopen($excel_file_xls, 'w');
-//var_dump($excel_data);exit;
-        foreach ($excel_data as $key => $fields) {
-            //Commented to create one file
-           /* $excel_file_str = trim(explode("_", $excel_file_name)[0]);
-            $pos = strpos($key, $excel_file_str);
-            if($pos === 0){*/
-                fputcsv($fp, $fields["key"], "\t", '"');
-                fputcsv($fp_xls, $fields["key"], "\t", '"');
-                foreach($fields["fields"] as $key => $field){
-
-                //fputcsv($fp, $fields["key"], "\t", '"');
-               // fputcsv($fp_xls, $fields["key"], "\t", '"');
-                //fputcsv($fp, $key, "\t", '"');
-                //fputcsv($fp_xls, $field, "\t", '"');
-                    fputcsv($fp, $field, "\t", '"');
-                    fputcsv($fp_xls, $field, "\t", '"');
-                }
-                //fputcsv($fp, $fields["fields"], "\t", '"');
-                //fputcsv($fp_xls, $fields["key"], "\t", '"');
-               // fputcsv($fp_xls, $fields["fields"], "\t", '"');
-           // }
-        }
-        fclose($fp);
-        fclose($fp_xls);
-   // }
-}
-
 function download_zip($filepath,$filename){
-    header("Pragma: public");
-    //header("Content-type: application/zip"); 
-    header("Expires: 0");
-    header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-    header("Cache-Control: public");
-    header("Content-Description: File Transfer");
-    header("Content-type: application/octet-stream");
-    header("Content-Disposition: attachment; filename=\"".$filename."\"");
-    header("Content-Transfer-Encoding: binary");
-    header("Content-Length: ".filesize($filepath.$filename));
-    while (ob_get_level()) {
-        ob_end_clean();
-   }
+    $zipfile = $filepath.$filename;
+    if (headers_sent()) {
+        echo 'HTTP header already sent';
+    } else {
+        if (!is_file($zipfile)) {
+            header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
+            echo 'File not found';
+        } else if (!is_readable($zipfile)) {
+            header($_SERVER['SERVER_PROTOCOL'].' 403 Forbidden');
+            echo 'File not readable';
+        } else {
+            while (ob_get_level()) {
+                ob_end_clean();
+            }
+            ob_start();
+            header($_SERVER['SERVER_PROTOCOL'].' 200 OK');
+            header("Content-Type: application/octet-stream");
+            header("Content-Transfer-Encoding: Binary");
+            header("Content-Length: ".(string)filesize($filepath.$filename));
+            header('Pragma: no-cache');
+           // header("Content-Disposition: attachment; filename=\"".basename($zipfile)."\"");
+            header("Content-Disposition: attachment; filename=\"export.zip\"");
 
-    //if(is_readable($filepath.$filename)){
-        @readfile($filepath.$filename);
-    //    exit;
-    //}else{
-     //   echo "Zip file is not readable";
-   // }
-
-    //header("Pragma: no-cache");
+            ob_clean();
+            ob_end_flush();
+            echo file_get_contents($zipfile);
+            //@readfile($zipfile);
+           exit();
+        }
+    }
+  
 }
 
 $name = date('Y-m-d_H-i-s');
@@ -362,26 +219,33 @@ if(is_dir($filepath.$temp_dir.$name)){
     $dest = $filepath.$temp_dir.$name;   // destination folder or file        
     copy_files($src, $dest);
 
-    if($excel_data){
-        create_excel_file($filepath.$temp_dir.$name, $excel_file_names, $excel_data);
+    if($excel_conn_param_data){
+        create_excel_file($filepath.$temp_dir.$name, $excel_file_names, $excel_conn_param_data, $excel_neuron_param_data);
     }
+    //Make the zip file of the excel file too
 
     $tmp_zip_file = $filepath.$temp_dir.$name."/".$zipcreated;
 
-   $newzip = new ZipArchive;
-   if($newzip -> open($tmp_zip_file, ZipArchive::CREATE ) === TRUE) {
-        $ffs = scandir($dest."/");
-        foreach($ffs as $file){
-            if ($file != "." && $file != ".." && !strstr($file,'.php')) {
-                $newzip -> addFile($dest."/".$file, $file);
-            }
+    $valid_files = get_files($dest);//."/");
+    if(count($valid_files)) {    
+        $newzip = new ZipArchive();
+
+        if($newzip->open($tmp_zip_file, ZIPARCHIVE::CREATE) !== true) {
+            return false;
         }
-        $newzip ->close();
+
+        foreach($valid_files as $file) {
+            $newzip->addFile($file,$file);
+        }
+        $newzip->close();
         if (file_exists($filepath.$temp_dir.$name."/".$zipcreated)) {
+            chmod($filepath.$temp_dir.$name."/".$zipcreated, 0777);
             download_zip($filepath.$temp_dir.$name."/", $zipcreated); 
         }
     }
+    else
+    {
+        return false;
+    }
 }
-
-
 ?>
