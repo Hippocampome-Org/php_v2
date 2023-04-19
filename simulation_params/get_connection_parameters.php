@@ -38,7 +38,7 @@ function get_default_synaptome_details($conn_synaptome, $table_name = NULL){
 pre, left(post,LOCATE(' ',post) - 1) as target_subregion,  post, ";
  //selected_neurons['synaptic']
     $column = "Source Subregion, Presynaptic Neuron Type, Target Subregion, Postsynaptoc Neuron Type, means_g, means_tau_d, means_tau_r, means_tau_f, means_u, ";
-    $select_default_synaptome_query .= "round(means_g, 2), means_tau_d, means_tau_r, means_tau_f, means_u, ";
+    $select_default_synaptome_query .= " means_g, means_tau_d, means_tau_r, means_tau_f, means_u, ";
     //$select_default_synaptome_query .= "round(means_g, 2), round(means_tau_d, 2), round(means_tau_r, 2), round(means_tau_f, 2), round(means_u, 2), ";
 
     $column .= "min_g, min_tau_d, min_tau_r, min_tau_f, min_u, ";
