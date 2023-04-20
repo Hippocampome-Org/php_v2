@@ -90,7 +90,7 @@ if(isset($_POST) && (count($_POST) > 0 )){
     if(strlen($sub_synaptome) > 1){ 
         $result_synaptome_array = get_synaptome_details($sub_synaptome, $sub, $conn_synaptome, 'tm_cond16');
     }
-    #var_dump($result_synaptome_array);
+    //var_dump($result_synaptome_array);
 }else{
     //$where .= "and subregion in ('DG')";
 }
@@ -102,8 +102,7 @@ $n=0;
 $result_array = array();
 
 $result_array = ["DG"=>array(), "CA3"=>array(), "CA1"=>array(), 
-        "EC"=>array(), "CA2"=>array(),"Sub"=>array()];
-
+        "EC"=>array(), "CA2"=>array(),"SUB"=>array()];
 while(list($id, $name, $subregion, $nickname, $excit_inhib, $type_subtype, $ranks , $v2p0) = mysqli_fetch_row($rs))
 {	
     $value=NULL;
@@ -123,6 +122,7 @@ while(list($id, $name, $subregion, $nickname, $excit_inhib, $type_subtype, $rank
     array_push($result_array[$subregion], 
     array('id'=>$id,'name'=>$nickname, 'excit_inhib'=>$excit_inhib, 'type_subtype'=>$type_subtype, 
     'ranks'=>$ranks , 'v2p0'=>$v2p0, 'synaptome_details'=>$value));
+  //  var_dump($result_array);
 }
 if(isset($_POST) && (count($_POST) > 0 )){ //Once we select the Sub regions
     $sub_count = count(explode(',', $sub));

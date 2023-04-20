@@ -89,9 +89,10 @@ if($_POST){
 
 // Enter the name of directory
 $root = $_SERVER["DOCUMENT_ROOT"];
-
+$root_server = $_SERVER['HTTP_SERVER'];
 $pathdir = "/hippocampome/php_v2/data/"; 
 $filepath = $root . $pathdir;
+$downloadpath = $root_server. $pathdir;
 
 //Create function to create temp directory
 function create_directory($temp_dir, $dir_path){
@@ -158,7 +159,7 @@ function delete_old_folders($path){
     }
 }
 
-function download_zip($filepath,$filename){
+function download_zip($filepath,$filename, $download_zip_file){
     $zipfile = $filepath.$filename;
     if (headers_sent()) {
         echo 'HTTP header already sent';
@@ -184,9 +185,7 @@ function download_zip($filepath,$filename){
 
             ob_clean();
             ob_end_flush();
-            echo file_get_contents($zipfile);
-            //@readfile($zipfile);
-           exit();
+            echo $download_zip_file."/".$filename;
         }
     }
   
@@ -225,6 +224,8 @@ if(is_dir($filepath.$temp_dir.$name)){
     //Make the zip file of the excel file too
 
     $tmp_zip_file = $filepath.$temp_dir.$name."/".$zipcreated;
+   // $download_zip_file = $downloadpath.$temp_dir.$name."/".$zipcreated;
+    $download_zip_file = $downloadpath.$temp_dir.$name;
 
     $valid_files = get_files($dest);//."/");
     if(count($valid_files)) {    
@@ -240,7 +241,7 @@ if(is_dir($filepath.$temp_dir.$name)){
         $newzip->close();
         if (file_exists($filepath.$temp_dir.$name."/".$zipcreated)) {
             chmod($filepath.$temp_dir.$name."/".$zipcreated, 0777);
-            download_zip($filepath.$temp_dir.$name."/", $zipcreated); 
+            download_zip($filepath.$temp_dir.$name."/", $zipcreated, $download_zip_file); 
         }
     }
     else

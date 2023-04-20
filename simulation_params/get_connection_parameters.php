@@ -34,8 +34,11 @@ function create_conn_params_query_string($neurons)
 
 function get_default_synaptome_details($conn_synaptome, $table_name = NULL){
     if($table_name == NULL){$table_name ='tm_cond16';}
-    $select_default_synaptome_query = "SELECT left(pre,LOCATE(' ',pre) - 1) as source_subregion, 
-pre, left(post,LOCATE(' ',post) - 1) as target_subregion,  post, ";
+    $select_default_synaptome_query = "SELECT 
+    left(pre,LOCATE(' ',pre) - 1) as source_subregion, 
+    left(pre,LOCATE(' (',pre) - 1) as pre,  
+    left(post,LOCATE(' ',post) - 1) as target_subregion,  
+    left(post,LOCATE(' (',post) - 1) as post, ";
  //selected_neurons['synaptic']
     $column = "Source Subregion, Presynaptic Neuron Type, Target Subregion, Postsynaptoc Neuron Type, means_g, means_tau_d, means_tau_r, means_tau_f, means_u, ";
     $select_default_synaptome_query .= " means_g, means_tau_d, means_tau_r, means_tau_f, means_u, ";

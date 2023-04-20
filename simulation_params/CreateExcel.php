@@ -4,21 +4,56 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Worksheet\Table;
+use PhpOffice\PhpSpreadsheet\Worksheet\Table\TableStyle;
 
 require_once('/Applications/XAMPP/vendor/autoload.php');
 
-function format_cells($spreadsheet){
-    $spreadsheet->getActiveSheet()->getStyle('A1:Z1')->applyFromArray(
+function format_cells($spreadsheet, $fillcol){
+    // determine the the number of rows in the active sheet
+    $highestRow = $spreadsheet->getActiveSheet()->getHighestRow();
+    // get the highest column letter
+    $highestColumn = $spreadsheet->getActiveSheet()->getHighestColumn();
+    // set autofilter range
+    $spreadsheet->getActiveSheet()->setAutoFilter('A1:'.$highestColumn.$highestRow);
+/*
+    // Create Table
+    $table = new Table('A1:D17', 'Sales_Data');
+    // Create Table Style
+    $tableStyle = new TableStyle();
+    // this line is the style type you want, you can verify this in Excel by clicking the "Format as Table" button and then hovering over the style you like to get the name
+    $tableStyle->setTheme(TableStyle::TABLE_STYLE_MEDIUM2);
+    // this gives you the alternate row color; I suggest to use either this or columnStripes as both together do not look good
+    $tableStyle->setShowRowStripes(true);
+    // similar to the alternate row color but does it for columns; I suggest to use either this or rowStripes as both together do not look good; I personally set to false and only used the rowStripes
+    $tableStyle->setShowColumnStripes(true);
+    // this will bold everything in the first column; I personally set to false
+    $tableStyle->setShowFirstColumn(true);
+    // this will bold everything in the last column; I personally set to false
+    $tableStyle->setShowLastColumn(true);
+    $table->setStyle($tableStyle);
+*/
+    $spreadsheet
+    ->getActiveSheet()
+    ->getStyle($fillcol.':'.$highestColumn.$highestRow)
+    //->getStyle('D2:'.$highestColumn.$highestRow)
+    ->getFill()
+    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+    ->getStartColor()
+    ->setARGB('ADD8E6');
+   /* $spreadsheet->getActiveSheet()->getStyle('A1:Z1')->applyFromArray(
         array(
            'fill' => array(
                'type' => Fill::FILL_SOLID,
-               'color' => array('rgb' => 'E5E4E2' )
+               'color' => array('rgb' => 'ADD8E6')//'E5E4E2' )
            ),
            'font'  => array(
                'bold'  =>  true
            )
         )
-      );
+      );*/
+
+      
 }
 
 function autosize_cells($spreadsheet){
@@ -57,9 +92,19 @@ function get_neuron_parameters_tab($spreadsheet, $excel_neuron_param_data){
         'A1'         // Top left coordinate of the worksheet range where
                      //    we want to set these values (default is A1)
     );
-    format_cells($spreadsheet);
+    //format_cells($spreadsheet);
+    format_cells($spreadsheet,'D2');
+
 
     autosize_cells($spreadsheet);
+   /* $spreadsheet
+    ->getActiveSheet()
+    ->getStyle('B1:B5')
+    ->getFill()
+    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+    ->getStartColor()
+    ->setARGB('808080');*/
+   // $spreadsheet->getActiveSheet()->getStyle('B2')->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_RED);
 }
 
 function get_conn_parameters_tab($spreadsheet, $excel_conn_param_data){
@@ -72,8 +117,18 @@ function get_conn_parameters_tab($spreadsheet, $excel_conn_param_data){
         'A1'         // Top left coordinate of the worksheet range where
                      //    we want to set these values (default is A1)
     );
-    format_cells($spreadsheet);
+    //format_cells($spreadsheet);
+    format_cells($spreadsheet,'E2');
+
     autosize_cells($spreadsheet);
+    /*$spreadsheet
+    ->getActiveSheet()
+    ->getStyle('A1:A5')
+    ->getFill()
+    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+    ->getStartColor()
+    ->setARGB('808080');*/
+   // $spreadsheet->getActiveSheet()->getStyle('B7')->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_RED);
 }
 
 function create_excel_file($filepath, $excel_file_names, $excel_conn_param_data, $excel_neuron_param_data){
@@ -98,7 +153,8 @@ function create_excel_file($filepath, $excel_file_names, $excel_conn_param_data,
     $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
 
     $excel_file = $filepath."/".$excel_file_name;
-    $writer->save($excel_file); // Here use the file name from joining thems    
+    $writer->save($excel_file); // Here use the file name from joining thems
+    
 }
 
 ?>

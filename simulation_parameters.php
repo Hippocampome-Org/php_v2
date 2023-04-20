@@ -172,7 +172,11 @@ function create_or_linkfile(){
    xmlHttp.onreadystatechange = function () {
       if (xmlHttp.readyState == 4) {
          if (xmlHttp.status == 200) {
-            alert(xmlHttp.responseText);
+            if(xmlHttp.responseText == 'Please select Neurons to create zip file.'){
+               alert(xmlHttp.responseText);
+            }else{
+               window.location.href = xmlHttp.responseText;
+            }
             //$("#results-table").html("<div>"+xmlHttp.responseText+"</div>");
          }
       }
