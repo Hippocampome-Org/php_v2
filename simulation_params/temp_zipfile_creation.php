@@ -224,7 +224,6 @@ if(is_dir($filepath.$temp_dir.$name)){
     //Make the zip file of the excel file too
 
     $tmp_zip_file = $filepath.$temp_dir.$name."/".$zipcreated;
-   // $download_zip_file = $downloadpath.$temp_dir.$name."/".$zipcreated;
     $download_zip_file = $downloadpath.$temp_dir.$name;
 
     $valid_files = get_files($dest);//."/");
@@ -236,7 +235,7 @@ if(is_dir($filepath.$temp_dir.$name)){
         }
 
         foreach($valid_files as $file) {
-            $newzip->addFile($file,$file);
+            $newzip->addFile($file,basename($file));//basename is to remove path to file
         }
         $newzip->close();
         if (file_exists($filepath.$temp_dir.$name."/".$zipcreated)) {

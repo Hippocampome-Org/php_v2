@@ -29,12 +29,11 @@ function get_default_neuron_params_details($conn){
                     izhmodels_single.C , izhmodels_single.k, 
                     izhmodels_single.Vr, izhmodels_single.Vt, izhmodels_single.a, 
                     izhmodels_single.b, izhmodels_single.Vpeak, izhmodels_single.Vmin, 
-                    izhmodels_single.d 
+                    izhmodels_single.d   
                     from Type 
                     join izhmodels_single on izhmodels_single.unique_id = type.id ";
 
-    $column = 'Neuron Type, E/I, rank, Population Size, Izh C, Izh k, Izh Vr, Izh Vt, Izh a, 
-    Izh b, Izh Vpeak, Izh Vmin, Izh d';
+    $column = 'Neuron Type, E/I, rank, Population Size, Izh C, Izh k, Izh Vr, Izh Vt, Izh a, Izh b, Izh Vpeak, Izh Vmin, Izh d, Refractory Period';
     if($_POST){
      $neurons =  explode(",", array_keys($_POST)[0]);
      $post_neuron = [];
@@ -50,19 +49,22 @@ function get_default_neuron_params_details($conn){
 
      $select_default_neuron_params_query .= " ) ";
     }
-    $select_default_neuron_params_query .= " ORDER BY Type.nickname ASC";
+    $select_default_neuron_params_query .= " and izhmodels_single.preferred = 'Y'  ORDER BY Type.nickname ASC";
     //echo $select_default_neuron_params_query;
     $rs = mysqli_query($conn,$select_default_neuron_params_query);
     $columns = explode(", ", $column);
-   // var_dump($columns);//exit;
    
     while($row = mysqli_fetch_row($rs))
     {   
         $arrVal = [];  
         $i=0;      
         foreach($columns as $colVal){
+            if($colVal == 'Refractory Period'){
+                array_push($arrVal, 1);
+            }else{
                 array_push($arrVal, $row[$i]);
-            $i++;
+                $i++;
+            }
         }
         array_push($result_default_neuron_params_array, $arrVal);
     }

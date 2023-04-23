@@ -161,11 +161,11 @@ function create_or_linkfile(){
    selected_neurons['synaptic'].push(synaptic);
   // alert("Line 133 selected_synaptic_neurons:"+selected_neurons['synaptic']);
  //  alert(selected_neurons['neurons']);
- selected_neurons = neurons;
+   selected_neurons = neurons;
    var selectedsubvalues = selected_neurons;
 
    //var selectedsubvalues = document.getElementById('selectedsubvalues').value;
-   alert("Selected Sub Values:"+selectedsubvalues);
+   //alert("Selected Sub Values:"+selectedsubvalues);
    var xmlHttp = new XMLHttpRequest();
    const url_call = './simulation_params/temp_zipfile_creation.php';
 

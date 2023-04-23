@@ -96,13 +96,13 @@ if(isset($_POST) && (count($_POST) > 0 )){
 }
 $select_query .= $where;
 $select_query .= " ORDER BY position asc";
-
+//echo $select_query;
 $rs = mysqli_query($conn,$select_query);
 $n=0;
 $result_array = array();
 
 $result_array = ["DG"=>array(), "CA3"=>array(), "CA1"=>array(), 
-        "EC"=>array(), "CA2"=>array(),"SUB"=>array()];
+        "EC"=>array(), "CA2"=>array(),"Sub"=>array()];
 while(list($id, $name, $subregion, $nickname, $excit_inhib, $type_subtype, $ranks , $v2p0) = mysqli_fetch_row($rs))
 {	
     $value=NULL;
