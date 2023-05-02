@@ -60,7 +60,7 @@ function get_synaptome_details($sub_synaptome, $sub, $conn_synaptome, $table_nam
 }
 //var_dump($_POST);
 $select_query = "SELECT id, name, subregion, nickname, excit_inhib, 
-type_subtype, ranks , v2p0 from type ";
+type_subtype, ranks , v2p0 from Type ";
 $where = " WHERE status = 'active' ";
 $sub = "";
 $sub_synaptome = "";

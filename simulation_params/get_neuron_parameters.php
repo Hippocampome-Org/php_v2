@@ -23,7 +23,7 @@ where Type.nickname IN  ('CA1 Basket',
 
 function get_default_neuron_params_details($conn){
     $select_default_neuron_params_query = "SELECT 
-                    type.nickname, Type.excit_inhib,
+                    Type.nickname, Type.excit_inhib,
                     Type.ranks, 
                     (select sum(counts) from Counts where unique_ID = Type.id) as population, 
                     izhmodels_single.C , izhmodels_single.k, 
@@ -35,22 +35,23 @@ function get_default_neuron_params_details($conn){
 
     $column = 'Neuron Type, E/I, rank, Population Size, Izh C, Izh k, Izh Vr, Izh Vt, Izh a, Izh b, Izh Vpeak, Izh Vmin, Izh d, Refractory Period';
     if($_POST){
-     $neurons =  explode(",", array_keys($_POST)[0]);
-     $post_neuron = [];
-     array_walk($neurons, 'neuron_alter', '');
-     $result_default_neuron_params_array = array();
-     $select_default_neuron_params_query .= " WHERE Type.nickname in (";
-
-     for ($i = 0; $i < count($neurons); $i++){
-         $neuron = $neurons[$i];
-         $select_default_neuron_params_query .= " '".$neuron."', ";
-     }
-     $select_default_neuron_params_query = substr($select_default_neuron_params_query, 0, -2);
-
-     $select_default_neuron_params_query .= " ) ";
+        $result_default_neuron_params_array = array();
+        if(array_keys($_POST)[0] != "selectall_neuron"){
+            $neurons =  explode(",", array_keys($_POST)[0]);
+            $post_neuron = [];
+            array_walk($neurons, 'neuron_alter', '');
+            $select_default_neuron_params_query .= " WHERE Type.nickname in (";
+    
+            for ($i = 0; $i < count($neurons); $i++){
+                $neuron = $neurons[$i];
+                $select_default_neuron_params_query .= " '".$neuron."', ";
+            }
+            $select_default_neuron_params_query = substr($select_default_neuron_params_query, 0, -2);
+            $select_default_neuron_params_query .= " ) ";
+        }
     }
     $select_default_neuron_params_query .= " and izhmodels_single.preferred = 'Y'  ORDER BY Type.nickname ASC";
-    //echo $select_default_neuron_params_query;
+    echo $select_default_neuron_params_query;
     $rs = mysqli_query($conn,$select_default_neuron_params_query);
     $columns = explode(", ", $column);
    

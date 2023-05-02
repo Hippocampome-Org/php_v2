@@ -39,13 +39,11 @@ function generate_file_name($neu_vals, $excel_file_names){
     if (in_array(trim($neu_vals[0]), array('CA3', 'CA3c'))) {
         if(!if_filename_exists("CA3_",$excel_file_names)){
             $excel_file_name = "CA3_";
-           // $excel_file_name = "CA3_".date('m-d-Y_H_i_s').".xlsx";
         }
     }
     else if (in_array(trim($neu_vals[0]), array('EC', 'MEC', 'LEC'))) {
         if(!if_filename_exists("EC_",$excel_file_names)){
             $excel_file_name = "EC_";
-            //$excel_file_name = "EC_".date('m-d-Y_H_i_s').".xlsx";
         }
     }
     else{
@@ -53,13 +51,17 @@ function generate_file_name($neu_vals, $excel_file_names){
             $excel_file_name = trim($neu_vals[0])."_";
             if($f1){$excel_file_name .= $f1;}
             if($f2){$excel_file_name .= $f2;}
-            //$excel_file_name .= date('m-d-Y_H_i_s').".xlsx"; commented for one file name
         }
     }
     return $excel_file_name;
 }
+//var_dump($_POST);exit;
 if($_POST){
-    $neurons =  explode(",", array_keys($_POST)[0]);
+    if(array_keys($_POST)[0] == "selectall_neuron"){
+        $neurons = array('DG','CA3','CA1','EC','MEC','LEC','CA2','Sub');
+    }else{
+        $neurons =  explode(",", array_keys($_POST)[0]);
+    }
 
     //Including this table name is for future as we know we might need details from different tables
     $result_default_synaptome_array['tm_cond16'] = get_default_synaptome_details($conn_synaptome, 'tm_cond16');
@@ -75,11 +77,6 @@ if($_POST){
         $excel_file_name = generate_file_name($neu_vals, $excel_file_names);
         if($excel_file_name){
             array_push($excel_file_names, $excel_file_name);
-        }
-        
-        if (array_key_exists($neuron, $result_default_synaptome_array['tm_cond16'])) {
-        }else{
-          
         }
         //Till Here
     }
@@ -221,8 +218,7 @@ if(is_dir($filepath.$temp_dir.$name)){
 
     if($excel_conn_param_data){
         create_csv_files($filepath.$temp_dir.$name, $excel_file_names, $excel_conn_param_data, $excel_neuron_param_data);
-
- //       create_excel_file($filepath.$temp_dir.$name, $excel_file_names, $excel_conn_param_data, $excel_neuron_param_data);
+ //     create_excel_file($filepath.$temp_dir.$name, $excel_file_names, $excel_conn_param_data, $excel_neuron_param_data);
     }
     //Make the zip file of the excel file too
 
