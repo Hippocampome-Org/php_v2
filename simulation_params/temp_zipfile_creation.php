@@ -1,7 +1,8 @@
 <?php
 
 include ("../../access_db.php");
-include ("./CreateExcel.php");
+//include ("./CreateExcel.php");
+include ("./CreateCSV.php");
 ini_set('display_errors', 'On');
 include ("./get_connection_parameters.php");
 include ("./get_neuron_parameters.php");
@@ -219,7 +220,9 @@ if(is_dir($filepath.$temp_dir.$name)){
     copy_files($src, $dest);
 
     if($excel_conn_param_data){
-        create_excel_file($filepath.$temp_dir.$name, $excel_file_names, $excel_conn_param_data, $excel_neuron_param_data);
+        create_csv_files($filepath.$temp_dir.$name, $excel_file_names, $excel_conn_param_data, $excel_neuron_param_data);
+
+ //       create_excel_file($filepath.$temp_dir.$name, $excel_file_names, $excel_conn_param_data, $excel_neuron_param_data);
     }
     //Make the zip file of the excel file too
 
