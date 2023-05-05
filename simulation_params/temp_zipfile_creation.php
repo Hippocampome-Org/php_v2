@@ -69,6 +69,7 @@ if($_POST){
 
     $result_default_neuron_params_array = get_default_neuron_params_details($conn);
     array_push($excel_neuron_param_data, $result_default_neuron_params_array);
+    //var_dump($excel_neuron_param_data);
 
     foreach($neurons as $neuron){
         $neu_vals = explode('_', $neuron);
@@ -212,10 +213,11 @@ $zipcreated = "paramsfile".date('m-d-Y_H_i_s').".zip";
 
 if(is_dir($filepath.$temp_dir.$name)){
     delete_old_folders($filepath.$temp_dir);
-    $src = $filepath."/default_zipfiles/";  // source folder or file
+    //Commented on May 4 2023 as we dont need those every time but kept the logic for future
+    //$src = $filepath."/default_zipfiles/";  // source folder or file
     $dest = $filepath.$temp_dir.$name;   // destination folder or file        
-    copy_files($src, $dest);
-
+    //copy_files($src, $dest);
+    
     if($excel_conn_param_data){
         create_csv_files($filepath.$temp_dir.$name, $excel_file_names, $excel_conn_param_data, $excel_neuron_param_data);
  //     create_excel_file($filepath.$temp_dir.$name, $excel_file_names, $excel_conn_param_data, $excel_neuron_param_data);

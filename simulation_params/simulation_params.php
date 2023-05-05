@@ -95,7 +95,7 @@ if(isset($_POST) && (count($_POST) > 0 )){
     //$where .= "and subregion in ('DG')";
 }
 $select_query .= $where;
-$select_query .= " ORDER BY position asc";
+$select_query .= " AND v2p0 = 0 ORDER BY position ASC";
 //echo $select_query;
 $rs = mysqli_query($conn,$select_query);
 $n=0;

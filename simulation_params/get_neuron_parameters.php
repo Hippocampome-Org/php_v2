@@ -1,4 +1,6 @@
 <?php
+include('./functions/default_neuron_calculations.php');
+
 //No need of this one for neurons
 function create_neurons_params_query_string($neurons)
 {
@@ -21,6 +23,35 @@ where Type.nickname IN  ('CA1 Basket',
         return $post_neuron;
 }
 
+function update_neurons_withmissing($result_default_neuron_params_array, $defualt_neuron_calculations, $missing_neurons, $columns){
+    foreach($missing_neurons as $missing_neuron){
+        $missing_neuron = trim($missing_neuron);
+        if($missing_neuron == 'EC LII Basket-Neurogliaform'){
+            $missing_neuron = 'EC LII Basket Multipolar Interneuron';
+        }
+        //echo "Line 29 missing_neuron ----";
+        //var_dump($missing_neuron);
+        if(isset($defualt_neuron_calculations[$missing_neuron])){
+            $arrVal = array();  
+            $i=0;
+            foreach($columns as $colVal){
+                if($colVal == 'Refractory Period'){
+                    array_push($arrVal, 1);
+                }elseif($colVal == 'CARLsim_default'){
+                    array_push($arrVal, 'Y');
+                }else{
+                    array_push($arrVal, $defualt_neuron_calculations[$missing_neuron][$i]);
+                    $i++;
+                }
+            }
+           // echo "Line 44 ----";
+            //var_dump($arrVal);
+            array_push($result_default_neuron_params_array, $arrVal);
+        }
+    }
+    return $result_default_neuron_params_array;
+}
+
 function get_default_neuron_params_details($conn){
     $select_default_neuron_params_query = "SELECT 
                     Type.nickname, Type.excit_inhib,
@@ -33,7 +64,7 @@ function get_default_neuron_params_details($conn){
                     from Type 
                     join izhmodels_single on izhmodels_single.unique_id = type.id ";
 
-    $column = 'Neuron Type, E/I, rank, Population Size, Izh C, Izh k, Izh Vr, Izh Vt, Izh a, Izh b, Izh Vpeak, Izh Vmin, Izh d, Refractory Period';
+    $column = 'Neuron Type, E/I, rank, Population Size, Izh C, Izh k, Izh Vr, Izh Vt, Izh a, Izh b, Izh Vpeak, Izh Vmin, Izh d, Refractory Period, CARLsim_default';
     if($_POST){
         $result_default_neuron_params_array = array();
         if(array_keys($_POST)[0] != "selectall_neuron"){
@@ -44,33 +75,44 @@ function get_default_neuron_params_details($conn){
     
             for ($i = 0; $i < count($neurons); $i++){
                 $neuron = $neurons[$i];
-                $select_default_neuron_params_query .= " '".$neuron."', ";
+                $select_default_neuron_params_query .= " '".trim($neuron)."', ";
             }
             $select_default_neuron_params_query = substr($select_default_neuron_params_query, 0, -2);
             $select_default_neuron_params_query .= " ) ";
         }
     }
     $select_default_neuron_params_query .= " and izhmodels_single.preferred = 'Y'  ORDER BY Type.nickname ASC";
-    echo $select_default_neuron_params_query;
+    //echo "get_neuron_params query is : ".$select_default_neuron_params_query;
     $rs = mysqli_query($conn,$select_default_neuron_params_query);
     $columns = explode(", ", $column);
-   
+    $defualt_neuron_calculations = get_default_neuron_calculations();
+    $missing_neurons = array();
+    $neurons_db = array();
     while($row = mysqli_fetch_row($rs))
     {   
-        $arrVal = [];  
+        $arrVal = array();  
         $i=0;      
         foreach($columns as $colVal){
             if($colVal == 'Refractory Period'){
                 array_push($arrVal, 1);
+            }elseif($colVal == 'CARLsim_default'){
+                array_push($arrVal, 'N');
             }else{
+                if($colVal == 'Neuron Type'){
+                    array_push($neurons_db, $row[$i]);
+                }
                 array_push($arrVal, $row[$i]);
                 $i++;
             }
         }
         array_push($result_default_neuron_params_array, $arrVal);
     }
+    $missing_neurons = array_diff($neurons, $neurons_db);
+    if(isset($missing_neurons) && count($missing_neurons) > 0){
+        $result_default_neuron_params_array = update_neurons_withmissing($result_default_neuron_params_array, $defualt_neuron_calculations, $missing_neurons, $columns);
+    }
     array_unshift($result_default_neuron_params_array, $columns);
-   // var_dump($result_default_neuron_params_array); // exit;
+    //var_dump($result_default_neuron_params_array); // exit;
     return  $result_default_neuron_params_array;
 }
 
