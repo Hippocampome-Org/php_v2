@@ -6,6 +6,8 @@ include ("./CreateCSV.php");
 ini_set('display_errors', 'On');
 include ("./get_connection_parameters.php");
 include ("./get_neuron_parameters.php");
+include('./functions/default_data_type_synap.php');
+
 
 $excel_file_names = array();
 $result_default_synaptome_array = array();
@@ -63,8 +65,12 @@ if($_POST){
         $neurons =  explode(",", array_keys($_POST)[0]);
     }
 
+    //Before calling any connection data get the default values
+    $synprocptotal_data = array();
+    $synprocptotal_data = get_synproCPtotal_data($conn);
+
     //Including this table name is for future as we know we might need details from different tables
-    $result_default_synaptome_array['tm_cond16'] = get_default_synaptome_details($conn_synaptome, 'tm_cond16');
+    $result_default_synaptome_array['tm_cond16'] = get_default_synaptome_details($conn_synaptome, 'tm_cond16', $synprocptotal_data);
     array_push($excel_conn_param_data, $result_default_synaptome_array['tm_cond16']);
 
     $result_default_neuron_params_array = get_default_neuron_params_details($conn);

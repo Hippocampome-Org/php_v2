@@ -1,5 +1,4 @@
 <?php
-include('./functions/default_neuron_calculations.php');
 
 //No need of this one for neurons
 function create_neurons_params_query_string($neurons)
@@ -85,7 +84,9 @@ function get_default_neuron_params_details($conn){
     //echo "get_neuron_params query is : ".$select_default_neuron_params_query;
     $rs = mysqli_query($conn,$select_default_neuron_params_query);
     $columns = explode(", ", $column);
-    $defualt_neuron_calculations = get_default_neuron_calculations();
+    $defualt_neuron_calculations = array();
+    $defualt_neuron_calculations = get_default_neuron_calc_values();
+    //var_dump($defualt_neuron_calculations);exit;
     $missing_neurons = array();
     $neurons_db = array();
     while($row = mysqli_fetch_row($rs))

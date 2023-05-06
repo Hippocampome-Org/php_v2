@@ -118,11 +118,15 @@ while(list($id, $name, $subregion, $nickname, $excit_inhib, $type_subtype, $rank
             }
         }
     }
+    //Added on May 5 2023 //Skip these two values as we don't have default values
+    if(in_array($nickname, array('CA1 Deep Pyramidal', 'CA1 Superficial Pyramidal'))){ continue; }
+    //Till Here
+
     //Using this on Feb 23 2023 as we got new db with nickname updated    
     array_push($result_array[$subregion], 
-    array('id'=>$id,'name'=>$nickname, 'excit_inhib'=>$excit_inhib, 'type_subtype'=>$type_subtype, 
-    'ranks'=>$ranks , 'v2p0'=>$v2p0, 'synaptome_details'=>$value));
-  //  var_dump($result_array);
+    array('id'=>$id,'name'=>$nickname, 'excit_inhib'=>$excit_inhib, '
+    type_subtype'=>$type_subtype, 'ranks'=>$ranks , 'v2p0'=>$v2p0, 'synaptome_details'=>$value));
+    // var_dump($result_array);
 }
 if(isset($_POST) && (count($_POST) > 0 )){ //Once we select the Sub regions
     $sub_count = count(explode(',', $sub));

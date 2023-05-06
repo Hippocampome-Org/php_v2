@@ -1,5 +1,18 @@
 <?php
 
+function get_connection_probability($row, $synprocptotal_data)
+{
+    $connection_probability = 1;
+    $carlsim_default = 'Y';
+    $key = $row[2].",".$row[5];
+    //$row[2], $row[5];
+    if(isset($synprocptotal_data[$key])){
+        $connection_probability = $synprocptotal_data[$key]['cp_mean_total'];
+        $carlsim_default = 'N';
+    }
+    return array($connection_probability, $carlsim_default);
+}
+
 function create_conn_params_query_string($neurons)
 {
    /* SELECT pre, post from tm_cond16 WHERE  (
@@ -32,20 +45,34 @@ function create_conn_params_query_string($neurons)
         return $post_neuron;
 }
 
-function get_default_synaptome_details($conn_synaptome, $table_name = NULL){
+function get_default_synaptome_details($conn_synaptome, $table_name = NULL, $synprocptotal_data){
     if($table_name == NULL){$table_name ='tm_cond16';}
     $select_default_synaptome_query = "SELECT 
     left(pre,LOCATE(' ',pre) - 1) as source_subregion, 
     left(pre,LOCATE(' (',pre) - 1) as pre,  
+    (select sr.type_id from synprotypetyperel sr where 
+    sr.type_name = pre
+    or sr.type_nickname = SUBSTRING_INDEX(SUBSTRING_INDEX(pre ,' (',1),' ',-2) 
+    OR 
+    sr.type_nickname = SUBSTRING_INDEX(SUBSTRING_INDEX(pre,' (',1),' ',-3) 
+    ) as pre_type_id, 
     left(post,LOCATE(' ',post) - 1) as target_subregion,  
-    left(post,LOCATE(' (',post) - 1) as post, ";
+    left(post,LOCATE(' (',post) - 1) as post, 
+    (select sr.type_id from synprotypetyperel sr where 
+    sr.type_name = post
+    or sr.type_nickname = SUBSTRING_INDEX(SUBSTRING_INDEX(post,' (',1),' ',-2) 
+    OR 
+    sr.type_nickname = SUBSTRING_INDEX(SUBSTRING_INDEX(post,' (',1),' ',-3) 
+    ) as post_type_id, ";
 
-    $column = "Source Subregion, Presynaptic Neuron Type, Target Subregion, Postsynaptic Neuron Type, g, tau_d, tau_r, tau_f, u, ";//Connection Probability, Synaptic Delay";
+   // $column = "Source Subregion, Presynaptic Neuron Type, Target Subregion, Postsynaptic Neuron Type, g, tau_d, tau_r, tau_f, u, ";//Connection Probability, Synaptic Delay";
+    $column = "Source Subregion, Presynaptic Neuron Type, Target Subregion, Postsynaptic Neuron Type, g, tau_d, tau_r, tau_f, u, Connection Probability, Synaptic Delay, CARLsim_default, ";
+
     $select_default_synaptome_query .= " means_g, means_tau_d, means_tau_r, means_tau_f, means_u, ";
 
     $column = substr($column, 0, -2);
     $select_default_synaptome_query = substr($select_default_synaptome_query, 0, -2);
-    $select_default_synaptome_query .= " from ".$table_name;
+    $select_default_synaptome_query .= " FROM ".$table_name;
     if($_POST){
      $neurons =  explode(",", array_keys($_POST)[0]);
      $select_default_synaptome_query .= " WHERE ";
@@ -65,25 +92,40 @@ function get_default_synaptome_details($conn_synaptome, $table_name = NULL){
      }
     }
     $select_default_synaptome_query .= " ORDER BY pre ASC";
-    //echo $select_default_synaptome_query;
+    //echo "get_connection_params query is : ".$select_default_synaptome_query;
     $rs = mysqli_query($conn_synaptome,$select_default_synaptome_query);
     $columns = explode(", ", $column);
    
     while($row = mysqli_fetch_row($rs))
     {	
-        $arrVal = [];  
-        $i=0;      
+        $arrVal = array();  
+        $i=0;  
+        list($connection_probability, $carlsim_default) = get_connection_probability($row, $synprocptotal_data);
         foreach($columns as $colVal){
-            array_push($arrVal, $row[$i]);
+            if($colVal == 'Synaptic Delay'){
+                array_push($arrVal, 1);
+            }elseif($colVal =='Connection Probability'){
+                array_push($arrVal, $connection_probability); //To add Connection probability -- need to tweak somemore
+            }elseif($colVal == 'CARLsim_default'){
+                //array_push($arrVal, 'N');
+                array_push($arrVal, $carlsim_default); // To add carlsim_default which is N by default
+            }else{
+                array_push($arrVal, $row[$i]);
+            }
             $i++;
         }
-        array_push($arrVal, 1); //To add Connection probability -- need to tweak somemore
+        //$connection_probability = 1;
+        /*array_push($arrVal, $connection_probability); //To add Connection probability -- need to tweak somemore
         array_push($arrVal, 1); // To add Synaptic delay which is 1 by default
+        array_push($arrVal, $carlsim_default); // To add Synaptic delay which is N by default
+*/
         array_push($result_default_synaptome_array, $arrVal);
     }
-    array_push($columns, "Connection Probability");
+    /*array_push($columns, "Connection Probability");
     array_push($columns, "Synaptic Delay");
+    array_push($columns, "CARLsim_default");*/
     array_unshift($result_default_synaptome_array, $columns);
+    //var_dump($result_default_synaptome_array);
     return  $result_default_synaptome_array;
 }
 ?>

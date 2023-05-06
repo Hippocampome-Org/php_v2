@@ -1,6 +1,6 @@
 <?php 
-function get_default_neuron_calculations(){
-    $default_neuron_calculations = array(
+function get_default_neuron_calc_values(){
+    $default_neuron_calc_calculations = array(
         'CA1_Interneuron_Specific_LMO_O' => array('CA1_Interneuron_Specific_LMO_O', 'i','5', '417','20.00','1.00','-55.00','-40.00','0.15','8.00','25.00','-55.00',200.00),
         'CA1_Interneuron_Specific_LM_R'=>array('CA1_Interneuron_Specific_LM_R','i','4','2042','20.00','1.00','-55.00','-40.00','0.15','8.00','25.00','-55.00',200.00),
         'CA1_Interneuron_Specific_LMR_R'=>array('CA1_Interneuron_Specific_LMR_R', 'i', '4', '2464', '20.00', '1.00', '-55.00', '-40.00', '0.15', '8.00', '25.00', '-55.00', 200.00),
@@ -35,6 +35,94 @@ function get_default_neuron_calculations(){
         'Sub Axo-axonic'=>array('Sub Axo-axonic','i','3','12796','20.00','1.00','-55.00','-40.00','0.15','8.00','25.00','-55.00',200.00),
         'Sub EC-Projecting Pyramidal'=>array('Sub EC-Projecting Pyramidal','e','3','116326','100.00','0.70','-60.00','-40.00','0.03','-2.00','35.00','-50.00',100.00)
     );
-    return $default_neuron_calculations;
+    return $default_neuron_calc_calculations;
 }
+
+function get_type_details($conn){
+    $select_query = "SELECT id, name, subregion, nickname, excit_inhib, position, 
+                        type_subtype, ranks , v2p0 from Type  WHERE status = 'active' 
+                        AND v2p0 = 0 ORDER BY position ASC";
+    $rs = mysqli_query($conn,$select_query);
+    $n=0;
+
+    $result_array = array();
+    while(list($id, $name, $subregion, $nickname, $excit_inhib, $position, $type_subtype, $ranks , $v2p0) = mysqli_fetch_row($rs))
+    {
+        //Using this on Feb 23 2023 as we got new db with nickname updated    
+        array_push($result_array[$nickname], 
+        array('id'=>$id,'name'=>$nickname, 'excit_inhib'=>$excit_inhib, 
+        'position'=>$position, 'subregion'=>$subregion, 
+        'type_subtype'=>$type_subtype, 
+        'ranks'=>$ranks , 'v2p0'=>$v2p0));
+         var_dump($result_array);
+    }
+    return $result_array;
+}
+
+function get_synproCPtotal_data($conn){
+    $select_query = "select source_id, ";
+    // (select excit_inhib from Type where id = source_id) as source_excit_inhib, 
+    $select_query .= "target_id, ";
+    //(select excit_inhib from Type where id = target_id) as target_excit_inhib, 
+    $select_query .= "CP_mean_total, CP_stdev_total, parcel_count
+    from SynproCPTotal";
+    //var_dump($conn);echo $select_query;
+    $rs = mysqli_query($conn,$select_query);
+
+    $result_array = array();
+    //while(list($source_id, $source_excit_inhib, $target_id, $target_excit_inhib, $cp_mean_total, $cp_stdev_total, $parcel_count) = mysqli_fetch_row($rs))
+    //var_dump($rs);
+    while(list($source_id, $target_id, $cp_mean_total, $cp_stdev_total, $parcel_count) = mysqli_fetch_row($rs))
+    {
+        //Using this on Feb 23 2023 as we got new db with nickname updated
+        $key = $source_id.",".$target_id;
+        $result_array[$key] = array();
+        $result_array[$key]['source_id']=$source_id;
+        $result_array[$key]['target_id']=$target_id;
+        $result_array[$key]['cp_mean_total']=$cp_mean_total;
+        $result_array[$key]['cp_stdev_total']=$cp_stdev_total;
+        $result_array[$key]['parcel_count']=$parcel_count;
+        /*array_push($result_array[$key], 
+        array('source_id'=>$source_id,
+        //'source_excit_inhib'=>$source_excit_inhib,
+        'target_id'=>$target_id, 
+        //'target_excit_inhib'=>$target_excit_inhib,
+        'cp_mean_total'=>$cp_mean_total, 
+        'cp_stdev_total'=>$cp_stdev_total, 'subregion'=>$parcel_count));*/
+    }
+    //var_dump($result_array);
+    return $result_array;
+}
+/*
+function get_synprotypetyperel_data($conn_synaptome){
+    $select_query = "select  tm.pre, 
+    (select sr.type_id from synprotypetyperel sr where 
+    sr.type_name = tm.pre
+    or sr.type_nickname = SUBSTRING_INDEX(SUBSTRING_INDEX(tm.pre ,' (',1),' ',-2) 
+    OR 
+    sr.type_nickname = SUBSTRING_INDEX(SUBSTRING_INDEX(tm.pre,' (',1),' ',-3) 
+    ) as pre_type_id, 
+    tm.post, (select sr.type_id from synprotypetyperel sr where 
+    sr.type_name = tm.post
+    or sr.type_nickname = SUBSTRING_INDEX(SUBSTRING_INDEX(tm.post,' (',1),' ',-2) 
+    OR 
+    sr.type_nickname = SUBSTRING_INDEX(SUBSTRING_INDEX(tm.post,' (',1),' ',-3) 
+    ) as post_type_id
+    from tm_cond16 tm";
+
+    $rs = mysqli_query($conn_synaptome,$select_query);
+    $n=0;
+    $result_array = array();
+    while(list($pre, $pre_id, $post, $post_id) = mysqli_fetch_row($rs))
+    {
+        //Using this on Feb 23 2023 as we got new db with nickname updated    
+        array_push($result_array, 
+        array('pre'=>$pre,'pre_type_id'=>$pre_type_id, 
+                'post'=>$post, 
+                'post_type_id'=>$post_type_id));
+    }
+    var_dump($result_array);
+    return $result_array;
+}
+*/
 ?>
