@@ -39,9 +39,8 @@ function get_default_neuron_calc_values(){
 }
 
 function get_type_details($conn){
-    $select_query = "SELECT id, name, subregion, nickname, excit_inhib, position, 
-                        type_subtype, ranks , v2p0 from Type  WHERE status = 'active' 
-                        AND v2p0 = 0 ORDER BY position ASC";
+    $select_query = "SELECT id, name, subregion, nickname, excit_inhib, position, type_subtype, ranks , v2p0 ";
+    $select_query .= " FROM Type ORDER BY position ASC";
     $rs = mysqli_query($conn,$select_query);
     $n=0;
 
@@ -49,46 +48,37 @@ function get_type_details($conn){
     while(list($id, $name, $subregion, $nickname, $excit_inhib, $position, $type_subtype, $ranks , $v2p0) = mysqli_fetch_row($rs))
     {
         //Using this on Feb 23 2023 as we got new db with nickname updated    
-        array_push($result_array[$nickname], 
-        array('id'=>$id,'name'=>$nickname, 'excit_inhib'=>$excit_inhib, 
-        'position'=>$position, 'subregion'=>$subregion, 
-        'type_subtype'=>$type_subtype, 
-        'ranks'=>$ranks , 'v2p0'=>$v2p0));
-         var_dump($result_array);
+        $result_array[$id] = array('id'=>$id,'name'=>$name,'nickname'=>$nickname,'excit_inhib'=>$excit_inhib,
+                                    'position'=>$position,'subregion'=>$subregion,'type_subtype'=>$type_subtype,
+                                    'ranks'=>$ranks ,'v2p0'=>$v2p0);
+         //var_dump($result_array);
     }
     return $result_array;
 }
 
 function get_synproCPtotal_data($conn){
-    $select_query = "select source_id, ";
-    // (select excit_inhib from Type where id = source_id) as source_excit_inhib, 
-    $select_query .= "target_id, ";
-    //(select excit_inhib from Type where id = target_id) as target_excit_inhib, 
-    $select_query .= "CP_mean_total, CP_stdev_total, parcel_count
-    from SynproCPTotal";
+    $select_query = "SELECT source_id, (select excit_inhib from Type where id = source_id) as source_excit_inhib, ";
+    $select_query .= "target_id, (select excit_inhib from Type where id = target_id) as target_excit_inhib, ";
+    $select_query .= "CP_mean_total, CP_stdev_total, parcel_count ";
+    $select_query .= "FROM SynproCPTotal";
     //var_dump($conn);echo $select_query;
     $rs = mysqli_query($conn,$select_query);
 
     $result_array = array();
-    //while(list($source_id, $source_excit_inhib, $target_id, $target_excit_inhib, $cp_mean_total, $cp_stdev_total, $parcel_count) = mysqli_fetch_row($rs))
+    while(list($source_id, $source_excit_inhib, $target_id, $target_excit_inhib, $cp_mean_total, $cp_stdev_total, $parcel_count) = mysqli_fetch_row($rs))
     //var_dump($rs);
-    while(list($source_id, $target_id, $cp_mean_total, $cp_stdev_total, $parcel_count) = mysqli_fetch_row($rs))
+    //while(list($source_id, $target_id, $cp_mean_total, $cp_stdev_total, $parcel_count) = mysqli_fetch_row($rs))
     {
         //Using this on Feb 23 2023 as we got new db with nickname updated
         $key = $source_id.",".$target_id;
         $result_array[$key] = array();
         $result_array[$key]['source_id']=$source_id;
+        $result_array[$key]['source_excit_inhib']=$source_excit_inhib;
         $result_array[$key]['target_id']=$target_id;
+        $result_array[$key]['target_excit_inhib']=$target_excit_inhib;
         $result_array[$key]['cp_mean_total']=$cp_mean_total;
         $result_array[$key]['cp_stdev_total']=$cp_stdev_total;
         $result_array[$key]['parcel_count']=$parcel_count;
-        /*array_push($result_array[$key], 
-        array('source_id'=>$source_id,
-        //'source_excit_inhib'=>$source_excit_inhib,
-        'target_id'=>$target_id, 
-        //'target_excit_inhib'=>$target_excit_inhib,
-        'cp_mean_total'=>$cp_mean_total, 
-        'cp_stdev_total'=>$cp_stdev_total, 'subregion'=>$parcel_count));*/
     }
     //var_dump($result_array);
     return $result_array;

@@ -1,14 +1,92 @@
 <?php
 
-function get_connection_probability($row, $synprocptotal_data)
+function  get_ei_vals($type_details, $id_type){
+    $ei_vals = array();
+    //var_dump($type_details);
+    foreach($type_details as $key => $type_detail) {
+        //foreach($type_detail as $key=>$values){
+            if($type_detail['excit_inhib'] == $id_type){
+                array_push($ei_vals, $key);
+            }
+       // }
+    }
+    return $ei_vals;
+}
+
+function mmmr($array, $output = 'mean'){ 
+    if(!is_array($array)){ 
+        return FALSE; 
+    }else{ 
+        switch($output){ 
+            case 'mean': 
+                $count = count($array); 
+                $sum = array_sum($array); 
+                $total = $sum / $count; 
+            break; 
+            case 'median': 
+                rsort($array); 
+                $middle = round(count($array) / 2); 
+                $total = $array[$middle-1]; 
+            break; 
+            case 'minimum': 
+                $total = min($array);
+            break; 
+            case 'maximum': 
+                $total = max($array);
+            break; 
+        } 
+        return $total; 
+    } 
+} 
+
+//function calculate_cptotals($synprocptotal_data, $source_id_type, $target_id_type, $calc_type = NULL)
+function calculate_cptotals($synprocptotal_data, $source_id_type, $source_ei_vals, $target_id_type, $target_ei_vals, $calc_type = NULL)
+{
+    if(!isset($calc_type)){
+        $calc_type ='mean';
+    }
+    $mean_vals = $stdev_vals = array();
+    $mean_count = $stdev_count = 0;
+    foreach($source_ei_vals as $source_ei_val){
+        foreach($target_ei_vals as $target_ei_val){
+            $key = $source_ei_val.",".$target_ei_val;
+            if(isset($synprocptotal_data[$key])){
+                if(isset($synprocptotal_data[$key]['cp_mean_total'])){
+                    array_push($mean_vals, $synprocptotal_data[$key]['cp_mean_total']);
+                    $mean_count++;
+                }
+                if(isset($synprocptotal_data[$key]['cp_stdev_total'])){
+                    array_push($stdev_vals, $synprocptotal_data[$key]['cp_stdev_total']);
+                    $stdev_count++;
+                }
+            }
+        }
+    }
+    return mmmr($mean_vals, $calc_type);
+}
+
+function get_connection_probability($row, $synprocptotal_data, $type_details)
 {
     $connection_probability = 1;
     $carlsim_default = 'Y';
+    $source_id = $row[2];
+    $target_id = $row[5];
+    $source_id_type = $type_details[$source_id]['excit_inhib'];
+    $target_id_type = $type_details[$target_id]['excit_inhib'];
+    $source_ei_vals = $target_ei_vals =array();
+
     $key = $row[2].",".$row[5];
     //$row[2], $row[5];
     if(isset($synprocptotal_data[$key])){
         $connection_probability = $synprocptotal_data[$key]['cp_mean_total'];
         $carlsim_default = 'N';
+    }
+    else{
+        //If mean, median and other option is selected
+        $source_ei_vals = get_ei_vals($type_details, $source_id_type);
+        $target_ei_vals = get_ei_vals($type_details, $target_id_type);
+
+        $connection_probability = calculate_cptotals($synprocptotal_data, $source_id_type, $source_ei_vals, $target_id_type, $target_ei_vals);
     }
     return array($connection_probability, $carlsim_default);
 }
@@ -45,7 +123,7 @@ function create_conn_params_query_string($neurons)
         return $post_neuron;
 }
 
-function get_default_synaptome_details($conn_synaptome, $table_name = NULL, $synprocptotal_data){
+function get_default_synaptome_details($conn_synaptome, $table_name = NULL, $synprocptotal_data, $type_details){
     if($table_name == NULL){$table_name ='tm_cond16';}
     $select_default_synaptome_query = "SELECT 
     left(pre,LOCATE(' ',pre) - 1) as source_subregion, 
@@ -100,7 +178,7 @@ function get_default_synaptome_details($conn_synaptome, $table_name = NULL, $syn
     {	
         $arrVal = array();  
         $i=0;  
-        list($connection_probability, $carlsim_default) = get_connection_probability($row, $synprocptotal_data);
+        list($connection_probability, $carlsim_default) = get_connection_probability($row, $synprocptotal_data, $type_details);
         foreach($columns as $colVal){
             if($colVal == 'Synaptic Delay'){
                 array_push($arrVal, 1);

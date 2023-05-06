@@ -66,11 +66,12 @@ if($_POST){
     }
 
     //Before calling any connection data get the default values
-    $synprocptotal_data = array();
+    $synprocptotal_data = $type_details = array();
     $synprocptotal_data = get_synproCPtotal_data($conn);
+    $type_details = get_type_details($conn);
 
     //Including this table name is for future as we know we might need details from different tables
-    $result_default_synaptome_array['tm_cond16'] = get_default_synaptome_details($conn_synaptome, 'tm_cond16', $synprocptotal_data);
+    $result_default_synaptome_array['tm_cond16'] = get_default_synaptome_details($conn_synaptome, 'tm_cond16', $synprocptotal_data, $type_details);
     array_push($excel_conn_param_data, $result_default_synaptome_array['tm_cond16']);
 
     $result_default_neuron_params_array = get_default_neuron_params_details($conn);
