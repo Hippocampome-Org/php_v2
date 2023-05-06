@@ -123,7 +123,7 @@ function create_conn_params_query_string($neurons)
         return $post_neuron;
 }
 
-function get_default_synaptome_details($conn_synaptome, $table_name = NULL, $synprocptotal_data, $type_details){
+function get_default_synaptome_details($conn_synaptome, $table_name = NULL, $synprocptotal_data, $type_details, $neurons_default = NULL){
     if($table_name == NULL){$table_name ='tm_cond16';}
     $select_default_synaptome_query = "SELECT 
     left(pre,LOCATE(' ',pre) - 1) as source_subregion, 
@@ -152,22 +152,26 @@ function get_default_synaptome_details($conn_synaptome, $table_name = NULL, $syn
     $select_default_synaptome_query = substr($select_default_synaptome_query, 0, -2);
     $select_default_synaptome_query .= " FROM ".$table_name;
     if($_POST){
-     $neurons =  explode(",", array_keys($_POST)[0]);
-     $select_default_synaptome_query .= " WHERE ";
-     $post_neuron = [];
-     array_walk($neurons, 'neuron_alter', '');
-     $result_default_synaptome_array = array();
+        if(array_keys($_POST)[0] == "selectall_neuron"){
+            $neurons = $neurons_default;
+        }else{
+            $neurons =  explode(",", array_keys($_POST)[0]);
+        }
+        $select_default_synaptome_query .= " WHERE ";
+        $post_neuron = [];
+        array_walk($neurons, 'neuron_alter', '');
+        $result_default_synaptome_array = array();
  
-     for ($i = 0; $i < count($neurons); $i++){
-         $neuron = $neurons[$i];
+        for ($i = 0; $i < count($neurons); $i++){
+            $neuron = $neurons[$i];
 
-         if($i != 0){                       
-             $select_default_synaptome_query .= " OR ";
-         }
-         $select_default_synaptome_query .= " ( pre like '".$neuron."%'  ";
-         $select_default_synaptome_query .= create_conn_params_query_string($neurons);
-         $select_default_synaptome_query .= " ) ";
-     }
+            if($i != 0){
+                $select_default_synaptome_query .= " OR ";
+            }
+            $select_default_synaptome_query .= " ( pre like '".$neuron."%'  ";
+            $select_default_synaptome_query .= create_conn_params_query_string($neurons);
+            $select_default_synaptome_query .= " ) ";
+        }
     }
     $select_default_synaptome_query .= " ORDER BY pre ASC";
     //echo "get_connection_params query is : ".$select_default_synaptome_query;

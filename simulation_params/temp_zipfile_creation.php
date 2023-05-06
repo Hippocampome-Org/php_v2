@@ -59,22 +59,27 @@ function generate_file_name($neu_vals, $excel_file_names){
 }
 //var_dump($_POST);exit;
 if($_POST){
-    if(array_keys($_POST)[0] == "selectall_neuron"){
-        $neurons = array('DG','CA3','CA1','EC','MEC','LEC','CA2','Sub');
-    }else{
-        $neurons =  explode(",", array_keys($_POST)[0]);
-    }
 
     //Before calling any connection data get the default values
     $synprocptotal_data = $type_details = array();
     $synprocptotal_data = get_synproCPtotal_data($conn);
     $type_details = get_type_details($conn);
-
     //Including this table name is for future as we know we might need details from different tables
-    $result_default_synaptome_array['tm_cond16'] = get_default_synaptome_details($conn_synaptome, 'tm_cond16', $synprocptotal_data, $type_details);
-    array_push($excel_conn_param_data, $result_default_synaptome_array['tm_cond16']);
 
-    $result_default_neuron_params_array = get_default_neuron_params_details($conn);
+    if(array_keys($_POST)[0] == "selectall_neuron"){
+        $subregions = array('DG','CA3','CA1','EC','MEC','LEC','CA2','Sub');
+        list($neurons, $neurons_subregions) = get_neurons($type_details, $subregions);
+        $result_default_synaptome_array['tm_cond16'] = get_default_synaptome_details($conn_synaptome, 'tm_cond16', $synprocptotal_data, $type_details, $neurons);
+        $result_default_neuron_params_array = get_default_neuron_params_details($conn, $neurons);
+
+    }else{
+        $neurons =  explode(",", array_keys($_POST)[0]);
+        $result_default_synaptome_array['tm_cond16'] = get_default_synaptome_details($conn_synaptome, 'tm_cond16', $synprocptotal_data, $type_details);
+        $result_default_neuron_params_array = get_default_neuron_params_details($conn);
+
+    }
+
+    array_push($excel_conn_param_data, $result_default_synaptome_array['tm_cond16']);
     array_push($excel_neuron_param_data, $result_default_neuron_params_array);
     //var_dump($excel_neuron_param_data);
 

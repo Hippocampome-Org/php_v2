@@ -28,8 +28,8 @@ function update_neurons_withmissing($result_default_neuron_params_array, $defual
         if($missing_neuron == 'EC LII Basket-Neurogliaform'){
             $missing_neuron = 'EC LII Basket Multipolar Interneuron';
         }
-        //echo "Line 29 missing_neuron ----";
-        //var_dump($missing_neuron);
+        /*echo "Line 29 missing_neuron ----";
+        var_dump($missing_neuron);*/
         if(isset($defualt_neuron_calculations[$missing_neuron])){
             $arrVal = array();  
             $i=0;
@@ -43,15 +43,15 @@ function update_neurons_withmissing($result_default_neuron_params_array, $defual
                     $i++;
                 }
             }
-           // echo "Line 44 ----";
-            //var_dump($arrVal);
+            /*echo "Line 44 ----";
+            var_dump($arrVal);*/
             array_push($result_default_neuron_params_array, $arrVal);
         }
     }
     return $result_default_neuron_params_array;
 }
 
-function get_default_neuron_params_details($conn){
+function get_default_neuron_params_details($conn, $neurons_default=NULL){
     $select_default_neuron_params_query = "SELECT 
                     Type.nickname, Type.excit_inhib,
                     Type.ranks, 
@@ -66,8 +66,11 @@ function get_default_neuron_params_details($conn){
     $column = 'Neuron Type, E/I, rank, Population Size, Izh C, Izh k, Izh Vr, Izh Vt, Izh a, Izh b, Izh Vpeak, Izh Vmin, Izh d, Refractory Period, CARLsim_default';
     if($_POST){
         $result_default_neuron_params_array = array();
-        if(array_keys($_POST)[0] != "selectall_neuron"){
+        if(array_keys($_POST)[0] == "selectall_neuron"){
+            $neurons = $neurons_default;
+        }else{
             $neurons =  explode(",", array_keys($_POST)[0]);
+        }
             $post_neuron = [];
             array_walk($neurons, 'neuron_alter', '');
             $select_default_neuron_params_query .= " WHERE Type.nickname in (";
@@ -78,9 +81,10 @@ function get_default_neuron_params_details($conn){
             }
             $select_default_neuron_params_query = substr($select_default_neuron_params_query, 0, -2);
             $select_default_neuron_params_query .= " ) ";
-        }
     }
-    $select_default_neuron_params_query .= " and izhmodels_single.preferred = 'Y'  ORDER BY Type.nickname ASC";
+    $select_default_neuron_params_query .= " AND status = 'active' AND v2p0 = 0 ";
+    $select_default_neuron_params_query .= " AND izhmodels_single.preferred = 'Y' ";
+    $select_default_neuron_params_query .= " ORDER BY Type.nickname ASC";
     //echo "get_neuron_params query is : ".$select_default_neuron_params_query;
     $rs = mysqli_query($conn,$select_default_neuron_params_query);
     $columns = explode(", ", $column);
@@ -109,6 +113,10 @@ function get_default_neuron_params_details($conn){
         array_push($result_default_neuron_params_array, $arrVal);
     }
     $missing_neurons = array_diff($neurons, $neurons_db);
+    /*echo "count of neurons: ";echo count($neurons);
+    echo "neurons: ";var_dump($neurons);
+    echo "neurons_db: ";var_dump($neurons_db);
+    echo "missing neurons: ";var_dump($missing_neurons);*/
     if(isset($missing_neurons) && count($missing_neurons) > 0){
         $result_default_neuron_params_array = update_neurons_withmissing($result_default_neuron_params_array, $defualt_neuron_calculations, $missing_neurons, $columns);
     }
