@@ -6,7 +6,7 @@ function create_neurons_params_query_string($neurons)
    /* select type.nickname, Type.excit_inhib,Type.ranks, (select sum(counts) from Counts where unique_ID = Type.id) as population, 
 izhmodels_single.C , izhmodels_single.k, 
 izhmodels_single.Vr, izhmodels_single.Vt, izhmodels_single.a, izhmodels_single.b, izhmodels_single.Vpeak, izhmodels_single.Vmin, 
-izhmodels_single.d from Type join izhmodels_single on izhmodels_single.unique_id = type.id 
+izhmodels_single.d from Type join izhmodels_single on izhmodels_single.unique_id = Type.id 
 where Type.nickname IN  ('CA1 Basket', 
 'CA1 Horizontal Basket', 
 'CA1 Basket CCK') and izhmodels_single.preferred = 'Y'
@@ -61,7 +61,7 @@ function get_default_neuron_params_details($conn, $neurons_default=NULL){
                     izhmodels_single.b, izhmodels_single.Vpeak, izhmodels_single.Vmin, 
                     izhmodels_single.d   
                     from Type 
-                    join izhmodels_single on izhmodels_single.unique_id = type.id ";
+                    join izhmodels_single on izhmodels_single.unique_id = Type.id ";
 
     $column = 'Neuron Type, E/I, rank, Population Size, Izh C, Izh k, Izh Vr, Izh Vt, Izh a, Izh b, Izh Vpeak, Izh Vmin, Izh d, Refractory Period, CARLsim_default';
     if($_POST){

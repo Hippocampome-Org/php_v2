@@ -145,6 +145,7 @@ function get_default_synaptome_details($conn_synaptome, $table_name = NULL, $syn
 
    // $column = "Source Subregion, Presynaptic Neuron Type, Target Subregion, Postsynaptic Neuron Type, g, tau_d, tau_r, tau_f, u, ";//Connection Probability, Synaptic Delay";
     $column = "Source Subregion, Presynaptic Neuron Type, Target Subregion, Postsynaptic Neuron Type, g, tau_d, tau_r, tau_f, u, Connection Probability, Synaptic Delay, CARLsim_default, ";
+    $column1 = "Source Subregion, Presynaptic Neuron Type, Pre Type Id, Target Subregion, Postsynaptic Neuron Type, Post Type Id, g, tau_d, tau_r, tau_f, u, Connection Probability, Synaptic Delay, CARLsim_default, ";
 
     $select_default_synaptome_query .= " means_g, means_tau_d, means_tau_r, means_tau_f, means_u, ";
 
@@ -158,7 +159,7 @@ function get_default_synaptome_details($conn_synaptome, $table_name = NULL, $syn
             $neurons =  explode(",", array_keys($_POST)[0]);
         }
         $select_default_synaptome_query .= " WHERE ";
-        $post_neuron = [];
+        $post_neuron = array();
         array_walk($neurons, 'neuron_alter', '');
         $result_default_synaptome_array = array();
  
@@ -177,13 +178,15 @@ function get_default_synaptome_details($conn_synaptome, $table_name = NULL, $syn
     //echo "get_connection_params query is : ".$select_default_synaptome_query;
     $rs = mysqli_query($conn_synaptome,$select_default_synaptome_query);
     $columns = explode(", ", $column);
+    $columns1 = explode(", ", $column1);
+   
    
     while($row = mysqli_fetch_row($rs))
     {	
         $arrVal = array();  
         $i=0;  
         list($connection_probability, $carlsim_default) = get_connection_probability($row, $synprocptotal_data, $type_details);
-        foreach($columns as $colVal){
+        foreach($columns1 as $colVal){
             if($colVal == 'Synaptic Delay'){
                 array_push($arrVal, 1);
             }elseif($colVal =='Connection Probability'){
@@ -192,7 +195,9 @@ function get_default_synaptome_details($conn_synaptome, $table_name = NULL, $syn
                 //array_push($arrVal, 'N');
                 array_push($arrVal, $carlsim_default); // To add carlsim_default which is N by default
             }else{
-                array_push($arrVal, $row[$i]);
+                if(in_array($i, array(0, 1, 3, 4, 6, 7, 8, 9, 10))){
+                    array_push($arrVal, $row[$i]);
+                }
             }
             $i++;
         }

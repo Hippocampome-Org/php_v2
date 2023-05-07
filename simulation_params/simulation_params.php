@@ -6,8 +6,7 @@ function get_synaptome_details($sub_synaptome, $sub, $conn_synaptome, $table_nam
     $subs = explode(", ", substr($sub, 0, -2));
     $sub_synaptomes = explode(", ", substr($sub_synaptome, 0, -2));
    // var_dump($sub_synaptomes);
-    $columns = array();
-    $columns = ['pre'];
+   $columns = array('pre');
     $select_synaptome_query = "SELECT pre, ";
     foreach($sub_synaptomes as $sub_synaptome){
         if($sub_synaptome == "mean"){
