@@ -73,7 +73,8 @@ function get_connection_probability($row, $synprocptotal_data, $type_details, $s
     $source_ei_vals = $target_ei_vals =array();
 
     $key = $source_id.",".$target_id;
-    if(isset($synprocptotal_data[$key]) && $synaptic == 'mean'){
+    //if(isset($synprocptotal_data[$key]) && $synaptic == 'mean'){
+    if(isset($synprocptotal_data[$key])){
         $connection_probability = $synprocptotal_data[$key]['cp_mean_total'];
         $carlsim_default = 'N';
     }
