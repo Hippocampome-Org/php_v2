@@ -28,6 +28,9 @@ function update_neurons_withmissing($result_default_neuron_params_array, $defual
         if($missing_neuron == 'EC LII Basket-Neurogliaform'){
             $missing_neuron = 'EC LII Basket Multipolar Interneuron';
         }
+        if($missing_neuron == 'CA1 Oriens-QuadA Projecting'){
+            $missing_neuron = 'CA1 Oriens-Bistratified Projecting';
+        }
         /*echo "Line 29 missing_neuron ----";
         var_dump($missing_neuron);*/
         if(isset($defualt_neuron_calculations[$missing_neuron])){

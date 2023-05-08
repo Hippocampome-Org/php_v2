@@ -1,20 +1,39 @@
 <?php
-function retrieve_subregions($result_array)
-{
-    $pathdir = "/hippocampome/php_v2/simulation_params/"; 
-    $return_value = "";
-    foreach($result_array as $key => $val_arr){
-        $class_name = strtolower($key)."_th_color";
-        $span_name = "countVal_".strtolower($key);
 
+function style_subregionsdynamically($result_array, $div_location){
+
+    if($div_location == 'left'){
+        $return_value = "<div style='width:25%;float:left;'>"; //left div which will have DG, CA2 and EC
+    } else if($div_location == 'right'){
+        $return_value = "<div style='width:70%;float:left;'>"; //right div which will have CA3, CA1 and EC
+    }
+        
+    foreach($result_array as $key => $val_arr){
         if(count($val_arr) == 0){
             continue;
         }
-        $return_value.="<table style='float:left;width:23%;'>";
+
+        if( ($div_location == 'left') && (in_array(trim($key), array('CA3', 'CA1', 'EC')))){ //To get only required list
+            continue;
+        }
+        else if( ($div_location == 'right') && (in_array($key, array('DG', 'CA2', 'Sub')))){
+            continue;
+        }
+        $class_name = strtolower($key)."_th_color";
+        $span_name = "countVal_".strtolower($key);
+
+        if( ($div_location == 'left') && (in_array(trim($key), array('DG', 'CA2', 'Sub')))){
+        //if(in_array(trim($key), array('DG', 'CA2', 'Sub'))){
+            $return_value.="<table style='float:left;width:100%;'>";
+        }
+        else if( ($div_location == 'right') && (in_array($key, array('CA3', 'CA1', 'EC')))){
+        //else if(in_array($key, array('CA3', 'CA1', 'EC'))){
+            $return_value.="<table style='float:left;width:33%;'>";
+        }
         $return_value.="<tr><th class='".$class_name."'>";
         $return_value.="<strong>".$key." (<span id='".$span_name."' name='".$span_name."'>0</span>/".count($val_arr).")</strong>";
         $return_value.="</th></tr>";
-        foreach($val_arr as $vals){//11 is like 2 to second row but to the right
+        foreach($val_arr as $vals){
             $td_name=strtolower($key)."_".$vals['id'];
             $return_value.="<tr><td id='".$td_name."' name='".$td_name."' style='font-size:11px' class='default-background' >"; //10 px is all in one line
             $return_value.="<input name='".$td_name."_checkbox' id='".$td_name."_checkbox' type='checkbox' value='".$vals['name']."' />";//To add checkbox
@@ -38,6 +57,19 @@ function retrieve_subregions($result_array)
         }
         $return_value.="</table>";
     }
+    $return_value .= "</div>";
+    return $return_value;
+}
+
+function retrieve_subregions($result_array)
+{
+    $pathdir = "/hippocampome/php_v2/simulation_params/";
+
+    $return_value = style_subregionsdynamically($result_array, 'left');
+    $return_value .= style_subregionsdynamically($result_array, 'right');
+    
+    $return_value .= "<div style='clear: both;'></div>";
+
     return $return_value;
 }
 

@@ -9,7 +9,7 @@ function get_default_neuron_calc_values(){
         'CA1 Interneuron Specific R-O'=>array('CA1 Interneuron Specific R-O', 'i', '5', '1703', '20.00', '1.00', '-55.00', '-40.00', '0.15', '8.00', '25.00', '-55.00', 200.00),
         'CA1 Interneuron Specific RO-O'=>array('CA1 Interneuron Specific RO-O', 'i', '5', '417', '20.00', '1.00', '-55.00', '-40.00', '0.15', '8.00', '25.00', '-55.00', 200.00),
         'CA1 LMR Projecting'=>array('CA1 LMR Projecting', 'i', '4', '1604', '20.00', '1.00', '-55.00', '-40.00', '0.15', '8.00', '25.00', '-55.00', 200.00),
-        'CA1_Oriens_Bistratified_Projecting'=>array('CA1_Oriens_Bistratified_Projecting', 'i', '5', '465', '20.00', '1.00', '-55.00', '-40.00', '0.15', '8.00', '25.00', '-55.00', 200.00),
+        'CA1 Oriens-Bistratified Projecting'=>array('CA1 Oriens-Bistratified Projecting', 'i', '5', '465', '20.00', '1.00', '-55.00', '-40.00', '0.15', '8.00', '25.00', '-55.00', 200.00),
         'CA1 Schaffer Collateral-Receiving R-Targeting'=>array('CA1 Schaffer Collateral-Receiving R-Targeting', 'i', '5', '204', '20.00', '1.00', '-55.00', '-40.00', '0.15', '8.00', '25.00', '-55.00', 200.00),
         'CA1 Hippocampo-subicular Projecting ENK+'=>array('CA1 Hippocampo-subicular Projecting ENK+', 'i', '5', '287', '20.00', '1.00', '-55.00', '-40.00', '0.15', '8.00', '25.00', '-55.00', 200.00),
         'CA3 Basket CCK' => array('CA3 Basket CCK', 'i', '3', '408', '135.00', '0.58', '-59.00', '-39.40', '0.01', '-1.24', '18.27', '-42.77', 54.00), 
