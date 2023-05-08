@@ -32,36 +32,51 @@ function clear_radiobuttons(){
    });
 }
 
+function default_radiobuttons(){
+   $('#synaptic_options_div input:radio').each(function() {
+      if(this.id == 'mean'){
+         this.checked = 'TRUE';
+      }else{
+         this.checked = '';
+      }
+   });
+   $('#neuron_types_div input:radio').each(function() {
+      if(this.id == 'v1_neurons'){
+         this.checked = 'TRUE';
+      }else{
+         this.checked = '';
+      }
+   });
+}
+
 $(document).ready(function(){
 
    $('#selectall_neuron').click(function(event) {
-        var $that = $(this);
-        $('#subregions_div input:checkbox').each(function() {
-           if(this.name=='unselectall_neuron'){
+      $('#subregions_div input:checkbox').each(function() {
+         if(this.name=='unselectall_neuron'){
             this.checked = '';
-           }else{
+         }else{
             this.checked = 'TRUE';
-           }
-        });
-        $('#synaptic_options_div input:radio').each(function() {
-           if(this.id == 'mean'){
-            this.checked = 'TRUE';
-           }else{
-            this.checked = '';
-           }  
-        });
-        $('#neuron_types_div input:radio').each(function() {
-           if(this.id == 'v1_neurons'){
-            this.checked = 'TRUE';
-           }else{
-            this.checked = '';
-           }         
+         }
       });
-    });
+      $('#synaptic_options_div input:radio').each(function() {
+         if(this.id == 'mean'){
+            this.checked = 'TRUE';
+         }else{
+            this.checked = '';
+         }
+      });
+      $('#neuron_types_div input:radio').each(function() {
+         if(this.id == 'v1_neurons'){
+            this.checked = 'TRUE';
+         }else{
+            this.checked = '';
+         }
+      });
+   });
 
    $('#unselectall_neuron').click(function(event) {
-        var $that = $(this);
-        $('#subregions_div input:checkbox').each(function() {
+      $('#subregions_div input:checkbox').each(function() {
          if(this.name=='unselectall_neuron'){
             if(this.checked =='TRUE'){
                this.checked =='';
@@ -77,14 +92,13 @@ $(document).ready(function(){
             clear_checkboxes();//To clear checkboxes in Sub regions result table
             clear_radiobuttons();
          }
-            
-        });
-        $('#synaptic_options_div input:radio').each(function() {
-            this.checked = '';
-        });
-        $('#neuron_types_div input:radio').each(function() {
-            this.checked = '';
-        });
+      });
+      $('#synaptic_options_div input:radio').each(function() {
+         this.checked = '';
+      });
+      $('#neuron_types_div input:radio').each(function() {
+         this.checked = '';
+      });
     });
 });
 
@@ -168,6 +182,15 @@ $(document).on('change',function(){
       var id = $(this).attr('id');
       var check_name = $(this).attr('name');
       var check_val = $(this).val();
+
+      if(["dg", "ca3", "ca2", "ca1", "sub", "ec"].indexOf(check_name) !== -1){
+         if(document.getElementById('unselectall_neuron').checked){
+            document.getElementById('unselectall_neuron').checked = '';
+         }
+         if ($('input[type="radio"]:checked').length === 0 ){
+            default_radiobuttons();
+         }
+      }
       if(inputFieldsCheckboxes.includes(check_name)){
          formData.append(check_name, check_val);
       }
@@ -296,7 +319,7 @@ list($permission) = mysqli_fetch_row($rs);
             All neuron types &nbsp;&nbsp;</input>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="unselectall_neuron" name="unselectall_neuron" id="unselectall_neuron">
-            UnSelect All &nbsp;&nbsp;</input>
+            Unselect All &nbsp;&nbsp;</input>
             </p>
             <p>
             <input type="checkbox" style="background-color: rgb(0, 0, 153);" value="dg" name="dg" id="dg">
