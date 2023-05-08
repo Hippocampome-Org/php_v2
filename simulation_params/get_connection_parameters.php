@@ -72,8 +72,8 @@ function get_connection_probability($row, $synprocptotal_data, $type_details, $s
     $target_id_type = $type_details[$target_id]['excit_inhib'];
     $source_ei_vals = $target_ei_vals =array();
 
-    $key = $row[2].",".$row[5];
-    if(isset($synprocptotal_data[$key])){
+    $key = $source_id.",".$target_id;
+    if(isset($synprocptotal_data[$key]) && $synaptic == 'mean'){
         $connection_probability = $synprocptotal_data[$key]['cp_mean_total'];
         $carlsim_default = 'N';
     }
