@@ -67,7 +67,7 @@ function get_neurons($type_details, $subregions){
         $neurons_subregions[$subregion] = array();
     }
     foreach($type_details as $key => $type_detail) {
-        $type_detail['nickname'] = str_replace(' ', '_', $type_detail['nickname']); //Added for "select all"
+        //$type_detail['nickname'] = str_replace(' ', '_', $type_detail['nickname']); //Added for "select all" //Commented on May 7 2023
         array_push($neurons, $type_detail['nickname']);
         array_push($neurons_subregions[$type_detail['subregion']], $type_detail['nickname']);
     }

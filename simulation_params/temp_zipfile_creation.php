@@ -57,7 +57,9 @@ function generate_file_name($neu_vals, $excel_file_names){
     }
     return $excel_file_name;
 }
-//var_dump($_POST);exit;
+/*var_dump($_POST);
+echo "Neurons: ";var_dump($_POST['neurons']);
+echo "Synaptic: ";var_dump($_POST['synaptic']);*/
 if($_POST){
 
     //Before calling any connection data get the default values
@@ -65,26 +67,29 @@ if($_POST){
     $synprocptotal_data = get_synproCPtotal_data($conn);
     $type_details = get_type_details($conn);
     //Including this table name is for future as we know we might need details from different tables
-
-    if(array_keys($_POST)[0] == "selectall_neuron"){
+    $synaptic='mean';
+    if(isset($_POST['synaptic'])){$synaptic=$_POST['synaptic'];}
+    //var_dump($_POST['synaptic']);
+    //var_dump($_POST['neurons']);
+    if($_POST['neurons'] == "selectall_neuron"){
         $subregions = array('DG','CA3','CA1','EC','MEC','LEC','CA2','Sub');
         list($neurons, $neurons_subregions) = get_neurons($type_details, $subregions);
-        $result_default_synaptome_array['tm_cond16'] = get_default_synaptome_details($conn_synaptome, 'tm_cond16', $synprocptotal_data, $type_details, $neurons);
+        $result_default_synaptome_array['tm_cond16'] = get_default_synaptome_details($conn_synaptome, 'tm_cond16', $synprocptotal_data, $type_details, $synaptic, $neurons);
         $result_default_neuron_params_array = get_default_neuron_params_details($conn, $neurons);
 
     }else{
-        $neurons =  explode(",", array_keys($_POST)[0]);
-        $result_default_synaptome_array['tm_cond16'] = get_default_synaptome_details($conn_synaptome, 'tm_cond16', $synprocptotal_data, $type_details);
+        $neurons =  explode(",", $_POST['neurons']);
+        $result_default_synaptome_array['tm_cond16'] = get_default_synaptome_details($conn_synaptome, 'tm_cond16', $synprocptotal_data, $type_details, $synaptic, $neurons);
         $result_default_neuron_params_array = get_default_neuron_params_details($conn);
-
     }
-
+    //var_dump($neurons);
     array_push($excel_conn_param_data, $result_default_synaptome_array['tm_cond16']);
     array_push($excel_neuron_param_data, $result_default_neuron_params_array);
     //var_dump($excel_neuron_param_data);
 
     foreach($neurons as $neuron){
-        $neu_vals = explode('_', $neuron);
+        //$neu_vals = explode('_', $neuron); //Commented on May 7 2023
+        $neu_vals = explode(' ', $neuron);
         $neuron = implode(" ", $neu_vals);
         //To generate the file name dynamically
         $excel_file_name = generate_file_name($neu_vals, $excel_file_names);

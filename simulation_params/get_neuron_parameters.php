@@ -66,10 +66,10 @@ function get_default_neuron_params_details($conn, $neurons_default=NULL){
     $column = 'Neuron Type, E/I, rank, Population Size, Izh C, Izh k, Izh Vr, Izh Vt, Izh a, Izh b, Izh Vpeak, Izh Vmin, Izh d, Refractory Period, CARLsim_default';
     if($_POST){
         $result_default_neuron_params_array = array();
-        if(array_keys($_POST)[0] == "selectall_neuron"){
+        if($_POST['neurons']  == "selectall_neuron"){
             $neurons = $neurons_default;
         }else{
-            $neurons =  explode(",", array_keys($_POST)[0]);
+            $neurons =  explode(",", $_POST['neurons'] );
         }
             $post_neuron = [];
             array_walk($neurons, 'neuron_alter', '');
