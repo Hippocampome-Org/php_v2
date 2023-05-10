@@ -83,6 +83,7 @@ $(document).ready(function(){
       $('#neuron_types_div input:radio').each(function() {
          this.checked = '';
       });
+      refreshPage();
     });
 
     $('input[type=radio][name=v1_neurons]').change(function() {
@@ -154,9 +155,24 @@ function create_or_linkfile(){
 }
 function OptionsSelected(me)
 {
-    if(!me.checked){me.checked='';}
-    if(me.checked){me.checked=true;}
-
+   var id_val = me.id;
+   var sub_key = id_val.substring(0, id_val.indexOf("_"));
+   var span_name = "countVal_"+sub_key.toLowerCase();
+   
+   if(!me.checked){
+      if(document.getElementById(span_name)){
+         var span_details = Number(document.getElementById(span_name).textContent);
+         document.getElementById(span_name).innerHTML = span_details-1; //To update count
+      }
+      me.checked='';
+   }
+   if(me.checked){
+      if(document.getElementById(span_name)){
+         var span_details = Number(document.getElementById(span_name).textContent);
+         document.getElementById(span_name).innerHTML = span_details+1;
+      }
+      me.checked=true;
+   }
 }
 //$(document).on('change',function(){
 
@@ -219,6 +235,14 @@ function subregion_selected(){
             selected_arr = selected_arr[1];
             clear_checkboxes();//To clear checkboxes in Sub regions result table
             for (const key in selected_arr) {
+               if(selected_arr[key].length == 0){
+                  var span_name = "countVal_"+key.toLowerCase();
+                  if(document.getElementById(span_name)){
+                     var span_details = document.getElementById(span_name).textContent;
+                     document.getElementById(span_name).innerHTML = selected_arr[key].length;
+                     //Till Here
+                  }
+               }
                if(selected_arr[key].length > 0){
                   //To update the count next to the sub region
                   var span_name = "countVal_"+key.toLowerCase();
