@@ -1,5 +1,18 @@
 <?php
 
+function format_amount_with_no_e($amount) {
+    $amount = (string)$amount; // cast the number in string
+    $pos = stripos($amount, 'E-'); // get the E- position
+    $there_is_e = $pos !== false; // E- is found
+
+    if ($there_is_e) {
+        $decimals = intval(substr($amount, $pos + 2, strlen($amount))); // extract the decimals
+        $amount = number_format($amount, $decimals, '.', ','); // format the number without E-
+    }
+
+    return $amount;
+}
+
 //No need of this one for neurons
 function create_neurons_params_query_string($neurons)
 {
@@ -42,6 +55,9 @@ function update_neurons_withmissing($result_default_neuron_params_array, $defual
                 }elseif($colVal == 'CARLsim_default'){
                     array_push($arrVal, 'Y');
                 }else{
+                    if(in_array($colVal, array('Izh C', 'Izh k', 'Izh Vr', 'Izh Vt', 'Izh a', 'Izh b', 'Izh Vpeak', 'Izh Vmin', 'Izh d'))){
+                        $defualt_neuron_calculations[$missing_neuron][$i] = format_amount_with_no_e($defualt_neuron_calculations[$missing_neuron][$i]);
+                    }
                     array_push($arrVal, $defualt_neuron_calculations[$missing_neuron][$i]);
                     $i++;
                 }
@@ -58,7 +74,7 @@ function get_default_neuron_params_details($conn, $neurons_default=NULL){
     $select_default_neuron_params_query = "SELECT 
                     Type.nickname, Type.excit_inhib,
                     Type.ranks, 
-                    (select sum(counts) from Counts where unique_ID = Type.id) as population, 
+                    (select DISTINCT counts from Counts where unique_ID = Type.id) as population,
                     izhmodels_single.C , izhmodels_single.k, 
                     izhmodels_single.Vr, izhmodels_single.Vt, izhmodels_single.a, 
                     izhmodels_single.b, izhmodels_single.Vpeak, izhmodels_single.Vmin, 
@@ -108,6 +124,9 @@ function get_default_neuron_params_details($conn, $neurons_default=NULL){
             }else{
                 if($colVal == 'Neuron Type'){
                     array_push($neurons_db, $row[$i]);
+                }
+                if(in_array($colVal, array('Izh C', 'Izh k', 'Izh Vr', 'Izh Vt', 'Izh a', 'Izh b', 'Izh Vpeak', 'Izh Vmin', 'Izh d'))){
+                    $row[$i] = format_amount_with_no_e($row[$i]);
                 }
                 array_push($arrVal, $row[$i]);
                 $i++;

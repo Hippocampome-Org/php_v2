@@ -59,7 +59,7 @@ function generate_file_name($neu_vals, $excel_file_names){
 }
 /*var_dump($_POST);
 echo "Neurons: ";var_dump($_POST['neurons']);
-echo "Synaptic: ";var_dump($_POST['synaptic']);*/
+echo "Synaptic: ";if(isset($_POST['synaptic'])){var_dump($_POST['synaptic']);}exit;*/
 if($_POST){
 
     //Before calling any connection data get the default values

@@ -36,7 +36,7 @@ function style_subregionsdynamically($result_array, $div_location){
         foreach($val_arr as $vals){
             $td_name=strtolower($key)."_".$vals['id'];
             $return_value.="<tr><td id='".$td_name."' name='".$td_name."' style='font-size:11px' class='default-background' >"; //10 px is all in one line
-            $return_value.="<input name='".$td_name."_checkbox' id='".$td_name."_checkbox' type='checkbox' value='".$vals['name']."' />";//To add checkbox
+            $return_value.="<input name='".$td_name."_checkbox' id='".$td_name."_checkbox' onclick='return OptionsSelected(this)' type='checkbox' value='".$vals['name']."' />";//To add checkbox
             if($vals['excit_inhib'] == 'i'){
                 $return_value.="<span style='color:#800000'>";
             }
