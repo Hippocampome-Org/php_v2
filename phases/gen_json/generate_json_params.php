@@ -31,14 +31,14 @@
 	$json_template_file = $path_to_files."neuron_groups.json";
 	$neuron_groups = file($json_template_file);
 
-	$json_template_file = $path_to_files."neuron_groups_ordered.json";
+	/*$json_template_file = $path_to_files."neuron_groups_ordered.json";
 	$neuron_groups_ordered = file($json_template_file);
 
 	$json_template_file = $path_to_files."neuron_classes.json";
 	$neuron_classes = file($json_template_file);
 
 	$json_template_file = $path_to_files."neuron_classes_ordered.json";
-	$neuron_classes_ordered = file($json_template_file);
+	$neuron_classes_ordered = file($json_template_file);*/
 
 	$json_template_file = $path_to_files."json_new_line.json";
 	$json_new_line = file($json_template_file);
@@ -66,8 +66,8 @@
 	/* Maunally sorted neuron group
 	Note: the auto sorted one no longer used due to
 	needing the same ordering as on the morphology page */
-	$neuron_group_short = array("Granule", "Mossy", "DG Basket", "MOPP", "Total Molecular Layer", "CA3 Pyramidal", "CA3c Pyramidal", "CA3 Axo-Axonic", "CA3 Basket", "CA3 BC CCK+", "CA3 QuadD-LM", "CA2 Pyramidal", "CA1 Pyramidal", "CA1 Superficial Pyramidal", "CA1 Deep Pyramidal", "CA1 Axo-axonic", "CA1 Basket", "CA1 BC CCK+", "CA1 Bistratified", "CA1 C-Bistratified", "CA1 Ivy", "CA1 LMR Projecting", "CA1 NGF Projecting", "CA1 O-LM", "CA1 Recurrent O-LMR", "Schaffer Collateral-Assoc", "CA1 Hipp-SUB Proj ENK+", "CA1 Trilaminar", "SUB EC-Proj Pyramidal", "SUB CA1-Proj Pyramidal", "MEC LII Stellate", "MEC LII-III PC-Multiform", "LIII Pyramidal", "LV Deep Pyramidal");
-	$neuron_ids = array(1000, 1002, 1035, 1008, 1004, 2000, 2004, 2028, 2043, 2044, 2049, 3000, 4000, 4098, 4099, 4036, 4078, 4079, 4080, 4181, 4081, 4004, 4011, 4069, 4089, 4015, 4041, 4035, 5001, 5005, 6003, 6008, 6017, 6021);
+	$neuron_group_short = array("Granule", "Mossy", "DG Basket", "MOPP", "Total Molecular Layer", "CA3 Pyramidal", "CA3c Pyramidal", "CA3 Axo-Axonic", "CA3 Basket", "CA3 BC CCK+", "CA3 QuadD-LM", "CA2 Pyramidal", "CA1 Pyramidal", "CA1 Superficial Pyramidal", "CA1 Deep Pyramidal", "CA1 Axo-axonic", "CA1 Basket", "CA1 BC CCK+", "CA1 Horizontal Basket CCK+", "CA1 Bistratified", "CA1 C-Bistratified", "CA1 Oriens-QuadA Projecting", "CA1 Ivy", "CA1 LMR Projecting", "CA1 Neurogliaform", "CA1 NGF Projecting", "CA1 O-LM", "CA1 Recurrent O-LMR", "Schaffer Collateral-Assoc", "CA1 Hipp-SUB Proj ENK+", "CA1 Trilaminar", "SUB EC-Proj Pyramidal", "SUB CA1-Proj Pyramidal", "MEC LII Stellate", "MEC LII-III PC-Multiform", "MEC LII Oblique Pyramidal", "LIII Pyramidal", "LV Deep Pyramidal");
+	$neuron_ids = array(1000, 1002, 1035, 1008, 1004, 2000, 2004, 2028, 2043, 2044, 2049, 3000, 4000, 4098, 4099, 4036, 4078, 4079, 4139, 4080, 4181, 4168, 4081, 4004, 4012, 4011, 4069, 4146, 4015, 4041, 4035, 5001, 5005, 6003, 6008, 6019, 6017, 6021);
 	$checkbox_group = array("species_check1","species_check2","age_check1","age_check2","age_check3","sex_check1","sex_check2","sex_check3","method_check1","method_check2","method_check3","method_check4","method_check5","method_check6","behavior_check1","behavior_check2","behavior_check3","behavior_check4","behavior_check5","behavior_check6","behavior_check7","behavior_check8");
 	$checkbox_values = array("rats","mice","adult","young adult","age not reported","male","female","unknown","sharp pipette","whole-cell patch clamp","juxtacellular","optotagging","silicon probe","tetrode","freely moving","head-fixed awake","sleep","urethane","urethane plus supplemental doses of ketamine and xylazine","ketamine and xylazine","ketamine, xylazine, and acepromazine","head fixed running");
 	function value2cbox($value, $checkbox_values, $checkbox_group) {
