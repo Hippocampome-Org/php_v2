@@ -5,6 +5,8 @@ In MySQL Workbench:
 netlist_parcels_create_table.sql
 2. run with "run sql script":
 netlist_parcels.sql
+Alternatively run in a command prompt:
+mysql -h localhost -u <username> -p <database> < netlist_parcels.sql
 
 For ADL and SD:
 3. open and run:
