@@ -14,7 +14,7 @@
 
 	include ("../../permission_check.php"); // must be logged in
 
-	$path_to_files = "/var/www/html/php/synap_prob/gen_json/";
+	$path_to_files = "/var/www/html/php_v2_dev/synap_prob/gen_json/";
 	$csv_output = '';
 	$write_csv_output = array();
 	$parcel_csv_output = array();

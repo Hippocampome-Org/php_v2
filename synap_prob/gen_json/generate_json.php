@@ -252,7 +252,13 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
 						$val = $row['val'];
 						$stdev = $row['stdev'];
 						if ($val != '' && $val != 0) {
-							$entry_output = $entry_output."<center><a href='property_page_synpro_pvals.php?id_neuron_source=".$neuron_ids[$i]."&id_neuron_target=".$neuron_ids[$j]."&color=blue&page=1&nm_page=ps' title='mean: ".toPrecision($val,4)."\\nstd: ".na_for_zero(toPrecision($stdev,4))."' target='_blank'>".toPrecision($val,4)."</a></center>";
+							if ($stdev=="N/A") {
+								$stdev_entry="N/A";
+							}
+							else {
+								$stdev_entry=na_for_zero(toPrecision($stdev,4));
+							}
+							$entry_output = $entry_output."<center><a href='property_page_synpro_pvals.php?id_neuron_source=".$neuron_ids[$i]."&id_neuron_target=".$neuron_ids[$j]."&color=blue&page=1&nm_page=ps' title='mean: ".toPrecision($val,4)."\\nstd: ".$stdev_entry."' target='_blank'>".toPrecision($val,4)."</a></center>";
 						}
 					}
 				} 
@@ -265,7 +271,13 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
 						$val = $row['val'];
 						$stdev = $row['stdev'];
 						if ($val != '' && $val != 0) {
-							$entry_output = $entry_output."<center><a href='property_page_synpro_pvals.php?id_neuron_source=".$neuron_ids[$i]."&id_neuron_target=".$neuron_ids[$j]."&color=blue&page=1&nm_page=noc' title='mean: ".toPrecision($val,3)."\\nstd: ".na_for_zero(toPrecision($stdev,3))."' target='_blank'>".toPrecision($val,3)."</a></center>";  
+							if ($stdev=="N/A") {
+								$stdev_entry="N/A";
+							}
+							else {
+								$stdev_entry=na_for_zero(toPrecision($stdev,3));
+							}
+							$entry_output = $entry_output."<center><a href='property_page_synpro_pvals.php?id_neuron_source=".$neuron_ids[$i]."&id_neuron_target=".$neuron_ids[$j]."&color=blue&page=1&nm_page=noc' title='mean: ".toPrecision($val,3)."\\nstd: ".$stdev_entry."' target='_blank'>".toPrecision($val,3)."</a></center>";  
 						}
 					}
 				} 	
@@ -278,7 +290,13 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
 						$val = $row['val'];
 						$stdev = $row['stdev'];
 						if ($val != '' && $val != 0) {
-							$entry_output = $entry_output."<center><a href='property_page_synpro_pvals.php?id_neuron_source=".$neuron_ids[$i]."&id_neuron_target=".$neuron_ids[$j]."&color=blue&page=1&nm_page=prosyn' title='mean: ".toPrecision($val,4)."\\nstd: ".na_for_zero(toPrecision($stdev,4))."' target='_blank'>".toPrecision($val,4)."</a></center>";            
+							if ($stdev=="N/A") {
+								$stdev_entry="N/A";
+							}
+							else {
+								$stdev_entry=na_for_zero(toPrecision($stdev,4));
+							}
+							$entry_output = $entry_output."<center><a href='property_page_synpro_pvals.php?id_neuron_source=".$neuron_ids[$i]."&id_neuron_target=".$neuron_ids[$j]."&color=blue&page=1&nm_page=prosyn' title='mean: ".toPrecision($val,4)."\\nstd: ".$stdev_entry."' target='_blank'>".toPrecision($val,4)."</a></center>";            
 						}
 					}
 				} 	
