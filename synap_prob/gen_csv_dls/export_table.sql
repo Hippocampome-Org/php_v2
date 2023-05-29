@@ -1,0 +1,1 @@
+SET STATEMENT max_statement_time=0 FOR SELECT * FROM hippocampome_v2b.sp_values INTO OUTFILE '/var/tmp/SynproExports//sp_values.csv' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"' LINES TERMINATED BY '\n';

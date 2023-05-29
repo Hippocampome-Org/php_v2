@@ -19,3 +19,9 @@ adl_values.csv
 NPS, NOC, and SP, the _values.sql for them can be
 directly run and results from that are exported to
 csv files.
+These files create database views.
+The views can be exported into csv files with export_table.sh.
+Run in command prompt:
+./export_table.sh <username> <password> <database> <view_name>
+This will export the data to /var/tmp/SynproExports/
+

@@ -1,3 +1,4 @@
+CREATE VIEW noc_values AS
 SELECT 
     tr1.type_name_new AS source_name,
     tr1.type_id AS source_id,
