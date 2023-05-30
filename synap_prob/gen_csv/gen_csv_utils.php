@@ -18,7 +18,7 @@
 			if ($refID==$frag_id_temp && $found==false) {
 				$frag_id=$fragments[$i][0];
 				$found=true;
-				echo "found";
+				//echo "found";
 			}
 			//echo "r:".$refID." f:".$frag_id_temp."|";
 		}

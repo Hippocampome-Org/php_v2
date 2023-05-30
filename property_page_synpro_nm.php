@@ -83,7 +83,8 @@ function insert_temporary($table, $id_fragment, $id_original, $quote, $authors, 
 	if ($citation_count == NULL)
 		$citation_count = -1;
 	////set_magic_quotes_runtime(0);	
-		if (get_magic_quotes_gpc()) {
+		//if (get_magic_quotes_gpc()) {
+	if (true) {
         	$publication = stripslashes($publication);  
         	$quotes = stripslashes($quotes);   
 	$authors = stripslashes($authors);  
@@ -758,7 +759,7 @@ function show_only_authors(link, start1, stop1)
 				{
 					$evidence_id[$i] = $evidencepropertyyperel -> getEvidence_id_array($i);
 				
-					// Retrieve Fragment_id frmo EvidenceFragmentRel by using Evidence_id
+					// Retrieve Fragment_id from EvidenceFragmentRel by using Evidence_id
 					$evidencefragmentrel -> retrive_fragment_id($evidence_id[$i]);
 					
 					$n_fragment_id = $evidencefragmentrel -> getN_fragment_id();
@@ -1320,7 +1321,8 @@ function show_only_authors(link, start1, stop1)
 							$subquery=$subquery."type like '".$property_array[$index]."' or ";
 						}
 					}	
-					$subquery=substr($subquery,0,count($subquery)-4);
+					//echo "subquery ".$subquery." count ".count($subquery)."<br>";
+					//$subquery=substr($subquery,0,count($subquery)-4);
 					$subquery=$subquery.")";
 					// Retrive evidences stored in temporary table
 					$subquery = "and ( type like 'Axons' )";

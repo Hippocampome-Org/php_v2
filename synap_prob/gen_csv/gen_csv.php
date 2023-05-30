@@ -29,51 +29,35 @@ Date:   2020
 
 	echo "<br><hr><center><h2><a href='gen_csv.php' style='color:black;text-decoration:none'>CSV Generation Page</a></h2>Note: this page's operations require read and write access to a directory specified<br>in its source code. If that is not availible online this should be run offline to complete its operations.</center><br><hr>";
 
-	echo "<h3><center>Choose CSV file to create:</center></h3>";
+	echo "<h3><center>Click to generate csv files:</center></h3>";
 
-	echo "<center><button onclick=\"window.location.href = '?page=nbyk';\" class='button'>N by K</button>&nbsp;&nbsp;&nbsp;&nbsp;<button onclick=\"window.location.href = '?page=nbyn';\" class='button'>N by N</button></center><br><hr>";
+	echo "<center><button onclick=\"window.location.href = '?page=allcsvs';\" class='button'>Generate Evidence CSV Files</button></center><br><hr>";
 
 	// write csv file
 	$page=$_REQUEST['page'];
-	if ($page=='nbyk') {
-		// import parameters for this software
-		//include ("gen_nbyk_params.php");
-		//include ("gen_nbyk_utils.php");
+	if ($page=='allcsvs') {
+		$csv_output_file1 = $path_to_files."evi_pro_type_rel_nbyk.csv";
+		$output_file1 = fopen($csv_output_file1, 'w') or die("Can't open file.");
+		$csv_output_file2 = $path_to_files."evi_pro_type_rel_nbym.csv";
+		$output_file2 = fopen($csv_output_file2, 'w') or die("Can't open file.");
 
-		$csv_output_file = $path_to_files."evi_prop_type_rel_results.csv";
-		$output_file = fopen($csv_output_file, 'w') or die("Can't open file.");
-
-		$sql = "SELECT distinct unique_ID, neurite, reference_ID FROM hippodevome.neurite_quantified;";
+		$sql = "SELECT distinct unique_ID, neurite, reference_ID FROM neurite_quantified;";
 		$result = $conn->query($sql);
-		$id = 0;
-		fwrite($output_file, "id,neuron_id,neurite_id,reference_id,frag_id,evi_id\n");
+		fwrite($output_file1, "evidence_ID,neurite_ID,type_ID,original_id,fragment_id,Article_id,priority,conflict_note,unvetted,linking_quote,interpretation_notes,property_type_explanation,pc_flag,soma_pcl_flag,ax_de_pcl_flag,perisomatic_targeting_flag,supplemental_pmids\n");
 		if ($result->num_rows > 0) { 
 			while($row = $result->fetch_assoc()) {
-				//if ($id < 5){
 				$neuron_id = $row['unique_ID'];
 				$neurite_id = neurite_to_neuriteID($prop_parcel_rel, $row['neurite']);
 				$reference_id = $row['reference_ID'];
 				$frag_id = refID_to_fragID($fragments, $reference_id);
 				$evi_id = fragID_to_eviID($evidence, $frag_id);
-				fwrite($output_file, $id.",".$neuron_id.",".$neurite_id.",".$reference_id.",".$frag_id.",".$evi_id."\n");
-				//echo $id.", ".$neuron_id.", ".$row['neurite'].", ".$reference_id.", ".$frag_id.", ".$evi_id."<br>";
-				//}
-				$id++;
+				fwrite($output_file1, "$evi_id,$neurite_id,$neuron_id,$reference_id,$frag_id,0,0,NULL,0,NULL,NULL,NULL,0,0,0,0,NULL\n");
 			}
-		}	
+		}
 
-		fclose($output_file);
-
-		echo "<br><center>$csv_output_file<br>file successfully written</center>";
-	}	
-	else if ($page=='nbyn') {
-		$csv_output_file = $path_to_files."evi_source_target_rel_results.csv";
-		$output_file = fopen($csv_output_file, 'w') or die("Can't open file.");
-
-		$sql = "SELECT source_id, target_id, refIDs FROM hippodevome.number_of_contacts where refIDs!='';";
+		$sql = "SELECT source_id, target_id, refIDs FROM number_of_contacts where refIDs!='';";
 		$result = $conn->query($sql);
-		$id = 0;
-		fwrite($output_file, "id,source_id,target_id,reference_id,frag_id,evi_id\n");
+		fwrite($output_file2, "evidence_ID,property_ID,source_id,target_id,original_id,fragment_id,Article_id,priority,conflict_note,unvetted,linking_quote,interpretation_notes,property_type_explanation,pc_flag,soma_pcl_flag,ax_de_pcl_flag,perisomatic_targeting_flag,supplemental_pmids\n");
 		if ($result->num_rows > 0) { 
 			while($row = $result->fetch_assoc()) {
 				$refIDs=explode(";", $row['refIDs']);
@@ -83,18 +67,15 @@ Date:   2020
 					$refID=str_replace(' ', '', $refID); # remove whitespace
 					$frag_id = refID_to_fragID($fragments, $refID);
 					$evi_id = fragID_to_eviID($evidence, $frag_id);
-					#if ($refID!=''&&$refID!='NooverlapinSP') {
 					if ($refID!=''&&$evi_id!='') {
-						fwrite($output_file, $id.",".$source_id.",".$target_id.",".$refID.",".$frag_id.",".$evi_id."\n");
-						//echo $source_id.",".$target_id.",".$refID.",".$frag_id.",".$evi_id."<br>";
-						$id++;
+						fwrite($output_file2, "$evi_id,NULL,$source_id,$target_id,$refID,$frag_id,0,0,NULL,0,NULL,NULL,NULL,0,0,0,0,NULL\n");
 					}
 				}
 			}
 		}	
 
-		fclose($output_file);		
+		fclose($output_file1); fclose($output_file2);
 
-		echo "<br><center>$csv_output_file<br>file successfully written</center>";
+		echo "<br><center>$csv_output_file1<br>and<br>$csv_output_file2<br>files successfully written</center>";
 	}
 ?>

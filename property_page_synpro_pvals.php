@@ -232,27 +232,32 @@ $post_name=$type_target->getName();
 	$cell_height='30px';
 	$cell_border='2px solid #282d7b';
 	$parcel_group_match=null;
-	for($as_i=0;$as_i<count($find_parcel_group_id);$as_i++) {
-		//if ($target_id==$find_parcel_group_id[$as_i]) {
-		if ($source_id==$find_parcel_group_id[$as_i]) {
-			$parcel_group_match=$as_i;
-		}
+
+	$pair_subregion = "";
+	$query = "
+	SELECT distinct subregion 
+	FROM SynproCP 
+	WHERE source_id=$source_id and target_id=$target_id;";
+	$rs = mysqli_query($GLOBALS['conn'],$query);
+	while(list($subregion) = mysqli_fetch_row($rs)) {
+		$pair_subregion=$subregion;
 	}
-	if ($find_parcel_group_name[$parcel_group_match]=='DG') {
+
+	if ($pair_subregion=='DG') {
 			$parcel_group = $dg_group; $parcel_group_short = $dg_group_short;}
-	else if ($find_parcel_group_name[$parcel_group_match]=='CA3') {
+	else if ($pair_subregion=='CA3') {
 			$parcel_group = $ca3_group; $parcel_group_short = $ca3_group_short;}
-	else if ($find_parcel_group_name[$parcel_group_match]=='CA2') {
+	else if ($pair_subregion=='CA2') {
 			$parcel_group = $ca2_group; $parcel_group_short = $ca2_group_short;}		
-	else if ($find_parcel_group_name[$parcel_group_match]=='CA1') {
+	else if ($pair_subregion=='CA1') {
 			$parcel_group = $ca1_group; $parcel_group_short = $ca1_group_short;}
-	else if ($find_parcel_group_name[$parcel_group_match]=='SUB') {
+	else if ($pair_subregion=='SUB') {
 			$parcel_group = $sub_group; $parcel_group_short = $sub_group_short;}
-	else if ($find_parcel_group_name[$parcel_group_match]=='EC') {
+	else if ($pair_subregion=='EC') {
 			$parcel_group = $ec_group; $parcel_group_short = $ec_group_short;}
-	else if ($find_parcel_group_name[$parcel_group_match]=='MEC') {
+	else if ($pair_subregion=='MEC') {
 			$parcel_group = $mec_group; $parcel_group_short = $ec_group_short;}
-	else if ($find_parcel_group_name[$parcel_group_match]=='LEC') {
+	else if ($pair_subregion=='LEC') {
 			$parcel_group = $lec_group; $parcel_group_short = $ec_group_short;}
 
 	function query_value($source_id, $target_id, $parcel, $prop, $table, $nm_page, $totals_col, $totals_table) {
@@ -265,21 +270,13 @@ $post_name=$type_target->getName();
 		preg_match('/(\w+):(\w+):\w+/', $parcel, $parcel_matches);
 		$subregion_name = $parcel_matches[1];
 		$parcel_name = $parcel_matches[2];
-		/*$query = "
-		SELECT source_ID, source_Name, target_ID, target_Name, neurite, CAST(AVG(CAST($prop AS ".$decimal_places.")) AS ".$decimal_places.")
-		FROM $table
-		WHERE source_ID=$source_id AND target_ID=$target_id AND neurite='$parcel'
-		AND $prop!=''
-		GROUP BY source_ID, source_Name, target_ID, target_Name, neurite
-		LIMIT 500000;
-		";*/
 		$query = "
 		SELECT source_ID, target_ID, subregion, parcel, AVG($prop)
 		FROM $table
 		WHERE source_ID=$source_id AND target_ID=$target_id AND subregion='$subregion_name' AND parcel='$parcel_name'
 		LIMIT 500000;
 		";
-		#echo "<br>$query<br>";
+		//echo "<br>$query<br>";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		while(list($sid, $tid, $subregion, $parcel_section, $val) = mysqli_fetch_row($rs))
 		{	
@@ -359,8 +356,6 @@ $post_name=$type_target->getName();
 		array_push($stat_results, $mean);
 		array_push($stat_results, $std);
 		//cho $query."<br>".$mean."<br>".$std;
-		//array_push($stat_results, 0.5);
-		//array_push($stat_results, 0.5);
 
 		return $stat_results;
 	}
@@ -412,7 +407,6 @@ $post_name=$type_target->getName();
 			//echo "<br><br><br>".$par_grp_conv_adj;
 			echo "<td style='width:$cell_width;border:$cell_border;height:$cell_height;'><a href='property_page_synpro_nm.php?id1_neuron=".$source_id."&val1_property=".$par_grp_conv_adj."&color1=red&id2_neuron=".$target_id."&val2_property=".$par_grp_conv_adj."&color2=blue&connection_type=".$E_or_I_val."&known_conn_flag=1&axonic_basket_flag=0&page=1&nm_page=".$nm_page."' target='_blank' style='text-decoration:none' title='mean: $stat_mean\nstd: $stat_std'>";
 			if ($nm_page=='noc') {
-				//echo adjPrecision($all_value_result, $value_result, 3);
 				echo toPrecision($value_result, 3);
 				//echo $value_result;
 			}
@@ -429,11 +423,9 @@ $post_name=$type_target->getName();
 			//echo toPrecision($value_result, 4);
 			if ($nm_page=='noc') {
 				echo "<a href='#' title='mean: $stat_mean\nstd: $stat_std' style='text-decoration:none;color:black'>".toPrecision($value_result, 3)."</a>";
-				//echo toPrecision($value_result, 3);
 			}
 			else {
 				echo "<a href='#' title='mean: $stat_mean\nstd: $stat_std' style='text-decoration:none;color:black'>".toPrecision($value_result, 4)."</a>";
-				//echo toPrecision($value_result, 4);
 			}
 			echo "</td>";
 		}
@@ -443,7 +435,6 @@ $post_name=$type_target->getName();
 	</table>";
 	}
 	if ($nm_page=='ps') {
-		//report_parcel_values('Potential Number of Synapses', $source_id, $target_id, 'potential_synapses', 'potential_synapses', $cell_width, $cell_height, $cell_border, $parcel_group, $parcel_group_short,$color,$nm_page,$E_or_I_val);
 		report_parcel_values('Potential Number of Synapses', $source_id, $target_id, 'NPS_mean', 'SynproNoPS', $cell_width, $cell_height, $cell_border, $parcel_group, $parcel_group_short,$color,$nm_page,$E_or_I_val,'NPS_mean_total','SynproNPSTotal');
 	}
 	else if ($nm_page=='noc') {

@@ -14,11 +14,11 @@
 
 	include ("../../permission_check.php"); // must be logged in
 
-	$path_to_files = "/var/www/html/synapse_probabilities/php/synap_prob/gen_csv/";
+	$path_to_files = "/var/www/html/php_v2_dev/synap_prob/gen_csv/";
 
 	// create $property parcel relation array
 	$prop_parcel_rel = array();
-	$sql = "SELECT property_id, parcel, property_desc, property_neurite FROM SynProPropParcelRel;";
+	$sql = "SELECT property_id, parcel, property_desc, property_neurite FROM SynproPropParcelRel;";
 	$result = $conn->query($sql);
 	if ($result->num_rows > 0) { 
 		while($row = $result->fetch_assoc()) {
