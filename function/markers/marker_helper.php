@@ -4,8 +4,8 @@
 
 
 //$n_markers = 36;
-$n_markers = 113;
-$n_columns = $n_markers + 3;
+// $n_markers = 113;
+// $n_columns = $n_markers + 3;
 
 
 // Name in alphabetic order for MARKERS: ************************************
@@ -122,11 +122,16 @@ $name_markers = array(
 		"109"=>"VILIP",
 		"110"=>"Wfs1",
 		"111"=>"Y1",
-		"112"=>"Y2"
+		"112"=>"Y2",
+		"113"=>"DCX",
+		"114"=>"NeuN",
+		"115"=>"NeuroD",
+		"116"=>"CRH",
+		"117"=>"NK1R"
 );
 
-
-
+$n_markers = count($name_markers);
+$n_columns = $n_markers + 3;
 
 function remap_marker_names($old_name) {
 	$new_name = $old_name;

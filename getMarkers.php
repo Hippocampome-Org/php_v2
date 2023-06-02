@@ -157,29 +157,37 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
 {
 	// ARRAY Creation for hippocampome properties: +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-	$hippo_property_id = array("CB"=>NULL,"CR"=>NULL,"PV"=>NULL,"5HT_3"=>NULL,"CB1"=>NULL,"GABAa_alfa"=>NULL,"mGluR1a"=>NULL,"Mus2R"=>NULL,"Sub_P_Rec"=>NULL,"vGluT3"=>NULL,"CCK"=>NULL,"ENK"=>NULL,"NG"=>NULL,"NPY"=>NULL,"SOM"=>NULL,"VIP"=>NULL,"a-act2"=>NULL,"CoupTF_2"=>NULL,"nNOS"=>NULL,"RLN"=>NULL,"AChE"=>NULL,"AMIGO2"=>NULL,"AR-beta1"=>NULL,"AR-beta2"=>NULL,"Astn2"=>NULL,"BDNF"=>NULL,"Bok"=>NULL,"Caln"=>NULL,"CaM"=>NULL,"CaMKII_alpha"=>NULL,"CGRP"=>NULL,"ChAT"=>NULL,"Chrna2"=>NULL,"CRF"=>NULL,"Ctip2"=>NULL,"Cx36"=>NULL,"CXCR4"=>NULL,"Dcn"=>NULL,"Disc1"=>NULL,"DYN"=>NULL,"EAAT3"=>NULL,"ErbB4"=>NULL,"GABAa_alpha2"=>NULL,"GABAa_alpha3"=>NULL,"GABAa_alpha4"=>NULL,"GABAa_alpha5"=>NULL,"GABAa_alpha6"=>NULL,"GABAa_beta1"=>NULL,"GABAa_beta2"=>NULL,"GABAa_beta3"=>NULL,"GABAa_delta"=>NULL,"GABAa_gamma1"=>NULL,"GABAa_gamma2"=>NULL,"GABA-B1"=>NULL,"GAT_1"=>NULL,"GAT-3"=>NULL,"GluA1"=>NULL,"GluA2"=>NULL,"GluA2_3"=>NULL,"GluA3"=>NULL,"GluA4"=>NULL,"GlyT2"=>NULL,"Gpc3"=>NULL,"Grp"=>NULL,"Htr2c"=>NULL,"Id_2"=>NULL,"Kv3_1"=>NULL,"Loc432748"=>NULL,"Man1a"=>NULL,"Math-2"=>NULL,"mGluR1"=>NULL,"mGluR2"=>NULL,"mGluR2_3"=>NULL,"mGluR3"=>NULL,"mGluR4"=>NULL,"mGluR5"=>NULL,"mGluR5a"=>NULL,"mGluR7a"=>NULL,"mGluR8a"=>NULL,"MOR"=>NULL,"Mus1R"=>NULL,"Mus3R"=>NULL,"Mus4R"=>NULL,"Ndst4"=>NULL,"NECAB1"=>NULL,"Neuropilin2"=>NULL,"NKB"=>NULL,"Nov"=>NULL,"Nr3c2"=>NULL,"Nr4a1"=>NULL,"p-CREB"=>NULL,"PCP4"=>NULL,"PPE"=>NULL,"PPTA"=>NULL,"Prox1"=>NULL,"Prss12"=>NULL,"Prss23"=>NULL,"PSA-NCAM"=>NULL,"SATB1"=>NULL,"SATB2"=>NULL,"SCIP"=>NULL,"SPO"=>NULL,"SubP"=>NULL,"Tc1568100"=>NULL,"TH"=>NULL,"vAChT"=>NULL,"vGAT"=>NULL,"vGlut1"=>NULL,"vGluT2"=>NULL,"VILIP"=>NULL,"Wfs1"=>NULL,"Y1"=>NULL,"Y2"=>NULL);
+	$hippo_property_id = array("CB"=>NULL,"CR"=>NULL,"PV"=>NULL,"5HT_3"=>NULL,"CB1"=>NULL,"GABAa_alfa"=>NULL,"mGluR1a"=>NULL,"Mus2R"=>NULL,"Sub_P_Rec"=>NULL,"vGluT3"=>NULL,"CCK"=>NULL,"ENK"=>NULL,"NG"=>NULL,"NPY"=>NULL,"SOM"=>NULL,"VIP"=>NULL,"a-act2"=>NULL,"CoupTF_2"=>NULL,"nNOS"=>NULL,"RLN"=>NULL,"AChE"=>NULL,"AMIGO2"=>NULL,"AR-beta1"=>NULL,"AR-beta2"=>NULL,"Astn2"=>NULL,"BDNF"=>NULL,"Bok"=>NULL,"Caln"=>NULL,"CaM"=>NULL,"CaMKII_alpha"=>NULL,"CGRP"=>NULL,"ChAT"=>NULL,"Chrna2"=>NULL,"CRF"=>NULL,"Ctip2"=>NULL,"Cx36"=>NULL,"CXCR4"=>NULL,"Dcn"=>NULL,"Disc1"=>NULL,"DYN"=>NULL,"EAAT3"=>NULL,"ErbB4"=>NULL,"GABAa_alpha2"=>NULL,"GABAa_alpha3"=>NULL,"GABAa_alpha4"=>NULL,"GABAa_alpha5"=>NULL,"GABAa_alpha6"=>NULL,"GABAa_beta1"=>NULL,"GABAa_beta2"=>NULL,"GABAa_beta3"=>NULL,"GABAa_delta"=>NULL,"GABAa_gamma1"=>NULL,"GABAa_gamma2"=>NULL,"GABA-B1"=>NULL,"GAT_1"=>NULL,"GAT-3"=>NULL,"GluA1"=>NULL,"GluA2"=>NULL,"GluA2_3"=>NULL,"GluA3"=>NULL,"GluA4"=>NULL,"GlyT2"=>NULL,"Gpc3"=>NULL,"Grp"=>NULL,"Htr2c"=>NULL,"Id_2"=>NULL,"Kv3_1"=>NULL,"Loc432748"=>NULL,"Man1a"=>NULL,"Math-2"=>NULL,"mGluR1"=>NULL,"mGluR2"=>NULL,"mGluR2_3"=>NULL,"mGluR3"=>NULL,"mGluR4"=>NULL,"mGluR5"=>NULL,"mGluR5a"=>NULL,"mGluR7a"=>NULL,"mGluR8a"=>NULL,"MOR"=>NULL,"Mus1R"=>NULL,"Mus3R"=>NULL,"Mus4R"=>NULL,"Ndst4"=>NULL,"NECAB1"=>NULL,"Neuropilin2"=>NULL,"NKB"=>NULL,"Nov"=>NULL,"Nr3c2"=>NULL,"Nr4a1"=>NULL,"p-CREB"=>NULL,"PCP4"=>NULL,"PPE"=>NULL,"PPTA"=>NULL,"Prox1"=>NULL,"Prss12"=>NULL,"Prss23"=>NULL,"PSA-NCAM"=>NULL,"SATB1"=>NULL,"SATB2"=>NULL,"SCIP"=>NULL,"SPO"=>NULL,"SubP"=>NULL,"Tc1568100"=>NULL,"TH"=>NULL,"vAChT"=>NULL,"vGAT"=>NULL,"vGlut1"=>NULL,"vGluT2"=>NULL,"VILIP"=>NULL,"Wfs1"=>NULL,"Y1"=>NULL,"Y2"=>NULL,"DCX"=>NULL,"NeuN"=>NULL,"NeuroD"=>NULL,"CRH"=>NULL,"NK1R"=>NULL);
 
-	$hippo_property_id_arr = array("CB"=>NULL,"CR"=>NULL,"PV"=>NULL,"5HT_3"=>NULL,"CB1"=>NULL,"GABAa_alfa"=>NULL,"mGluR1a"=>NULL,"Mus2R"=>NULL,"Sub_P_Rec"=>NULL,"vGluT3"=>NULL,"CCK"=>NULL,"ENK"=>NULL,"NG"=>NULL,"NPY"=>NULL,"SOM"=>NULL,"VIP"=>NULL,"a-act2"=>NULL,"CoupTF_2"=>NULL,"nNOS"=>NULL,"RLN"=>NULL,"AChE"=>NULL,"AMIGO2"=>NULL,"AR-beta1"=>NULL,"AR-beta2"=>NULL,"Astn2"=>NULL,"BDNF"=>NULL,"Bok"=>NULL,"Caln"=>NULL,"CaM"=>NULL,"CaMKII_alpha"=>NULL,"CGRP"=>NULL,"ChAT"=>NULL,"Chrna2"=>NULL,"CRF"=>NULL,"Ctip2"=>NULL,"Cx36"=>NULL,"CXCR4"=>NULL,"Dcn"=>NULL,"Disc1"=>NULL,"DYN"=>NULL,"EAAT3"=>NULL,"ErbB4"=>NULL,"GABAa_alpha2"=>NULL,"GABAa_alpha3"=>NULL,"GABAa_alpha4"=>NULL,"GABAa_alpha5"=>NULL,"GABAa_alpha6"=>NULL,"GABAa_beta1"=>NULL,"GABAa_beta2"=>NULL,"GABAa_beta3"=>NULL,"GABAa_delta"=>NULL,"GABAa_gamma1"=>NULL,"GABAa_gamma2"=>NULL,"GABA-B1"=>NULL,"GAT_1"=>NULL,"GAT-3"=>NULL,"GluA1"=>NULL,"GluA2"=>NULL,"GluA2_3"=>NULL,"GluA3"=>NULL,"GluA4"=>NULL,"GlyT2"=>NULL,"Gpc3"=>NULL,"Grp"=>NULL,"Htr2c"=>NULL,"Id_2"=>NULL,"Kv3_1"=>NULL,"Loc432748"=>NULL,"Man1a"=>NULL,"Math-2"=>NULL,"mGluR1"=>NULL,"mGluR2"=>NULL,"mGluR2_3"=>NULL,"mGluR3"=>NULL,"mGluR4"=>NULL,"mGluR5"=>NULL,"mGluR5a"=>NULL,"mGluR7a"=>NULL,"mGluR8a"=>NULL,"MOR"=>NULL,"Mus1R"=>NULL,"Mus3R"=>NULL,"Mus4R"=>NULL,"Ndst4"=>NULL,"NECAB1"=>NULL,"Neuropilin2"=>NULL,"NKB"=>NULL,"Nov"=>NULL,"Nr3c2"=>NULL,"Nr4a1"=>NULL,"p-CREB"=>NULL,"PCP4"=>NULL,"PPE"=>NULL,"PPTA"=>NULL,"Prox1"=>NULL,"Prss12"=>NULL,"Prss23"=>NULL,"PSA-NCAM"=>NULL,"SATB1"=>NULL,"SATB2"=>NULL,"SCIP"=>NULL,"SPO"=>NULL,"SubP"=>NULL,"Tc1568100"=>NULL,"TH"=>NULL,"vAChT"=>NULL,"vGAT"=>NULL,"vGlut1"=>NULL,"vGluT2"=>NULL,"VILIP"=>NULL,"Wfs1"=>NULL,"Y1"=>NULL,"Y2"=>NULL);
+	$hippo_property_id_arr = $hippo_property_id;
+	// $hippo_property_id_arr = array("CB"=>NULL,"CR"=>NULL,"PV"=>NULL,"5HT_3"=>NULL,"CB1"=>NULL,"GABAa_alfa"=>NULL,"mGluR1a"=>NULL,"Mus2R"=>NULL,"Sub_P_Rec"=>NULL,"vGluT3"=>NULL,"CCK"=>NULL,"ENK"=>NULL,"NG"=>NULL,"NPY"=>NULL,"SOM"=>NULL,"VIP"=>NULL,"a-act2"=>NULL,"CoupTF_2"=>NULL,"nNOS"=>NULL,"RLN"=>NULL,"AChE"=>NULL,"AMIGO2"=>NULL,"AR-beta1"=>NULL,"AR-beta2"=>NULL,"Astn2"=>NULL,"BDNF"=>NULL,"Bok"=>NULL,"Caln"=>NULL,"CaM"=>NULL,"CaMKII_alpha"=>NULL,"CGRP"=>NULL,"ChAT"=>NULL,"Chrna2"=>NULL,"CRF"=>NULL,"Ctip2"=>NULL,"Cx36"=>NULL,"CXCR4"=>NULL,"Dcn"=>NULL,"Disc1"=>NULL,"DYN"=>NULL,"EAAT3"=>NULL,"ErbB4"=>NULL,"GABAa_alpha2"=>NULL,"GABAa_alpha3"=>NULL,"GABAa_alpha4"=>NULL,"GABAa_alpha5"=>NULL,"GABAa_alpha6"=>NULL,"GABAa_beta1"=>NULL,"GABAa_beta2"=>NULL,"GABAa_beta3"=>NULL,"GABAa_delta"=>NULL,"GABAa_gamma1"=>NULL,"GABAa_gamma2"=>NULL,"GABA-B1"=>NULL,"GAT_1"=>NULL,"GAT-3"=>NULL,"GluA1"=>NULL,"GluA2"=>NULL,"GluA2_3"=>NULL,"GluA3"=>NULL,"GluA4"=>NULL,"GlyT2"=>NULL,"Gpc3"=>NULL,"Grp"=>NULL,"Htr2c"=>NULL,"Id_2"=>NULL,"Kv3_1"=>NULL,"Loc432748"=>NULL,"Man1a"=>NULL,"Math-2"=>NULL,"mGluR1"=>NULL,"mGluR2"=>NULL,"mGluR2_3"=>NULL,"mGluR3"=>NULL,"mGluR4"=>NULL,"mGluR5"=>NULL,"mGluR5a"=>NULL,"mGluR7a"=>NULL,"mGluR8a"=>NULL,"MOR"=>NULL,"Mus1R"=>NULL,"Mus3R"=>NULL,"Mus4R"=>NULL,"Ndst4"=>NULL,"NECAB1"=>NULL,"Neuropilin2"=>NULL,"NKB"=>NULL,"Nov"=>NULL,"Nr3c2"=>NULL,"Nr4a1"=>NULL,"p-CREB"=>NULL,"PCP4"=>NULL,"PPE"=>NULL,"PPTA"=>NULL,"Prox1"=>NULL,"Prss12"=>NULL,"Prss23"=>NULL,"PSA-NCAM"=>NULL,"SATB1"=>NULL,"SATB2"=>NULL,"SCIP"=>NULL,"SPO"=>NULL,"SubP"=>NULL,"Tc1568100"=>NULL,"TH"=>NULL,"vAChT"=>NULL,"vGAT"=>NULL,"vGlut1"=>NULL,"vGluT2"=>NULL,"VILIP"=>NULL,"Wfs1"=>NULL,"Y1"=>NULL,"Y2"=>NULL);
 
+	$hippo_property = $hippo_property_id;
+	// $hippo_property = array("CB"=>NULL,"CR"=>NULL,"PV"=>NULL,"5HT_3"=>NULL,"CB1"=>NULL,"GABAa_alfa"=>NULL,"mGluR1a"=>NULL,"Mus2R"=>NULL,"Sub_P_Rec"=>NULL,"vGluT3"=>NULL,"CCK"=>NULL,"ENK"=>NULL,"NG"=>NULL,"NPY"=>NULL,"SOM"=>NULL,"VIP"=>NULL,"a-act2"=>NULL,"CoupTF_2"=>NULL,"nNOS"=>NULL,"RLN"=>NULL,"AChE"=>NULL,"AMIGO2"=>NULL,"AR-beta1"=>NULL,"AR-beta2"=>NULL,"Astn2"=>NULL,"BDNF"=>NULL,"Bok"=>NULL,"Caln"=>NULL,"CaM"=>NULL,"CaMKII_alpha"=>NULL,"CGRP"=>NULL,"ChAT"=>NULL,"Chrna2"=>NULL,"CRF"=>NULL,"Ctip2"=>NULL,"Cx36"=>NULL,"CXCR4"=>NULL,"Dcn"=>NULL,"Disc1"=>NULL,"DYN"=>NULL,"EAAT3"=>NULL,"ErbB4"=>NULL,"GABAa_alpha2"=>NULL,"GABAa_alpha3"=>NULL,"GABAa_alpha4"=>NULL,"GABAa_alpha5"=>NULL,"GABAa_alpha6"=>NULL,"GABAa_beta1"=>NULL,"GABAa_beta2"=>NULL,"GABAa_beta3"=>NULL,"GABAa_delta"=>NULL,"GABAa_gamma1"=>NULL,"GABAa_gamma2"=>NULL,"GABA-B1"=>NULL,"GAT_1"=>NULL,"GAT-3"=>NULL,"GluA1"=>NULL,"GluA2"=>NULL,"GluA2_3"=>NULL,"GluA3"=>NULL,"GluA4"=>NULL,"GlyT2"=>NULL,"Gpc3"=>NULL,"Grp"=>NULL,"Htr2c"=>NULL,"Id_2"=>NULL,"Kv3_1"=>NULL,"Loc432748"=>NULL,"Man1a"=>NULL,"Math-2"=>NULL,"mGluR1"=>NULL,"mGluR2"=>NULL,"mGluR2_3"=>NULL,"mGluR3"=>NULL,"mGluR4"=>NULL,"mGluR5"=>NULL,"mGluR5a"=>NULL,"mGluR7a"=>NULL,"mGluR8a"=>NULL,"MOR"=>NULL,"Mus1R"=>NULL,"Mus3R"=>NULL,"Mus4R"=>NULL,"Ndst4"=>NULL,"NECAB1"=>NULL,"Neuropilin2"=>NULL,"NKB"=>NULL,"Nov"=>NULL,"Nr3c2"=>NULL,"Nr4a1"=>NULL,"p-CREB"=>NULL,"PCP4"=>NULL,"PPE"=>NULL,"PPTA"=>NULL,"Prox1"=>NULL,"Prss12"=>NULL,"Prss23"=>NULL,"PSA-NCAM"=>NULL,"SATB1"=>NULL,"SATB2"=>NULL,"SCIP"=>NULL,"SPO"=>NULL,"SubP"=>NULL,"Tc1568100"=>NULL,"TH"=>NULL,"vAChT"=>NULL,"vGAT"=>NULL,"vGlut1"=>NULL,"vGluT2"=>NULL,"VILIP"=>NULL,"Wfs1"=>NULL,"Y1"=>NULL,"Y2"=>NULL);
+
+	$hippo = $hippo_property_id;
+	// $hippo = array("CB"=>NULL,"CR"=>NULL,"PV"=>NULL,"5HT_3"=>NULL,"CB1"=>NULL,"GABAa_alfa"=>NULL,"mGluR1a"=>NULL,"Mus2R"=>NULL,"Sub_P_Rec"=>NULL,"vGluT3"=>NULL,"CCK"=>NULL,"ENK"=>NULL,"NG"=>NULL,"NPY"=>NULL,"SOM"=>NULL,"VIP"=>NULL,"a-act2"=>NULL,"CoupTF_2"=>NULL,"nNOS"=>NULL,"RLN"=>NULL,"AChE"=>NULL,"AMIGO2"=>NULL,"AR-beta1"=>NULL,"AR-beta2"=>NULL,"Astn2"=>NULL,"BDNF"=>NULL,"Bok"=>NULL,"Caln"=>NULL,"CaM"=>NULL,"CaMKII_alpha"=>NULL,"CGRP"=>NULL,"ChAT"=>NULL,"Chrna2"=>NULL,"CRF"=>NULL,"Ctip2"=>NULL,"Cx36"=>NULL,"CXCR4"=>NULL,"Dcn"=>NULL,"Disc1"=>NULL,"DYN"=>NULL,"EAAT3"=>NULL,"ErbB4"=>NULL,"GABAa_alpha2"=>NULL,"GABAa_alpha3"=>NULL,"GABAa_alpha4"=>NULL,"GABAa_alpha5"=>NULL,"GABAa_alpha6"=>NULL,"GABAa_beta1"=>NULL,"GABAa_beta2"=>NULL,"GABAa_beta3"=>NULL,"GABAa_delta"=>NULL,"GABAa_gamma1"=>NULL,"GABAa_gamma2"=>NULL,"GABA-B1"=>NULL,"GAT_1"=>NULL,"GAT-3"=>NULL,"GluA1"=>NULL,"GluA2"=>NULL,"GluA2_3"=>NULL,"GluA3"=>NULL,"GluA4"=>NULL,"GlyT2"=>NULL,"Gpc3"=>NULL,"Grp"=>NULL,"Htr2c"=>NULL,"Id_2"=>NULL,"Kv3_1"=>NULL,"Loc432748"=>NULL,"Man1a"=>NULL,"Math-2"=>NULL,"mGluR1"=>NULL,"mGluR2"=>NULL,"mGluR2_3"=>NULL,"mGluR3"=>NULL,"mGluR4"=>NULL,"mGluR5"=>NULL,"mGluR5a"=>NULL,"mGluR7a"=>NULL,"mGluR8a"=>NULL,"MOR"=>NULL,"Mus1R"=>NULL,"Mus3R"=>NULL,"Mus4R"=>NULL,"Ndst4"=>NULL,"NECAB1"=>NULL,"Neuropilin2"=>NULL,"NKB"=>NULL,"Nov"=>NULL,"Nr3c2"=>NULL,"Nr4a1"=>NULL,"p-CREB"=>NULL,"PCP4"=>NULL,"PPE"=>NULL,"PPTA"=>NULL,"Prox1"=>NULL,"Prss12"=>NULL,"Prss23"=>NULL,"PSA-NCAM"=>NULL,"SATB1"=>NULL,"SATB2"=>NULL,"SCIP"=>NULL,"SPO"=>NULL,"SubP"=>NULL,"Tc1568100"=>NULL,"TH"=>NULL,"vAChT"=>NULL,"vGAT"=>NULL,"vGlut1"=>NULL,"vGluT2"=>NULL,"VILIP"=>NULL,"Wfs1"=>NULL,"Y1"=>NULL,"Y2"=>NULL);
+
+	$hippo_negative = $hippo_property_id;
+	// $hippo_negative = array("CB"=>NULL,"CR"=>NULL,"PV"=>NULL,"5HT_3"=>NULL,"CB1"=>NULL,"GABAa_alfa"=>NULL,"mGluR1a"=>NULL,"Mus2R"=>NULL,"Sub_P_Rec"=>NULL,"vGluT3"=>NULL,"CCK"=>NULL,"ENK"=>NULL,"NG"=>NULL,"NPY"=>NULL,"SOM"=>NULL,"VIP"=>NULL,"a-act2"=>NULL,"CoupTF_2"=>NULL,"nNOS"=>NULL,"RLN"=>NULL,"AChE"=>NULL,"AMIGO2"=>NULL,"AR-beta1"=>NULL,"AR-beta2"=>NULL,"Astn2"=>NULL,"BDNF"=>NULL,"Bok"=>NULL,"Caln"=>NULL,"CaM"=>NULL,"CaMKII_alpha"=>NULL,"CGRP"=>NULL,"ChAT"=>NULL,"Chrna2"=>NULL,"CRF"=>NULL,"Ctip2"=>NULL,"Cx36"=>NULL,"CXCR4"=>NULL,"Dcn"=>NULL,"Disc1"=>NULL,"DYN"=>NULL,"EAAT3"=>NULL,"ErbB4"=>NULL,"GABAa_alpha2"=>NULL,"GABAa_alpha3"=>NULL,"GABAa_alpha4"=>NULL,"GABAa_alpha5"=>NULL,"GABAa_alpha6"=>NULL,"GABAa_beta1"=>NULL,"GABAa_beta2"=>NULL,"GABAa_beta3"=>NULL,"GABAa_delta"=>NULL,"GABAa_gamma1"=>NULL,"GABAa_gamma2"=>NULL,"GABA-B1"=>NULL,"GAT_1"=>NULL,"GAT-3"=>NULL,"GluA1"=>NULL,"GluA2"=>NULL,"GluA2_3"=>NULL,"GluA3"=>NULL,"GluA4"=>NULL,"GlyT2"=>NULL,"Gpc3"=>NULL,"Grp"=>NULL,"Htr2c"=>NULL,"Id_2"=>NULL,"Kv3_1"=>NULL,"Loc432748"=>NULL,"Man1a"=>NULL,"Math-2"=>NULL,"mGluR1"=>NULL,"mGluR2"=>NULL,"mGluR2_3"=>NULL,"mGluR3"=>NULL,"mGluR4"=>NULL,"mGluR5"=>NULL,"mGluR5a"=>NULL,"mGluR7a"=>NULL,"mGluR8a"=>NULL,"MOR"=>NULL,"Mus1R"=>NULL,"Mus3R"=>NULL,"Mus4R"=>NULL,"Ndst4"=>NULL,"NECAB1"=>NULL,"Neuropilin2"=>NULL,"NKB"=>NULL,"Nov"=>NULL,"Nr3c2"=>NULL,"Nr4a1"=>NULL,"p-CREB"=>NULL,"PCP4"=>NULL,"PPE"=>NULL,"PPTA"=>NULL,"Prox1"=>NULL,"Prss12"=>NULL,"Prss23"=>NULL,"PSA-NCAM"=>NULL,"SATB1"=>NULL,"SATB2"=>NULL,"SCIP"=>NULL,"SPO"=>NULL,"SubP"=>NULL,"Tc1568100"=>NULL,"TH"=>NULL,"vAChT"=>NULL,"vGAT"=>NULL,"vGlut1"=>NULL,"vGluT2"=>NULL,"VILIP"=>NULL,"Wfs1"=>NULL,"Y1"=>NULL,"Y2"=>NULL);
+
+	$hippo_positive = $hippo_property_id;
+	// $hippo_positive = array("CB"=>NULL,"CR"=>NULL,"PV"=>NULL,"5HT_3"=>NULL,"CB1"=>NULL,"GABAa_alfa"=>NULL,"mGluR1a"=>NULL,"Mus2R"=>NULL,"Sub_P_Rec"=>NULL,"vGluT3"=>NULL,"CCK"=>NULL,"ENK"=>NULL,"NG"=>NULL,"NPY"=>NULL,"SOM"=>NULL,"VIP"=>NULL,"a-act2"=>NULL,"CoupTF_2"=>NULL,"nNOS"=>NULL,"RLN"=>NULL,"AChE"=>NULL,"AMIGO2"=>NULL,"AR-beta1"=>NULL,"AR-beta2"=>NULL,"Astn2"=>NULL,"BDNF"=>NULL,"Bok"=>NULL,"Caln"=>NULL,"CaM"=>NULL,"CaMKII_alpha"=>NULL,"CGRP"=>NULL,"ChAT"=>NULL,"Chrna2"=>NULL,"CRF"=>NULL,"Ctip2"=>NULL,"Cx36"=>NULL,"CXCR4"=>NULL,"Dcn"=>NULL,"Disc1"=>NULL,"DYN"=>NULL,"EAAT3"=>NULL,"ErbB4"=>NULL,"GABAa_alpha2"=>NULL,"GABAa_alpha3"=>NULL,"GABAa_alpha4"=>NULL,"GABAa_alpha5"=>NULL,"GABAa_alpha6"=>NULL,"GABAa_beta1"=>NULL,"GABAa_beta2"=>NULL,"GABAa_beta3"=>NULL,"GABAa_delta"=>NULL,"GABAa_gamma1"=>NULL,"GABAa_gamma2"=>NULL,"GABA-B1"=>NULL,"GAT_1"=>NULL,"GAT-3"=>NULL,"GluA1"=>NULL,"GluA2"=>NULL,"GluA2_3"=>NULL,"GluA3"=>NULL,"GluA4"=>NULL,"GlyT2"=>NULL,"Gpc3"=>NULL,"Grp"=>NULL,"Htr2c"=>NULL,"Id_2"=>NULL,"Kv3_1"=>NULL,"Loc432748"=>NULL,"Man1a"=>NULL,"Math-2"=>NULL,"mGluR1"=>NULL,"mGluR2"=>NULL,"mGluR2_3"=>NULL,"mGluR3"=>NULL,"mGluR4"=>NULL,"mGluR5"=>NULL,"mGluR5a"=>NULL,"mGluR7a"=>NULL,"mGluR8a"=>NULL,"MOR"=>NULL,"Mus1R"=>NULL,"Mus3R"=>NULL,"Mus4R"=>NULL,"Ndst4"=>NULL,"NECAB1"=>NULL,"Neuropilin2"=>NULL,"NKB"=>NULL,"Nov"=>NULL,"Nr3c2"=>NULL,"Nr4a1"=>NULL,"p-CREB"=>NULL,"PCP4"=>NULL,"PPE"=>NULL,"PPTA"=>NULL,"Prox1"=>NULL,"Prss12"=>NULL,"Prss23"=>NULL,"PSA-NCAM"=>NULL,"SATB1"=>NULL,"SATB2"=>NULL,"SCIP"=>NULL,"SPO"=>NULL,"SubP"=>NULL,"Tc1568100"=>NULL,"TH"=>NULL,"vAChT"=>NULL,"vGAT"=>NULL,"vGlut1"=>NULL,"vGluT2"=>NULL,"VILIP"=>NULL,"Wfs1"=>NULL,"Y1"=>NULL,"Y2"=>NULL);
+
+	$hippo_weak_positive = $hippo_property_id;
+	// $hippo_weak_positive = array("CB"=>NULL,"CR"=>NULL,"PV"=>NULL,"5HT_3"=>NULL,"CB1"=>NULL,"GABAa_alfa"=>NULL,"mGluR1a"=>NULL,"Mus2R"=>NULL,"Sub_P_Rec"=>NULL,"vGluT3"=>NULL,"CCK"=>NULL,"ENK"=>NULL,"NG"=>NULL,"NPY"=>NULL,"SOM"=>NULL,"VIP"=>NULL,"a-act2"=>NULL,"CoupTF_2"=>NULL,"nNOS"=>NULL,"RLN"=>NULL,"AChE"=>NULL,"AMIGO2"=>NULL,"AR-beta1"=>NULL,"AR-beta2"=>NULL,"Astn2"=>NULL,"BDNF"=>NULL,"Bok"=>NULL,"Caln"=>NULL,"CaM"=>NULL,"CaMKII_alpha"=>NULL,"CGRP"=>NULL,"ChAT"=>NULL,"Chrna2"=>NULL,"CRF"=>NULL,"Ctip2"=>NULL,"Cx36"=>NULL,"CXCR4"=>NULL,"Dcn"=>NULL,"Disc1"=>NULL,"DYN"=>NULL,"EAAT3"=>NULL,"ErbB4"=>NULL,"GABAa_alpha2"=>NULL,"GABAa_alpha3"=>NULL,"GABAa_alpha4"=>NULL,"GABAa_alpha5"=>NULL,"GABAa_alpha6"=>NULL,"GABAa_beta1"=>NULL,"GABAa_beta2"=>NULL,"GABAa_beta3"=>NULL,"GABAa_delta"=>NULL,"GABAa_gamma1"=>NULL,"GABAa_gamma2"=>NULL,"GABA-B1"=>NULL,"GAT_1"=>NULL,"GAT-3"=>NULL,"GluA1"=>NULL,"GluA2"=>NULL,"GluA2_3"=>NULL,"GluA3"=>NULL,"GluA4"=>NULL,"GlyT2"=>NULL,"Gpc3"=>NULL,"Grp"=>NULL,"Htr2c"=>NULL,"Id_2"=>NULL,"Kv3_1"=>NULL,"Loc432748"=>NULL,"Man1a"=>NULL,"Math-2"=>NULL,"mGluR1"=>NULL,"mGluR2"=>NULL,"mGluR2_3"=>NULL,"mGluR3"=>NULL,"mGluR4"=>NULL,"mGluR5"=>NULL,"mGluR5a"=>NULL,"mGluR7a"=>NULL,"mGluR8a"=>NULL,"MOR"=>NULL,"Mus1R"=>NULL,"Mus3R"=>NULL,"Mus4R"=>NULL,"Ndst4"=>NULL,"NECAB1"=>NULL,"Neuropilin2"=>NULL,"NKB"=>NULL,"Nov"=>NULL,"Nr3c2"=>NULL,"Nr4a1"=>NULL,"p-CREB"=>NULL,"PCP4"=>NULL,"PPE"=>NULL,"PPTA"=>NULL,"Prox1"=>NULL,"Prss12"=>NULL,"Prss23"=>NULL,"PSA-NCAM"=>NULL,"SATB1"=>NULL,"SATB2"=>NULL,"SCIP"=>NULL,"SPO"=>NULL,"SubP"=>NULL,"Tc1568100"=>NULL,"TH"=>NULL,"vAChT"=>NULL,"vGAT"=>NULL,"vGlut1"=>NULL,"vGluT2"=>NULL,"VILIP"=>NULL,"Wfs1"=>NULL,"Y1"=>NULL,"Y2"=>NULL);
+
+	$hippo_negative_inference = $hippo_property_id;
+	// $hippo_negative_inference = array("CB"=>NULL,"CR"=>NULL,"PV"=>NULL,"5HT_3"=>NULL,"CB1"=>NULL,"GABAa_alfa"=>NULL,"mGluR1a"=>NULL,"Mus2R"=>NULL,"Sub_P_Rec"=>NULL,"vGluT3"=>NULL,"CCK"=>NULL,"ENK"=>NULL,"NG"=>NULL,"NPY"=>NULL,"SOM"=>NULL,"VIP"=>NULL,"a-act2"=>NULL,"CoupTF_2"=>NULL,"nNOS"=>NULL,"RLN"=>NULL,"AChE"=>NULL,"AMIGO2"=>NULL,"AR-beta1"=>NULL,"AR-beta2"=>NULL,"Astn2"=>NULL,"BDNF"=>NULL,"Bok"=>NULL,"Caln"=>NULL,"CaM"=>NULL,"CaMKII_alpha"=>NULL,"CGRP"=>NULL,"ChAT"=>NULL,"Chrna2"=>NULL,"CRF"=>NULL,"Ctip2"=>NULL,"Cx36"=>NULL,"CXCR4"=>NULL,"Dcn"=>NULL,"Disc1"=>NULL,"DYN"=>NULL,"EAAT3"=>NULL,"ErbB4"=>NULL,"GABAa_alpha2"=>NULL,"GABAa_alpha3"=>NULL,"GABAa_alpha4"=>NULL,"GABAa_alpha5"=>NULL,"GABAa_alpha6"=>NULL,"GABAa_beta1"=>NULL,"GABAa_beta2"=>NULL,"GABAa_beta3"=>NULL,"GABAa_delta"=>NULL,"GABAa_gamma1"=>NULL,"GABAa_gamma2"=>NULL,"GABA-B1"=>NULL,"GAT_1"=>NULL,"GAT-3"=>NULL,"GluA1"=>NULL,"GluA2"=>NULL,"GluA2_3"=>NULL,"GluA3"=>NULL,"GluA4"=>NULL,"GlyT2"=>NULL,"Gpc3"=>NULL,"Grp"=>NULL,"Htr2c"=>NULL,"Id_2"=>NULL,"Kv3_1"=>NULL,"Loc432748"=>NULL,"Man1a"=>NULL,"Math-2"=>NULL,"mGluR1"=>NULL,"mGluR2"=>NULL,"mGluR2_3"=>NULL,"mGluR3"=>NULL,"mGluR4"=>NULL,"mGluR5"=>NULL,"mGluR5a"=>NULL,"mGluR7a"=>NULL,"mGluR8a"=>NULL,"MOR"=>NULL,"Mus1R"=>NULL,"Mus3R"=>NULL,"Mus4R"=>NULL,"Ndst4"=>NULL,"NECAB1"=>NULL,"Neuropilin2"=>NULL,"NKB"=>NULL,"Nov"=>NULL,"Nr3c2"=>NULL,"Nr4a1"=>NULL,"p-CREB"=>NULL,"PCP4"=>NULL,"PPE"=>NULL,"PPTA"=>NULL,"Prox1"=>NULL,"Prss12"=>NULL,"Prss23"=>NULL,"PSA-NCAM"=>NULL,"SATB1"=>NULL,"SATB2"=>NULL,"SCIP"=>NULL,"SPO"=>NULL,"SubP"=>NULL,"Tc1568100"=>NULL,"TH"=>NULL,"vAChT"=>NULL,"vGAT"=>NULL,"vGlut1"=>NULL,"vGluT2"=>NULL,"VILIP"=>NULL,"Wfs1"=>NULL,"Y1"=>NULL,"Y2"=>NULL);
 	
-
-	$hippo_property = array("CB"=>NULL,"CR"=>NULL,"PV"=>NULL,"5HT_3"=>NULL,"CB1"=>NULL,"GABAa_alfa"=>NULL,"mGluR1a"=>NULL,"Mus2R"=>NULL,"Sub_P_Rec"=>NULL,"vGluT3"=>NULL,"CCK"=>NULL,"ENK"=>NULL,"NG"=>NULL,"NPY"=>NULL,"SOM"=>NULL,"VIP"=>NULL,"a-act2"=>NULL,"CoupTF_2"=>NULL,"nNOS"=>NULL,"RLN"=>NULL,"AChE"=>NULL,"AMIGO2"=>NULL,"AR-beta1"=>NULL,"AR-beta2"=>NULL,"Astn2"=>NULL,"BDNF"=>NULL,"Bok"=>NULL,"Caln"=>NULL,"CaM"=>NULL,"CaMKII_alpha"=>NULL,"CGRP"=>NULL,"ChAT"=>NULL,"Chrna2"=>NULL,"CRF"=>NULL,"Ctip2"=>NULL,"Cx36"=>NULL,"CXCR4"=>NULL,"Dcn"=>NULL,"Disc1"=>NULL,"DYN"=>NULL,"EAAT3"=>NULL,"ErbB4"=>NULL,"GABAa_alpha2"=>NULL,"GABAa_alpha3"=>NULL,"GABAa_alpha4"=>NULL,"GABAa_alpha5"=>NULL,"GABAa_alpha6"=>NULL,"GABAa_beta1"=>NULL,"GABAa_beta2"=>NULL,"GABAa_beta3"=>NULL,"GABAa_delta"=>NULL,"GABAa_gamma1"=>NULL,"GABAa_gamma2"=>NULL,"GABA-B1"=>NULL,"GAT_1"=>NULL,"GAT-3"=>NULL,"GluA1"=>NULL,"GluA2"=>NULL,"GluA2_3"=>NULL,"GluA3"=>NULL,"GluA4"=>NULL,"GlyT2"=>NULL,"Gpc3"=>NULL,"Grp"=>NULL,"Htr2c"=>NULL,"Id_2"=>NULL,"Kv3_1"=>NULL,"Loc432748"=>NULL,"Man1a"=>NULL,"Math-2"=>NULL,"mGluR1"=>NULL,"mGluR2"=>NULL,"mGluR2_3"=>NULL,"mGluR3"=>NULL,"mGluR4"=>NULL,"mGluR5"=>NULL,"mGluR5a"=>NULL,"mGluR7a"=>NULL,"mGluR8a"=>NULL,"MOR"=>NULL,"Mus1R"=>NULL,"Mus3R"=>NULL,"Mus4R"=>NULL,"Ndst4"=>NULL,"NECAB1"=>NULL,"Neuropilin2"=>NULL,"NKB"=>NULL,"Nov"=>NULL,"Nr3c2"=>NULL,"Nr4a1"=>NULL,"p-CREB"=>NULL,"PCP4"=>NULL,"PPE"=>NULL,"PPTA"=>NULL,"Prox1"=>NULL,"Prss12"=>NULL,"Prss23"=>NULL,"PSA-NCAM"=>NULL,"SATB1"=>NULL,"SATB2"=>NULL,"SCIP"=>NULL,"SPO"=>NULL,"SubP"=>NULL,"Tc1568100"=>NULL,"TH"=>NULL,"vAChT"=>NULL,"vGAT"=>NULL,"vGlut1"=>NULL,"vGluT2"=>NULL,"VILIP"=>NULL,"Wfs1"=>NULL,"Y1"=>NULL,"Y2"=>NULL);
-
-	$hippo = array("CB"=>NULL,"CR"=>NULL,"PV"=>NULL,"5HT_3"=>NULL,"CB1"=>NULL,"GABAa_alfa"=>NULL,"mGluR1a"=>NULL,"Mus2R"=>NULL,"Sub_P_Rec"=>NULL,"vGluT3"=>NULL,"CCK"=>NULL,"ENK"=>NULL,"NG"=>NULL,"NPY"=>NULL,"SOM"=>NULL,"VIP"=>NULL,"a-act2"=>NULL,"CoupTF_2"=>NULL,"nNOS"=>NULL,"RLN"=>NULL,"AChE"=>NULL,"AMIGO2"=>NULL,"AR-beta1"=>NULL,"AR-beta2"=>NULL,"Astn2"=>NULL,"BDNF"=>NULL,"Bok"=>NULL,"Caln"=>NULL,"CaM"=>NULL,"CaMKII_alpha"=>NULL,"CGRP"=>NULL,"ChAT"=>NULL,"Chrna2"=>NULL,"CRF"=>NULL,"Ctip2"=>NULL,"Cx36"=>NULL,"CXCR4"=>NULL,"Dcn"=>NULL,"Disc1"=>NULL,"DYN"=>NULL,"EAAT3"=>NULL,"ErbB4"=>NULL,"GABAa_alpha2"=>NULL,"GABAa_alpha3"=>NULL,"GABAa_alpha4"=>NULL,"GABAa_alpha5"=>NULL,"GABAa_alpha6"=>NULL,"GABAa_beta1"=>NULL,"GABAa_beta2"=>NULL,"GABAa_beta3"=>NULL,"GABAa_delta"=>NULL,"GABAa_gamma1"=>NULL,"GABAa_gamma2"=>NULL,"GABA-B1"=>NULL,"GAT_1"=>NULL,"GAT-3"=>NULL,"GluA1"=>NULL,"GluA2"=>NULL,"GluA2_3"=>NULL,"GluA3"=>NULL,"GluA4"=>NULL,"GlyT2"=>NULL,"Gpc3"=>NULL,"Grp"=>NULL,"Htr2c"=>NULL,"Id_2"=>NULL,"Kv3_1"=>NULL,"Loc432748"=>NULL,"Man1a"=>NULL,"Math-2"=>NULL,"mGluR1"=>NULL,"mGluR2"=>NULL,"mGluR2_3"=>NULL,"mGluR3"=>NULL,"mGluR4"=>NULL,"mGluR5"=>NULL,"mGluR5a"=>NULL,"mGluR7a"=>NULL,"mGluR8a"=>NULL,"MOR"=>NULL,"Mus1R"=>NULL,"Mus3R"=>NULL,"Mus4R"=>NULL,"Ndst4"=>NULL,"NECAB1"=>NULL,"Neuropilin2"=>NULL,"NKB"=>NULL,"Nov"=>NULL,"Nr3c2"=>NULL,"Nr4a1"=>NULL,"p-CREB"=>NULL,"PCP4"=>NULL,"PPE"=>NULL,"PPTA"=>NULL,"Prox1"=>NULL,"Prss12"=>NULL,"Prss23"=>NULL,"PSA-NCAM"=>NULL,"SATB1"=>NULL,"SATB2"=>NULL,"SCIP"=>NULL,"SPO"=>NULL,"SubP"=>NULL,"Tc1568100"=>NULL,"TH"=>NULL,"vAChT"=>NULL,"vGAT"=>NULL,"vGlut1"=>NULL,"vGluT2"=>NULL,"VILIP"=>NULL,"Wfs1"=>NULL,"Y1"=>NULL,"Y2"=>NULL);
-
-	$hippo_negative = array("CB"=>NULL,"CR"=>NULL,"PV"=>NULL,"5HT_3"=>NULL,"CB1"=>NULL,"GABAa_alfa"=>NULL,"mGluR1a"=>NULL,"Mus2R"=>NULL,"Sub_P_Rec"=>NULL,"vGluT3"=>NULL,"CCK"=>NULL,"ENK"=>NULL,"NG"=>NULL,"NPY"=>NULL,"SOM"=>NULL,"VIP"=>NULL,"a-act2"=>NULL,"CoupTF_2"=>NULL,"nNOS"=>NULL,"RLN"=>NULL,"AChE"=>NULL,"AMIGO2"=>NULL,"AR-beta1"=>NULL,"AR-beta2"=>NULL,"Astn2"=>NULL,"BDNF"=>NULL,"Bok"=>NULL,"Caln"=>NULL,"CaM"=>NULL,"CaMKII_alpha"=>NULL,"CGRP"=>NULL,"ChAT"=>NULL,"Chrna2"=>NULL,"CRF"=>NULL,"Ctip2"=>NULL,"Cx36"=>NULL,"CXCR4"=>NULL,"Dcn"=>NULL,"Disc1"=>NULL,"DYN"=>NULL,"EAAT3"=>NULL,"ErbB4"=>NULL,"GABAa_alpha2"=>NULL,"GABAa_alpha3"=>NULL,"GABAa_alpha4"=>NULL,"GABAa_alpha5"=>NULL,"GABAa_alpha6"=>NULL,"GABAa_beta1"=>NULL,"GABAa_beta2"=>NULL,"GABAa_beta3"=>NULL,"GABAa_delta"=>NULL,"GABAa_gamma1"=>NULL,"GABAa_gamma2"=>NULL,"GABA-B1"=>NULL,"GAT_1"=>NULL,"GAT-3"=>NULL,"GluA1"=>NULL,"GluA2"=>NULL,"GluA2_3"=>NULL,"GluA3"=>NULL,"GluA4"=>NULL,"GlyT2"=>NULL,"Gpc3"=>NULL,"Grp"=>NULL,"Htr2c"=>NULL,"Id_2"=>NULL,"Kv3_1"=>NULL,"Loc432748"=>NULL,"Man1a"=>NULL,"Math-2"=>NULL,"mGluR1"=>NULL,"mGluR2"=>NULL,"mGluR2_3"=>NULL,"mGluR3"=>NULL,"mGluR4"=>NULL,"mGluR5"=>NULL,"mGluR5a"=>NULL,"mGluR7a"=>NULL,"mGluR8a"=>NULL,"MOR"=>NULL,"Mus1R"=>NULL,"Mus3R"=>NULL,"Mus4R"=>NULL,"Ndst4"=>NULL,"NECAB1"=>NULL,"Neuropilin2"=>NULL,"NKB"=>NULL,"Nov"=>NULL,"Nr3c2"=>NULL,"Nr4a1"=>NULL,"p-CREB"=>NULL,"PCP4"=>NULL,"PPE"=>NULL,"PPTA"=>NULL,"Prox1"=>NULL,"Prss12"=>NULL,"Prss23"=>NULL,"PSA-NCAM"=>NULL,"SATB1"=>NULL,"SATB2"=>NULL,"SCIP"=>NULL,"SPO"=>NULL,"SubP"=>NULL,"Tc1568100"=>NULL,"TH"=>NULL,"vAChT"=>NULL,"vGAT"=>NULL,"vGlut1"=>NULL,"vGluT2"=>NULL,"VILIP"=>NULL,"Wfs1"=>NULL,"Y1"=>NULL,"Y2"=>NULL);
-
-	$hippo_positive = array("CB"=>NULL,"CR"=>NULL,"PV"=>NULL,"5HT_3"=>NULL,"CB1"=>NULL,"GABAa_alfa"=>NULL,"mGluR1a"=>NULL,"Mus2R"=>NULL,"Sub_P_Rec"=>NULL,"vGluT3"=>NULL,"CCK"=>NULL,"ENK"=>NULL,"NG"=>NULL,"NPY"=>NULL,"SOM"=>NULL,"VIP"=>NULL,"a-act2"=>NULL,"CoupTF_2"=>NULL,"nNOS"=>NULL,"RLN"=>NULL,"AChE"=>NULL,"AMIGO2"=>NULL,"AR-beta1"=>NULL,"AR-beta2"=>NULL,"Astn2"=>NULL,"BDNF"=>NULL,"Bok"=>NULL,"Caln"=>NULL,"CaM"=>NULL,"CaMKII_alpha"=>NULL,"CGRP"=>NULL,"ChAT"=>NULL,"Chrna2"=>NULL,"CRF"=>NULL,"Ctip2"=>NULL,"Cx36"=>NULL,"CXCR4"=>NULL,"Dcn"=>NULL,"Disc1"=>NULL,"DYN"=>NULL,"EAAT3"=>NULL,"ErbB4"=>NULL,"GABAa_alpha2"=>NULL,"GABAa_alpha3"=>NULL,"GABAa_alpha4"=>NULL,"GABAa_alpha5"=>NULL,"GABAa_alpha6"=>NULL,"GABAa_beta1"=>NULL,"GABAa_beta2"=>NULL,"GABAa_beta3"=>NULL,"GABAa_delta"=>NULL,"GABAa_gamma1"=>NULL,"GABAa_gamma2"=>NULL,"GABA-B1"=>NULL,"GAT_1"=>NULL,"GAT-3"=>NULL,"GluA1"=>NULL,"GluA2"=>NULL,"GluA2_3"=>NULL,"GluA3"=>NULL,"GluA4"=>NULL,"GlyT2"=>NULL,"Gpc3"=>NULL,"Grp"=>NULL,"Htr2c"=>NULL,"Id_2"=>NULL,"Kv3_1"=>NULL,"Loc432748"=>NULL,"Man1a"=>NULL,"Math-2"=>NULL,"mGluR1"=>NULL,"mGluR2"=>NULL,"mGluR2_3"=>NULL,"mGluR3"=>NULL,"mGluR4"=>NULL,"mGluR5"=>NULL,"mGluR5a"=>NULL,"mGluR7a"=>NULL,"mGluR8a"=>NULL,"MOR"=>NULL,"Mus1R"=>NULL,"Mus3R"=>NULL,"Mus4R"=>NULL,"Ndst4"=>NULL,"NECAB1"=>NULL,"Neuropilin2"=>NULL,"NKB"=>NULL,"Nov"=>NULL,"Nr3c2"=>NULL,"Nr4a1"=>NULL,"p-CREB"=>NULL,"PCP4"=>NULL,"PPE"=>NULL,"PPTA"=>NULL,"Prox1"=>NULL,"Prss12"=>NULL,"Prss23"=>NULL,"PSA-NCAM"=>NULL,"SATB1"=>NULL,"SATB2"=>NULL,"SCIP"=>NULL,"SPO"=>NULL,"SubP"=>NULL,"Tc1568100"=>NULL,"TH"=>NULL,"vAChT"=>NULL,"vGAT"=>NULL,"vGlut1"=>NULL,"vGluT2"=>NULL,"VILIP"=>NULL,"Wfs1"=>NULL,"Y1"=>NULL,"Y2"=>NULL);
-
-	$hippo_weak_positive = array("CB"=>NULL,"CR"=>NULL,"PV"=>NULL,"5HT_3"=>NULL,"CB1"=>NULL,"GABAa_alfa"=>NULL,"mGluR1a"=>NULL,"Mus2R"=>NULL,"Sub_P_Rec"=>NULL,"vGluT3"=>NULL,"CCK"=>NULL,"ENK"=>NULL,"NG"=>NULL,"NPY"=>NULL,"SOM"=>NULL,"VIP"=>NULL,"a-act2"=>NULL,"CoupTF_2"=>NULL,"nNOS"=>NULL,"RLN"=>NULL,"AChE"=>NULL,"AMIGO2"=>NULL,"AR-beta1"=>NULL,"AR-beta2"=>NULL,"Astn2"=>NULL,"BDNF"=>NULL,"Bok"=>NULL,"Caln"=>NULL,"CaM"=>NULL,"CaMKII_alpha"=>NULL,"CGRP"=>NULL,"ChAT"=>NULL,"Chrna2"=>NULL,"CRF"=>NULL,"Ctip2"=>NULL,"Cx36"=>NULL,"CXCR4"=>NULL,"Dcn"=>NULL,"Disc1"=>NULL,"DYN"=>NULL,"EAAT3"=>NULL,"ErbB4"=>NULL,"GABAa_alpha2"=>NULL,"GABAa_alpha3"=>NULL,"GABAa_alpha4"=>NULL,"GABAa_alpha5"=>NULL,"GABAa_alpha6"=>NULL,"GABAa_beta1"=>NULL,"GABAa_beta2"=>NULL,"GABAa_beta3"=>NULL,"GABAa_delta"=>NULL,"GABAa_gamma1"=>NULL,"GABAa_gamma2"=>NULL,"GABA-B1"=>NULL,"GAT_1"=>NULL,"GAT-3"=>NULL,"GluA1"=>NULL,"GluA2"=>NULL,"GluA2_3"=>NULL,"GluA3"=>NULL,"GluA4"=>NULL,"GlyT2"=>NULL,"Gpc3"=>NULL,"Grp"=>NULL,"Htr2c"=>NULL,"Id_2"=>NULL,"Kv3_1"=>NULL,"Loc432748"=>NULL,"Man1a"=>NULL,"Math-2"=>NULL,"mGluR1"=>NULL,"mGluR2"=>NULL,"mGluR2_3"=>NULL,"mGluR3"=>NULL,"mGluR4"=>NULL,"mGluR5"=>NULL,"mGluR5a"=>NULL,"mGluR7a"=>NULL,"mGluR8a"=>NULL,"MOR"=>NULL,"Mus1R"=>NULL,"Mus3R"=>NULL,"Mus4R"=>NULL,"Ndst4"=>NULL,"NECAB1"=>NULL,"Neuropilin2"=>NULL,"NKB"=>NULL,"Nov"=>NULL,"Nr3c2"=>NULL,"Nr4a1"=>NULL,"p-CREB"=>NULL,"PCP4"=>NULL,"PPE"=>NULL,"PPTA"=>NULL,"Prox1"=>NULL,"Prss12"=>NULL,"Prss23"=>NULL,"PSA-NCAM"=>NULL,"SATB1"=>NULL,"SATB2"=>NULL,"SCIP"=>NULL,"SPO"=>NULL,"SubP"=>NULL,"Tc1568100"=>NULL,"TH"=>NULL,"vAChT"=>NULL,"vGAT"=>NULL,"vGlut1"=>NULL,"vGluT2"=>NULL,"VILIP"=>NULL,"Wfs1"=>NULL,"Y1"=>NULL,"Y2"=>NULL);
-
-	$hippo_negative_inference = array("CB"=>NULL,"CR"=>NULL,"PV"=>NULL,"5HT_3"=>NULL,"CB1"=>NULL,"GABAa_alfa"=>NULL,"mGluR1a"=>NULL,"Mus2R"=>NULL,"Sub_P_Rec"=>NULL,"vGluT3"=>NULL,"CCK"=>NULL,"ENK"=>NULL,"NG"=>NULL,"NPY"=>NULL,"SOM"=>NULL,"VIP"=>NULL,"a-act2"=>NULL,"CoupTF_2"=>NULL,"nNOS"=>NULL,"RLN"=>NULL,"AChE"=>NULL,"AMIGO2"=>NULL,"AR-beta1"=>NULL,"AR-beta2"=>NULL,"Astn2"=>NULL,"BDNF"=>NULL,"Bok"=>NULL,"Caln"=>NULL,"CaM"=>NULL,"CaMKII_alpha"=>NULL,"CGRP"=>NULL,"ChAT"=>NULL,"Chrna2"=>NULL,"CRF"=>NULL,"Ctip2"=>NULL,"Cx36"=>NULL,"CXCR4"=>NULL,"Dcn"=>NULL,"Disc1"=>NULL,"DYN"=>NULL,"EAAT3"=>NULL,"ErbB4"=>NULL,"GABAa_alpha2"=>NULL,"GABAa_alpha3"=>NULL,"GABAa_alpha4"=>NULL,"GABAa_alpha5"=>NULL,"GABAa_alpha6"=>NULL,"GABAa_beta1"=>NULL,"GABAa_beta2"=>NULL,"GABAa_beta3"=>NULL,"GABAa_delta"=>NULL,"GABAa_gamma1"=>NULL,"GABAa_gamma2"=>NULL,"GABA-B1"=>NULL,"GAT_1"=>NULL,"GAT-3"=>NULL,"GluA1"=>NULL,"GluA2"=>NULL,"GluA2_3"=>NULL,"GluA3"=>NULL,"GluA4"=>NULL,"GlyT2"=>NULL,"Gpc3"=>NULL,"Grp"=>NULL,"Htr2c"=>NULL,"Id_2"=>NULL,"Kv3_1"=>NULL,"Loc432748"=>NULL,"Man1a"=>NULL,"Math-2"=>NULL,"mGluR1"=>NULL,"mGluR2"=>NULL,"mGluR2_3"=>NULL,"mGluR3"=>NULL,"mGluR4"=>NULL,"mGluR5"=>NULL,"mGluR5a"=>NULL,"mGluR7a"=>NULL,"mGluR8a"=>NULL,"MOR"=>NULL,"Mus1R"=>NULL,"Mus3R"=>NULL,"Mus4R"=>NULL,"Ndst4"=>NULL,"NECAB1"=>NULL,"Neuropilin2"=>NULL,"NKB"=>NULL,"Nov"=>NULL,"Nr3c2"=>NULL,"Nr4a1"=>NULL,"p-CREB"=>NULL,"PCP4"=>NULL,"PPE"=>NULL,"PPTA"=>NULL,"Prox1"=>NULL,"Prss12"=>NULL,"Prss23"=>NULL,"PSA-NCAM"=>NULL,"SATB1"=>NULL,"SATB2"=>NULL,"SCIP"=>NULL,"SPO"=>NULL,"SubP"=>NULL,"Tc1568100"=>NULL,"TH"=>NULL,"vAChT"=>NULL,"vGAT"=>NULL,"vGlut1"=>NULL,"vGluT2"=>NULL,"VILIP"=>NULL,"Wfs1"=>NULL,"Y1"=>NULL,"Y2"=>NULL);
+	$hippo_positive_inference = $hippo_property_id;
+	// $hippo_positive_inference = array("CB"=>NULL,"CR"=>NULL,"PV"=>NULL,"5HT_3"=>NULL,"CB1"=>NULL,"GABAa_alfa"=>NULL,"mGluR1a"=>NULL,"Mus2R"=>NULL,"Sub_P_Rec"=>NULL,"vGluT3"=>NULL,"CCK"=>NULL,"ENK"=>NULL,"NG"=>NULL,"NPY"=>NULL,"SOM"=>NULL,"VIP"=>NULL,"a-act2"=>NULL,"CoupTF_2"=>NULL,"nNOS"=>NULL,"RLN"=>NULL,"AChE"=>NULL,"AMIGO2"=>NULL,"AR-beta1"=>NULL,"AR-beta2"=>NULL,"Astn2"=>NULL,"BDNF"=>NULL,"Bok"=>NULL,"Caln"=>NULL,"CaM"=>NULL,"CaMKII_alpha"=>NULL,"CGRP"=>NULL,"ChAT"=>NULL,"Chrna2"=>NULL,"CRF"=>NULL,"Ctip2"=>NULL,"Cx36"=>NULL,"CXCR4"=>NULL,"Dcn"=>NULL,"Disc1"=>NULL,"DYN"=>NULL,"EAAT3"=>NULL,"ErbB4"=>NULL,"GABAa_alpha2"=>NULL,"GABAa_alpha3"=>NULL,"GABAa_alpha4"=>NULL,"GABAa_alpha5"=>NULL,"GABAa_alpha6"=>NULL,"GABAa_beta1"=>NULL,"GABAa_beta2"=>NULL,"GABAa_beta3"=>NULL,"GABAa_delta"=>NULL,"GABAa_gamma1"=>NULL,"GABAa_gamma2"=>NULL,"GABA-B1"=>NULL,"GAT_1"=>NULL,"GAT-3"=>NULL,"GluA1"=>NULL,"GluA2"=>NULL,"GluA2_3"=>NULL,"GluA3"=>NULL,"GluA4"=>NULL,"GlyT2"=>NULL,"Gpc3"=>NULL,"Grp"=>NULL,"Htr2c"=>NULL,"Id_2"=>NULL,"Kv3_1"=>NULL,"Loc432748"=>NULL,"Man1a"=>NULL,"Math-2"=>NULL,"mGluR1"=>NULL,"mGluR2"=>NULL,"mGluR2_3"=>NULL,"mGluR3"=>NULL,"mGluR4"=>NULL,"mGluR5"=>NULL,"mGluR5a"=>NULL,"mGluR7a"=>NULL,"mGluR8a"=>NULL,"MOR"=>NULL,"Mus1R"=>NULL,"Mus3R"=>NULL,"Mus4R"=>NULL,"Ndst4"=>NULL,"NECAB1"=>NULL,"Neuropilin2"=>NULL,"NKB"=>NULL,"Nov"=>NULL,"Nr3c2"=>NULL,"Nr4a1"=>NULL,"p-CREB"=>NULL,"PCP4"=>NULL,"PPE"=>NULL,"PPTA"=>NULL,"Prox1"=>NULL,"Prss12"=>NULL,"Prss23"=>NULL,"PSA-NCAM"=>NULL,"SATB1"=>NULL,"SATB2"=>NULL,"SCIP"=>NULL,"SPO"=>NULL,"SubP"=>NULL,"Tc1568100"=>NULL,"TH"=>NULL,"vAChT"=>NULL,"vGAT"=>NULL,"vGlut1"=>NULL,"vGluT2"=>NULL,"VILIP"=>NULL,"Wfs1"=>NULL,"Y1"=>NULL,"Y2"=>NULL);
 	
-	$hippo_positive_inference = array("CB"=>NULL,"CR"=>NULL,"PV"=>NULL,"5HT_3"=>NULL,"CB1"=>NULL,"GABAa_alfa"=>NULL,"mGluR1a"=>NULL,"Mus2R"=>NULL,"Sub_P_Rec"=>NULL,"vGluT3"=>NULL,"CCK"=>NULL,"ENK"=>NULL,"NG"=>NULL,"NPY"=>NULL,"SOM"=>NULL,"VIP"=>NULL,"a-act2"=>NULL,"CoupTF_2"=>NULL,"nNOS"=>NULL,"RLN"=>NULL,"AChE"=>NULL,"AMIGO2"=>NULL,"AR-beta1"=>NULL,"AR-beta2"=>NULL,"Astn2"=>NULL,"BDNF"=>NULL,"Bok"=>NULL,"Caln"=>NULL,"CaM"=>NULL,"CaMKII_alpha"=>NULL,"CGRP"=>NULL,"ChAT"=>NULL,"Chrna2"=>NULL,"CRF"=>NULL,"Ctip2"=>NULL,"Cx36"=>NULL,"CXCR4"=>NULL,"Dcn"=>NULL,"Disc1"=>NULL,"DYN"=>NULL,"EAAT3"=>NULL,"ErbB4"=>NULL,"GABAa_alpha2"=>NULL,"GABAa_alpha3"=>NULL,"GABAa_alpha4"=>NULL,"GABAa_alpha5"=>NULL,"GABAa_alpha6"=>NULL,"GABAa_beta1"=>NULL,"GABAa_beta2"=>NULL,"GABAa_beta3"=>NULL,"GABAa_delta"=>NULL,"GABAa_gamma1"=>NULL,"GABAa_gamma2"=>NULL,"GABA-B1"=>NULL,"GAT_1"=>NULL,"GAT-3"=>NULL,"GluA1"=>NULL,"GluA2"=>NULL,"GluA2_3"=>NULL,"GluA3"=>NULL,"GluA4"=>NULL,"GlyT2"=>NULL,"Gpc3"=>NULL,"Grp"=>NULL,"Htr2c"=>NULL,"Id_2"=>NULL,"Kv3_1"=>NULL,"Loc432748"=>NULL,"Man1a"=>NULL,"Math-2"=>NULL,"mGluR1"=>NULL,"mGluR2"=>NULL,"mGluR2_3"=>NULL,"mGluR3"=>NULL,"mGluR4"=>NULL,"mGluR5"=>NULL,"mGluR5a"=>NULL,"mGluR7a"=>NULL,"mGluR8a"=>NULL,"MOR"=>NULL,"Mus1R"=>NULL,"Mus3R"=>NULL,"Mus4R"=>NULL,"Ndst4"=>NULL,"NECAB1"=>NULL,"Neuropilin2"=>NULL,"NKB"=>NULL,"Nov"=>NULL,"Nr3c2"=>NULL,"Nr4a1"=>NULL,"p-CREB"=>NULL,"PCP4"=>NULL,"PPE"=>NULL,"PPTA"=>NULL,"Prox1"=>NULL,"Prss12"=>NULL,"Prss23"=>NULL,"PSA-NCAM"=>NULL,"SATB1"=>NULL,"SATB2"=>NULL,"SCIP"=>NULL,"SPO"=>NULL,"SubP"=>NULL,"Tc1568100"=>NULL,"TH"=>NULL,"vAChT"=>NULL,"vGAT"=>NULL,"vGlut1"=>NULL,"vGluT2"=>NULL,"VILIP"=>NULL,"Wfs1"=>NULL,"Y1"=>NULL,"Y2"=>NULL);
-	
-	$hippo_unknown = array("CB"=>NULL,"CR"=>NULL,"PV"=>NULL,"5HT_3"=>NULL,"CB1"=>NULL,"GABAa_alfa"=>NULL,"mGluR1a"=>NULL,"Mus2R"=>NULL,"Sub_P_Rec"=>NULL,"vGluT3"=>NULL,"CCK"=>NULL,"ENK"=>NULL,"NG"=>NULL,"NPY"=>NULL,"SOM"=>NULL,"VIP"=>NULL,"a-act2"=>NULL,"CoupTF_2"=>NULL,"nNOS"=>NULL,"RLN"=>NULL,"AChE"=>NULL,"AMIGO2"=>NULL,"AR-beta1"=>NULL,"AR-beta2"=>NULL,"Astn2"=>NULL,"BDNF"=>NULL,"Bok"=>NULL,"Caln"=>NULL,"CaM"=>NULL,"CaMKII_alpha"=>NULL,"CGRP"=>NULL,"ChAT"=>NULL,"Chrna2"=>NULL,"CRF"=>NULL,"Ctip2"=>NULL,"Cx36"=>NULL,"CXCR4"=>NULL,"Dcn"=>NULL,"Disc1"=>NULL,"DYN"=>NULL,"EAAT3"=>NULL,"ErbB4"=>NULL,"GABAa_alpha2"=>NULL,"GABAa_alpha3"=>NULL,"GABAa_alpha4"=>NULL,"GABAa_alpha5"=>NULL,"GABAa_alpha6"=>NULL,"GABAa_beta1"=>NULL,"GABAa_beta2"=>NULL,"GABAa_beta3"=>NULL,"GABAa_delta"=>NULL,"GABAa_gamma1"=>NULL,"GABAa_gamma2"=>NULL,"GABA-B1"=>NULL,"GAT_1"=>NULL,"GAT-3"=>NULL,"GluA1"=>NULL,"GluA2"=>NULL,"GluA2_3"=>NULL,"GluA3"=>NULL,"GluA4"=>NULL,"GlyT2"=>NULL,"Gpc3"=>NULL,"Grp"=>NULL,"Htr2c"=>NULL,"Id_2"=>NULL,"Kv3_1"=>NULL,"Loc432748"=>NULL,"Man1a"=>NULL,"Math-2"=>NULL,"mGluR1"=>NULL,"mGluR2"=>NULL,"mGluR2_3"=>NULL,"mGluR3"=>NULL,"mGluR4"=>NULL,"mGluR5"=>NULL,"mGluR5a"=>NULL,"mGluR7a"=>NULL,"mGluR8a"=>NULL,"MOR"=>NULL,"Mus1R"=>NULL,"Mus3R"=>NULL,"Mus4R"=>NULL,"Ndst4"=>NULL,"NECAB1"=>NULL,"Neuropilin2"=>NULL,"NKB"=>NULL,"Nov"=>NULL,"Nr3c2"=>NULL,"Nr4a1"=>NULL,"p-CREB"=>NULL,"PCP4"=>NULL,"PPE"=>NULL,"PPTA"=>NULL,"Prox1"=>NULL,"Prss12"=>NULL,"Prss23"=>NULL,"PSA-NCAM"=>NULL,"SATB1"=>NULL,"SATB2"=>NULL,"SCIP"=>NULL,"SPO"=>NULL,"SubP"=>NULL,"Tc1568100"=>NULL,"TH"=>NULL,"vAChT"=>NULL,"vGAT"=>NULL,"vGlut1"=>NULL,"vGluT2"=>NULL,"VILIP"=>NULL,"Wfs1"=>NULL,"Y1"=>NULL,"Y2"=>NULL);
+	$hippo_unknown = $hippo_property_id;
+	// $hippo_unknown = array("CB"=>NULL,"CR"=>NULL,"PV"=>NULL,"5HT_3"=>NULL,"CB1"=>NULL,"GABAa_alfa"=>NULL,"mGluR1a"=>NULL,"Mus2R"=>NULL,"Sub_P_Rec"=>NULL,"vGluT3"=>NULL,"CCK"=>NULL,"ENK"=>NULL,"NG"=>NULL,"NPY"=>NULL,"SOM"=>NULL,"VIP"=>NULL,"a-act2"=>NULL,"CoupTF_2"=>NULL,"nNOS"=>NULL,"RLN"=>NULL,"AChE"=>NULL,"AMIGO2"=>NULL,"AR-beta1"=>NULL,"AR-beta2"=>NULL,"Astn2"=>NULL,"BDNF"=>NULL,"Bok"=>NULL,"Caln"=>NULL,"CaM"=>NULL,"CaMKII_alpha"=>NULL,"CGRP"=>NULL,"ChAT"=>NULL,"Chrna2"=>NULL,"CRF"=>NULL,"Ctip2"=>NULL,"Cx36"=>NULL,"CXCR4"=>NULL,"Dcn"=>NULL,"Disc1"=>NULL,"DYN"=>NULL,"EAAT3"=>NULL,"ErbB4"=>NULL,"GABAa_alpha2"=>NULL,"GABAa_alpha3"=>NULL,"GABAa_alpha4"=>NULL,"GABAa_alpha5"=>NULL,"GABAa_alpha6"=>NULL,"GABAa_beta1"=>NULL,"GABAa_beta2"=>NULL,"GABAa_beta3"=>NULL,"GABAa_delta"=>NULL,"GABAa_gamma1"=>NULL,"GABAa_gamma2"=>NULL,"GABA-B1"=>NULL,"GAT_1"=>NULL,"GAT-3"=>NULL,"GluA1"=>NULL,"GluA2"=>NULL,"GluA2_3"=>NULL,"GluA3"=>NULL,"GluA4"=>NULL,"GlyT2"=>NULL,"Gpc3"=>NULL,"Grp"=>NULL,"Htr2c"=>NULL,"Id_2"=>NULL,"Kv3_1"=>NULL,"Loc432748"=>NULL,"Man1a"=>NULL,"Math-2"=>NULL,"mGluR1"=>NULL,"mGluR2"=>NULL,"mGluR2_3"=>NULL,"mGluR3"=>NULL,"mGluR4"=>NULL,"mGluR5"=>NULL,"mGluR5a"=>NULL,"mGluR7a"=>NULL,"mGluR8a"=>NULL,"MOR"=>NULL,"Mus1R"=>NULL,"Mus3R"=>NULL,"Mus4R"=>NULL,"Ndst4"=>NULL,"NECAB1"=>NULL,"Neuropilin2"=>NULL,"NKB"=>NULL,"Nov"=>NULL,"Nr3c2"=>NULL,"Nr4a1"=>NULL,"p-CREB"=>NULL,"PCP4"=>NULL,"PPE"=>NULL,"PPTA"=>NULL,"Prox1"=>NULL,"Prss12"=>NULL,"Prss23"=>NULL,"PSA-NCAM"=>NULL,"SATB1"=>NULL,"SATB2"=>NULL,"SCIP"=>NULL,"SPO"=>NULL,"SubP"=>NULL,"Tc1568100"=>NULL,"TH"=>NULL,"vAChT"=>NULL,"vGAT"=>NULL,"vGlut1"=>NULL,"vGluT2"=>NULL,"VILIP"=>NULL,"Wfs1"=>NULL,"Y1"=>NULL,"Y2"=>NULL);
 
-	$hippo_color = array("CB"=>NULL,"CR"=>NULL,"PV"=>NULL,"5HT_3"=>NULL,"CB1"=>NULL,"GABAa_alfa"=>NULL,"mGluR1a"=>NULL,"Mus2R"=>NULL,"Sub_P_Rec"=>NULL,"vGluT3"=>NULL,"CCK"=>NULL,"ENK"=>NULL,"NG"=>NULL,"NPY"=>NULL,"SOM"=>NULL,"VIP"=>NULL,"a-act2"=>NULL,"CoupTF_2"=>NULL,"nNOS"=>NULL,"RLN"=>NULL,"AChE"=>NULL,"AMIGO2"=>NULL,"AR-beta1"=>NULL,"AR-beta2"=>NULL,"Astn2"=>NULL,"BDNF"=>NULL,"Bok"=>NULL,"Caln"=>NULL,"CaM"=>NULL,"CaMKII_alpha"=>NULL,"CGRP"=>NULL,"ChAT"=>NULL,"Chrna2"=>NULL,"CRF"=>NULL,"Ctip2"=>NULL,"Cx36"=>NULL,"CXCR4"=>NULL,"Dcn"=>NULL,"Disc1"=>NULL,"DYN"=>NULL,"EAAT3"=>NULL,"ErbB4"=>NULL,"GABAa_alpha2"=>NULL,"GABAa_alpha3"=>NULL,"GABAa_alpha4"=>NULL,"GABAa_alpha5"=>NULL,"GABAa_alpha6"=>NULL,"GABAa_beta1"=>NULL,"GABAa_beta2"=>NULL,"GABAa_beta3"=>NULL,"GABAa_delta"=>NULL,"GABAa_gamma1"=>NULL,"GABAa_gamma2"=>NULL,"GABA-B1"=>NULL,"GAT_1"=>NULL,"GAT-3"=>NULL,"GluA1"=>NULL,"GluA2"=>NULL,"GluA2_3"=>NULL,"GluA3"=>NULL,"GluA4"=>NULL,"GlyT2"=>NULL,"Gpc3"=>NULL,"Grp"=>NULL,"Htr2c"=>NULL,"Id_2"=>NULL,"Kv3_1"=>NULL,"Loc432748"=>NULL,"Man1a"=>NULL,"Math-2"=>NULL,"mGluR1"=>NULL,"mGluR2"=>NULL,"mGluR2_3"=>NULL,"mGluR3"=>NULL,"mGluR4"=>NULL,"mGluR5"=>NULL,"mGluR5a"=>NULL,"mGluR7a"=>NULL,"mGluR8a"=>NULL,"MOR"=>NULL,"Mus1R"=>NULL,"Mus3R"=>NULL,"Mus4R"=>NULL,"Ndst4"=>NULL,"NECAB1"=>NULL,"Neuropilin2"=>NULL,"NKB"=>NULL,"Nov"=>NULL,"Nr3c2"=>NULL,"Nr4a1"=>NULL,"p-CREB"=>NULL,"PCP4"=>NULL,"PPE"=>NULL,"PPTA"=>NULL,"Prox1"=>NULL,"Prss12"=>NULL,"Prss23"=>NULL,"PSA-NCAM"=>NULL,"SATB1"=>NULL,"SATB2"=>NULL,"SCIP"=>NULL,"SPO"=>NULL,"SubP"=>NULL,"Tc1568100"=>NULL,"TH"=>NULL,"vAChT"=>NULL,"vGAT"=>NULL,"vGlut1"=>NULL,"vGluT2"=>NULL,"VILIP"=>NULL,"Wfs1"=>NULL,"Y1"=>NULL,"Y2"=>NULL);
+	$hippo_color = $hippo_property_id;
+	// $hippo_color = array("CB"=>NULL,"CR"=>NULL,"PV"=>NULL,"5HT_3"=>NULL,"CB1"=>NULL,"GABAa_alfa"=>NULL,"mGluR1a"=>NULL,"Mus2R"=>NULL,"Sub_P_Rec"=>NULL,"vGluT3"=>NULL,"CCK"=>NULL,"ENK"=>NULL,"NG"=>NULL,"NPY"=>NULL,"SOM"=>NULL,"VIP"=>NULL,"a-act2"=>NULL,"CoupTF_2"=>NULL,"nNOS"=>NULL,"RLN"=>NULL,"AChE"=>NULL,"AMIGO2"=>NULL,"AR-beta1"=>NULL,"AR-beta2"=>NULL,"Astn2"=>NULL,"BDNF"=>NULL,"Bok"=>NULL,"Caln"=>NULL,"CaM"=>NULL,"CaMKII_alpha"=>NULL,"CGRP"=>NULL,"ChAT"=>NULL,"Chrna2"=>NULL,"CRF"=>NULL,"Ctip2"=>NULL,"Cx36"=>NULL,"CXCR4"=>NULL,"Dcn"=>NULL,"Disc1"=>NULL,"DYN"=>NULL,"EAAT3"=>NULL,"ErbB4"=>NULL,"GABAa_alpha2"=>NULL,"GABAa_alpha3"=>NULL,"GABAa_alpha4"=>NULL,"GABAa_alpha5"=>NULL,"GABAa_alpha6"=>NULL,"GABAa_beta1"=>NULL,"GABAa_beta2"=>NULL,"GABAa_beta3"=>NULL,"GABAa_delta"=>NULL,"GABAa_gamma1"=>NULL,"GABAa_gamma2"=>NULL,"GABA-B1"=>NULL,"GAT_1"=>NULL,"GAT-3"=>NULL,"GluA1"=>NULL,"GluA2"=>NULL,"GluA2_3"=>NULL,"GluA3"=>NULL,"GluA4"=>NULL,"GlyT2"=>NULL,"Gpc3"=>NULL,"Grp"=>NULL,"Htr2c"=>NULL,"Id_2"=>NULL,"Kv3_1"=>NULL,"Loc432748"=>NULL,"Man1a"=>NULL,"Math-2"=>NULL,"mGluR1"=>NULL,"mGluR2"=>NULL,"mGluR2_3"=>NULL,"mGluR3"=>NULL,"mGluR4"=>NULL,"mGluR5"=>NULL,"mGluR5a"=>NULL,"mGluR7a"=>NULL,"mGluR8a"=>NULL,"MOR"=>NULL,"Mus1R"=>NULL,"Mus3R"=>NULL,"Mus4R"=>NULL,"Ndst4"=>NULL,"NECAB1"=>NULL,"Neuropilin2"=>NULL,"NKB"=>NULL,"Nov"=>NULL,"Nr3c2"=>NULL,"Nr4a1"=>NULL,"p-CREB"=>NULL,"PCP4"=>NULL,"PPE"=>NULL,"PPTA"=>NULL,"Prox1"=>NULL,"Prss12"=>NULL,"Prss23"=>NULL,"PSA-NCAM"=>NULL,"SATB1"=>NULL,"SATB2"=>NULL,"SCIP"=>NULL,"SPO"=>NULL,"SubP"=>NULL,"Tc1568100"=>NULL,"TH"=>NULL,"vAChT"=>NULL,"vGAT"=>NULL,"vGlut1"=>NULL,"vGluT2"=>NULL,"VILIP"=>NULL,"Wfs1"=>NULL,"Y1"=>NULL,"Y2"=>NULL);
 
 	$soma_location = array("DG:SMo"=>0, "DG:SMi"=>1, "DG:SG"=>2, "DG:H"=>3, 
 	                       "CA3:SLM"=>0, "CA3:SR"=>1, "CA3:SL"=>2, "CA3:SP"=>3, "CA3:SO"=>4, 
@@ -217,7 +225,7 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
 		{
 			$object_value = $property->getVal();
 			array_push($soma_positions, $soma_location["$object_value"]);
-		}	
+		}
 	}
 	
 	
@@ -229,7 +237,7 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
 		
 		$property -> retrive_by_id($Property_id); // For each property id retrieve the respective properties
 		$rel1 = $property->getRel(); // Retrieve a predicate for a particular property id
-		$part1 = $property->getPart(); // Retrieve Subject (from the property table)
+		// $part1 = $property->getPart(); // Retrieve Subject (from the property table)
 		if ($rel1 == 'has expression')
 		{
 			$id_p[$q] = $property->getID(); // Retrieve the id
@@ -277,7 +285,7 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
 		
 	preg_match('!\d+!',substr($type->getName(),strpos($type->getName(), ')')),$matches);
 	$neurite_pattern=str_split($matches[0]);
-	$neurite_pattern_temp= array();
+	$neurite_pattern_temp = array();
 	for ($np=0; $np<sizeof($neurite_pattern); $np++){
 		if(in_array($np, $soma_positions)){
 			array_push($neurite_pattern_temp, "<strong>".intval($neurite_pattern[$np])."</strong>");
@@ -414,7 +422,12 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
 				getUrlForLink($id,$hippo['VILIP'],$name_markers['109'],$hippo_color['VILIP']),
 				getUrlForLink($id,$hippo['Wfs1'],$name_markers['110'],$hippo_color['Wfs1']),
 				getUrlForLink($id,$hippo['Y1'],$name_markers['111'],$hippo_color['Y1']),
-				getUrlForLink($id,$hippo['Y2'],$name_markers['112'],$hippo_color['Y2'])
+				getUrlForLink($id,$hippo['Y2'],$name_markers['112'],$hippo_color['Y2']),
+				getUrlForLink($id,$hippo['DCX'],$name_markers['113'],$hippo_color['DCX']),
+				getUrlForLink($id,$hippo['NeuN'],$name_markers['114'],$hippo_color['NeuN']),
+				getUrlForLink($id,$hippo['NeuroD'],$name_markers['115'],$hippo_color['NeuroD']),
+				getUrlForLink($id,$hippo['CRH'],$name_markers['116'],$hippo_color['CRH']),
+				getUrlForLink($id,$hippo['NK1R'],$name_markers['117'],$hippo_color['NK1R'])
 				);
 	}
 	else{
@@ -445,100 +458,105 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
 			getUrlForLink($id,$hippo['nNOS'],$name_markers['18'],$hippo_color['nNOS']),
 			getUrlForLink($id,$hippo['RLN'],$name_markers['19'],$hippo_color['RLN']),
 			
-				getUrlForLink($id,$hippo['AChE'],$name_markers['20'],$hippo_color['AChE']),
-				getUrlForLink($id,$hippo['AMIGO2'],$name_markers['21'],$hippo_color['AMIGO2']),
-				getUrlForLink($id,$hippo['AR-beta1'],$name_markers['22'],$hippo_color['AR-beta1']),
-				getUrlForLink($id,$hippo['AR-beta2'],$name_markers['23'],$hippo_color['AR-beta2']),
-				getUrlForLink($id,$hippo['Astn2'],$name_markers['24'],$hippo_color['Astn2']),
-				getUrlForLink($id,$hippo['BDNF'],$name_markers['25'],$hippo_color['BDNF']),
-				getUrlForLink($id,$hippo['Bok'],$name_markers['26'],$hippo_color['Bok']),
-				getUrlForLink($id,$hippo['Caln'],$name_markers['27'],$hippo_color['Caln']),
-				getUrlForLink($id,$hippo['CaM'],$name_markers['28'],$hippo_color['CaM']),
-				getUrlForLink($id,$hippo['CaMKII_alpha'],$name_markers['29'],$hippo_color['CaMKII_alpha']),
-				getUrlForLink($id,$hippo['CGRP'],$name_markers['30'],$hippo_color['CGRP']),
-				getUrlForLink($id,$hippo['ChAT'],$name_markers['31'],$hippo_color['ChAT']),
-				getUrlForLink($id,$hippo['Chrna2'],$name_markers['32'],$hippo_color['Chrna2']),
-				getUrlForLink($id,$hippo['CRF'],$name_markers['33'],$hippo_color['CRF']),
-				getUrlForLink($id,$hippo['Ctip2'],$name_markers['34'],$hippo_color['Ctip2']),
-				getUrlForLink($id,$hippo['Cx36'],$name_markers['35'],$hippo_color['Cx36']),
-				getUrlForLink($id,$hippo['CXCR4'],$name_markers['36'],$hippo_color['CXCR4']),
-				getUrlForLink($id,$hippo['Dcn'],$name_markers['37'],$hippo_color['Dcn']),
-				getUrlForLink($id,$hippo['Disc1'],$name_markers['38'],$hippo_color['Disc1']),
-				getUrlForLink($id,$hippo['DYN'],$name_markers['39'],$hippo_color['DYN']),
-				getUrlForLink($id,$hippo['EAAT3'],$name_markers['40'],$hippo_color['EAAT3']),
-				getUrlForLink($id,$hippo['ErbB4'],$name_markers['41'],$hippo_color['ErbB4']),
-				getUrlForLink($id,$hippo['GABAa_alpha2'],$name_markers['42'],$hippo_color['GABAa_alpha2']),
-				getUrlForLink($id,$hippo['GABAa_alpha3'],$name_markers['43'],$hippo_color['GABAa_alpha3']),
-				getUrlForLink($id,$hippo['GABAa_alpha4'],$name_markers['44'],$hippo_color['GABAa_alpha4']),
-				getUrlForLink($id,$hippo['GABAa_alpha5'],$name_markers['45'],$hippo_color['GABAa_alpha5']),
-				getUrlForLink($id,$hippo['GABAa_alpha6'],$name_markers['46'],$hippo_color['GABAa_alpha6']),
-				getUrlForLink($id,$hippo['GABAa_beta1'],$name_markers['47'],$hippo_color['GABAa_beta1']),
-				getUrlForLink($id,$hippo['GABAa_beta2'],$name_markers['48'],$hippo_color['GABAa_beta2']),
-				getUrlForLink($id,$hippo['GABAa_beta3'],$name_markers['49'],$hippo_color['GABAa_beta3']),
-				getUrlForLink($id,$hippo['GABAa_delta'],$name_markers['50'],$hippo_color['GABAa_delta']),
-				getUrlForLink($id,$hippo['GABAa_gamma1'],$name_markers['51'],$hippo_color['GABAa_gamma1']),
-				getUrlForLink($id,$hippo['GABAa_gamma2'],$name_markers['52'],$hippo_color['GABAa_gamma2']),
-				getUrlForLink($id,$hippo['GABA-B1'],$name_markers['53'],$hippo_color['GABA-B1']),
-				getUrlForLink($id,$hippo['GAT_1'],$name_markers['54'],$hippo_color['GAT_1']),
-				getUrlForLink($id,$hippo['GAT-3'],$name_markers['55'],$hippo_color['GAT-3']),
-				getUrlForLink($id,$hippo['GluA1'],$name_markers['56'],$hippo_color['GluA1']),
-				getUrlForLink($id,$hippo['GluA2'],$name_markers['57'],$hippo_color['GluA2']),
-				getUrlForLink($id,$hippo['GluA2_3'],$name_markers['58'],$hippo_color['GluA2_3']),
-				getUrlForLink($id,$hippo['GluA3'],$name_markers['59'],$hippo_color['GluA3']),
-				getUrlForLink($id,$hippo['GluA4'],$name_markers['60'],$hippo_color['GluA4']),			
-				getUrlForLink($id,$hippo['GlyT2'],$name_markers['61'],$hippo_color['GlyT2']),
-				getUrlForLink($id,$hippo['Gpc3'],$name_markers['62'],$hippo_color['Gpc3']),
-				getUrlForLink($id,$hippo['Grp'],$name_markers['63'],$hippo_color['Grp']),
-				getUrlForLink($id,$hippo['Htr2c'],$name_markers['64'],$hippo_color['Htr2c']),
-				getUrlForLink($id,$hippo['Id_2'],$name_markers['65'],$hippo_color['Id_2']),
-				getUrlForLink($id,$hippo['Kv3_1'],$name_markers['66'],$hippo_color['Kv3_1']),
-				getUrlForLink($id,$hippo['Loc432748'],$name_markers['67'],$hippo_color['Loc432748']),
-				getUrlForLink($id,$hippo['Man1a'],$name_markers['68'],$hippo_color['Man1a']),
-				getUrlForLink($id,$hippo['Math-2'],$name_markers['69'],$hippo_color['Math-2']),
-				getUrlForLink($id,$hippo['mGluR1'],$name_markers['70'],$hippo_color['mGluR1']),
-				getUrlForLink($id,$hippo['mGluR2'],$name_markers['71'],$hippo_color['mGluR2']),
-				getUrlForLink($id,$hippo['mGluR2_3'],$name_markers['72'],$hippo_color['mGluR2_3']),
-				getUrlForLink($id,$hippo['mGluR3'],$name_markers['73'],$hippo_color['mGluR3']),
-				getUrlForLink($id,$hippo['mGluR4'],$name_markers['74'],$hippo_color['mGluR4']),
-				getUrlForLink($id,$hippo['mGluR5'],$name_markers['75'],$hippo_color['mGluR5']),
-				getUrlForLink($id,$hippo['mGluR5a'],$name_markers['76'],$hippo_color['mGluR5a']),
-				getUrlForLink($id,$hippo['mGluR7a'],$name_markers['77'],$hippo_color['mGluR7a']),
-				getUrlForLink($id,$hippo['mGluR8a'],$name_markers['78'],$hippo_color['mGluR8a']),
-				getUrlForLink($id,$hippo['MOR'],$name_markers['79'],$hippo_color['MOR']),
-				getUrlForLink($id,$hippo['Mus1R'],$name_markers['80'],$hippo_color['Mus1R']),
-				getUrlForLink($id,$hippo['Mus3R'],$name_markers['81'],$hippo_color['Mus3R']),
-				getUrlForLink($id,$hippo['Mus4R'],$name_markers['82'],$hippo_color['Mus4R']),
-				getUrlForLink($id,$hippo['Ndst4'],$name_markers['83'],$hippo_color['Ndst4']),
-				getUrlForLink($id,$hippo['NECAB1'],$name_markers['84'],$hippo_color['NECAB1']),
-				getUrlForLink($id,$hippo['Neuropilin2'],$name_markers['85'],$hippo_color['Neuropilin2']),
-				getUrlForLink($id,$hippo['NKB'],$name_markers['86'],$hippo_color['NKB']),
-				getUrlForLink($id,$hippo['Nov'],$name_markers['87'],$hippo_color['Nov']),
-				getUrlForLink($id,$hippo['Nr3c2'],$name_markers['88'],$hippo_color['Nr3c2']),
-				getUrlForLink($id,$hippo['Nr4a1'],$name_markers['89'],$hippo_color['Nr4a1']),
-				getUrlForLink($id,$hippo['p-CREB'],$name_markers['90'],$hippo_color['p-CREB']),
-				getUrlForLink($id,$hippo['PCP4'],$name_markers['91'],$hippo_color['PCP4']),
-				getUrlForLink($id,$hippo['PPE'],$name_markers['92'],$hippo_color['PPE']),
-				getUrlForLink($id,$hippo['PPTA'],$name_markers['93'],$hippo_color['PPTA']),
-				getUrlForLink($id,$hippo['Prox1'],$name_markers['94'],$hippo_color['Prox1']),
-				getUrlForLink($id,$hippo['Prss12'],$name_markers['95'],$hippo_color['Prss12']),
-				getUrlForLink($id,$hippo['Prss23'],$name_markers['96'],$hippo_color['Prss23']),
-				getUrlForLink($id,$hippo['PSA-NCAM'],$name_markers['97'],$hippo_color['PSA-NCAM']),
-				getUrlForLink($id,$hippo['SATB1'],$name_markers['98'],$hippo_color['SATB1']),
-				getUrlForLink($id,$hippo['SATB2'],$name_markers['99'],$hippo_color['SATB2']),
-				getUrlForLink($id,$hippo['SCIP'],$name_markers['100'],$hippo_color['SCIP']),
-				getUrlForLink($id,$hippo['SPO'],$name_markers['101'],$hippo_color['SPO']),
-				getUrlForLink($id,$hippo['SubP'],$name_markers['102'],$hippo_color['SubP']),
-				getUrlForLink($id,$hippo['Tc1568100'],$name_markers['103'],$hippo_color['Tc1568100']),
-				getUrlForLink($id,$hippo['TH'],$name_markers['104'],$hippo_color['TH']),
-				getUrlForLink($id,$hippo['vAChT'],$name_markers['105'],$hippo_color['vAChT']),
-				getUrlForLink($id,$hippo['vGAT'],$name_markers['106'],$hippo_color['vGAT']),
-				getUrlForLink($id,$hippo['vGlut1'],$name_markers['107'],$hippo_color['vGlut1']),
-				getUrlForLink($id,$hippo['vGluT2'],$name_markers['108'],$hippo_color['vGluT2']),
-				getUrlForLink($id,$hippo['VILIP'],$name_markers['109'],$hippo_color['VILIP']),
-				getUrlForLink($id,$hippo['Wfs1'],$name_markers['110'],$hippo_color['Wfs1']),
-				getUrlForLink($id,$hippo['Y1'],$name_markers['111'],$hippo_color['Y1']),
-				getUrlForLink($id,$hippo['Y2'],$name_markers['112'],$hippo_color['Y2'])
-			);
+			getUrlForLink($id,$hippo['AChE'],$name_markers['20'],$hippo_color['AChE']),
+			getUrlForLink($id,$hippo['AMIGO2'],$name_markers['21'],$hippo_color['AMIGO2']),
+			getUrlForLink($id,$hippo['AR-beta1'],$name_markers['22'],$hippo_color['AR-beta1']),
+			getUrlForLink($id,$hippo['AR-beta2'],$name_markers['23'],$hippo_color['AR-beta2']),
+			getUrlForLink($id,$hippo['Astn2'],$name_markers['24'],$hippo_color['Astn2']),
+			getUrlForLink($id,$hippo['BDNF'],$name_markers['25'],$hippo_color['BDNF']),
+			getUrlForLink($id,$hippo['Bok'],$name_markers['26'],$hippo_color['Bok']),
+			getUrlForLink($id,$hippo['Caln'],$name_markers['27'],$hippo_color['Caln']),
+			getUrlForLink($id,$hippo['CaM'],$name_markers['28'],$hippo_color['CaM']),
+			getUrlForLink($id,$hippo['CaMKII_alpha'],$name_markers['29'],$hippo_color['CaMKII_alpha']),
+			getUrlForLink($id,$hippo['CGRP'],$name_markers['30'],$hippo_color['CGRP']),
+			getUrlForLink($id,$hippo['ChAT'],$name_markers['31'],$hippo_color['ChAT']),
+			getUrlForLink($id,$hippo['Chrna2'],$name_markers['32'],$hippo_color['Chrna2']),
+			getUrlForLink($id,$hippo['CRF'],$name_markers['33'],$hippo_color['CRF']),
+			getUrlForLink($id,$hippo['Ctip2'],$name_markers['34'],$hippo_color['Ctip2']),
+			getUrlForLink($id,$hippo['Cx36'],$name_markers['35'],$hippo_color['Cx36']),
+			getUrlForLink($id,$hippo['CXCR4'],$name_markers['36'],$hippo_color['CXCR4']),
+			getUrlForLink($id,$hippo['Dcn'],$name_markers['37'],$hippo_color['Dcn']),
+			getUrlForLink($id,$hippo['Disc1'],$name_markers['38'],$hippo_color['Disc1']),
+			getUrlForLink($id,$hippo['DYN'],$name_markers['39'],$hippo_color['DYN']),
+			getUrlForLink($id,$hippo['EAAT3'],$name_markers['40'],$hippo_color['EAAT3']),
+			getUrlForLink($id,$hippo['ErbB4'],$name_markers['41'],$hippo_color['ErbB4']),
+			getUrlForLink($id,$hippo['GABAa_alpha2'],$name_markers['42'],$hippo_color['GABAa_alpha2']),
+			getUrlForLink($id,$hippo['GABAa_alpha3'],$name_markers['43'],$hippo_color['GABAa_alpha3']),
+			getUrlForLink($id,$hippo['GABAa_alpha4'],$name_markers['44'],$hippo_color['GABAa_alpha4']),
+			getUrlForLink($id,$hippo['GABAa_alpha5'],$name_markers['45'],$hippo_color['GABAa_alpha5']),
+			getUrlForLink($id,$hippo['GABAa_alpha6'],$name_markers['46'],$hippo_color['GABAa_alpha6']),
+			getUrlForLink($id,$hippo['GABAa_beta1'],$name_markers['47'],$hippo_color['GABAa_beta1']),
+			getUrlForLink($id,$hippo['GABAa_beta2'],$name_markers['48'],$hippo_color['GABAa_beta2']),
+			getUrlForLink($id,$hippo['GABAa_beta3'],$name_markers['49'],$hippo_color['GABAa_beta3']),
+			getUrlForLink($id,$hippo['GABAa_delta'],$name_markers['50'],$hippo_color['GABAa_delta']),
+			getUrlForLink($id,$hippo['GABAa_gamma1'],$name_markers['51'],$hippo_color['GABAa_gamma1']),
+			getUrlForLink($id,$hippo['GABAa_gamma2'],$name_markers['52'],$hippo_color['GABAa_gamma2']),
+			getUrlForLink($id,$hippo['GABA-B1'],$name_markers['53'],$hippo_color['GABA-B1']),
+			getUrlForLink($id,$hippo['GAT_1'],$name_markers['54'],$hippo_color['GAT_1']),
+			getUrlForLink($id,$hippo['GAT-3'],$name_markers['55'],$hippo_color['GAT-3']),
+			getUrlForLink($id,$hippo['GluA1'],$name_markers['56'],$hippo_color['GluA1']),
+			getUrlForLink($id,$hippo['GluA2'],$name_markers['57'],$hippo_color['GluA2']),
+			getUrlForLink($id,$hippo['GluA2_3'],$name_markers['58'],$hippo_color['GluA2_3']),
+			getUrlForLink($id,$hippo['GluA3'],$name_markers['59'],$hippo_color['GluA3']),
+			getUrlForLink($id,$hippo['GluA4'],$name_markers['60'],$hippo_color['GluA4']),			
+			getUrlForLink($id,$hippo['GlyT2'],$name_markers['61'],$hippo_color['GlyT2']),
+			getUrlForLink($id,$hippo['Gpc3'],$name_markers['62'],$hippo_color['Gpc3']),
+			getUrlForLink($id,$hippo['Grp'],$name_markers['63'],$hippo_color['Grp']),
+			getUrlForLink($id,$hippo['Htr2c'],$name_markers['64'],$hippo_color['Htr2c']),
+			getUrlForLink($id,$hippo['Id_2'],$name_markers['65'],$hippo_color['Id_2']),
+			getUrlForLink($id,$hippo['Kv3_1'],$name_markers['66'],$hippo_color['Kv3_1']),
+			getUrlForLink($id,$hippo['Loc432748'],$name_markers['67'],$hippo_color['Loc432748']),
+			getUrlForLink($id,$hippo['Man1a'],$name_markers['68'],$hippo_color['Man1a']),
+			getUrlForLink($id,$hippo['Math-2'],$name_markers['69'],$hippo_color['Math-2']),
+			getUrlForLink($id,$hippo['mGluR1'],$name_markers['70'],$hippo_color['mGluR1']),
+			getUrlForLink($id,$hippo['mGluR2'],$name_markers['71'],$hippo_color['mGluR2']),
+			getUrlForLink($id,$hippo['mGluR2_3'],$name_markers['72'],$hippo_color['mGluR2_3']),
+			getUrlForLink($id,$hippo['mGluR3'],$name_markers['73'],$hippo_color['mGluR3']),
+			getUrlForLink($id,$hippo['mGluR4'],$name_markers['74'],$hippo_color['mGluR4']),
+			getUrlForLink($id,$hippo['mGluR5'],$name_markers['75'],$hippo_color['mGluR5']),
+			getUrlForLink($id,$hippo['mGluR5a'],$name_markers['76'],$hippo_color['mGluR5a']),
+			getUrlForLink($id,$hippo['mGluR7a'],$name_markers['77'],$hippo_color['mGluR7a']),
+			getUrlForLink($id,$hippo['mGluR8a'],$name_markers['78'],$hippo_color['mGluR8a']),
+			getUrlForLink($id,$hippo['MOR'],$name_markers['79'],$hippo_color['MOR']),
+			getUrlForLink($id,$hippo['Mus1R'],$name_markers['80'],$hippo_color['Mus1R']),
+			getUrlForLink($id,$hippo['Mus3R'],$name_markers['81'],$hippo_color['Mus3R']),
+			getUrlForLink($id,$hippo['Mus4R'],$name_markers['82'],$hippo_color['Mus4R']),
+			getUrlForLink($id,$hippo['Ndst4'],$name_markers['83'],$hippo_color['Ndst4']),
+			getUrlForLink($id,$hippo['NECAB1'],$name_markers['84'],$hippo_color['NECAB1']),
+			getUrlForLink($id,$hippo['Neuropilin2'],$name_markers['85'],$hippo_color['Neuropilin2']),
+			getUrlForLink($id,$hippo['NKB'],$name_markers['86'],$hippo_color['NKB']),
+			getUrlForLink($id,$hippo['Nov'],$name_markers['87'],$hippo_color['Nov']),
+			getUrlForLink($id,$hippo['Nr3c2'],$name_markers['88'],$hippo_color['Nr3c2']),
+			getUrlForLink($id,$hippo['Nr4a1'],$name_markers['89'],$hippo_color['Nr4a1']),
+			getUrlForLink($id,$hippo['p-CREB'],$name_markers['90'],$hippo_color['p-CREB']),
+			getUrlForLink($id,$hippo['PCP4'],$name_markers['91'],$hippo_color['PCP4']),
+			getUrlForLink($id,$hippo['PPE'],$name_markers['92'],$hippo_color['PPE']),
+			getUrlForLink($id,$hippo['PPTA'],$name_markers['93'],$hippo_color['PPTA']),
+			getUrlForLink($id,$hippo['Prox1'],$name_markers['94'],$hippo_color['Prox1']),
+			getUrlForLink($id,$hippo['Prss12'],$name_markers['95'],$hippo_color['Prss12']),
+			getUrlForLink($id,$hippo['Prss23'],$name_markers['96'],$hippo_color['Prss23']),
+			getUrlForLink($id,$hippo['PSA-NCAM'],$name_markers['97'],$hippo_color['PSA-NCAM']),
+			getUrlForLink($id,$hippo['SATB1'],$name_markers['98'],$hippo_color['SATB1']),
+			getUrlForLink($id,$hippo['SATB2'],$name_markers['99'],$hippo_color['SATB2']),
+			getUrlForLink($id,$hippo['SCIP'],$name_markers['100'],$hippo_color['SCIP']),
+			getUrlForLink($id,$hippo['SPO'],$name_markers['101'],$hippo_color['SPO']),
+			getUrlForLink($id,$hippo['SubP'],$name_markers['102'],$hippo_color['SubP']),
+			getUrlForLink($id,$hippo['Tc1568100'],$name_markers['103'],$hippo_color['Tc1568100']),
+			getUrlForLink($id,$hippo['TH'],$name_markers['104'],$hippo_color['TH']),
+			getUrlForLink($id,$hippo['vAChT'],$name_markers['105'],$hippo_color['vAChT']),
+			getUrlForLink($id,$hippo['vGAT'],$name_markers['106'],$hippo_color['vGAT']),
+			getUrlForLink($id,$hippo['vGlut1'],$name_markers['107'],$hippo_color['vGlut1']),
+			getUrlForLink($id,$hippo['vGluT2'],$name_markers['108'],$hippo_color['vGluT2']),
+			getUrlForLink($id,$hippo['VILIP'],$name_markers['109'],$hippo_color['VILIP']),
+			getUrlForLink($id,$hippo['Wfs1'],$name_markers['110'],$hippo_color['Wfs1']),
+			getUrlForLink($id,$hippo['Y1'],$name_markers['111'],$hippo_color['Y1']),
+			getUrlForLink($id,$hippo['Y2'],$name_markers['112'],$hippo_color['Y2']),
+			getUrlForLink($id,$hippo['DCX'],$name_markers['113'],$hippo_color['DCX']),
+			getUrlForLink($id,$hippo['NeuN'],$name_markers['114'],$hippo_color['NeuN']),
+			getUrlForLink($id,$hippo['NeuroD'],$name_markers['115'],$hippo_color['NeuroD']),
+			getUrlForLink($id,$hippo['CRH'],$name_markers['116'],$hippo_color['CRH']),
+			getUrlForLink($id,$hippo['NK1R'],$name_markers['117'],$hippo_color['NK1R'])
+		);
 	}
 	$responce->rows = $rows;
 
