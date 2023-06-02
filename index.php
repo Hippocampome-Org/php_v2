@@ -182,9 +182,9 @@ jQuery(document).ready(function() {
       </font>
         <BR>
         <font class='font2' color='#000000'>
-        v1.12 - Released: 05/05/2022
+        v2.0 - Released: 05/24/2023
         <br>
-        527,802 Pieces of Knowledge (PoK) & 46,004 Pieces of Evidence (PoE)
+        528,945 Pieces of Knowledge (PoK) & 46,292 Pieces of Evidence (PoE)
         <br>
         <br>
         The Hippocampome is a curated knowledge base of the circuitry
@@ -276,10 +276,10 @@ jQuery(document).ready(function() {
       <br>
     </td>
 
-    <td width="50%" style='vertical-align:top; padding-top:50px; padding-left:50px'>
+    <td width="50%" style='vertical-align:top; padding-top:0px; padding-left:50px'>
       <img src='images/brain6.png' width='450px' id="image_brain"/>
       <font class='font2' color='#000000'>
-        <br><br><br>
+        <br>
         The release of v1.7 on 10/08/2019 includes Izhikevich models for most of the neuron types,
         downloadable parameter and CARLSim4-simulation files, and the ability to perform simulations of the firing
         patterns.
@@ -313,11 +313,17 @@ jQuery(document).ready(function() {
         <i>Quantification of neuron types in the rodent hippocampal formation by data mining and numerical optimization.</i></a>
         European Journal of Neuroscience 2022 55:1724-1741. doi: 10.1111/ejn.15639.
         <br><br>
-        <b>*NEW*</b> The release of v1.12 on 05/05/2022 includes 499,200 PoK, 8,495 PoE, and new browsable matrices of synaptic physiology parameter values for combinations of species, sex, age, temperature, and recording mode. 
+        The release of v1.12 on 05/05/2022 includes 499,200 PoK, 8,495 PoE, and new browsable matrices of synaptic physiology parameter values for combinations of species, sex, age, temperature, and recording mode. 
         Reference: <b>Moradi et al., 2022</b>
         <a href = "https://www.nature.com/articles/s42003-022-03329-5">
         <i>Normalized unitary synaptic signaling of the hippocampus and entorhinal cortex predicted by deep learning of experimental recordings.</i></a>
         Communications Biology 2022 5(418):1-19. doi: 10.1038/s42003-022-03329-5.
+        <br><br>
+        <b>*NEW*</b> The release of v2.0 on 05/24/2023 includes 1,143 PoK, 288 PoE, and a new GUI for selecting neuron types for running spiking neural network simulations. 
+        Reference: <b>Wheeler et al., 2023</b>
+        <a href = "https://www.biorxiv.org/content/10.1101/2023.05.12.540597v1">
+        <i>Hippocampome.org v2.0: a knowledge base enabling data-driven spiking neural network simulations of rodent hippocampal circuits.</i></a>
+        bioRxiv. doi: 10.1101/2023.05.12.540597.
       </font>
     </td>
   </tr>
@@ -343,8 +349,8 @@ jQuery(document).ready(function() {
           <!-- <br /><p><?php echo $info; ?> -->
           <br /><p><?php $webpage_id_number = 1; include('report_hits.php'); ?>
           <br>
-          527,802 Pieces of Knowledge (PoK) and 46,004 Pieces of Evidence (PoE)
-          <br />Last Update: 22 Aug 2022 (<a href="Help_Release_Notes.php">v2.0&alpha; R 1Q</a>)</font>
+          528,945 Pieces of Knowledge (PoK) and 46,292 Pieces of Evidence (PoE)
+          <br />Last Update: 24 May 2023 (<a href="Help_Release_Notes.php">v2.0&alpha; R 1Q</a>)</font>
           <br />
         </div>
     </td>   
