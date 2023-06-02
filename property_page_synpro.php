@@ -740,6 +740,7 @@ function show_only_authors(link, start1, stop1)
 						$n_article = $n_article + 1;
 					}
 				}
+
 				for ($i=0; $i<$n_article; $i++)
 				{
 					// Retrieve Quote and page_location and original_id from Fragment bu using fragment_id:
