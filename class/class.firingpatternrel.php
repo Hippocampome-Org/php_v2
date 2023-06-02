@@ -42,7 +42,6 @@ class firingpatternrel
 	
 		$query = "SELECT Type_id FROM $table WHERE FiringPattern_id='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		
 		while(list($Type_id) = mysqli_fetch_row($rs))
 		{
 				$this->setTypeId($Type_id);
