@@ -182,7 +182,7 @@ class evidencepropertyyperel_phases
 		$table=$this->getName_table();		
 		$query = "SELECT DISTINCT Evidence_id,linking_quote,interpretation_notes FROM $table WHERE Type_id = '$type_id'";
 		//echo "sql: ".$query."<br>";
-		$rs = mysqli_query($GLOBALS['conn'],$query);
+w		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
 		while(list($id,$linking_quote,$interpretation_notes) = mysqli_fetch_row($rs))
 		{			

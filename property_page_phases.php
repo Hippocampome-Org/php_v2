@@ -1161,7 +1161,6 @@ function show_only_authors(link, start1, stop1)
 							else 
 								$authors2.=" <a href='find_author.php?name_author=$auth_final&first_author=$f_auth&new=1&see_result=1'>$auth[$x]</a>";
 						}
-						
 						$year1 = $year;
 						$publication1 = $publication;
 						$PMID1 = $PMID;
@@ -1172,6 +1171,8 @@ function show_only_authors(link, start1, stop1)
 						$volume1 = $volume;
 						$issue1 = $issue;
 						$referenceID = $referenceID_val;
+
+						break; # added 05/27/2023 because the while loop was executing an unnecessary number of times
 					}					
 					
 					display_article($authors1, $authors2, $publication1, $year1, $volume1, $issue_tot, $pages1, $string_pmid, $doi_tot, $show1, $PMID1, $issue1, $doi1, $page_in, $page_end, $title_temp, $name_show_only, $val_property, $id_neuron, $i);
