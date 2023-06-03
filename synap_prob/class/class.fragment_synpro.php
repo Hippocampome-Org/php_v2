@@ -411,7 +411,7 @@ class fragment_synpro
     public function getSomaticDistances($neuron_id,$neurite,$refID)
     {
     	$somatic_distances=array();
-		$query = "SELECT CAST(STD(CAST(avg_path_length AS DECIMAL(10,2))) AS DECIMAL(10,2)) AS std_sd, CAST(AVG(CAST(avg_path_length AS DECIMAL(10,2))) AS DECIMAL(10,2)) AS avg, CAST(COUNT(CAST(avg_path_length AS DECIMAL(10,0))) AS DECIMAL(10,0)) AS count_sd, CAST(min_path_length AS DECIMAL(10,2)) AS min_sd, CAST(max_path_length AS DECIMAL(10,2)) AS max_sd FROM neurite_quantified WHERE unique_id=".$neuron_id." AND neurite_quantified.neurite='".$neurite."' AND reference_ID=".$refID." AND avg_path_length!='';";
+		$query = "SELECT CAST(STD(CAST(avg_path_length AS DECIMAL(10,2))) AS DECIMAL(10,2)) AS std_sd, CAST(AVG(CAST(avg_path_length AS DECIMAL(10,2))) AS DECIMAL(10,2)) AS avg, CAST(COUNT(CAST(avg_path_length AS DECIMAL(10,0))) AS DECIMAL(10,0)) AS count_sd, CAST(MIN(min_path_length) AS DECIMAL(10,2)) AS min_sd, CAST(MAX(max_path_length) AS DECIMAL(10,2)) AS max_sd FROM neurite_quantified WHERE unique_id=".$neuron_id." AND neurite_quantified.neurite='".$neurite."' AND reference_ID=".$refID." AND avg_path_length!='';";
 		//echo $query."<br>";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		while(list($std_sd, $avg, $count_sd, $min_sd, $max_sd) = mysqli_fetch_row($rs))
