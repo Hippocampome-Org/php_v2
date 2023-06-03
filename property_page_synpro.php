@@ -79,7 +79,8 @@ function insert_temporary($table, $id_fragment, $id_original, $quote, $authors, 
 	if ($citation_count == NULL)
 		$citation_count = -1;
 	////set_magic_quotes_runtime(0);	
-		if (get_magic_quotes_gpc()) {
+		//if (get_magic_quotes_gpc()) {
+		if (true) {
         	$publication = stripslashes($publication);  
         	$quotes = stripslashes($quotes);   
 	$authors = stripslashes($authors);  
@@ -542,6 +543,16 @@ function show_only_authors(link, start1, stop1)
 	print("<title>Evidence - $name ($val_property)</title>");
 ?>
 <script type="text/javascript" src="style/resolution.js"></script>
+<script>
+function hide_element(entry_name) {
+  var arrayOfElements=document.getElementsByClassName(entry_name);
+	var lengthOfArray=arrayOfElements.length;
+
+	for (var i=0; i<lengthOfArray;i++){
+	    arrayOfElements[i].style.display='none';
+	}
+}
+</script>
 </head>
 
 <body>
@@ -740,7 +751,6 @@ function show_only_authors(link, start1, stop1)
 						$n_article = $n_article + 1;
 					}
 				}
-
 				for ($i=0; $i<$n_article; $i++)
 				{
 					// Retrieve Quote and page_location and original_id from Fragment bu using fragment_id:
@@ -1096,6 +1106,12 @@ function show_only_authors(link, start1, stop1)
 				<br />
 
 			<?php	
+				// track evidence entries with non-empty values
+				$evi_articles_vals = array(); // entries with values
+				$evi_quotes_vals = array(); // entries with values
+				$evi_articles_nonvals = array(); // entries missing values
+				$evi_quotes_nonvals = array(); // entries missing values
+
 				// There are no results available:
 				if ($n_id == 0)
 					print ("<br><font class='font12'>There are no results available.</font><br><br>");
@@ -1152,8 +1168,9 @@ function show_only_authors(link, start1, stop1)
 							<tr>
 							<td width='10%' align='center'>
 							</td>
-							<td width='5%' align='center' class='table_neuron_page2' valign='center'>
-						");							
+							<td width='5%' align='center' class='table_neuron_page2 evi_entry$i' valign='center'>
+						");				
+						//print("<script>hide_element(\"evi_entry1\");</script>");
 						
 						if ($show1 == 0)
 						{
@@ -1209,7 +1226,7 @@ function show_only_authors(link, start1, stop1)
 						
 						print ("
 							</td>							
-							<td align='left' width='85%' class='table_neuron_page2'>
+							<td align='left' width='85%' class='table_neuron_page2 evi_entry$i'>
 							
 							<font color='#000000'><strong>$title_temp[$i]</strong></font> <br>
 							$authors2 <br>
@@ -1218,7 +1235,6 @@ function show_only_authors(link, start1, stop1)
 							</td>	
 							</tr>																																		
 						</table>");
-						
 						// TABLE for Quotes:
 						// Logic to form dynamic query to retrive evidences(axon,dendrite,soma ) depending on checkbox selection 
 						$subquery=" and ( ";
@@ -1228,8 +1244,11 @@ function show_only_authors(link, start1, stop1)
 								$subquery=$subquery."type like '".$property_array[$index]."' or ";
 							}
 						}	
-						$subquery=substr($subquery,0,count($subquery)-4);
+						//$subquery=substr($subquery,0,count($subquery)-4);
+						$subquery=substr($subquery,0,strlen($subquery)-4);
 						$subquery=$subquery.")";
+						//echo "<br>".$subquery."<br>";
+						//echo "<br>".strlen($subquery)."<br>";
 						// Retrive evidences stored in temporary table
 						try
 						{			
@@ -1238,23 +1257,10 @@ function show_only_authors(link, start1, stop1)
 							$rs = mysqli_query($GLOBALS['conn'],$query);	
 							while(list($id_fragment, $id_original, $quote, $page_location, $type) = mysqli_fetch_row($rs))
 							{	
-								/*
-								$no_records=False;
-								if ($id_fragment=='' && $id_original=='' && $quote=='' && $page_location=='' && $type=='') 
-								{
-									echo "Nothing found";
-								}
-								else echo "Found ".$id_fragment." ".$id_original." ".$quote." ".$page_location." ".$type;
-								*/
-								//$current_record = $id_fragment.$id_original.$quote.$page_location.$type;
 								$current_record = $id_original.$quote.$page_location.$type;
-								//echo "CURR REC ".$type;
 								$type_for_display=$type;
-							#if (!in_array($current_record, $avoid_dups))
-							if (true)
-							{	
 								$quote_count++;	
-								if ($show1 == 1)
+								if (true)//$show1 == 1)
 								{
 									$type_show  = "";
 									$query_type = "SELECT distinct type FROM $name_temporary_table WHERE id_fragment = $id_fragment $subquery ORDER BY type ASC";
@@ -1266,40 +1272,40 @@ function show_only_authors(link, start1, stop1)
 									if($color != ''){
 									//if ($type_show == 'Axons')
 									if ($type_for_display == 'Axons')
-									print ("<table width='80%' border='0' cellspacing='2' cellpadding='5' style='display:table' class='axon'>");
+									print ("<table width='80%' border='0' cellspacing='2' cellpadding='5' style='display:table' class='axon evi_entry$i-$quote_count'>");
 									if ($type_for_display == 'Dendrites')
-									print ("<table width='80%' border='0' cellspacing='2' cellpadding='5' style='display:table' class='dendrite'>");
+									print ("<table width='80%' border='0' cellspacing='2' cellpadding='5' style='display:table' class='dendrite evi_entry$i-$quote_count'>");
 								    if ($type_for_display == 'Somata')
-									print ("<table width='80%' border='0' cellspacing='2' cellpadding='5' style='display:table' class='somata'>");
+									print ("<table width='80%' border='0' cellspacing='2' cellpadding='5' style='display:table' class='somata evi_entry$i-$quote_count'>");
 									if ($type_for_display == 'AxonsSomata')
-									print ("<table width='80%' border='0' cellspacing='2' cellpadding='5' style='display:table' class='axonsomata'>");
+									print ("<table width='80%' border='0' cellspacing='2' cellpadding='5' style='display:table' class='axonsomata evi_entry$i-$quote_count'>");
 									if ($type_for_display == 'AxonsDendrites')
-									print ("<table width='80%' border='0' cellspacing='2' cellpadding='5' style='display:table' class='axondendrite'>");
+									print ("<table width='80%' border='0' cellspacing='2' cellpadding='5' style='display:table' class='axondendrite evi_entry$i-$quote_count'>");
 									if ($type_for_display == 'DendritesSomata')
-									print ("<table width='80%' border='0' cellspacing='2' cellpadding='5' style='display:table' class='dendritesomata'>");
+									print ("<table width='80%' border='0' cellspacing='2' cellpadding='5' style='display:table' class='dendritesomata evi_entry$i-$quote_count'>");
 									if ($type_for_display == 'AxonsDendritesSomata')
-									print ("<table width='80%' border='0' cellspacing='2' cellpadding='5' style='display:table' class='axondendritesomata'>");								
+									print ("<table width='80%' border='0' cellspacing='2' cellpadding='5' style='display:table' class='axondendritesomata evi_entry$i-$quote_count'>");								
 									}
 									
 									if ($type_for_display == '')								
-										print ("<table width='80%' border='0' cellspacing='2' cellpadding='5' style='display:table'>");
+										print ("<table width='80%' border='0' cellspacing='2' cellpadding='5' style='display:table' class='evi_entry$i-$quote_count'>");
 									print ("<tr>");
 												
 									$row_span=30;
 									if ($type_for_display == 'Axons')		
-										print ("<td width='15%' rowspan='".$row_span."' align='right' valign='top'><img src='images/axon.png'></td>");
+										print ("<td width='15%' rowspan='".$row_span."' align='right' valign='top'><img src='images/axon.png' class='evi_entry$i-$quote_count'></td>");
 									if ($type_for_display == 'Dendrites')		
-										print ("<td width='15%' rowspan='".$row_span."' align='right' valign='top'><img src='images/dendrite.png'></td>");	
+										print ("<td width='15%' rowspan='".$row_span."' align='right' valign='top'><img src='images/dendrite.png' class='evi_entry$i-$quote_count'></td>");	
 									if ($type_for_display == 'Somata')		
 										print ("<td width='15%' rowspan='".$row_span."' align='right' valign='top'><p style='color:rgb(84,84,84);font-size:68%'>SOMA</p></td>");
 	                                if ($type_for_display == 'AxonsSomata')	
-	                                  print ("<td width='15%' rowspan='".$row_span."' align='right' valign='top' style='display:table-cell' class='comboflag-axonsomata'> <p style='color:rgb(84,84,84);font-size:68%'>SOMA</p><img src='images/axon.png'></td>");										   
+	                                  print ("<td width='15%' rowspan='".$row_span."' align='right' valign='top' style='display:table-cell' class='comboflag-axonsomata'> <p style='color:rgb(84,84,84);font-size:68%'>SOMA</p><img src='images/axon.png' class='evi_entry$i-$quote_count'></td>");										   
 	                                if ($type_for_display == 'AxonsDendrites')	
-										print ("<td width='15%' rowspan='".$row_span."' align='right' valign='top' style='display:table-cell' class='comboflag-axondendrite'><img src='images/axon-dendrite.png'></td>");
+										print ("<td width='15%' rowspan='".$row_span."' align='right' valign='top' style='display:table-cell' class='comboflag-axondendrite'><img src='images/axon-dendrite.png' class='evi_entry$i-$quote_count'></td>");
 								    if ($type_for_display == 'DendritesSomata')
-										print ("<td width='15%' rowspan='".$row_span."' align='right' valign='top' style='display:table-cell' class='comboflag-dendritesomata'><p style='color:rgb(84,84,84);font-size:68%'>SOMA</p><img src='images/dendrite.png'></td>");	
+										print ("<td width='15%' rowspan='".$row_span."' align='right' valign='top' style='display:table-cell' class='comboflag-dendritesomata'><p style='color:rgb(84,84,84);font-size:68%'>SOMA</p><img src='images/dendrite.png' class='evi_entry$i-$quote_count'></td>");	
 									if ($type_for_display == 'AxonsDendritesSomata')
-	                                 	print ("<td width='15%' rowspan='".$row_span."' align='right' valign='top' style='display:table-cell' class='comboflag-axondendritesomata'> <p style='color:rgb(84,84,84);font-size:68%'>SOMA</p><img src='images/axon-dendrite.png'></td>");
+	                                 	print ("<td width='15%' rowspan='".$row_span."' align='right' valign='top' style='display:table-cell' class='comboflag-axondendritesomata'> <p style='color:rgb(84,84,84);font-size:68%'>SOMA</p><img src='images/axon-dendrite.png' class='evi_entry$i-$quote_count'></td>");
 									if ($type_for_display == '')									
 										print ("<td width='15%' rowspan='".$row_span."' align='right' valign='top' style='display:table-cell'></td>");								
 									// retrieve the attachament
@@ -1335,40 +1341,40 @@ function show_only_authors(link, start1, stop1)
 									
 
 									// get protocol age species and interpretation
-									$query_to_get_info = "SELECT interpretation_notes,protocol,age_weight,species_descriptor,species_tag  FROM ".$class_fragment." WHERE id=$id_fragment ";
+									$query_to_get_info = "SELECT interpretation_notes,protocol,age_weight,species_tag  FROM ".$class_fragment." WHERE id=$id_fragment ";
+									//echo $query_to_get_info;
 									$rs_to_get_info = mysqli_query($GLOBALS['conn'],$query_to_get_info);	
 									$seg_1_text="";
 									$seg_2_text="";
-									while(list($interpretation_notes,$protocol,$age_weight,$species_descriptor,$species_tag) = mysqli_fetch_row($rs_to_get_info))
+									while(list($interpretation_notes,$protocol,$age_weight,$species_tag) = mysqli_fetch_row($rs_to_get_info))
 									{
 										if ($interpretation_notes=='NULL') {$interpretation_notes='';}
 										if ($protocol=='NULL') {$protocol='';}
 										if ($age_weight=='NULL') {$age_weight='';}
-										if ($species_descriptor=='NULL') {$species_descriptor='';}
 										if ($species_tag=='NULL') {$species_tag='';}
 										$species=$fragment->refid_to_species($id_original);
 										if ($species=='NULL') {$species='';}
 
 										if($protocol){
 											$seg_1_text=$seg_1_text."	<tr>
-											<td width='70%' class='table_neuron_page2' align='left'>
+											<td width='70%' class='table_neuron_page2 evi_entry$i-$quote_count' align='left'>
 												PROTOCOL: $protocol
 											</td>
-											<td width='15%' align='center'> </td></tr>";
+											<td width='15%' align='center' class='evi_entry$i-$quote_count'> </td></tr>";
 										}
 										if($species){
 											$seg_1_text=$seg_1_text."<tr>	
-											<td width='70%' class='table_neuron_page2' align='left'>
+											<td width='70%' class='table_neuron_page2 evi_entry$i-$quote_count' align='left'>
 												SPECIES: $species 
 												</td>
-											<td width='15%' align='center'> </td></tr>";
+											<td width='15%' align='center' class='evi_entry$i-$quote_count'> </td></tr>";
 										}
 										if($age_weight){
 											$seg_1_text=$seg_1_text."	<tr>
-											<td width='70%' class='table_neuron_page2' align='left'>
+											<td width='70%' class='table_neuron_page2 evi_entry$i-$quote_count' align='left'>
 												Age/Weight: $age_weight
 											</td>
-											<td width='15%' align='center'> </td></tr>";
+											<td width='15%' align='center' class='evi_entry$i-$quote_count'> </td></tr>";
 										}
 										#$seg_2_text="";
 										if($interpretation_notes){
@@ -1385,7 +1391,7 @@ function show_only_authors(link, start1, stop1)
 									$parcel=$val_property;
 									print ("
 											<tr>
-											<td width='70%' class='table_neuron_page2' align='left'>");
+											<td width='70%' class='table_neuron_page2 evi_entry$i' align='left'>");
 									if ($sp_page=='dal') {
 										$neurite_lengths=$fragment->getNeuriteLengths($neuron_id,$nq_neurite_name,$refID);
 										$download_icon='images/download_PNG.png';
@@ -1406,6 +1412,15 @@ function show_only_authors(link, start1, stop1)
 											if ($color=='blue') {
 												print ("Dendritic length in ".$parcel.": ".$neurite_lengths[1]." μm");
 											}
+										}
+										// track if evidence entries have values or not
+										if ($neurite_lengths[1]=='') {
+												array_push($evi_articles_nonvals,$i);
+												array_push($evi_quotes_nonvals,$quote_count);
+										}
+										else {
+												array_push($evi_articles_vals,$i);
+												array_push($evi_quotes_vals,$quote_count);
 										}
 									}
 									else if ($sp_page=='sd') {
@@ -1429,22 +1444,36 @@ function show_only_authors(link, start1, stop1)
 												print ("Somatic distance of dendrites in ".$parcel.": ".$somatic_distances[1]." μm (n = 1)");
 											}			
 										}
+										// track if evidence entries have values or not
+										if ($somatic_distances[1]=='') {
+												array_push($evi_articles_nonvals,$i);
+												array_push($evi_quotes_nonvals,$quote_count);
+										}
+										else {
+												array_push($evi_articles_vals,$i);
+												array_push($evi_quotes_vals,$quote_count);
+										}
+									}
+									// hide entries
+									if ($show1 != 1) {
+										print("<script>hide_element(\"evi_entry".$i."-".$quote_count."\");</script>");
+										print("hide_element(\"evi_entry".$i."-".$quote_count."\");");
 									}
 									print ("</td></tr>");
 									print ("
 										<tr>	
-											<td width='70%' class='table_neuron_page2' align='left'>");
+											<td width='70%' class='table_neuron_page2 evi_entry$i' align='left'>");
 									
 											print ($att_desc);
 											//print ($id_fragment);
 											print("</td>
-											<td width='15%' class='table_neuron_page2' align='center'>");
+											<td width='15%' class='table_neuron_page2 evi_entry$i' align='center'>");
 											
 											//if ($attachment_type=="morph_figure"||$attachment_type=="morph_table")
 											if ($attachment_type=="synpro_figure"&&$link_figure!='attachment/neurites/')
 											{
 												print ("<a href='".$att_link."' target='_blank'>");
-												print ("<img src='".$download_icon."' border='0' width='40%' style='background-color:white;'>");
+												print ("<img src='".$download_icon."' border='0' width='40%' style='background-color:white;' class='evi_entry$i'>");
 												print ("</a>");
 											}
 											print("</td></tr>");
@@ -1453,31 +1482,30 @@ function show_only_authors(link, start1, stop1)
 										// view info
 										print ("
 										<tr>	
-											<td width='70%' class='table_neuron_page2' align='left'>
+											<td width='70%' class='table_neuron_page2 evi_entry$i' align='left'>
 												Page location: <span title='$id_fragment (original: $id_original)'>$page_location</span>
 											</td>
-											<td width='15%' align='center'>");	
+											<td width='15%' align='center' class='evi_entry$i'>");	
 										print ("</td></tr>	
 										<tr>		
-											<td width='70%' class='table_neuron_page2' align='left'>
+											<td width='70%' class='table_neuron_page2 evi_entry$i' align='left'>
 												<em>$quote</em>");
 										print ($seg_2_text);
 										print("</td>
-											<td width='15%' class='table_neuron_page2' align='center'>");
+											<td width='15%' class='table_neuron_page2 evi_entry$i' align='center'");
 											
 											//if ($attachment_type=="morph_figure"||$attachment_type=="morph_table")
 											if ($attachment_type=="synpro_figure"&&$link_figure!='attachment/neurites/')
 											{
 												print ("<a href='$art_orig_link_figure' target='_blank'>");
-												print ("<img src='$art_orig_link_figure' border='0' width='80%' style='background-color:white;'>");
+												print ("<img src='$art_orig_link_figure' border='0' width='80%' style='background-color:white;' class='evi_entry$i'>");
 												print ("</a>");
 											}	
 											else;
 											print("</td></tr>");
 
 										print ("</table>");
-								}								
-							}
+								}		
 							array_push($avoid_dups, $current_record);	
 							//echo ($avoid_dups[0])."<br>";							
 						}	
@@ -1487,6 +1515,24 @@ function show_only_authors(link, start1, stop1)
 						print ("<br><font class='font12'>Error Occured while processing.</font><br><br>");
 					}						
 				} 
+				// hide article entries that have no value
+				for ($art_i = 0; $art_i < sizeof($evi_articles_nonvals); $art_i++) {
+					$art_quote = false;
+					for ($art_i2 = 0; $art_i2 < sizeof($evi_articles_vals); $art_i2++) {
+						if ($evi_articles_vals[$art_i2] == $evi_articles_nonvals[$art_i]) {
+							$art_quote = true;
+						}
+					}
+					if ($art_quote == false) {
+						print("<script>hide_element(\"evi_entry".$evi_articles_nonvals[$art_i]."\");</script>");
+					}
+				}
+				// hide quote entries that have no value
+				for ($art_i = 0; $art_i < sizeof($evi_articles_nonvals); $art_i++) {
+					for ($quo_i = 0; $quo_i < sizeof($evi_quotes_nonvals); $quo_i++) {
+						print("<script>hide_element(\"evi_entry".$evi_articles_nonvals[$art_i]."-".$evi_quotes_nonvals[$quo_i]."\");</script>");	
+					}
+				}
 		?>
 			<!-- PAGINATION TABLE -->	
 				<table width="80%" border="0" cellspacing="2" cellpadding="0">
@@ -1516,7 +1562,9 @@ function show_only_authors(link, start1, stop1)
 									$cnt++;
 								}
 								if($neuron_show_only_value&&$n_id_tot!=0){
-										print ("$page_in1 - $page_end1 of $n_id_tot articles ($cnt Quotes)");	
+										// this needed to be updated to account for hidden articles adn quotes
+										//print ("$page_in1 - $page_end1 of $n_id_tot articles ($cnt Quotes)");	
+										//print ("currently displaying values from ".sizeof(array_unique($evi_articles_vals))." articles (".sizeof(array_unique($evi_quotes_vals))." Quotes)");	
 								}
 								 // Last page:
 								 $last_page1 = $n_id_tot / 10;

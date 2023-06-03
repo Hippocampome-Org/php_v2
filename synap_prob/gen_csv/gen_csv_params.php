@@ -33,7 +33,7 @@
 	$result = $conn->query($sql);
 	if ($result->num_rows > 0) { 
 		while($row = $result->fetch_assoc()) {
-			$entry=array($row['id'], $row['original_id'], $row['dt'], $row['quote'], $row['page_location'], $row['pmid_isbn'], $row['pmid_isbn_page'], $row['type'], $row['attachment'], $row['attachment_type'], $row['source_id'], $row['target_id'], $row['parameter'], $row['interpretation'], $row['interpretation_notes'], $row['linking_cell_id'], $row['linking_pmid_isbn'], $row['linking_pmid_isbn_page'], $row['linking_quote'], $row['linking_page_location'], $row['species_tag'], $row['species_descriptor'], $row['age_weight'], $row['protocol']);
+			$entry=array($row['id'], $row['original_id'], $row['dt'], $row['quote'], $row['page_location'], $row['pmid_isbn'], $row['pmid_isbn_page'], $row['type'], $row['attachment'], $row['attachment_type'], $row['source_id'], $row['target_id'], $row['parameter'], $row['interpretation'], $row['interpretation_notes'], $row['linking_cell_id'], $row['linking_pmid_isbn'], $row['linking_pmid_isbn_page'], $row['linking_quote'], $row['linking_page_location'], $row['species_tag'], $row['strain'], $row['age_weight'], $row['protocol']);
 			array_push($fragments, $entry);
 		}
 	}	
