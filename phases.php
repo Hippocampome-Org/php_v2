@@ -17,7 +17,7 @@ include("permission_check.php");
 <script src="jqGrid-4/js/jquery.jqGrid.src.js" type="text/javascript"></script>
 <script src="jquery-ui-1.10.2.custom/js/jquery.jqGrid.src-custom.js" type="text/javascript"></script>
 <?php
-require_once("load_matrix_session_phases.php");
+//require_once("load_matrix_session_phases.php");
 $jsonStr = $_SESSION['Phases'];
 $color_selected ='#EBF283';
 $research = $_REQUEST['research'];
