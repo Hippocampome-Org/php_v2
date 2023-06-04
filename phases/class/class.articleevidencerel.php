@@ -31,6 +31,17 @@ class articleevidencerel_phases
 		$this->_max_n_by_k_evidence_id = 23403;
 	}
 
+	public function retrive_article_id_from_pmid($pmid)
+	{
+		$query = "SELECT id FROM Article WHERE pmid_isbn='$pmid';";
+		$rs = mysqli_query($GLOBALS['conn'],$query);
+		$id_result = 0;
+		while(list($id) = mysqli_fetch_row($rs))
+		{	
+			$id_result = $id;
+		}
+		return $id_result;
+	}
 
 	public function retrive_article_id($evidence_id)
     {
@@ -41,7 +52,6 @@ class articleevidencerel_phases
 		//$query = "SELECT DISTINCT article_id FROM $table WHERE Evidence_id = '$evidence_id' AND Evidence_id>17505";
 		//$query = "SELECT DISTINCT article_id FROM $table WHERE Evidence_id = '$evidence_id'";
 		$query = "SELECT pmid FROM phases_fragment WHERE id='$evidence_id';";
-		//echo $query."<br>";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
 		while(list($id) = mysqli_fetch_row($rs))

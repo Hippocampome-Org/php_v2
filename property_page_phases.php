@@ -714,28 +714,27 @@ function show_only_authors(link, start1, stop1)
 					$pmid_isbn= $fragment -> getPmid_isbn();
 					$referenceID= $fragment -> getReferenceID();
 					//echo $fragment_id[$i]." referenceID: ".$referenceID." | ";
-					//echo "pmid_isbn ".$pmid_isbn."<br>";
+					//echo "<br>pmid_isbn1 ".$pmid_isbn;
 					$pmid_isbn_page= $fragment -> getPmid_isbn_page();
-					//echo "pmid_isbn_page: $pmid_isbn_page<br>";
+					//echo "<br>pmid_isbn_page: $pmid_isbn_page";
 					$page_location = $fragment -> getPage_location();
+					//if ($pmid_isbn == 25375253) {$pmid_isbn_page = NULL;}
 					//Retreive information from attachment table					
-					if ($pmid_isbn_page!=0 && $pmid_isbn_page!= NULL)
+					if ($pmid_isbn == 25375253) {
+						// spcial processing of phases_fragment entry with pmid_isbn_page that does not match what is listed in Article table
+						$id_article = $articleevidencerel -> retrive_article_id_from_pmid(25375253);
+						$article -> retrive_by_id($id_article);
+					}
+					else if ($pmid_isbn_page!=0 && $pmid_isbn_page!= NULL)
 					{
 						$article -> retrive_by_pmid_isbn_and_page_number($pmid_isbn, $pmid_isbn_page);
-						$id_article= $article -> getID();
-						//echo $id_article."<br>";
-					}
-					else if ($pmid_isbn == 25375253) {
-						$article -> retrive_by_pmid(25375253);
 						$id_article= $article -> getID();
 					}
 					else 
 					{
 						// retrieve article_id from ArticleEvidenceRel by using Evidence_id
 						$articleevidencerel -> retrive_article_id($evidence_id[$i]);
-						//echo $evidence_id[$i]."<br>";
 						$id_article = $articleevidencerel -> getArticle_id_array(0);
-						//echo $id_article."<br>";
 						// retrieve all information from article table by using article_id
 						$article -> retrive_by_id($id_article) ;
 					}
@@ -885,7 +884,7 @@ function show_only_authors(link, start1, stop1)
 						$title_temp[$n_id] = $title;											
 						$n_id = $n_id + 1;
 					}					
-					//echo $query." $n_id";
+					//echo $query." $n_id title:".$title_temp[$n_id];
 				?>	
 
 					
@@ -1280,7 +1279,6 @@ function show_only_authors(link, start1, stop1)
 								print ($seg_1_text);
 								$neuron_id=$id_neuron;
 								$refID=$id_original;
-								//echo "all_val_check|||||||||||||||||| ".$all_val_check." ".($all_val_check == "checked")."<br>";
 								
 								if ($val_property!="all_other" && $all_val_check != "checked") {
 									for ($i_vt = 0; $i_vt < count($all_val_types); $i_vt++) {
