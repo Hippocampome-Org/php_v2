@@ -88,7 +88,8 @@ function insert_temporary($table, $id_fragment, $id_original, $quote, $authors, 
 	if ($citation_count == NULL)
 		$citation_count = -1;
 	////set_magic_quotes_runtime(0);	
-		if (get_magic_quotes_gpc()) {
+		//if (get_magic_quotes_gpc()) {
+		if (true) {
         	$publication = stripslashes($publication);  
         	$quotes = stripslashes($quotes);   
 	$authors = stripslashes($authors);  
