@@ -1195,7 +1195,7 @@ function show_only_authors(link, start1, stop1)
 							$referenceID = $fragment -> frag_id_to_ref_id($id_fragment);
 							//echo "<br>test $referenceID ".$neuron_ids[0]." $array_index<br>";
 							$array_index=$fragment->neuron_id_to_array_index($id_neuron, $neuron_ids);
-							$write_output = retrieve_values($conn, $array_index, $theta_values, $spw_values, $firingrate_values, $other_values, $neuron_ids, $conditions, $best_ranks_theta, $best_ranks_swr, $best_ranks_firingrate, $npage_theta, $npage_swr, $npage_firingrate, $npage_other, $pmid_isbn, $referenceID, $other_all, $val_property);
+							$write_output = retrieve_values($conn, $array_index, $theta_values, $spw_values, $firingrate_values, $other_values, $neuron_ids, $conditions, $best_ranks_theta, $best_ranks_swr, $best_ranks_firingrate, $npage_theta, $npage_swr, $npage_firingrate, $npage_other, $pmid_isbn, $referenceID, $other_all, $val_property, $best_ranks_other);
 							//echo "val_property ".$val_property."<br>";
 							$theta_values = $write_output[0];
 							$spw_values = $write_output[1];
