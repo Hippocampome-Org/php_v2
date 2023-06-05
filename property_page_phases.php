@@ -631,6 +631,9 @@ function show_only_authors(link, start1, stop1)
 			<tr>
 				<td width="20%" align="right">&nbsp;</td>
 				<td align="left" width="80%" class="table_neuron_page2">&nbsp;&nbsp;<strong>Hippocampome Neuron ID: <?php echo $id?></strong></td>
+				<?php 
+				//echo "<br>id_neuron".$id_neuron; 
+				?>
 			</tr>
 			<tr>
 				<td width="20%" align="right">&nbsp;</td>
@@ -719,10 +722,13 @@ function show_only_authors(link, start1, stop1)
 					//echo "<br>pmid_isbn_page: $pmid_isbn_page";
 					$page_location = $fragment -> getPage_location();
 					//if ($pmid_isbn == 25375253) {$pmid_isbn_page = NULL;}
-					//Retreive information from attachment table					
+					//Retreive information from attachment table	
+					//echo "test2";				
 					if ($pmid_isbn == 25375253) {
 						// spcial processing of phases_fragment entry with pmid_isbn_page that does not match what is listed in Article table
-						$id_article = $articleevidencerel -> retrive_article_id_from_pmid(25375253);
+						//$id_article = $articleevidencerel -> retrive_article_id_from_pmid(25375253);
+						$articleevidencerel->retrive_article_id_from_pmid(25375253);
+						$id_article = $articleevidencerel->getArticleId();
 						$article -> retrive_by_id($id_article);
 					}
 					else if ($pmid_isbn_page!=0 && $pmid_isbn_page!= NULL)

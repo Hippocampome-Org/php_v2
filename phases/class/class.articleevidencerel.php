@@ -21,6 +21,7 @@ class articleevidencerel_phases
 	private $_n_article_id;
 	private $_min_n_by_k_evidence_id;
 	private $_max_n_by_k_evidence_id;
+	private $_article_id;
 
 	function __construct ($name)
 	{
@@ -33,14 +34,14 @@ class articleevidencerel_phases
 
 	public function retrive_article_id_from_pmid($pmid)
 	{
-		$query = "SELECT id FROM Article WHERE pmid_isbn='$pmid';";
+		$query = "SELECT id FROM Article WHERE pmid_isbn=$pmid;";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$id_result = 0;
 		while(list($id) = mysqli_fetch_row($rs))
 		{	
 			$id_result = $id;
 		}
-		return $id_result;
+		$this->setArticleId($id_result);
 	}
 
 	public function retrive_article_id($evidence_id)
@@ -99,6 +100,10 @@ class articleevidencerel_phases
 		  $this->_n_article_id = $val1;
     }
 
+    public function setArticleId($val1)
+    {
+    	  $this->_article_id = $val1;
+    }
 
 	// GET ++++++++++++++++++++++++++++++++++++++	
     public function getEvidence_id_array($i)
@@ -134,6 +139,11 @@ class articleevidencerel_phases
 	public function getNbyM_table()
     {
     	return $this->_n_by_m_name_table;
+    }
+
+    public function getArticleId()
+    {
+    	return $this->_article_id;
     }
 }
 
