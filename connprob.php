@@ -26,6 +26,11 @@ https://stackoverflow.com/questions/53798216/toprecision-rounding-direction
     <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/pure-min.css" integrity="sha384-oAOxQR6DkCoMliIh8yFnu25d7Eq/PHS21PClpwjOTeU2jRSq11vu66rf90/cZr47" crossorigin="anonymous">
     <link rel="stylesheet" href="function/menu_support_files/menu_main_style.css" type="text/css" />
     <script type="text/javascript" src="style/resolution.js"></script>
+    <script>
+        function show_table(table_name) {
+            document.getElementById(table_name).style.display = "block";
+        }
+    </script>
 </head>
 <body>
 
@@ -124,10 +129,14 @@ include("function/menu_main.php");
             ?>
         </fieldset>
     </form>
-    <div id="title1" style="position:relative;top:-20px;display: none;z-index:5"><center>Probability of Connection Per Neuron Pair</center></div>
-    <div id="graph" style="height:300px;position:relative;top:-20px;z-index:1"></div>
-    <div id="title2" style="position:relative;bottom:300px;display: none;z-index:5"><center>Number of Contacts Per Connected Neuron Pair</center></div>
-    <div id="graph_noc" style="height:300px;position:relative;top:-180px;z-index:1"></div>
+    <div id="results0_cp_data" style="position:relative;top:-20px;display: none;z-index:5"><center>Probability of Connection Per Neuron Pair</center></div>
+    <div id="results0_cp_section" style="height:300px;position:relative;top:-20px;z-index:1"></div>
+    <div id="results0_noc_data" style="position:relative;bottom:300px;display: none;z-index:5"><center>Number of Contacts Per Connected Neuron Pair</center></div>
+    <div id="results0_noc_section" style="height:300px;position:relative;top:-180px;z-index:1"></div>
+    <div id="results1_cp_data" style="position:relative;top:-580px;display: none;z-index:5"><center>Probability of Connection Per Neuron Pair</center></div>
+    <div id="results1_cp_section" style="height:300px;position:relative;top:00px;z-index:1;display: none;"></div>
+    <div id="results1_noc_data" style="position:relative;top:-860px;display: none;z-index:5"><center>Number of Contacts Per Connected Neuron Pair</center></div>
+    <div id="results1_noc_section" style="height:300px;position:relative;top:-400px;z-index:1;display: none;"></div>
 </div>
     <script>
         let connDic = {};
@@ -224,10 +233,6 @@ include("function/menu_main.php");
             let target = document.getElementById("target").value.trim();
             let source_id = sourceIDDic[source];
             let target_id = targetIDDic[target];
-            /*let source_subregion = document.getElementById("source").value.split(" ")[0];
-            if (source_subregion == "CA3c") {source_subregion = "CA3";}
-            let target_subregion = document.getElementById("target").value.split(" ")[0];
-            if (target_subregion == "CA3c") {target_subregion = "CA3";}*/
             let source_subregion = subregion;
             let target_subregion = subregion;
             let dendrite_lengths_group = all_groups[0];
@@ -255,18 +260,13 @@ include("function/menu_main.php");
                 let axon_neurite = axon_lengths_group[i][3];
                 let axon_length = axon_lengths_group[i][4];
                 let axon_volume = axon_volumes_group[i][4];
-                //if (parcel != "I") {document.write(parcel+" "+parcel.length+" "+axon_parcel+" "+axon_parcel.length+" "+(parcel===axon_parcel)+"<br>");}
                 //if (parcel == "SP") {document.write("source: "+source+" target: "+target+" "+parcel+" "+parcel.length+" "+axon_parcel+" "+axon_parcel.length+" "+"axon_subregion "+axon_subregion+" source_subregion "+source_subregion+" "+(parcel===axon_parcel)+"<br>");}
-                //if (parcel.toUpperCase() != "SMO" && parcel.toUpperCase() != "SMI" && parcel.toUpperCase() != "SG" && parcel.toUpperCase() != "H") {document.write(parcel.toUpperCase());}
-                //if (parcel != "I") {document.write((source_id === axon_neuron_id && source_subregion === axon_subregion && (parcel.toString()).toUpperCase() === (axon_parcel.toString()).toUpperCase() && axon_neurite === "A")+" "+axon_length+"<br>");}
-
-                //if (source_id === axon_neuron_id && source_subregion === axon_subregion && (parcel.toString()).toUpperCase() === (axon_parcel.toString()).toUpperCase() && axon_neurite === "A") {
+                
                 if (source_id === axon_neuron_id && (parcel.toString()).toUpperCase() === (axon_parcel.toString()).toUpperCase() && axon_neurite === "A") {
                     axon_lengths.push(axon_length);
                     axon_volumes.push(axon_volume);
                 }
 
-                //if (source_id === axon_neuron_id && source_subregion === axon_subregion && axon_neurite === "A") {
                 if (source_id === axon_neuron_id && source_subregion === axon_subregion && axon_neurite === "A") {
                     parcels_axon.push(axon_parcel);
                 }
@@ -279,10 +279,6 @@ include("function/menu_main.php");
                 let dendrite_neurite = dendrite_lengths_group[i][3];
                 let dendrite_length = dendrite_lengths_group[i][4];
                 let dendrite_volume = dendrite_volumes_group[i][4];
-                if (parcel == "SLM") {
-                    //document.write(dendrite_length+"<br>");
-                }
-
                 //if (parcel=='SL') {document.write("source: "+source+" target: "+target+" "+parcel+" "+parcel.length+" "+dendrite_parcel+" "+dendrite_parcel.length+" "+(parcel===dendrite_parcel)+"<br>");}
 
                 if (target_id === dendrite_neuron_id && target_subregion === dendrite_subregion && (parcel.toString()).toUpperCase() === (dendrite_parcel.toString()).toUpperCase() && dendrite_neurite == "D") {
@@ -300,9 +296,7 @@ include("function/menu_main.php");
             //if (parcels_axon[0]=='H') {document.write(parcels_axon[0]);}
             for (let i = 0; i < parcels_axon.length; i++) {
                 for (let j = 0; j < parcels_dendrite.length; j++) {
-                    //if (parcel=='SP') {document.write("parcels_axon "+parcels_axon[i]+" parcels_dendrite "+parcels_dendrite[j]+"<br>");}
                     if (parcels_axon[i] === parcels_dendrite[j]) {
-                        //if (parcels_axon[i]=='H') {document.write(parcels_axon[i]);}
                         parcel_found = false;
                         for (let k = 0; k < parcels_both.length; k++) {
                             if (parcels_both[k] === parcels_axon[i]) {
@@ -316,7 +310,6 @@ include("function/menu_main.php");
                 }
             }
             n_parcels = parcels_both.length;
-            //if (parcel=='SP') {document.write("n_parcels "+n_parcels+" dendrite_lengths_group.length "+dendrite_lengths_group.length);}
 
             dendritic_length_mean = mean(dendrite_lengths);
             axonal_length_mean = mean(axon_lengths);
@@ -327,9 +320,6 @@ include("function/menu_main.php");
 
             // nps
             nps_mean = c * axonal_length_mean * dendritic_length_mean / volume;
-            //if (parcel === "SLM") {document.write(c+" "+axonal_length_mean+" "+dendritic_length_mean+" "+volume);}
-            //if (true) {document.write(parcel+" "+c+" "+axonal_length_mean+" "+dendritic_length_mean+" "+volume);}
-            //if (parcel === "SR") {document.write(nps_mean);}
             nps_stdev = nps_mean * Math.sqrt(Math.pow((axonal_length_stdev / axonal_length_mean),2) + Math.pow((dendritic_length_stdev / dendritic_length_mean),2));
             //console.log("nps: "+subregion+" "+parcel+" "+"nps_mean: "+nps_mean+" nps_stdev: "+nps_stdev);
 
@@ -356,7 +346,7 @@ include("function/menu_main.php");
 
             return stat_values;
         }
-        function stdev_calcs(all_groups, subregions, parcels) {
+        function stdev_calcs(all_groups, subregion, parcels) {
             let stdev_values = Array(parcels.length);
             let stdev_parcel_values = Array((parcels.length-1));
             let total_nc_mean = 0;
@@ -369,22 +359,16 @@ include("function/menu_main.php");
             let cp_stdev = Array();
 
             // values per parcel (subregion and layer)
-            for (var i = 0; i < subregions.length; i++) {
-                for (var j = 0; j < parcels.length; j++) {
-                    stdev_values[j] = Array(Array(),Array());
-                    if (j < (parcels.length - 1)) {
-                        stdev_values[j] = calc_stats(all_groups, subregions[i], parcels[j]);
-                        nc_means.push(stdev_values[j][0]);
-                        nc_stdev.push(stdev_values[j][1]);
-                        cp_means.push(stdev_values[j][2]);
-                        cp_stdev.push(stdev_values[j][3]);
-                    }
+            for (var i = 0; i < parcels.length; i++) {
+                stdev_values[i] = Array(Array(),Array());
+                if (i < (parcels.length - 1)) {
+                    stdev_values[i] = calc_stats(all_groups, subregion, parcels[i]);
+                    nc_means.push(stdev_values[i][0]);
+                    nc_stdev.push(stdev_values[i][1]);
+                    cp_means.push(stdev_values[i][2]);
+                    cp_stdev.push(stdev_values[i][3]);
                 }
             }
-            for (var i = 0; i < parcels.length; i++) {
-                //document.write(i+" "+parcels[i]+" "+cp_means[i]+"<br>");
-            }  
-            //document.write(subregions.length);
 
             var nc_stdev_tally = 0;
             var cp_mean_tally = 1;
@@ -412,13 +396,6 @@ include("function/menu_main.php");
             return stdev_values;
         }
         function parse(all_groups){
-            /*let source = document.getElementById("source").value.trim();
-            let target = document.getElementById("target").value.trim();
-            let source_id = sourceIDDic[source];
-            let target_id = targetIDDic[target];*/
-
-            //let source_id_str = source_id.toString();
-            //let subregion_number = source_id_str.substring(0, 1);
             let subregions = Array();
             let cname = Array();
 
@@ -426,9 +403,10 @@ include("function/menu_main.php");
             <?php include("synap_prob/n_m_params.php"); ?>
             <?php
             // find subregions
+            $sr_entries = array();
+            //array_push($sr_entries, 'DG');
             $sql = "SELECT distinct subregion FROM SynproPairsOrder WHERE source_id=".$_REQUEST["source_id"]." AND target_id=".$_REQUEST["target_id"];
             $result = $conn->query($sql);
-            $sr_entries = array();
             if ($result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
                     array_push($sr_entries, $row['subregion']);
@@ -439,50 +417,56 @@ include("function/menu_main.php");
             }
             //echo "document.write(\"$sql\");"
             ?>
+
+            ////////////// process each subregion individually //////////////
+            for (var si = 0; si < subregions.length; si++) {
+            cname = Array();
+            show_table('results'+si+'_cp_data');
+            show_table('results'+si+'_cp_section');
+            show_table('results'+si+'_noc_data');
+            show_table('results'+si+'_noc_section');
             // find relevant layers
-            for (var i = 0; i < subregions.length; i++) {
-                if (subregions[i]==='DG') {
-                    <?php
-                        for ($i = 0; $i < count($dg_group_short); $i++) {
-                            echo "cname.push(\"".$dg_group_short[$i]."\");";
-                        }
-                    ?>                
-                };
-                if (subregions[i]==='CA3') {
-                    <?php
-                        for ($i = 0; $i < count($ca3_group_short); $i++) {
-                            echo "cname.push(\"".$ca3_group_short[$i]."\");";
-                        }
-                    ?> 
-                }
-                if (subregions[i]==='CA2') {
-                    <?php
-                        for ($i = 0; $i < count($ca2_group_short); $i++) {
-                            echo "cname.push(\"".$ca2_group_short[$i]."\");";
-                        }
-                    ?> 
-                }
-                if (subregions[i]==='CA1') {
-                    <?php
-                        for ($i = 0; $i < count($ca1_group_short); $i++) {
-                            echo "cname.push(\"".$ca1_group_short[$i]."\");";
-                        }
-                    ?> 
-                }
-                if (subregions[i]==='SUB') {
-                    <?php
-                        for ($i = 0; $i < count($sub_group_short); $i++) {
-                            echo "cname.push(\"".$sub_group_short[$i]."\");";
-                        }
-                    ?> 
-                }
-                if (subregions[i]==='EC'||subregions[i]==='LEC'||subregions[i]==='MEC') {
-                    <?php
-                        for ($i = 0; $i < count($ec_group_short); $i++) {
-                            echo "cname.push(\"".$ec_group_short[$i]."\");";
-                        }
-                    ?> 
-                }
+            if (subregions[si]==='DG') {
+                <?php
+                    for ($i = 0; $i < count($dg_group_short); $i++) {
+                        echo "cname.push(\"".$dg_group_short[$i]."\");";
+                    }
+                ?>                
+            };
+            if (subregions[si]==='CA3') {
+                <?php
+                    for ($i = 0; $i < count($ca3_group_short); $i++) {
+                        echo "cname.push(\"".$ca3_group_short[$i]."\");";
+                    }
+                ?> 
+            }
+            if (subregions[si]==='CA2') {
+                <?php
+                    for ($i = 0; $i < count($ca2_group_short); $i++) {
+                        echo "cname.push(\"".$ca2_group_short[$i]."\");";
+                    }
+                ?> 
+            }
+            if (subregions[si]==='CA1') {
+                <?php
+                    for ($i = 0; $i < count($ca1_group_short); $i++) {
+                        echo "cname.push(\"".$ca1_group_short[$i]."\");";
+                    }
+                ?> 
+            }
+            if (subregions[si]==='SUB') {
+                <?php
+                    for ($i = 0; $i < count($sub_group_short); $i++) {
+                        echo "cname.push(\"".$sub_group_short[$i]."\");";
+                    }
+                ?> 
+            }
+            if (subregions[si]==='EC'||subregions[si]==='LEC'||subregions[si]==='MEC') {
+                <?php
+                    for ($i = 0; $i < count($ec_group_short); $i++) {
+                        echo "cname.push(\"".$ec_group_short[$i]."\");";
+                    }
+                ?> 
             }
 
             parcels = Array();
@@ -497,11 +481,11 @@ include("function/menu_main.php");
                 parcel_entry = parcel_entry.replace("LVI","VI");
                 parcels.push(parcel_entry);
             }
-            let stdev_values = stdev_calcs(all_groups, subregions, parcels);
+            let stdev_values = stdev_calcs(all_groups, subregions[si], parcels);
             //document.write("cname.length "+cname.length);
 
-            document.getElementById('title1').style.display='block';
-            let cp_text = "<center>Probability of Connection Per Neuron Pair<br><br><table style='text-align:center;border: 1px solid black;width:88%;height:10px;table-layout: fixed;font-size:16px;'><tr style='background-color:grey;font-color:white;color:white;'>";
+            document.getElementById('results'+si+'_cp_data').style.display='block';
+            let cp_text = "<center>"+subregions[si]+"<br>Probability of Connection Per Neuron Pair<br><br><table style='text-align:center;border: 1px solid black;width:88%;height:10px;table-layout: fixed;font-size:16px;'><tr style='background-color:grey;font-color:white;color:white;'>";
             for (let i = 0; i < cname.length; i++) {
               cp_text += "<td style='padding: 5px;font-color:white;color:white;border: 1px solid black;'>"+cname[i]+'</td>';
             } 
@@ -529,8 +513,8 @@ include("function/menu_main.php");
               cp_text += "</td>";
             }
             cp_text += '</tr></table></center>';
-            document.getElementById('title1').innerHTML = cp_text;
-            document.getElementById('title2').style.display='block';
+            document.getElementById('results'+si+'_cp_data').innerHTML = cp_text;
+            document.getElementById('results'+si+'_noc_data').style.display='block';
             let noc_text = "<center>Number of Contacts Per Connected Neuron Pair<br><br><table style='text-align:center;border: 1px solid black;width:88%;height:10px;table-layout: fixed;font-size:16px;'><tr style='background-color:grey;font-color:white;color:white;'>";
             for (let i = 0; i < cname.length; i++) {
               noc_text += "<td style='padding: 5px;font-color:white;color:white;border: 1px solid black;'>"+cname[i]+'</td>';
@@ -559,7 +543,9 @@ include("function/menu_main.php");
               noc_text += "</td>";
             }
             noc_text += '</tr></table></center>';
-            document.getElementById('title2').innerHTML = noc_text;
+            document.getElementById('results'+si+'_noc_data').innerHTML = noc_text;
+            }
+            /////////////////////////////////////////////////////////////////
         }
         function readData(url,volume_data,volumes_index,columns_index,all_groups){
             $.ajax({
@@ -591,7 +577,6 @@ include("function/menu_main.php");
                 $parcel_volumes = array();
                 if (isset($_REQUEST["source"])) {
                     echo "document.getElementById('source').value='".$_REQUEST["source"]."';";
-                    //$sql_general = "SELECT unique_id, sl.sub_layer as subregion, SUBSTRING_INDEX(SUBSTRING_INDEX(neurite,':',2),':',-1) as parcel, SUBSTRING_INDEX(neurite,':',-1) as neurite, filtered_total_length as length, convexhull as volume FROM neurite_quantified as nq, SynproSubLayers as sl WHERE nq.unique_id!='' AND nq.filtered_total_length != 0 AND nq.filtered_total_length != '' AND nq.neurite not like '%:All:%' AND nq.convexhull != 0 AND nq.convexhull != '' AND nq.unique_id = sl.neuron_id AND ((sl.sub_layer = SUBSTRING_INDEX(SUBSTRING_INDEX(neurite,':',1),':',-1)) OR (sl.sub_layer = 'MEC' AND SUBSTRING_INDEX(SUBSTRING_INDEX(neurite,':',1),':',-1) = 'EC') OR (sl.sub_layer = 'LEC' AND SUBSTRING_INDEX(SUBSTRING_INDEX(neurite,':',1),':',-1) = 'EC'))";
                     $sql_general = "SELECT unique_id, SUBSTRING_INDEX(neurite,':',1)  as subregion, SUBSTRING_INDEX(SUBSTRING_INDEX(neurite,':',2),':',-1) as parcel, SUBSTRING_INDEX(neurite,':',-1) as neurite, filtered_total_length as length, convexhull as volume FROM neurite_quantified as nq WHERE nq.unique_id!='' AND nq.filtered_total_length != 0 AND nq.filtered_total_length != '' AND nq.neurite not like '%:All:%' AND nq.convexhull != 0 AND nq.convexhull != ''";
                     // collect axon values
                     $sql    = $sql_general." AND SUBSTRING_INDEX(neurite,':',-1) = 'A' AND unique_id = ".$_REQUEST["source_id"];
@@ -606,9 +591,7 @@ include("function/menu_main.php");
                             array_push($entry, $row['neurite']);
                             array_push($entry, $row['length']);
                             array_push($entry, $row['volume']);
-                            //if ($row['neurite'] == "A") {
-                                array_push($axon_group, $entry);
-                            //}
+                            array_push($axon_group, $entry);
                         }
                     }
                     // collect dendrite values
@@ -624,13 +607,10 @@ include("function/menu_main.php");
                             array_push($entry, $row['neurite']);
                             array_push($entry, $row['length']);
                             array_push($entry, $row['volume']);
-                            //if ($row['neurite'] == "D") {
-                                array_push($dendrite_group, $entry);
-                            //}
+                            array_push($dendrite_group, $entry);
                         }
                     }
-                    //echo "document.write(\"".$sql."\")";                    
-                    //$sql   = "SELECT * FROM SynproVolumesSelected;";
+                    //echo "document.write(\"".$sql."\")";         
 
                     ///////// find volumes ////////////
                     $sql   = "SELECT po.source_id, po.target_id, po.subregion, po.parcel, pv.volume FROM SynproPairsOrder as po, SynproParcelVolumes as pv WHERE po.subregion = pv.subregion AND po.parcel = pv.parcel AND po.parcel = pv.parcel AND source_id=".$_REQUEST["source_id"]." AND target_id=".$_REQUEST["target_id"];
@@ -649,9 +629,6 @@ include("function/menu_main.php");
                     ///////////////////////////////////
                     //echo "document.write(\"".$sql."\")";
                 }
-                //echo "document.write(\"entry:<br>".$axon_group[2][2]."\")";
-                //echo "document.write(\"entry:<br>".sizeof($dendrite_group)."\")";
-                //echo "document.write(\"entry:<br>".$sql_general."\")";
             ?>
 
             let dendrite_lengths_group = Array();
@@ -672,45 +649,18 @@ include("function/menu_main.php");
                     foreach ($entry as $entry_value) {
                         echo "entry.push(\"".$entry_value."\");";
                     }
-                    //echo "document.write(entry[4]);";
-                    //echo "document.write(\"".$dendrite_group[0][4]."<br>\");";
                     echo "lengths_entry = Array(entry[0], entry[1], entry[2], entry[3], entry[4]);";
-                    /*echo "lengths_entry = Array(";
-                    for ($i = 0; $i < count($entry); $i++) {
-                        echo "entry[$i]";
-                        if ($i<(count($entry)-1)) {echo ", ";}
-                    }
-                    echo ");";*/
                     echo "volumes_entry = Array(entry[0], entry[1], entry[2], entry[3], entry[5]);";
-                    /*echo "volumes_entry = Array(";
-                    for ($i = 0; $i < count($entry); $i++) {
-                        echo "entry[$i]";
-                        if ($i<(count($entry)-1)) {echo ", ";}
-                    }
-                    echo ");";*/
                     echo "dendrite_lengths_group.push(lengths_entry);";
                     echo "dendrite_volumes_group.push(volumes_entry);";
                 }
-                //echo "document.write(dendrite_lengths_group[1][4]);";
                 foreach ($axon_group as $entry2) {
                     echo "entry2 = Array();";
                     foreach ($entry2 as $entry_value2) {
                         echo "entry2.push(\"".$entry_value2."\");";
                     }
                     echo "lengths_entry2 = Array(entry2[0], entry2[1], entry2[2], entry2[3], entry2[4]);";
-                    /*echo "lengths_entry2 = Array(";
-                    for ($i = 0; $i < count($entry); $i++) {
-                        echo "entry2[$i]";
-                        if ($i<(count($entry)-1)) {echo ", ";}
-                    }
-                    echo ");";*/
                     echo "volumes_entry2 = Array(entry2[0], entry2[1], entry2[2], entry2[3], entry2[5]);";
-                    /*echo "volumes_entry2 = Array(";
-                    for ($i = 0; $i < count($entry); $i++) {
-                        echo "entry2[$i]";
-                        if ($i<(count($entry)-1)) {echo ", ";}
-                    }
-                    echo ");";*/
                     echo "axon_lengths_group.push(lengths_entry2);";
                     echo "axon_volumes_group.push(volumes_entry2);";
                 }
@@ -724,7 +674,6 @@ include("function/menu_main.php");
             ?>
             
             all_groups = Array(dendrite_lengths_group, dendrite_volumes_group, axon_lengths_group, axon_volumes_group, parcel_volumes_group);
-            //document.write(document.getElementById("source").value);
             let name = document.getElementById("source").value.split(" ")[0];
             parse(all_groups);
         }
@@ -797,16 +746,13 @@ include("function/menu_main.php");
                         target = target.trim();
                         let sourceName = source.split(" ")[0];                        
                         let targetName = target.split(" ")[0];
-                        //if (sourceName === targetName || (sourceName==="EC"||sourceName==="LEC"||sourceName==="MEC")&&(targetName==="EC"||targetName==="LEC"||targetName==="MEC") || (sourceName==="CA3"&&targetName==="CA3c") || (sourceName==="CA3c"&&targetName==="CA3")) {
-                        if (true) {
-                            if (!connDic[source]) {
-                                connDic[source] = [];
-                            }
-                            connDic[source].push(target);
-                            sourceIDDic[source] = sourceID;
-                            targetIDDic[target] = targetID;
-                            //document.write(source+" "+target+"<br>");
+                        if (!connDic[source]) {
+                            connDic[source] = [];
                         }
+                        connDic[source].push(target);
+                        sourceIDDic[source] = sourceID;
+                        targetIDDic[target] = targetID;
+                        //document.write(source+" "+target+"<br>");
                     }
                 }
                 let source_html = document.getElementById("source");
