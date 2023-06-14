@@ -485,7 +485,13 @@ include("function/menu_main.php");
             //document.write("cname.length "+cname.length);
 
             document.getElementById('results'+si+'_cp_data').style.display='block';
-            let cp_text = "<center>"+subregions[si]+"<br>Probability of Connection Per Neuron Pair<br><br><table style='text-align:center;border: 1px solid black;width:88%;height:10px;table-layout: fixed;font-size:16px;'><tr style='background-color:grey;font-color:white;color:white;'>";
+            let cp_text = "";
+            <?php 
+            if ($_REQUEST["source_id"]==2020 && $_REQUEST["target_id"]==3007) {
+                echo "cp_text += \"<center><br><font style='color:red'>Currently neuron id 2020 to 3007 connection results are not reported correctly here. We are working to fix this.</font></center><br>\";\n";
+            }
+            ?>
+            cp_text += "<center>Subregion: "+subregions[si]+"<br>Probability of Connection Per Neuron Pair<br><br><table style='text-align:center;border: 1px solid black;width:88%;height:10px;table-layout: fixed;font-size:16px;'><tr style='background-color:grey;font-color:white;color:white;'>";
             for (let i = 0; i < cname.length; i++) {
               cp_text += "<td style='padding: 5px;font-color:white;color:white;border: 1px solid black;'>"+cname[i]+'</td>';
             } 
