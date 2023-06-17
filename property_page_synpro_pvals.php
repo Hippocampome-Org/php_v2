@@ -259,6 +259,7 @@ $post_name=$type_target->getName();
 			$parcel_group = $mec_group; $parcel_group_short = $ec_group_short;}
 	else if ($pair_subregion=='LEC') {
 			$parcel_group = $lec_group; $parcel_group_short = $ec_group_short;}
+	echo "<span style='float:middle;font-size:12px;background-color:white;' class='table_neuron_page2'><strong>Subregion: ".$pair_subregion."<br><br></strong></span>";
 
 	function query_value($source_id, $target_id, $parcel, $prop, $table, $nm_page, $totals_col, $totals_table) {
 		$value_result = 0;
@@ -414,6 +415,9 @@ $post_name=$type_target->getName();
 				//echo adjPrecision($all_value_result, $value_result, 4);
 				echo toPrecision($value_result, 4);
 				//echo $value_result;
+			}
+			if ($source_id==2020 && $target_id==3007) {
+				echo " found ";
 			}
 			echo "</a></td>";
 		}
