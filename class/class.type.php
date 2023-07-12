@@ -60,6 +60,22 @@ class type
 	}
 	
 	
+	public function retrieve_id_by_subregion_v1p0($subregion) // Retrive the data from table: 'TYPE' by ID (only with STATUS = active):
+    {
+		$table=$this->getName_table();	
+	
+		$query = "SELECT id FROM $table WHERE status = 'active' AND subregion = '$subregion' AND v2p0 = '0'";
+		$rs = mysqli_query($GLOBALS['conn'],$query);
+		$n=0;
+		while(list($id) = mysqli_fetch_row($rs))
+		{	
+//			$this->setID_array($id, $n);
+			$n = $n + 1;
+		}
+		$this->setNumber_subregion_type($n);
+	}
+	
+	
 	public function retrive_name_by_nickname()   // Retrive the data from table: 'TYPE' by ID (only with STATUS = active):
     {
 		$table=$this->getName_table();	
