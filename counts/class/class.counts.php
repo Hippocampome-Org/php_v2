@@ -9,6 +9,8 @@ class counts
 	private $_variable;
 	private $_n_variables;
 	private $_cell_type;
+	private $_counts;
+
 	function __construct ($name)
 	{
 		$this->_name_table = $name;
@@ -44,8 +46,20 @@ class counts
 		$this->setN_variables($n);
 	}	
 	
+	public function retrieve_counts_by_id($id){
+		// $query = "SELECT DISTINCT counts FROM Counts WHERE unique_ID ='$id'";
+		$query = "SELECT DISTINCT counts FROM counts WHERE unique_ID ='$id'";
+
+		$rs = mysqli_query($GLOBALS['conn'],$query);
+		while(list($counts) = mysqli_fetch_row($rs))
+		{	
+			$this->setCounts($counts);
+		}
+	}
+
 	public function retrieve_counts($id){
-		$query = "SELECT counts FROM Counts WHERE unique_ID ='$id'";
+		// $query = "SELECT DISTINCT counts FROM Counts WHERE unique_ID ='$id'";
+		$query = "SELECT DISTINCT counts FROM counts WHERE unique_ID ='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$counts_value="";
 		while($rows=mysqli_fetch_array($rs, MYSQLI_ASSOC))
@@ -56,7 +70,7 @@ class counts
 	}
 
 	public function retrieve_lower_bound($id){
-		$query = "SELECT lower_bound FROM Counts WHERE unique_ID ='$id'";
+		$query = "SELECT lower_bound FROM counts WHERE unique_ID ='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$lower_bound_value="";
 		while($rows=mysqli_fetch_array($rs, MYSQLI_ASSOC))
@@ -67,7 +81,7 @@ class counts
 	}
 
 	public function retrieve_upper_bound($id){
-		$query = "SELECT upper_bound FROM Counts WHERE unique_ID ='$id'";
+		$query = "SELECT upper_bound FROM counts WHERE unique_ID ='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$upper_bound_value="";
 		while($rows=mysqli_fetch_array($rs, MYSQLI_ASSOC))
@@ -107,6 +121,11 @@ class counts
     {
 		  $this->_cell_type[$n] = $val;
     }		
+
+    public function setCounts($val)
+    {
+    	$this->_counts = $val;
+    }
 	
 	// GET ++++++++++++++++++++++++++++++++++++++	  
     public function getMeasurement_eqn($i)
@@ -139,5 +158,9 @@ class counts
     	return $this->_cell_type[$i];
     }			
 	
+	public function getCounts()
+	{
+		return $this->_counts;
+	}
 }
 ?>
