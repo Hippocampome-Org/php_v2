@@ -144,17 +144,17 @@ if($research!="1")
 	$type -> retrive_id();
 	$number_type = $type->getNumber_type();
 
-	$type -> retrieve_id_by_subregion('DG');
+	$type -> retrieve_id_by_subregion_v1p0('DG');
 	$nDG = $type->getNumber_subregion_type();
-	$type -> retrieve_id_by_subregion('CA3');
+	$type -> retrieve_id_by_subregion_v1p0('CA3');
 	$nCA3 = $type->getNumber_subregion_type();
-	$type -> retrieve_id_by_subregion('CA2');
+	$type -> retrieve_id_by_subregion_v1p0('CA2');
 	$nCA2 = $type->getNumber_subregion_type();
-	$type -> retrieve_id_by_subregion('CA1');
+	$type -> retrieve_id_by_subregion_v1p0('CA1');
 	$nCA1 = $type->getNumber_subregion_type();
-	$type -> retrieve_id_by_subregion('Sub');
+	$type -> retrieve_id_by_subregion_v1p0('Sub');
 	$nSub = $type->getNumber_subregion_type();
-	$type -> retrieve_id_by_subregion('EC');
+	$type -> retrieve_id_by_subregion_v1p0('EC');
 	$nEC = $type->getNumber_subregion_type();
 }
 
