@@ -262,8 +262,11 @@ include("function/menu_main.php");
                 let axon_volume = axon_volumes_group[i][4];
                 //if (parcel == "SP") {document.write("source: "+source+" target: "+target+" "+parcel+" "+parcel.length+" "+axon_parcel+" "+axon_parcel.length+" "+"axon_subregion "+axon_subregion+" source_subregion "+source_subregion+" "+(parcel===axon_parcel)+"<br>");}
                 
-                if (source_id === axon_neuron_id && (parcel.toString()).toUpperCase() === (axon_parcel.toString()).toUpperCase() && axon_neurite === "A") {
+                if (source_id === axon_neuron_id && (parcel.toString()).toUpperCase() === (axon_parcel.toString()).toUpperCase() && axon_neurite === "A" && 
+                    (subregion.toString()).toUpperCase() === (axon_subregion.toString()).toUpperCase()) {
+                    //console.log("parcel.toString(): "+parcel.toString()+" ");
                     axon_lengths.push(axon_length);
+                    //console.log("axon_length: "+axon_length+"\n");
                     axon_volumes.push(axon_volume);
                 }
 
@@ -281,7 +284,8 @@ include("function/menu_main.php");
                 let dendrite_volume = dendrite_volumes_group[i][4];
                 //if (parcel=='SL') {document.write("source: "+source+" target: "+target+" "+parcel+" "+parcel.length+" "+dendrite_parcel+" "+dendrite_parcel.length+" "+(parcel===dendrite_parcel)+"<br>");}
 
-                if (target_id === dendrite_neuron_id && target_subregion === dendrite_subregion && (parcel.toString()).toUpperCase() === (dendrite_parcel.toString()).toUpperCase() && dendrite_neurite == "D") {
+                if (target_id === dendrite_neuron_id && target_subregion === dendrite_subregion && (parcel.toString()).toUpperCase() === (dendrite_parcel.toString()).toUpperCase() && dendrite_neurite == "D" && 
+                    (subregion.toString()).toUpperCase() === (dendrite_subregion.toString()).toUpperCase()) {
                     dendrite_lengths.push(dendrite_length);
                     dendrite_volumes.push(dendrite_volume);
                 }
@@ -331,11 +335,12 @@ include("function/menu_main.php");
 
             overlap_volume_mean = ((axonal_convex_hull_mean + dendritic_convex_hull_mean) / 4)
             overlap_volume_stdev = Math.sqrt(Math.pow(axonal_convex_hull_stdev,2) + Math.pow(dendritic_convex_hull_stdev,2));
-            console.log("vol over: "+subregion+" "+parcel+" "+" axon vol: "+axonal_convex_hull_mean+" dend vol: "+dendritic_convex_hull_mean+" overlap_volume_mean: "+overlap_volume_mean+" overlap_volume_stdev: "+overlap_volume_stdev);
+            //console.log("vol over: "+subregion+" "+parcel+" "+" axon vol: "+axonal_convex_hull_mean+" dend vol: "+dendritic_convex_hull_mean+" overlap_volume_mean: "+overlap_volume_mean+" overlap_volume_stdev: "+overlap_volume_stdev);
 
             nc_mean = (1/n_parcels) + (c * axonal_length_mean * dendritic_length_mean) / overlap_volume_mean;
+            //console.log("nc_mean: n_parcels: "+n_parcels+" c: "+c+" axonal_length_mean: "+axonal_length_mean+" dendritic_length_mean: "+dendritic_length_mean+" overlap_volume_mean: "+overlap_volume_mean+"\n");
             nc_stdev = nc_mean * Math.sqrt(Math.pow((axonal_length_stdev / axonal_length_mean),2) + Math.pow((dendritic_length_stdev / dendritic_length_mean),2) + Math.pow((overlap_volume_stdev / overlap_volume_mean),2));
-            console.log("noc: "+subregion+" "+parcel+" "+"nc_mean: "+nc_mean+" nc_stdev: "+nc_stdev);
+            //console.log("noc: "+subregion+" "+parcel+" "+"nc_mean: "+nc_mean+" nc_stdev: "+nc_stdev);
 
             // cp
             cp_mean = nps_mean / nc_mean;
