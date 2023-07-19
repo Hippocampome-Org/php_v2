@@ -583,9 +583,12 @@ include("function/menu_main.php");
                 $parcel_volumes = array();
                 if (isset($_REQUEST["source"])) {
                     echo "document.getElementById('source').value='".$_REQUEST["source"]."';";
+                    /*
                     $sql_general = "SELECT unique_id, SUBSTRING_INDEX(neurite,':',1)  as subregion, SUBSTRING_INDEX(SUBSTRING_INDEX(neurite,':',2),':',-1) as parcel, SUBSTRING_INDEX(neurite,':',-1) as neurite, filtered_total_length as length, convexhull as volume FROM neurite_quantified as nq WHERE nq.unique_id!='' AND nq.filtered_total_length != 0 AND nq.filtered_total_length != '' AND nq.neurite not like '%:All:%' AND nq.convexhull != 0 AND nq.convexhull != ''";
+                    */
+                    $sql_general = "SELECT unique_id, GROUP_CONCAT(DISTINCT SUBSTRING_INDEX(SUBSTRING_INDEX(neurite,':',1),':',-1)) as subregion, GROUP_CONCAT(DISTINCT SUBSTRING_INDEX(SUBSTRING_INDEX(neurite,':',2),':',-1)) as parcel, GROUP_CONCAT(DISTINCT SUBSTRING_INDEX(neurite,':',-1)) as neurite, neurite as full_loc, AVG(nullif(nq.filtered_total_length,'')) as length, AVG(nullif(nq.convexhull,'')) as volume FROM neurite_quantified as nq WHERE nq.unique_id!='' AND nq.neurite not like '%:All:%' AND (nq.filtered_total_length!='' OR nq.convexhull!='')";
                     // collect axon values
-                    $sql    = $sql_general." AND SUBSTRING_INDEX(neurite,':',-1) = 'A' AND unique_id = ".$_REQUEST["source_id"];
+                    $sql    = $sql_general." AND SUBSTRING_INDEX(neurite,':',-1) = 'A' AND unique_id = ".$_REQUEST["source_id"]." GROUP BY unique_id, SUBSTRING_INDEX(SUBSTRING_INDEX(neurite,':',1),':',-1), SUBSTRING_INDEX(SUBSTRING_INDEX(neurite,':',2),':',-1), nq.neurite";
                     //echo "document.write(\"".$sql."\");";
                     $result = $conn->query($sql);
                     if ($result->num_rows > 0) {
@@ -601,7 +604,7 @@ include("function/menu_main.php");
                         }
                     }
                     // collect dendrite values
-                    $sql    = $sql_general." AND SUBSTRING_INDEX(neurite,':',-1) = 'D' AND unique_id = ".$_REQUEST["target_id"];
+                    $sql    = $sql_general." AND SUBSTRING_INDEX(neurite,':',-1) = 'D' AND unique_id = ".$_REQUEST["target_id"]." GROUP BY unique_id, SUBSTRING_INDEX(SUBSTRING_INDEX(neurite,':',1),':',-1), SUBSTRING_INDEX(SUBSTRING_INDEX(neurite,':',2),':',-1), nq.neurite";
                     //echo "document.write(\"".$sql."\")";        
                     $result = $conn->query($sql);
                     if ($result->num_rows > 0) {
