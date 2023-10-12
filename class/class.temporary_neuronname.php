@@ -28,10 +28,7 @@ class temporary_neuronname
 
 	public function insert_temporary($letter, $neuron)
 	{
-	//set_magic_quotes_runtime(0);
-		if (get_magic_quotes_gpc()) {
-        	$neuron = stripslashes($neuron);    
-    	}
+        $neuron = stripslashes($neuron);
 		$neuron= mysqli_real_escape_string($GLOBALS['conn'],$neuron);
 		$table=$this->getName_table();
 			
@@ -41,12 +38,7 @@ class temporary_neuronname
 
 	public function update_temporary($letter, $neuron, $flag, $id)
 	{
-	//set_magic_quotes_runtime(0);
-	
-    	if (get_magic_quotes_gpc()) {
-        	$neuron = stripslashes($neuron);    
-    	}
-    
+		$neuron = stripslashes($neuron);
 		$neuron= mysqli_real_escape_string($GLOBALS['conn'],$neuron);	
 		$table=$this->getName_table();
 	

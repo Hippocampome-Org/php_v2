@@ -1,0 +1,12 @@
+
+.div-column {
+	float: left;
+	width: 28.33%;
+	padding: 1px;
+  }
+  
+  /* Clear floats after the columns */
+  .div-row {
+    width: 100%;
+    display: block;
+  }

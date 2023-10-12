@@ -103,14 +103,13 @@ function insert_temporary($table,$fp_id, $id_fragment, $id_original, $quote, $au
 		$citation_count = -1;
 	if($id_neuron_conn==NULL)
 		$id_neuron_conn=-1;
-	//set_magic_quotes_runtime(0);	
-	if (get_magic_quotes_gpc()) {
-    	$publication = stripslashes($publication);  
-    	$quote = stripslashes($quote);   
-		$authors = stripslashes($authors); 
-		$linking_quote = stripslashes($linking_quote);
-		$linking_page_location = stripslashes($linking_page_location);
-	}
+
+	$publication = stripslashes($publication);
+    $quote = stripslashes($quote);
+	$authors = stripslashes($authors);
+	$linking_quote = stripslashes($linking_quote);
+	$linking_page_location = stripslashes($linking_page_location);
+
 	$publication= mysqli_real_escape_string($GLOBALS['conn'],$publication);
 	$quote = mysqli_real_escape_string($GLOBALS['conn'],$quote);
 	$authors = mysqli_real_escape_string($GLOBALS['conn'],$authors);

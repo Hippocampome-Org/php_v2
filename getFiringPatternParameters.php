@@ -299,7 +299,7 @@ for($fp_count=0;$fp_count<count($firing_pattern_names);$fp_count++)
 		$flagShow=0;
 		// get matrix parameters for a type
 		for($index=0;$index<count($view_param_mr);$index++){
-			if($fp_array[$id][$view_param_mr[$index]]){
+			if(isset($fp_array[$id][$view_param_mr[$index]]) && $fp_array[$id][$view_param_mr[$index]]){
 				$title=$fp_array[$id][$view_param_mr[$index]];
 				$data=$fp_array[$id][$view_param_mr[$index]];
 				$data=explode(",",$data);

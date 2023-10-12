@@ -1,0 +1,77 @@
+
+.default-background {
+    background: white;
+    background-color: white;
+}
+
+.grey-background {
+    background:rgb(211, 211, 211) !important;
+    background-color: rgb(211, 211, 211) !important;
+}
+.dg_th_color {
+    background: rgb(119, 0, 0) !important;
+    background-color: rgb(119, 0, 0)!important;
+    color: rgb(255, 255, 255) !important;
+}
+.ca1_th_color {
+    background: rgb(255, 97, 3)!important;
+    background-color: rgb(255, 97, 3) !important;
+    color: rgb(255, 255, 255) !important;
+}
+.ca2_th_color {
+    background: rgb(255, 255, 153) !important;
+    background-color: rgb(255, 255, 153) !important;
+    color: rgb(0, 0, 0) !important;
+}
+.ca3_th_color {
+    background: rgb(192, 129, 129) !important;
+    background-color: rgb(192, 129, 129) !important;
+    color: rgb(255, 255, 255) !important;
+}
+.ec_th_color {
+    background: rgb(51, 102, 51) !important;
+    background-color: rgb(51, 102, 51) !important;
+    color: rgb(255, 255, 255) !important;
+}
+.sub_th_color {
+    background: rgb(255, 204, 51) !important;
+    background-color: rgb(255, 204, 51) !important;
+    color: rgb(0, 0, 0) !important;
+}
+
+#dg_th,#ca1_th,#ca2_th,#ca3_th,#ec_th,#sub_th
+{
+  color:white !important;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+  
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+  
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+.hide {
+    display: none;
+  }
+      
+  .myDIV:hover + .hide {
+    display: block;
+    color: red;
+  }

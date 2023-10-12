@@ -382,11 +382,11 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
 					$protoc[1] = str_replace(' ', '', $protoc[1]);
 					$protoc_pieces = explode("|", $protoc[1]);
 					
-					if($location_protocol == 'patchelectrode' && $protoc_pieces[1] != 'p')
+					if($protoc_pieces[1] != 'p')
 					{
 						$protoc_pieces[1] = 'p';
 					}
-					if($location_animal != null && $protoc_pieces[0] != 'm')
+					if($protoc_pieces[0] != 'm')
 					{
 						$protoc_pieces[0] = 'm';
 					}
@@ -399,7 +399,7 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
 					$std_sem = $epdata->getStd_sem();
 
 					$non_default_conditions_str = "";
-					if ($rep_value != NULL)
+					if (isset($rep_values) && $rep_value != NULL)
 					{
 						$nn_rep_value += 1;
 						

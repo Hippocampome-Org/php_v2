@@ -122,14 +122,13 @@ function insert_temporary($table, $i1_counter, $id_fragment, $id_original, $quot
 	{
 		//set_magic_quotes_runtime(false);
 	}
-	if (get_magic_quotes_gpc()) {
-		$publication = stripslashes($publication);
-		$res = stripslashes($res);
-		$quote = stripslashes($quote);   
-		$authors = stripslashes($authors); 
-		$linking_quote = stripslashes($linking_quote);
-		$linking_page_location = stripslashes($linking_page_location);
-	}
+	$publication = stripslashes($publication);
+	$res = stripslashes($res);
+	$quote = stripslashes($quote);
+	$authors = stripslashes($authors);
+	$linking_quote = stripslashes($linking_quote);
+	$linking_page_location = stripslashes($linking_page_location);
+
 	$publication= mysqli_real_escape_string($GLOBALS['conn'],$publication);
 	$quote = mysqli_real_escape_string($GLOBALS['conn'],$quote);
 	$authors = mysqli_real_escape_string($GLOBALS['conn'],$authors);
