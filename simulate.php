@@ -11,6 +11,8 @@
 
 
 <head>
+<!-- Google Analytics Tracking -->  
+<?php include_once("analytics.php") ?>
 <meta http-equiv="Content-Type" content="text/html" />
 <script type="text/javascript" src="plotlyjs/plotly-latest.min.js"></script>
 </head>

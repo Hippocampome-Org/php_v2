@@ -2,6 +2,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+<!-- Google Analytics Tracking -->  
+<?php include_once("analytics.php") ?>
   <!--
     Name: Author Search
     Author: Nate Sutton

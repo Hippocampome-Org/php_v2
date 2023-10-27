@@ -110,6 +110,8 @@ if ($_REQUEST['clear_all'])
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<!-- Google Analytics Tracking -->  
+<?php include_once("analytics.php") ?>
 
 <script type="text/javascript">
 	// Javascript function 

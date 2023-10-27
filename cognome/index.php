@@ -2,6 +2,8 @@
 <?php include ("../permission_check.php"); ?>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<!-- Google Analytics Tracking -->  
+<?php include_once("analytics.php") ?>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <title id="title_id">Cognome Knowledgebase</title>
   <link rel="stylesheet" type="text/css" href="main.css">

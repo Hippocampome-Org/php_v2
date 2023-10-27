@@ -2,6 +2,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+<!-- Google Analytics Tracking -->  
+<?php include_once("analytics.php") ?>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <title>Hippocampus Region Models and Theories</title>
   <link rel="stylesheet" type="text/css" href="main.css">

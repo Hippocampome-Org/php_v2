@@ -26,6 +26,8 @@ $firingpatternrel = new firingpatternrel($class_firing_pattern_rel);
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<!-- Google Analytics Tracking -->  
+<?php include_once("analytics.php") ?>
 <?php 
 include ("function/icon.html"); 
 ?>

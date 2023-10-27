@@ -17,6 +17,8 @@ https://stackoverflow.com/questions/2140627/how-to-do-case-insensitive-string-co
 https://stackoverflow.com/questions/53798216/toprecision-rounding-direction
 -->
 <head>
+<!-- Google Analytics Tracking -->  
+<?php include_once("analytics.php") ?>
     <meta charset="UTF-8">
     <title>Probability of Connection Tool</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">

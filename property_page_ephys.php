@@ -8,6 +8,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<!-- Google Analytics Tracking -->  
+<?php include_once("analytics.php") ?>
 <script>
 $(document).ready(function(){
      $("span[id^='flip']").click(function(){

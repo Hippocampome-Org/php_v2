@@ -5,6 +5,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<!-- Google Analytics Tracking -->  
+<?php include_once("analytics.php") ?>
 
 <?php	
 require_once('class/class.temporary_neuronterm.php');
