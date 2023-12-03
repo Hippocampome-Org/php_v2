@@ -91,6 +91,8 @@ ul
 <?php 
 	include ("function/title.php");
 	include ("function/menu_main.php");
+	include ("access_db.php");//Added on Dec 3 2023
+
 ?>	
 <!-- Main page loading code -->		
 <div id="center" style="padding:100px 100px; align:center;">
@@ -150,7 +152,7 @@ ul
 <div id="neuron" style="padding:100px 100px; align:center;">
 	<p style="align: center;">Neuron Statistics  <a href="#top">Back to top</a><p>
 	<div id="neuron-inside" style="width: 950px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
-		<?php echo get_neurons_views_report(); ?>
+		<?php echo get_neurons_views_report($conn); //Passing $conn on Dec 3 2023 ?>
 	</div>
 </div>
 <!-- Till here -->
@@ -160,7 +162,7 @@ ul
 <div id="pageview" style="padding:100px 100px; align:center;">
 	<p style="align: center;">Page View Statistics  <a href="#top">Back to top</a><p>
 	<div id="pageview-inside" style="width: 800px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
-		<?php echo get_pages_views_report(); ?>	
+		<?php echo get_pages_views_report($conn); //Passing $conn on Dec 3 2023 ?>	
 	</div>
 </div>
 <!-- Till here -->
@@ -170,7 +172,7 @@ ul
 <div id="subregion" style="padding:100px 100px; align:center;">
 	<p style="align: center;">Sub Region Statistics  <a href="#top">Back to top</a><p>
 	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
-		<?php echo get_subregion_views_report(); ?> 
+		<?php echo get_subregion_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
 	</div>
 </div>
 <!-- Till here -->

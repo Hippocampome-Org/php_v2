@@ -1,6 +1,6 @@
 <?php
 
-function get_page_views(){
+function get_page_views($conn){ //Passed on Dec 3 2023
 	$page_views_query = "select day_index, views 
 		from ga_analytics_pages_views where views > 0 
 		GROUP BY YEAR(day_index), MONTH(day_index)";
@@ -39,8 +39,8 @@ function format_table($conn, $query, $table_string, $rows){
 	echo $table_string;
 }
 
-function get_pages_views_report(){
-	include ("../access_db.php");
+function get_pages_views_report($conn){ //Passed $conn on Dec 3 2023
+	//include ("../access_db.php");//Commented on Dec 3 2023
 	$table_string = "<table style='border: 1px solid black;'>";
 	$table_string .= "<tr><th style='border: 1px solid black;'>Month-Year</th><th style='border: 1px solid black;'>Views</th></tr>";
 	$table_string .= "<tbody style='height: 590px !important; overflow: scroll; '>";
@@ -55,8 +55,8 @@ function get_pages_views_report(){
 	return $table_string;
 }
 
-function get_neurons_views_report(){
-	include ("../access_db.php");
+function get_neurons_views_report($conn){ //Passed on Dec 3 2023
+	//include ("../access_db.php");//Commented on Dec 3 2023
 	$table_string = "<table style='border: 1px solid black;'>";
 	$table_string .= "<tr><th style='border: 1px solid black;'>Page</th>";
 	$table_string .= "<th style='border: 1px solid black;'>Views</th>";
@@ -73,8 +73,8 @@ function get_neurons_views_report(){
 	return $table_string;
 }
 
-function get_subregion_views_report(){
-	include ("../access_db.php");
+function get_subregion_views_report($conn){ //Passed on Dec 3 2023
+	//include ("../access_db.php");//Commented on Dec 3 2023
 	$table_string = "<table style='border: 1px solid black;'>";
 	$table_string .= "<tr><th style='border: 1px solid black;'>Page</th>";
 	$table_string .= "<th style='border: 1px solid black;'>Views</th>";
