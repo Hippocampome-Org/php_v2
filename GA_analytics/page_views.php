@@ -112,12 +112,14 @@ function get_neurons_views_report($conn){ //Passed on Dec 3 2023
 	$table_string .= "<th style='border: 1px solid black;'>Neuron Name</th>";
 	$table_string .= "<th style='border: 1px solid black;'>Views</th></tr>";
 	$table_string .= "<tbody style='height: 590px !important; overflow: scroll; '>";
-	$page_neurons_views_query = "SELECT substring_index(substring_index(page, 'id_neuron=', -1), '&', 1) as neuronID, 
-(select name from Type where id = substring_index(substring_index(page, 'id_neuron=', -1), '&', 1) ) as neuron_name, count(*) as count 
+	$page_neurons_views_query = " SELECT substring_index(substring_index(page, 'id_neuron=', -1), '&', 1) as neuronID,
+                                    (select name from Type where id = substring_index(substring_index(page, 'id_neuron=', -1), '&', 1) ) as neuron_name,
+                                count(*) as count
                                 FROM ga_analytics_pages
-                                WHERE page LIKE '%id_neuron=%' 
-				AND length(substring_index(substring_index(page, 'id_neuron=', -1), '&', 1)) >2 
-                                GROUP BY substring_index(substring_index(page, 'id_neuron=', -1),'&', 1)";
+                                WHERE page LIKE '%id_neuron=%' and page LIKE '%/php/%' 
+                                and substring_index(substring_index(page, 'id_neuron=', -1), '&', 1) not in (4181, 2232, 23223 )
+                                AND length(substring_index(substring_index(page, 'id_neuron=', -1), '&', 1)) >2
+                                GROUP BY substring_index(substring_index(page, 'id_neuron=', -1),'&', 1)"; //exclude '4181', '2232', '23223')
 
 	$table_string .= format_table($conn, $page_neurons_views_query, $table_string, 3);
 	$table_string .= "</tbody></table>";
@@ -127,27 +129,28 @@ function get_neurons_views_report($conn){ //Passed on Dec 3 2023
 
 function get_morphology_property_views_report($conn){
 	$table_string = "<table style='border: 1px solid black;'>";
-        $table_string .= "<tr><th style='border: 1px solid black;'>Morphology</th>";
-        $table_string .= "<th style='border: 1px solid black;'>Color</th>";
+        $table_string .= "<tr>";
+	//<th style='border: 1px solid black;'>Morphology</th>"; //Commented on Dec 8 2023
+        //$table_string .= "<th style='border: 1px solid black;'>Color</th>"; //Commented on Dec 8 2023
         $table_string .= "<th style='border: 1px solid black;'>Neuron ID</th>";
         $table_string .= "<th style='border: 1px solid black;'>Neuron Name</th>";
         $table_string .= "<th style='border: 1px solid black;'>Views</th></tr>";
         $table_string .= "<tbody style='height: 590px !important; overflow: scroll; '>";
-        $page_property_views_query = " SELECT substring_index(substring_index(page, 'val_property=', -1), '&', 1)
-                                as morphology, 
-                                substring_index(substring_index(page, 'color=', -1), '&', 1)
-                                as color, 
+        $page_property_views_query = " SELECT 
+				-- substring_index(substring_index(page, 'val_property=', -1), '&', 1) as morphology, -- Commented on Dec 8 2023
+                                -- substring_index(substring_index(page, 'color=', -1), '&', 1) as color, -- commented on Dec 8 2023
                                  substring_index(substring_index(page, 'id_neuron=', -1), '&', 1) as neuronID, 
-(select name from Type where id = substring_index(substring_index(page, 'id_neuron=', -1), '&', 1) ) as neuron_name, 
-								count(*) 
+				(select name from Type where id = substring_index(substring_index(page, 'id_neuron=', -1), '&', 1) ) as neuron_name, 
+				count(*) 
                                 FROM ga_analytics_pages
-                                WHERE page LIKE '%morphology.php?id_neuron=%' 
+                                WHERE page LIKE '%morphology.php?id_neuron=%' and page LIKE '%/php/%' 
                                 AND length(substring_index(substring_index(page, 'id_neuron=', -1), '&', 1)) >2 
 				AND length(substring_index(substring_index(page, 'val_property=', -1), '&', 1)) > 2 
 				AND length(substring_index(substring_index(page, 'color=', -1), '&', 1)) > 2 
                                 GROUP BY substring_index(substring_index(page, 'morphology.php', -1),'&', 1)";
 
-        $table_string .= format_table($conn, $page_property_views_query, $table_string, 5);
+        //$table_string .= format_table($conn, $page_property_views_query, $table_string, 5);//Commented on Dec 8 2023 as we are getting only 3 columns from db
+        $table_string .= format_table($conn, $page_property_views_query, $table_string, 3);
         $table_string .= "</tbody></table>";
 
         echo $table_string;
@@ -155,27 +158,28 @@ function get_morphology_property_views_report($conn){
 
 function get_markers_property_views_report($conn){
 	$table_string = "<table style='border: 1px solid black;'>";
-        $table_string .= "<tr><th style='border: 1px solid black;'>Markers</th>";
-        $table_string .= "<th style='border: 1px solid black;'>Color</th>";
+        $table_string .= "<tr>";
+	//<th style='border: 1px solid black;'>Markers</th>"; //Commented on Dec 8 2023
+        //$table_string .= "<th style='border: 1px solid black;'>Color</th>"; //Commented on Dec 8 2023
         $table_string .= "<th style='border: 1px solid black;'>Neuron ID</th>";
         $table_string .= "<th style='border: 1px solid black;'>Neuron Name</th>";
         $table_string .= "<th style='border: 1px solid black;'>Views</th></tr>";
         $table_string .= "<tbody style='height: 590px !important; overflow: scroll; '>";
-        $page_property_views_query = " SELECT substring_index(substring_index(page, 'val_property=', -1), '&', 1)
-                                as morphology, 
-                                substring_index(substring_index(page, 'color=', -1), '&', 1)
-                                as color, 
+        $page_property_views_query = " SELECT 
+				-- substring_index(substring_index(page, 'val_property=', -1), '&', 1) as morphology, -- Commented on Dec 8 2023
+                                -- substring_index(substring_index(page, 'color=', -1), '&', 1) as color, -- Commented on Dec 8 2023
                                  substring_index(substring_index(page, 'id_neuron=', -1), '&', 1) as neuronID, 
-(select name from Type where id = substring_index(substring_index(page, 'id_neuron=', -1), '&', 1) ) as neuron_name, 
-								count(*) 
+				(select name from Type where id = substring_index(substring_index(page, 'id_neuron=', -1), '&', 1) ) as neuron_name, 
+				count(*) 
                                 FROM ga_analytics_pages
-                                WHERE page LIKE '%markers.php?id_neuron=%' 
+                                WHERE page LIKE '%markers.php?id_neuron=%' and page LIKE '%/php/%'  
                                 AND length(substring_index(substring_index(page, 'id_neuron=', -1), '&', 1)) >2 
 				AND length(substring_index(substring_index(page, 'val_property=', -1), '&', 1)) > 2 
 				AND length(substring_index(substring_index(page, 'color=', -1), '&', 1)) > 2 
                                 GROUP BY substring_index(substring_index(page, 'markers.php', -1),'&', 1)";
 
-        $table_string .= format_table($conn, $page_property_views_query, $table_string, 5);
+        //$table_string .= format_table($conn, $page_property_views_query, $table_string, 5); //Commted on Dec 8 2023 as we have 3 cols only
+        $table_string .= format_table($conn, $page_property_views_query, $table_string, 3);
         $table_string .= "</tbody></table>";
 
         echo $table_string;
@@ -187,10 +191,10 @@ function get_subregion_views_report($conn){ //Passed on Dec 3 2023
 	$table_string .= "<tr><th style='border: 1px solid black;'>Subregion</th><th style='border: 1px solid black;'>Views</th></tr>";
 	$table_string .= "<tbody style='height: 590px !important; overflow: scroll; '>";
 	$page_subregion_views_query = "SELECT 
-                                 substring_index(substring_index(page, 'id_neuron=', -1), '&', 1) as neuronID, 
-								count(*) as views 
+                                substring_index(substring_index(page, 'id_neuron=', -1), '&', 1) as neuronID, 
+				count(*) as views 
                                 FROM ga_analytics_pages
-                                WHERE page LIKE '%id_neuron=%' 
+                                WHERE page LIKE '%id_neuron=%' and page LIKE '%/php/%'  
                                 AND length(substring_index(substring_index(page, 'id_neuron=', -1), '&', 1)) >2 
                                 GROUP BY substring_index(substring_index(page, 'id_neuron=', -1),'&', 1)";
 	$table_string .= format_table_sub($conn, $page_subregion_views_query, $table_string, 2);
@@ -200,6 +204,21 @@ function get_subregion_views_report($conn){ //Passed on Dec 3 2023
 }
 
 function get_functionality_views_report($conn){
+	$table_string = "<table style='border: 1px solid black;'>";
+	$table_string .= "<tr><th style='border: 1px solid black;'>Property</th><th style='border: 1px solid black;'>Views</th></tr>";
+	$table_string .= "<tbody style='height: 590px !important; overflow: scroll; '>";
+	$page_subregion_views_query = "  select substring_index(substring_index(page, '/php/property_page_', -1),'.', 1), count(*)
+                                FROM ga_analytics_pages where page like '%/php/property%' 
+				AND substring_index(substring_index(page, '/php/property_page_', -1),'.', 1) 
+                                NOT IN ('synpro_nm_old2', 'connectivity_test', 'connectivity_orig') 
+                                GROUP BY substring_index(substring_index(page, '/php/property', -1),'?', 1)";
+                                
+	// -- exclude _page_synpro_nm_old2.php, _page_connectivity_test.php, _page_connectivity_orig.php"
+
+	$table_string .= format_table($conn, $page_subregion_views_query, $table_string, 2);
+	$table_string .= "</tbody></table>";
+	
+	echo $table_string;
 }
 
 ?>
