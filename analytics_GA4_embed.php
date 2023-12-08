@@ -110,9 +110,12 @@ ul
 			</div>
 			<div id="links" style="padding: 15px; 10px;">
  	    		<ul>
-				<li><a href="#neuron">Neuron Statistics</a></li>
-				<li><a href="#pageview">Page View Statistics</a></li>
+				<li><a href="#neuron">Neuron Type Statistics</a></li>
+				<li><a href="#morphologyproperty">Morphology Property Statistics</a></li>
+				<li><a href="#markersproperty">Markers Property Statistics</a></li>
 				<li><a href="#subregion">Sub Region Statistics</a></li>
+				<li><a href="#functionality">Functionality Domain Page Statistics</a></li>
+				<li><a href="#pageview">Page View Statistics</a></li>
 	    		</ul>
 			</div>
 		</div>
@@ -147,22 +150,32 @@ ul
 */
 ?>
 
-<!-- When Neuron Statistics is clicked-->
+<!-- When Neuron Type Statistics is clicked-->
 </br></br>
 <div id="neuron" style="padding:100px 100px; align:center;">
-	<p style="align: center;">Neuron Statistics  <a href="#top">Back to top</a><p>
+	<p style="align: center;">Neuron Type Statistics  <a href="#top">Back to top</a><p>
 	<div id="neuron-inside" style="width: 950px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
-		<?php echo get_neurons_views_report($conn); //Passing $conn on Dec 3 2023 ?>
+		<?php  get_neurons_views_report($conn); //Passing $conn on Dec 3 2023 ?>
 	</div>
 </div>
 <!-- Till here -->
 
-<!-- When Page View Statistics is clicked-->
+<!-- When Morphology Property Statistics is clicked-->
 </br></br>
-<div id="pageview" style="padding:100px 100px; align:center;">
-	<p style="align: center;">Page View Statistics  <a href="#top">Back to top</a><p>
-	<div id="pageview-inside" style="width: 800px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
-		<?php echo get_pages_views_report($conn); //Passing $conn on Dec 3 2023 ?>	
+<div id="morphologyproperty" style="padding:100px 100px; align:center;">
+	<p style="align: center;">Morphology Property Statistics  <a href="#top">Back to top</a><p>
+	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+		<?php  get_morphology_property_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
+	</div>
+</div>
+<!-- Till here -->
+
+<!-- When Markers Property Statistics is clicked-->
+</br></br>
+<div id="markersproperty" style="padding:100px 100px; align:center;">
+	<p style="align: center;">Markers Property Statistics  <a href="#top">Back to top</a><p>
+	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+		<?php  get_markers_property_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
 	</div>
 </div>
 <!-- Till here -->
@@ -172,7 +185,28 @@ ul
 <div id="subregion" style="padding:100px 100px; align:center;">
 	<p style="align: center;">Sub Region Statistics  <a href="#top">Back to top</a><p>
 	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
-		<?php echo get_subregion_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
+		<?php get_subregion_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
 	</div>
 </div>
 <!-- Till here -->
+
+<!-- When Functionality  Statistics is clicked-->
+</br></br>
+<div id="functionality" style="padding:100px 100px; align:center;">
+	<p style="align: center;">Functionality Domain Statistics  <a href="#top">Back to top</a><p>
+	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+		<?php get_functionality_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
+	</div>
+</div>
+<!-- Till here -->
+
+<!-- When Page View Statistics is clicked-->
+</br></br>
+<div id="pageview" style="padding:100px 100px; align:center;">
+	<p style="align: center;">Page View Statistics  <a href="#top">Back to top</a><p>
+	<div id="pageview-inside" style="width: 800px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+		<?php get_pages_views_report($conn); //Passing $conn on Dec 3 2023 ?>	
+	</div>
+</div>
+<!-- Till here -->
+
