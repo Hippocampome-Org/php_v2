@@ -82,6 +82,21 @@ ul
 	{margin-bottom:0in;}
 -->
 </style>
+<style>
+table, th, td {
+  border: 1px solid black;
+}
+
+tr:nth-child(even){
+  background-color: #98AFC7;
+}
+
+.blue-bg {   background: #98AFC7; }
+.white-bg { backgrou: #ffffff; }
+.green-bg {  background: #A2D7A7; }
+.lightgreen-bg { background: #E2F1E3; }
+
+</style>
 </head>
 
 <body>
