@@ -138,32 +138,6 @@ tr:nth-child(even){
 </div>
 <div style="clear:both"></div>
 <!-- Main initial page ends here -->
-<?php 
-				//<li><a href="#country">Access By Country</a></li>
-				//<li><a href="#city">Access By City</a></li>
-/*
-<!-- When Country is clicked-->
-</br></br>
-<div id="country" style="padding:100px 100px; align:center;">
-	<p style="align: center;">Access By Country  <a href="#top">Back to top</a><p>
-	<div id="countryi-inside" style="width: 800px; height: 600px; overflow-x: hidden;overflow-y: auto;position: relative; outline: none;">
-		<iframe width="100%" height="100%" src="https://lookerstudio.google.com/embed/reporting/b42b71e6-d63d-49ac-9bdd-83f6d88473ad/page/1M" allowfullscreen > </iframe>
-	</div>
-</div>
-<!-- Till here -->
-
-
-<!-- When City is clicked-->
-</br></br>
-<div id="city" style="padding:100px 100px; align:center;">
-	<p style="align: center;">Access By City  <a href="#top">Back to top</a><p>
-	<div id="city-inside" style="width: 800px; height: 600px; position: relative; outline: none;">
-		<iframe width="100%" height="100%" src="https://lookerstudio.google.com/embed/reporting/49789e8a-dda3-4f56-a8bd-c91dceaef5c2/page/mt5fD" allowfullscreen > </iframe>
-	</div>
-</div>
-<!-- Till here -->
-*/
-?>
 
 <!-- When Neuron Type Statistics is clicked-->
 </br></br>
