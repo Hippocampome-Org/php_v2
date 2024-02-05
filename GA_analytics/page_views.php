@@ -16,7 +16,7 @@ function get_page_views($conn){ //Passed on Dec 3 2023
 }
 
 function format_table($conn, $query, $table_string, $rows){
-
+	$count = 0;
         $rs = mysqli_query($conn,$query);
 	$table_string1 = '';
 	if(!$rs || ($rs->num_rows < 1)){
@@ -34,14 +34,17 @@ function format_table($conn, $query, $table_string, $rows){
 			$table_string1 .= "<td>".$row[$j]."</td>";
 			$j++;
 		}
+		$count += $row[$rows-1];
 		$table_string1 .= "</tr>";
 		$i++;//increment for color gradient of the row
 	}
+	$table_string1 .= "<tr><td><b>Total Count</b></td><td>".$count."</td></tr>";	
 	return $table_string1;
 }
 
 function format_table_markers($conn, $query, $table_string, $rows, $array_subs = NULL){
-
+	
+	$count = 0;
         $rs = mysqli_query($conn,$query);
         $table_string1 = '';
 	if(!$rs || ($rs->num_rows < 1)){
@@ -81,16 +84,18 @@ function format_table_markers($conn, $query, $table_string, $rows, $array_subs =
 			}//Color gradient CSS
 
 			$table_string1 .= "</tr>";
+			$count += $value1;
 			$i++;
 		}
 		$j++;
         }
+	$table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$count."</td></tr>";
 
         return $table_string1;
 }
 
 function format_table_sub($conn, $query, $table_string, $rows){
-
+	$count = 0;
         $rs = mysqli_query($conn,$query);
 	$table_string1 = '';
 	if(!$rs || ($rs->num_rows < 1)){
@@ -116,9 +121,10 @@ function format_table_sub($conn, $query, $table_string, $rows){
 		$table_string1 .= "<td>".$key."</td>";
 		$table_string1 .= "<td>".$value."</td>";
 		$table_string1 .= "</tr>";
+		$count += $value;
 		$i++;
 	}
-	
+	$table_string1 .= "<tr><td><b>Total Count</b></td><td>".$count."</td></tr>";	
 	return $table_string1;
 }
 
