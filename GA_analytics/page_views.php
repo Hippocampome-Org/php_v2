@@ -38,7 +38,7 @@ function format_table($conn, $query, $table_string, $rows){
 		$table_string1 .= "</tr>";
 		$i++;//increment for color gradient of the row
 	}
-	$table_string1 .= "<tr><td><b>Total Count</b></td><td>".$count."</td></tr>";	
+	$table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$count."</td></tr>";	
 	return $table_string1;
 }
 
@@ -124,7 +124,7 @@ function format_table_sub($conn, $query, $table_string, $rows){
 		$count += $value;
 		$i++;
 	}
-	$table_string1 .= "<tr><td><b>Total Count</b></td><td>".$count."</td></tr>";	
+	$table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$count."</td></tr>";	
 	return $table_string1;
 }
 
