@@ -31,7 +31,6 @@ class fragment_counts
 	public function retrive_by_id($id) 
     {
 		$table=$this->getName_table();
-		
 		$query = "SELECT id, referenceID, cellID, location_in_reference, material_used, authors, title, journal, year, PMID, pmid_isbn_page FROM $table WHERE id = '$id'";
 		#echo $query."<br>";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
@@ -39,6 +38,7 @@ class fragment_counts
 		{	
 			$this->setReferenceID($referenceID);
 			$this->setID($id);
+			$this->setOriginal_id($cellID);
 			//$this->setOriginal_id($FTQ_ID);			
 			$this->setQuote($material_used);
 			//$this->setPage_location($page_location);

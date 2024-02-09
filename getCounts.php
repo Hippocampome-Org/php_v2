@@ -275,7 +275,7 @@ for($i = 0; $i<$number_type; $i++)
 			if ($optimum == 0){
 				$rows[$ii]['cell'][3] = '';
 			}else{
-				$rows[$ii]['cell'][3] = '<span class="link_left font4">'.round($optimum*0.41).'</span>';		
+				$rows[$ii]['cell'][3] = '<span class="link_left font4">'.round(intval($optimum)*0.41).'</span>';
 			}
 		}
 		else
@@ -290,7 +290,7 @@ for($i = 0; $i<$number_type; $i++)
 			if ($optimum == 0){
 				$rows[$ii]['cell'][3] = '';
 			}else{
-				$rows[$ii]['cell'][3] = '<span class="link_left font4">'.round($optimum*0.41).'</span>';		
+				$rows[$ii]['cell'][3] = '<span class="link_left font4">'.round(intval($optimum)*0.41).'</span>';
 			}
 		}
 	}
