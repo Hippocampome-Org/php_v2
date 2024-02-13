@@ -111,6 +111,7 @@ tr:nth-child(even){
 ?>	
 <!-- Main page loading code -->		
 <div id="center" style="padding:100px 100px; align:center;">
+	<font class="font3">
 	<div style="align: center; padding-left:150px;"><h3> Hippocampome is accessed around the world</h3></div>
 	<div style="width:100%;">
 		<div style="float:left;width=80%;">
@@ -130,21 +131,23 @@ tr:nth-child(even){
 				<li><a href="#markersproperty">Markers Property Statistics</a></li>
 				<li><a href="#subregion">Sub Region Statistics</a></li>
 				<li><a href="#functionality">Functionality Domain Page Statistics</a></li>
+				<li><a href="#other_pageview">Other Page View Statistics</a></li>
 				<li><a href="#pageview">Page View Statistics</a></li>
 	    		</ul>
 			</div>
 		</div>
 	</div>
+	</font>
 </div>
 <div style="clear:both"></div>
 <!-- Main initial page ends here -->
-
+<font class="font3">
 <!-- When Neuron Type Statistics is clicked-->
 </br></br>
 <div id="neuron" style="padding:100px 100px; align:center;">
 	<p style="align: center;">Neuron Type Statistics  <a href="#top">Back to top</a><p>
 	<div id="neuron-inside" style="width: 950px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
-		<?php  get_neurons_views_report($conn); //Passing $conn on Dec 3 2023 ?>
+		<?php	get_neurons_views_report($conn); //Passing $conn on Dec 3 2023 ?>
 	</div>
 </div>
 <!-- Till here -->
@@ -189,6 +192,16 @@ tr:nth-child(even){
 </div>
 <!-- Till here -->
 
+<!-- When Other View Statistics is clicked-->
+</br></br>
+<div id="other_pageview" style="padding:100px 100px; align:center;">
+	<p style="align: center;">Other Page View Statistics  <a href="#top">Back to top</a><p>
+	<div id="pageview-inside" style="width: 800px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+		<?php get_other_pages_views_report($conn); //Passing $conn on Dec 3 2023 ?>	
+	</div>
+</div>
+<!-- Till here -->
+
 <!-- When Page View Statistics is clicked-->
 </br></br>
 <div id="pageview" style="padding:100px 100px; align:center;">
@@ -198,4 +211,4 @@ tr:nth-child(even){
 	</div>
 </div>
 <!-- Till here -->
-
+</font>

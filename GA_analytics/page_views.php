@@ -1,9 +1,15 @@
 <?php
 
 function get_page_views($conn){ //Passed on Dec 3 2023
-	$page_views_query = "select day_index, views 
+	/*$page_views_query = "select day_index, views 
 		from ga_analytics_pages_views where views > 0 
-		GROUP BY YEAR(day_index), MONTH(day_index)";
+		GROUP BY YEAR(day_index), MONTH(day_index)"; */
+	$page_views_query = "SELECT YEAR(day_index) AS year, 
+		MONTH(day_index) AS month, 
+		SUM(views) AS total_views
+			FROM ga_analytics_pages_views 
+			WHERE views > 0
+			GROUP BY YEAR(day_index), MONTH(day_index)";
 
 	$rs = mysqli_query($conn,$page_views_query);
 	$result_page_views_array = array();
@@ -31,6 +37,7 @@ function format_table($conn, $query, $table_string, $rows){
 		else{ $table_string1 .= '<tr class="blue-bg">';}//Color gradient CSS
 
 		while($j < $rows){
+			if($row[$j] == 'fp'){ $row[$j] = 'firing pattern'; }
 			$table_string1 .= "<td>".$row[$j]."</td>";
 			$j++;
 		}
@@ -128,20 +135,85 @@ function format_table_sub($conn, $query, $table_string, $rows){
 	return $table_string1;
 }
 
+function get_other_pages_views_report($conn){ //Passed $conn on Dec 3 2023
+	$table_string = "<table>";
+	$table_string .= "<tr><th>Page</th><th>Views</th></tr>";
+	$table_string .= "<tbody style='height: 590px !important; overflow: scroll; '>";
+	
+	$page_other_views_query = "SELECT
+		gap.page,
+		SUM(REPLACE(gap.page_views, ',', '')) as total_views
+			FROM
+			ga_analytics_pages gap
+			WHERE 
+			NOT EXISTS (
+					SELECT 1
+					FROM (
+						SELECT id 
+						FROM ga_analytics_pages
+						WHERE
+						page LIKE '/property_page_markers.php?id_neuron=%'
+						AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232, 23223)
+
+						UNION
+
+						SELECT id
+						FROM ga_analytics_pages
+						WHERE
+						page LIKE '%id_neuron=%'
+						AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4
+						AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232, 23223)
+
+						UNION
+
+						SELECT id
+						FROM ga_analytics_pages
+						WHERE
+						page LIKE '/property_page_%'
+						AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, '?id_neuron=', -1), '&', 1)) = 4
+						AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232, 23223)
+						AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) NOT IN ('synpro_nm_old2', 'connectivity_test', 'connectivity_orig')
+						) combined_data
+						WHERE gap.id = combined_data.id
+						)
+						AND gap.page NOT LIKE '/devur%'
+						AND gap.page NOT LIKE '/hippocampome/php_v2/%'
+						AND gap.page NOT LIKE '/php_v2_dev/%'
+						AND gap.page NOT LIKE '/php_v2_bak%'
+						AND gap.page NOT LIKE '/php_v2%'
+						AND gap.page NOT LIKE '/bot-%'
+						AND gap.page NOT LIKE '/csv2db%'
+						AND gap.page NOT LIKE '/hipp Better%'
+						AND gap.page NOT LIKE '/php/'
+						GROUP BY
+						gap.page
+						ORDER BY
+						total_views DESC";
+	//echo $page_other_views_query;
+
+	$table_string .= format_table($conn, $page_other_views_query, $table_string, 2);
+	$table_string .= "</tbody></table>";
+	
+	echo $table_string;
+}
+
 function get_pages_views_report($conn){ //Passed $conn on Dec 3 2023
 	$table_string = "<table>";
 	$table_string .= "<tr><th>Month-Year</th><th>Views</th></tr>";
 	$table_string .= "<tbody style='height: 590px !important; overflow: scroll; '>";
 	
-	$page_views_query = "select concat(DATE_FORMAT(day_index,'%b'), '-', YEAR(day_index)) as dm, sum(views)
+	$page_views_query = "select concat(DATE_FORMAT(day_index,'%b'), '-', YEAR(day_index)) as dm, 
+				sum(replace(views,',',''))  
 			     from ga_analytics_pages_views where views > 0 
 			     GROUP BY YEAR(day_index), MONTH(day_index)";
 
+	//echo $page_views_query;
 	$table_string .= format_table($conn, $page_views_query, $table_string, 2);
 	$table_string .= "</tbody></table>";
 	
 	echo $table_string;
 }
+
 function get_table_skeleton_first($cols){
 	$table_string1 = "<table>";
 	if($cols){
@@ -161,15 +233,27 @@ function get_table_skeleton_end(){
 
 function get_neurons_views_report($conn){ //Passed on Dec 3 2023
 	$table_string = get_table_skeleton_first(['Neuron ID', 'Neuron Name', 'Views']);
-	$page_neurons_views_query = " SELECT substring_index(substring_index(page, 'id_neuron=', -1), '&', 1) as neuronID,
-                                    (select name from Type where id = substring_index(substring_index(page, 'id_neuron=', -1), '&', 1) ) as neuron_name,
-                                count(*) as count
-                                FROM ga_analytics_pages
-                                WHERE page LIKE '%id_neuron=%'
-                                and substring_index(substring_index(page, 'id_neuron=', -1), '&', 1) not in (4168, 4181, 2232, 23223 )
-                                AND length(substring_index(substring_index(page, 'id_neuron=', -1), '&', 1)) = 4
-                                GROUP BY substring_index(substring_index(page, 'id_neuron=', -1),'&', 1)"; //exclude '4181', '2232', '23223')
-				//-- and page LIKE '%/php/%'
+
+	$page_neurons_views_query = "SELECT
+		t.id AS neuronID,
+		t.nickname AS neuron_name,
+		SUM(replace(page_views, ',', '')) AS count
+			FROM
+			(
+			 SELECT
+			 substring_index(substring_index(page, 'id_neuron=', -1), '&', 1) AS neuronID,
+			 page_views
+			 FROM
+			 ga_analytics_pages
+			 WHERE
+			 page LIKE '%id_neuron=%'
+			 AND substring_index(substring_index(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232, 23223)
+			 AND LENGTH(substring_index(substring_index(page, 'id_neuron=', -1), '&', 1)) = 4
+			) AS derived
+			JOIN Type AS t ON t.id = derived.neuronID
+			GROUP BY
+			derived.neuronID, t.nickname";
+	//echo $page_neurons_views_query;
 	$table_string .= format_table($conn, $page_neurons_views_query, $table_string, 3);
 	$table_string .= get_table_skeleton_end();
 	
@@ -179,12 +263,16 @@ function get_neurons_views_report($conn){ //Passed on Dec 3 2023
 function get_morphology_property_views_report($conn){
 	$table_string = get_table_skeleton_first(['Morphology', 'Layer', 'Views']);
 	$page_property_views_query = "SELECT
-				  SUBSTRING_INDEX(substring_index(substring_index(page, 'val_property=', -1), '&', 1),'_',1) AS subregion,
-                                   SUBSTRING_INDEX(substring_index(substring_index(page, 'val_property=', -1), '&', 1),'_',-1) AS layer,
-                                count(*)
-                                FROM ga_analytics_pages
-                                WHERE page LIKE '%property_page_morphology.php?id_neuron=%' -- and page LIKE '%/php/%'
-				GROUP BY  substring_index(substring_index(page, 'val_property=', -1), '&', 1)";
+					SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '_', 1) AS subregion,
+					SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '_', -1) AS layer,
+					SUM(REPLACE(page_views, ',', '')) AS count
+			FROM
+			ga_analytics_pages
+			WHERE
+			page LIKE '%property_page_morphology.php?id_neuron=%'
+			GROUP BY
+			subregion, layer";
+	//echo $page_property_views_query;
 
 	$array_subs = ["DG"=>["SMo"=>0,"SMi"=>0,"SG"=>0,"H"=>0],"CA3"=>["SLM"=>0, "SR"=>0, "SL"=>0, "SP"=>0,"SO"=>0],"CA2"=>["SLM"=>0,"SR"=>0,"SP"=>0,"SO"=>0],"CA1"=>["SLM"=>0,"SR"=>0,"SP"=>0,"SO"=>0],"SUB"=>["SM"=>0,"SP"=>0,"PL"=>0],"EC"=>["I"=>0,"II"=>0,"III"=>0,"IV"=>0,"V"=>0,"VI"=>0]];
         $table_string .= format_table_markers($conn, $page_property_views_query, $table_string, 3, $array_subs);
@@ -195,17 +283,21 @@ function get_morphology_property_views_report($conn){
 
 function get_markers_property_views_report($conn){
 	$table_string = get_table_skeleton_first(['Markers', 'Expression', 'Views']);
-        $page_property_views_query = " SELECT
-                                substring_index(substring_index(page, 'val_property=', -1), '&', 1) as markers,
-                                substring_index(substring_index(page, 'color=', -1), '&', 1) as color,
-                                count(*)
-                                FROM ga_analytics_pages
-				WHERE page like '%property_page_markers.php?id_neuron=%' 
-				AND  substring_index(substring_index(page, 'id_neuron=', -1), '&', 1) not in (4168, 4181, 2232, 23223 )
-                                GROUP BY substring_index(substring_index(page, 'property_page_markers.php', -1),'&', 1) 
-				ORDER BY  substring_index(substring_index(page, 'val_property=', -1), '&', 1) ";
 
-        //-- WHERE page LIKE '%markers.php?id_neuron=%' -- and page LIKE '%/php/%'
+	$page_property_views_query = "SELECT
+		SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1) AS markers,
+		SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1) AS color,
+		SUM(REPLACE(page_views, ',', '')) AS count
+			FROM
+			ga_analytics_pages
+			WHERE
+			page LIKE '%property_page_markers.php?id_neuron=%'
+			AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232, 23223)
+			GROUP BY
+			SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'property_page_markers.php', -1), '&', 1)
+			ORDER BY
+			SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1)";
+	//echo $page_property_views_query;
         $table_string .= format_table_markers($conn, $page_property_views_query, $table_string, 3);
 	$table_string .= get_table_skeleton_end();
 
@@ -215,15 +307,19 @@ function get_markers_property_views_report($conn){
 
 function get_subregion_views_report($conn){ //Passed on Dec 3 2023
 	$table_string = get_table_skeleton_first(['Subregion', 'Views']);
-	$page_subregion_views_query = "SELECT 
-                                substring_index(substring_index(page, 'id_neuron=', -1), '&', 1) as neuronID, 
-				count(*) as views 
-                                FROM ga_analytics_pages
-                                WHERE page LIKE '%id_neuron=%'
-                                AND length(substring_index(substring_index(page, 'id_neuron=', -1), '&', 1)) = 4
-				AND  substring_index(substring_index(page, 'id_neuron=', -1), '&', 1) not in (4168, 4181, 2232, 23223 )
-                                GROUP BY substring_index(substring_index(page, 'id_neuron=', -1),'&', 1)";
-	//-- and page LIKE '%/php/%'
+	
+	$page_subregion_views_query =" SELECT
+		SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) AS neuronID,
+		SUM(REPLACE(page_views, ',', '')) AS views
+			FROM
+			ga_analytics_pages
+			WHERE
+			page LIKE '%id_neuron=%'
+			AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4
+			AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232, 23223)
+			GROUP BY
+			SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)";
+	//echo $page_subregion_views_query;
 	$table_string .= format_table_sub($conn, $page_subregion_views_query, $table_string, 2);
 	$table_string .= get_table_skeleton_end();
 	
@@ -233,15 +329,19 @@ function get_subregion_views_report($conn){ //Passed on Dec 3 2023
 function get_functionality_views_report($conn){
 	$table_string = get_table_skeleton_first(['Property', 'Views']);
 
-	$page_functionality_views_query = " select substring_index(substring_index(page, '/property_page_', -1),'.', 1), count(*)
-                                FROM ga_analytics_pages where page like '%/property_page_%' 
-				AND length(substring_index(substring_index(page, '?id_neuron=', -1), '&', 1)) = 4
-                                AND substring_index(substring_index(page, 'id_neuron=', -1), '&', 1) not in (4168, 4181, 2232, 23223 )
-                                AND substring_index(substring_index(page, '/property_page_', -1),'.', 1)
-                                NOT IN ('synpro_nm_old2', 'connectivity_test', 'connectivity_orig') 
-                                GROUP BY substring_index(substring_index(page, '/property_page_', -1),'?', 1)";
-	 // -- exclude _page_synpro_nm_old2.php, _page_connectivity_test.php, _page_connectivity_orig.php"
-
+	$page_functionality_views_query = "SELECT
+		SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) AS property_page,
+		SUM(REPLACE(page_views, ',', '')) AS views
+			FROM
+			ga_analytics_pages
+			WHERE
+			page LIKE '%/property_page_%'
+			AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, '?id_neuron=', -1), '&', 1)) = 4
+			AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232, 23223)
+			AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) NOT IN ('synpro_nm_old2', 'connectivity_test', 'connectivity_orig')
+			GROUP BY
+			SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '?', 1)";
+	//echo $page_functionality_views_query;
 	$table_string .= format_table($conn, $page_functionality_views_query, $table_string, 2);
 	$table_string .= get_table_skeleton_end();
 	
