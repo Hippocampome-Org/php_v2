@@ -11,6 +11,7 @@ function get_page_views($conn){ //Passed on Dec 3 2023
 			WHERE views > 0
 			GROUP BY YEAR(day_index), MONTH(day_index)";
 
+	//AND day_index >= '2023-07-01' 
 	$rs = mysqli_query($conn,$page_views_query);
 	$result_page_views_array = array();
 	while($row = mysqli_fetch_row($rs))
@@ -175,20 +176,28 @@ function get_other_pages_views_report($conn){ //Passed $conn on Dec 3 2023
 						AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) NOT IN ('synpro_nm_old2', 'connectivity_test', 'connectivity_orig')
 						) combined_data
 						WHERE gap.id = combined_data.id
-						)
-						AND gap.page NOT LIKE '/devur%'
-						AND gap.page NOT LIKE '/hippocampome/php_v2/%'
-						AND gap.page NOT LIKE '/php_v2_dev/%'
-						AND gap.page NOT LIKE '/php_v2_bak%'
-						AND gap.page NOT LIKE '/php_v2%'
-						AND gap.page NOT LIKE '/bot-%'
-						AND gap.page NOT LIKE '/csv2db%'
-						AND gap.page NOT LIKE '/hipp Better%'
-						AND gap.page NOT LIKE '/php/'
-						GROUP BY
-						gap.page
-						ORDER BY
-						total_views DESC";
+					)
+					AND gap.page NOT LIKE '/phpdev/%'
+					AND gap.page NOT LIKE '/phprev/%'
+					AND gap.page NOT LIKE '/devur%'
+					AND gap.page NOT LIKE '/hippocampome/php_v2/%'
+					AND gap.page NOT LIKE '/php_v2_dev/%'
+					AND gap.page NOT LIKE '/php_v2_bak%'
+					AND gap.page NOT LIKE '/php_v2/%'
+					AND gap.page NOT LIKE '/bot-%'
+					AND gap.page NOT LIKE '/csv2db%'
+					AND gap.page NOT LIKE '/hipp Better%'
+					AND gap.page NOT LIKE '/php_test%'
+					AND gap.page != '/php/index.php/.env'
+					AND gap.page !=  '/php/'
+					AND gap.page !=  '/php_test/'
+					AND gap.page != '/'
+					AND gap.page != '/phpmain/index.php'
+					AND gap.page != '/php_bak_20221004/'
+					AND gap.page != '/hippocampome/'
+					GROUP BY gap.page
+					ORDER BY total_views DESC";
+	//-- AND gap.day_index is NOT NULL
 	//echo $page_other_views_query;
 
 	$table_string .= format_table($conn, $page_other_views_query, $table_string, 2);
@@ -206,8 +215,8 @@ function get_pages_views_report($conn){ //Passed $conn on Dec 3 2023
 				sum(replace(views,',',''))  
 			     from ga_analytics_pages_views where views > 0 
 			     GROUP BY YEAR(day_index), MONTH(day_index)";
-
-	//echo $page_views_query;
+	// AND day_index >= '2023-07-01' 
+	// echo $page_views_query;
 	$table_string .= format_table($conn, $page_views_query, $table_string, 2);
 	$table_string .= "</tbody></table>";
 	
@@ -254,6 +263,7 @@ function get_neurons_views_report($conn){ //Passed on Dec 3 2023
 			GROUP BY
 			derived.neuronID, t.nickname";
 	//echo $page_neurons_views_query;
+	//AND day_index is NOT NULL
 	$table_string .= format_table($conn, $page_neurons_views_query, $table_string, 3);
 	$table_string .= get_table_skeleton_end();
 	
@@ -341,6 +351,7 @@ function get_functionality_views_report($conn){
 			AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) NOT IN ('synpro_nm_old2', 'connectivity_test', 'connectivity_orig')
 			GROUP BY
 			SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '?', 1)";
+	// AND day_index is NOT NULL
 	//echo $page_functionality_views_query;
 	$table_string .= format_table($conn, $page_functionality_views_query, $table_string, 2);
 	$table_string .= get_table_skeleton_end();
