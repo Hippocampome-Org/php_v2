@@ -127,9 +127,10 @@ tr:nth-child(even){
 			<div id="links" style="padding: 15px; 10px;">
  	    		<ul>
 				<li><a href="#neuron">Neuron Type Statistics</a></li>
+				<li><a href="#subregion">Sub Region Statistics</a></li>
 				<li><a href="#morphologyproperty">Morphology Property Statistics</a></li>
 				<li><a href="#markersproperty">Markers Property Statistics</a></li>
-				<li><a href="#subregion">Sub Region Statistics</a></li>
+				<li><a href="#firingpattern">Firing Pattern Statistics</a></li>
 				<li><a href="#functionality">Functionality Domain Page Statistics</a></li>
 				<li><a href="#pageviews">Views per Page Statistics </a></li>
 				<li><a href="#pageview_monthly">Page Views Per Month Statistics</a></li>
@@ -148,6 +149,16 @@ tr:nth-child(even){
 	<p style="align: center;">Neuron Type Statistics  <a href="#top">Back to top</a><p>
 	<div id="neuron-inside" style="width: 950px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
 		<?php	get_neurons_views_report($conn); //Passing $conn on Dec 3 2023 ?>
+	</div>
+</div>
+<!-- Till here -->
+
+<!-- When Sub Regions Statistics is clicked-->
+</br></br>
+<div id="subregion" style="padding:100px 100px; align:center;">
+	<p style="align: center;">Sub Region Statistics  <a href="#top">Back to top</a><p>
+	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+		<?php get_subregion_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
 	</div>
 </div>
 <!-- Till here -->
@@ -172,12 +183,12 @@ tr:nth-child(even){
 </div>
 <!-- Till here -->
 
-<!-- When Sub Regions Statistics is clicked-->
+<!-- When Firing Pattern Statistics is clicked-->
 </br></br>
-<div id="subregion" style="padding:100px 100px; align:center;">
-	<p style="align: center;">Sub Region Statistics  <a href="#top">Back to top</a><p>
+<div id="firingpattern" style="padding:100px 100px; align:center;">
+	<p style="align: center;">Firing Pattern Statistics  <a href="#top">Back to top</a><p>
 	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
-		<?php get_subregion_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
+		<?php get_fp_property_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
 	</div>
 </div>
 <!-- Till here -->

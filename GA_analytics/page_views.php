@@ -78,6 +78,35 @@ function format_table($conn, $query, $table_string, $rows, $query2=NULL){
 	return $table_string1;
 }
 
+function format_table_property($conn, $query, $table_string, $rows, $format){
+	$count = 0;
+        $rs = mysqli_query($conn,$query);
+	$table_string1 = '';
+	if(!$rs || ($rs->num_rows < 1)){
+		$table_string1 .= "<tr><td> No Data is available </td></tr>";
+		return $table_string1;
+	}
+	$i=0;
+	while($row = mysqli_fetch_row($rs))
+	{
+		$j=0;
+		if($i%2==0){ $table_string .= '<tr class="white-bg" >';}
+		else{ $table_string1 .= '<tr class="blue-bg">';}//Color gradient CSS
+
+		while($j < $rows){
+			$row[0] = $format[$row[0]];
+			if($row[$rows-1] > 0){
+				$table_string1 .= "<td>".$row[$j]."</td>";
+			}
+			$j++;
+		}
+		$count += $row[$rows-1];
+		$table_string1 .= "</tr>";
+		$i++;//increment for color gradient of the row
+	}
+	$table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$count."</td></tr>";
+	return $table_string1;
+}
 function format_table_markers($conn, $query, $table_string, $rows, $array_subs = NULL){
 	
 	$count = 0;
@@ -290,6 +319,49 @@ function get_markers_property_views_report($conn){
         echo $table_string;
 }
 
+function get_fp_property_views_report($conn){
+	$table_string = get_table_skeleton_first(['Firing Pattern', 'Views']);
+	$fp_format = [
+		'ASP.' => 'adapting spiking',
+		'ASP.ASP.' => 'adapting spiking followed by (slower) adapting spiking',
+		'ASP.NASP' => 'non-adapting spiking preceded by adapting spiking',
+		'ASP.SLN' => 'silence preceded by adapting spiking',
+		'D.' => 'delayed spiking',
+		'D.ASP.' => 'delayed adapting spiking',
+		'D.NASP' => 'delayed non-adapting spiking',
+		'D.PSTUT' => 'delayed persistent stuttering',
+		'D.RASP.NASP' => 'non-adapting spiking preceded by delayed rapidly adapting spiking',
+		'NASP' => 'non-adapting spiking',
+		'PSTUT' => 'persistent stuttering',
+		'PSWB' => 'persistent slow-wave bursting',
+		'RASP.' => 'rapidly adapting spiking',
+		'RASP.ASP.' => 'rapidly adapting spiking followed by adapting spiking',
+		'RASP.NASP' => 'non-adapting spiking preceded by rapidly adapting spiking',
+		'RASP.SLN' => 'silence preceded by rapidly adapting spiking',
+		'TSTUT.' => 'transient stuttering',
+		'TSTUT.NASP' => 'non-adapting spiking preceded by transient stuttering',
+		'TSTUT.PSTUT' => 'transient stuttering followed by persistent stuttering',
+		'TSTUT.SLN' => 'silence preceded by transient stuttering',
+		'TSWB.NASP' => 'non-adapting spiking preceded by transient slow-wave bursting',
+		'TSWB.SLN' => 'silence preceded by transient slow-wave bursting',
+		'D.TSWB.NASP' => 'non-adapting spiking preceded by delayed transient slow-wave bursting',
+		'D.TSTUT.' => 'delayed persistent stuttering',
+		'TSTUT.ASP.' => 'transient stuttering followed by adapting spiking'
+			];
+
+	$page_fp_property_views_query = "SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'parameter=', -1), '&', 1) AS fp,
+				 SUM(REPLACE(page_views, ',', '')) AS count
+		FROM ga_analytics_pages WHERE page LIKE '%property_page_fp.php?id_neuron=%'
+		AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
+		GROUP BY SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'parameter=', -1), '&', 1)
+		ORDER BY SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'parameter=', -1), '&', 1)";
+
+	//echo $page_fp_property_views_query;
+        $table_string .= format_table_property($conn, $page_fp_property_views_query, $table_string, 2, $fp_format);
+	$table_string .= get_table_skeleton_end();
+
+        echo $table_string;
+}
 
 function get_subregion_views_report($conn){ //Passed on Dec 3 2023
 	$table_string = get_table_skeleton_first(['Subregion', 'Views']);
