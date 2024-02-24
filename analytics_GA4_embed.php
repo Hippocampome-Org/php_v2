@@ -131,8 +131,8 @@ tr:nth-child(even){
 				<li><a href="#markersproperty">Markers Property Statistics</a></li>
 				<li><a href="#subregion">Sub Region Statistics</a></li>
 				<li><a href="#functionality">Functionality Domain Page Statistics</a></li>
-				<li><a href="#other_pageview">Other Page View Statistics</a></li>
-				<li><a href="#pageview">Page View Statistics</a></li>
+				<li><a href="#pageviews">Views per Page Statistics </a></li>
+				<li><a href="#pageview_monthly">Page Views Per Month Statistics</a></li>
 	    		</ul>
 			</div>
 		</div>
@@ -194,20 +194,20 @@ tr:nth-child(even){
 
 <!-- When Other View Statistics is clicked-->
 </br></br>
-<div id="other_pageview" style="padding:100px 100px; align:center;">
-	<p style="align: center;">Other Page View Statistics  <a href="#top">Back to top</a><p>
+<div id="pageviews" style="padding:100px 100px; align:center;">
+	<p style="align: center;">Views per Page Statistics <a href="#top">Back to top</a><p>
 	<div id="pageview-inside" style="width: 800px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
-		<?php get_other_pages_views_report($conn); //Passing $conn on Dec 3 2023 ?>	
+		<?php get_views_per_page_report($conn); //Passing $conn on Dec 3 2023 ?>	
 	</div>
 </div>
 <!-- Till here -->
 
-<!-- When Page View Statistics is clicked-->
+<!-- When Page View Monthly Statistics is clicked-->
 </br></br>
-<div id="pageview" style="padding:100px 100px; align:center;">
-	<p style="align: center;">Page View Statistics  <a href="#top">Back to top</a><p>
+<div id="pageview_monthly" style="padding:100px 100px; align:center;">
+	<p style="align: center;">Page Views Per Month Statistics  <a href="#top">Back to top</a><p>
 	<div id="pageview-inside" style="width: 800px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
-		<?php get_pages_views_report($conn); //Passing $conn on Dec 3 2023 ?>	
+		<?php get_pages_views_per_month_report($conn); //Passing $conn on Dec 3 2023 ?>	
 	</div>
 </div>
 <!-- Till here -->
