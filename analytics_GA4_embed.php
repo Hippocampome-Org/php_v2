@@ -128,9 +128,11 @@ tr:nth-child(even){
  	    		<ul>
 				<li><a href="#neuron">Neuron Type Statistics</a></li>
 				<li><a href="#subregion">Sub Region Statistics</a></li>
-				<li><a href="#morphologyproperty">Morphology Property Statistics</a></li>
-				<li><a href="#markersproperty">Markers Property Statistics</a></li>
+				<li><a href="#property_counts">Count Statistics</a></li>
 				<li><a href="#firingpattern">Firing Pattern Statistics</a></li>
+				<li><a href="#markersproperty">Markers Property Statistics</a></li>
+				<li><a href="#morphologyproperty">Morphology Property Statistics</a></li>
+				<li><a href="#phases_counts">Phases Statistics</a></li>
 				<li><a href="#functionality">Functionality Domain Page Statistics</a></li>
 				<li><a href="#pageviews">Views per Page Statistics </a></li>
 				<li><a href="#pageview_monthly">Page Views Per Month Statistics</a></li>
@@ -163,22 +165,12 @@ tr:nth-child(even){
 </div>
 <!-- Till here -->
 
-<!-- When Morphology Property Statistics is clicked-->
+<!-- When Property Counts Statistics is clicked-->
 </br></br>
-<div id="morphologyproperty" style="padding:100px 100px; align:center;">
-	<p style="align: center;">Morphology Property Statistics  <a href="#top">Back to top</a><p>
+<div id="property_counts" style="padding:100px 100px; align:center;">
+	<p style="align: center;">Property Count Statistics  <a href="#top">Back to top</a><p>
 	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
-		<?php  get_morphology_property_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
-	</div>
-</div>
-<!-- Till here -->
-
-<!-- When Markers Property Statistics is clicked-->
-</br></br>
-<div id="markersproperty" style="padding:100px 100px; align:center;">
-	<p style="align: center;">Markers Property Statistics  <a href="#top">Back to top</a><p>
-	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
-		<?php  get_markers_property_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
+		<?php get_counts_views_report($conn, 'counts'); //Passing $conn on Dec 3 2023 ?> 
 	</div>
 </div>
 <!-- Till here -->
@@ -193,6 +185,36 @@ tr:nth-child(even){
 </div>
 <!-- Till here -->
 
+<!-- When Markers Property Statistics is clicked-->
+</br></br>
+<div id="markersproperty" style="padding:100px 100px; align:center;">
+	<p style="align: center;">Markers Property Statistics  <a href="#top">Back to top</a><p>
+	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+		<?php  get_markers_property_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
+	</div>
+</div>
+<!-- Till here -->
+
+<!-- When Morphology Property Statistics is clicked-->
+</br></br>
+<div id="morphologyproperty" style="padding:100px 100px; align:center;">
+	<p style="align: center;">Morphology Property Statistics  <a href="#top">Back to top</a><p>
+	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+		<?php  get_morphology_property_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
+	</div>
+</div>
+<!-- Till here -->
+
+<!-- When Phase Counts Statistics is clicked-->
+</br></br>
+<div id="phases_counts" style="padding:100px 100px; align:center;">
+	<p style="align: center;">Phase Statistics  <a href="#top">Back to top</a><p>
+	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+		<?php get_counts_views_report($conn, 'phases'); //Passing $conn on Dec 3 2023 ?> 
+	</div>
+</div>
+<!-- Till here -->
+
 <!-- When Functionality  Statistics is clicked-->
 </br></br>
 <div id="functionality" style="padding:100px 100px; align:center;">
@@ -203,7 +225,7 @@ tr:nth-child(even){
 </div>
 <!-- Till here -->
 
-<!-- When Other View Statistics is clicked-->
+<!-- When Views per Page Statistics is clicked-->
 </br></br>
 <div id="pageviews" style="padding:100px 100px; align:center;">
 	<p style="align: center;">Views per Page Statistics <a href="#top">Back to top</a><p>

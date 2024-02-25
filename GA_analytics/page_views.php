@@ -319,6 +319,30 @@ function get_markers_property_views_report($conn){
         echo $table_string;
 }
 
+function get_counts_views_report($conn, $page_string=NULL){
+	$table_string = get_table_skeleton_first(['Neuron ID', 'Neuron Name', 'Views']);
+
+        $page_counts_views_query = "SELECT
+		t.id AS neuronID, t.nickname AS neuron_name, SUM(replace(page_views, ',', '')) AS count FROM
+		( SELECT substring_index(substring_index(page, 'id_neuron=', -1), '&', 1) AS neuronID, page_views
+		FROM ga_analytics_pages WHERE page LIKE ";
+	if($page_string == 'phases'){
+		$page_counts_views_query .= " '%property_page_phases.php?id_neuron=%' ";
+	}
+	if($page_string == 'counts'){
+		$page_counts_views_query .= " '%property_page_counts.php?id_neuron=%' ";
+	}
+	$page_counts_views_query .= " AND LENGTH(substring_index(substring_index(page, 'id_neuron=', -1), '&', 1)) = 4
+					AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
+		)AS derived JOIN Type AS t ON t.id = derived.neuronID GROUP BY derived.neuronID, t.nickname";
+        //echo $page_counts_views_query;
+        $table_string .= format_table($conn, $page_counts_views_query, $table_string, 3);
+        $table_string .= get_table_skeleton_end();
+
+        echo $table_string;
+
+}
+
 function get_fp_property_views_report($conn){
 	$table_string = get_table_skeleton_first(['Firing Pattern', 'Views']);
 	$fp_format = [
