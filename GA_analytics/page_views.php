@@ -78,7 +78,7 @@ function format_table($conn, $query, $table_string, $rows, $query2=NULL){
 	return $table_string1;
 }
 
-function format_functionality_table($conn, $query, $table_string, $rows, $exclude=NULL){
+function format_table_functionality($conn, $query, $table_string, $rows, $exclude=NULL){
         $count = 0; 
         $rs = mysqli_query($conn,$query);
         $table_string1 = '';
@@ -191,40 +191,6 @@ function format_table_markers($conn, $query, $table_string, $rows, $array_subs =
         return $table_string1;
 }
 
-function format_table_sub($conn, $query, $table_string, $rows){
-	$count = 0;
-        $rs = mysqli_query($conn,$query);
-	$table_string1 = '';
-	if(!$rs || ($rs->num_rows < 1)){
-		$table_string1 .= "<tr ><td> No Data is available </td></tr>";
-		return $table_string1;
-	}
-	$dg = $ca3 = $ca2 = $ca1 = $sub = $ec = 0;
-	$array_subs = ["DG"=>0, "CA3"=>0, "CA2"=>0,"CA1"=>0,"Subiculum"=>0,"Entorhinal Cortex"=>0];
-	while($row = mysqli_fetch_row($rs))
-	{
-		if($row[0] >= 1000 && $row[0] < 2000){		$array_subs["DG"] += $row[1];			}
-		else  if($row[0] >= 2000 && $row[0] < 3000){	$array_subs["CA3"] += $row[1];			}
-		else  if($row[0] >= 3000 && $row[0] < 4000){	$array_subs["CA2"] += $row[1];			}
-		else  if($row[0]  >= 4000 && $row[0] < 5000){	$array_subs["CA1"] += $row[1];			}
-		else  if($row[0] >= 5000 && $row[0] < 6000){	$array_subs["Subiculum"] += $row[1];		}
-		else  if($row[0] >= 6000 && $row[0] < 7000){	$array_subs["Entorhinal Cortex"] += $row[1];	}
-	}
-	$i=0;
-	foreach($array_subs as $key => $value){
-		if($i%2==0){ $table_string .= '<tr class="white-bg">';}
-		else{ $table_string1 .= '<tr class="blue-bg">';}//Color gradient CSS
-
-		$table_string1 .= "<td>".$key."</td>";
-		$table_string1 .= "<td>".$value."</td>";
-		$table_string1 .= "</tr>";
-		$count += $value;
-		$i++;
-	}
-	$table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$count."</td></tr>";	
-	return $table_string1;
-}
-
 function get_views_per_page_report($conn){ //Passed $conn on Dec 3 2023
 	$table_string = "<table>";
 	$table_string .= "<tr><th>Page</th><th>Views</th></tr>";
@@ -278,29 +244,27 @@ function get_table_skeleton_end(){
 }
 
 function get_neurons_views_report($conn){ //Passed on Dec 3 2023
-	$table_string = get_table_skeleton_first(['Neuron ID', 'Neuron Name', 'Views']);
-
-	$page_neurons_views_query = "SELECT
-		t.id AS neuronID,
-		t.nickname AS neuron_name,
-		SUM(replace(page_views, ',', '')) AS count
-			FROM
-			(
-			 SELECT
-			 substring_index(substring_index(page, 'id_neuron=', -1), '&', 1) AS neuronID,
-			 page_views
-			 FROM
-			 ga_analytics_pages
-			 WHERE
-			 page LIKE '%id_neuron=%'
-			 AND LENGTH(substring_index(substring_index(page, 'id_neuron=', -1), '&', 1)) = 4
-			AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
-			) AS derived
-			JOIN Type AS t ON t.id = derived.neuronID
-			GROUP BY
-			derived.neuronID, t.nickname";
+	$table_string = get_table_skeleton_first(['Subregion', 'Neuron Name', 'Views']);
+	$page_neurons_views_query = "SELECT t.subregion, t.nickname AS neuron_name,
+                SUM(replace(page_views, ',', '')) AS count
+                        FROM
+                        (
+                         SELECT
+                         substring_index(substring_index(page, 'id_neuron=', -1), '&', 1) AS neuronID,
+                         page_views
+                         FROM 
+                         ga_analytics_pages
+                         WHERE
+                         page LIKE '%id_neuron=%'
+                         AND LENGTH(substring_index(substring_index(page, 'id_neuron=', -1), '&', 1)) = 4       
+                        AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
+                        ) AS derived
+                        JOIN Type AS t ON t.id = derived.neuronID
+                        GROUP BY
+                        t.nickname, 
+			 t.subregion";
 	//echo $page_neurons_views_query;
-	$table_string .= format_table($conn, $page_neurons_views_query, $table_string, 3);
+	$table_string .= format_table_markers($conn, $page_neurons_views_query, $table_string, 3);
 	$table_string .= get_table_skeleton_end();
 	
 	echo $table_string;
@@ -419,27 +383,6 @@ function get_fp_property_views_report($conn){
         echo $table_string;
 }
 
-function get_subregion_views_report($conn){ //Passed on Dec 3 2023
-	$table_string = get_table_skeleton_first(['Subregion', 'Views']);
-	
-	$page_subregion_views_query =" SELECT
-		SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) AS neuronID,
-		SUM(REPLACE(page_views, ',', '')) AS views
-			FROM
-			ga_analytics_pages
-			WHERE
-			page LIKE '%id_neuron=%'
-			AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4
-			 AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
-			GROUP BY
-			SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)";
-	//echo $page_subregion_views_query;
-	$table_string .= format_table_sub($conn, $page_subregion_views_query, $table_string, 2);
-	$table_string .= get_table_skeleton_end();
-	
-	echo $table_string;
-}
-
 function get_domain_functionality_views_report($conn){
 	$table_string = get_table_skeleton_first(['Property', 'Views']);
 
@@ -506,7 +449,7 @@ function get_page_functionality_views_report($conn){
 			    ORDER BY 
 			    views DESC ";
 	//echo $page_functionality_views_query;
-	$table_string .= format_functionality_table($conn, $page_functionality_views_query, $table_string, 2, 'not php');
+	$table_string .= format_table_functionality($conn, $page_functionality_views_query, $table_string, 2, 'not php');
 	$table_string .= get_table_skeleton_end();
 	
 	echo $table_string;
