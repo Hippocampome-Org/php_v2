@@ -131,7 +131,10 @@ tr:nth-child(even){
 				<li><a href="#firingpattern">Firing Pattern Statistics</a></li>
 				<li><a href="#markersproperty">Markers Property Statistics</a></li>
 				<li><a href="#morphologyproperty">Morphology Property Statistics</a></li>
+				<li><a href="#pmid_isbn_property">Morphology Linking pmid isbn Property Statistics</a></li>
 				<li><a href="#phases_counts">Phases Statistics</a></li>
+				<li><a href="#synpro_counts">Synpro Statistics</a></li>
+				<li><a href="#synpro_nm_counts">Synpro NM Statistics</a></li>
 				<li><a href="#property_functionality">Functionality Property Domain Page Statistics</a></li>
 				<li><a href="#page_functionality">Functionality Domain Page Statistics</a></li>
 				<li><a href="#pageviews">Views per Page Statistics </a></li>
@@ -195,12 +198,42 @@ tr:nth-child(even){
 </div>
 <!-- Till here -->
 
+<!-- When Morphology Linking pmid isbn Property Statistics is clicked-->
+</br></br>
+<div id="pmid_isbn_property" style="padding:100px 100px; align:center;">
+	<p style="align: center;">Morphology Linking pmid isbn Property Statistics  <a href="#top">Back to top</a><p>
+	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+		<?php  get_pmid_isbn_property_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
+	</div>
+</div>
+<!-- Till here -->
+
 <!-- When Phase Counts Statistics is clicked-->
 </br></br>
 <div id="phases_counts" style="padding:100px 100px; align:center;">
 	<p style="align: center;">Phase Statistics  <a href="#top">Back to top</a><p>
 	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
 		<?php get_counts_views_report($conn, 'phases'); //Passing $conn on Dec 3 2023 ?> 
+	</div>
+</div>
+<!-- Till here -->
+
+<!-- When Synpro Count Statistics is clicked-->
+</br></br>
+<div id="synpro_counts" style="padding:100px 100px; align:center;">
+	<p style="align: center;">Synpro Statistics  <a href="#top">Back to top</a><p>
+	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+		<?php get_counts_views_report($conn, 'synpro'); //Passing $conn on Dec 3 2023 ?> 
+	</div>
+</div>
+<!-- Till here -->
+
+<!-- When Synpro NM Counts Statistics is clicked-->
+</br></br>
+<div id="synpro_nm_counts" style="padding:100px 100px; align:center;">
+	<p style="align: center;">Synpro NM Statistics  <a href="#top">Back to top</a><p>
+	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+		<?php get_counts_views_report($conn, 'synpro_nm'); //Passing $conn on Dec 3 2023 ?> 
 	</div>
 </div>
 <!-- Till here -->

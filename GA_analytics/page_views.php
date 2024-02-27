@@ -292,6 +292,26 @@ function get_morphology_property_views_report($conn){
         echo $table_string;
 }
 
+function get_pmid_isbn_property_views_report($conn){
+
+	$table_string = get_table_skeleton_first(['pmid_isbn', 'Views']);
+	$page_pmid_isbn_property_views_query = "SELECT
+                        SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'linking_pmid_isbn=', -1), '&', 1), '_', 1) AS linking_pmid_isbn,
+						SUM(REPLACE(page_views, ',', '')) AS count 
+                        FROM ga_analytics_pages
+                        WHERE
+                        page LIKE '%property_page_morphology_linking_pmid_isbn.php?id_neuron=%'
+                        AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
+                        GROUP BY
+                        linking_pmid_isbn";
+	//echo $page_pmid_isbn_property_views_query;
+
+        $table_string .= format_table($conn, $page_pmid_isbn_property_views_query, $table_string, 2);
+	$table_string .= get_table_skeleton_end();
+
+        echo $table_string;
+}
+
 function get_markers_property_views_report($conn){
 	$table_string = get_table_skeleton_first(['Markers', 'Expression', 'Views']);
 
@@ -327,6 +347,12 @@ function get_counts_views_report($conn, $page_string=NULL){
 	}
 	if($page_string == 'counts'){
 		$page_counts_views_query .= " '%property_page_counts.php?id_neuron=%' ";
+	}
+	if($page_string == 'synpro'){
+		$page_counts_views_query .= " '%property_page_synpro.php?id_neuron=%' ";
+	}
+	if($page_string == 'synpro_nm'){
+		$page_counts_views_query .= " '%property_page_synpro_nm.php?id_neuron=%' ";
 	}
 	$page_counts_views_query .= " AND LENGTH(substring_index(substring_index(page, 'id_neuron=', -1), '&', 1)) = 4
 					AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
