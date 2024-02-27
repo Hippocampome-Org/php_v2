@@ -78,6 +78,38 @@ function format_table($conn, $query, $table_string, $rows, $query2=NULL){
 	return $table_string1;
 }
 
+function format_functionality_table($conn, $query, $table_string, $rows, $exclude=NULL){
+        $count = 0; 
+        $rs = mysqli_query($conn,$query);
+        $table_string1 = '';
+        if(!$rs || ($rs->num_rows < 1)){
+                $table_string1 .= "<tr><td> No Data is available </td></tr>";
+                return $table_string1; 
+        }
+        $i=0; 
+        while($row = mysqli_fetch_row($rs))
+        {       
+                $j=0;
+		if (isset($exclude) && $row[0] == $exclude) {
+			continue;
+		}
+		if($i%2==0){ $table_string .= '<tr class="white-bg" >';}
+		else{ $table_string1 .= '<tr class="blue-bg">';}//Color gradient CSS
+
+		while($j < $rows){
+			if($row[$j] == 'fp'){ $row[$j] = 'firing pattern'; }
+			if($row[$rows-1] > 0){
+				$table_string1 .= "<td>".$row[$j]."</td>";
+			}
+			$j++;
+		}
+		$count += $row[$rows-1];
+		$table_string1 .= "</tr>";
+		$i++;//increment for color gradient of the row
+        }
+        $table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$count."</td></tr>";
+        return $table_string1;
+}
 function format_table_property($conn, $query, $table_string, $rows, $format){
 	$count = 0;
         $rs = mysqli_query($conn,$query);
@@ -408,22 +440,73 @@ function get_subregion_views_report($conn){ //Passed on Dec 3 2023
 	echo $table_string;
 }
 
-function get_functionality_views_report($conn){
+function get_domain_functionality_views_report($conn){
 	$table_string = get_table_skeleton_first(['Property', 'Views']);
 
 	$page_functionality_views_query = "SELECT
-		SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) AS property_page,
-		SUM(REPLACE(page_views, ',', '')) AS views
-			FROM
-			ga_analytics_pages
-			WHERE
-			page LIKE '%/property_page_%'
-			AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, '?id_neuron=', -1), '&', 1)) = 4
-			AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
-			GROUP BY
-			SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '?', 1)";
+                SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) AS property_page,
+                SUM(REPLACE(page_views, ',', '')) AS views
+                        FROM
+                        ga_analytics_pages 
+                        WHERE
+                        page LIKE '%/property_page_%'
+                        AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, '?id_neuron=', -1), '&', 1)) = 4
+                        AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
+                        GROUP BY
+                        SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '?', 1)";
 	//echo $page_functionality_views_query;
 	$table_string .= format_table($conn, $page_functionality_views_query, $table_string, 2);
+	$table_string .= get_table_skeleton_end();
+	
+	echo $table_string;
+}
+
+function get_page_functionality_views_report($conn){
+	$table_string = get_table_skeleton_first(['Property', 'Views']);
+
+	$page_functionality_views_query = "SELECT 
+		CASE 
+		WHEN page LIKE '%find_author.php%' THEN 'find_author'
+		WHEN page LIKE '%index.php%' THEN 'index'
+		WHEN page LIKE '%ephys.php%' THEN 'ephys'
+		WHEN page LIKE '%Help_%' THEN 'Help'
+		WHEN page LIKE '%analytics%' THEN 'analytics'
+		WHEN page LIKE '%user_feedback%' THEN 'user_feedback'
+		WHEN page LIKE '%phases%' THEN 'phases'
+		WHEN page LIKE '%bot-traffic%' THEN 'bot'
+		WHEN page = '/' THEN '/'
+		WHEN page LIKE '%neuron_by_pattern%' THEN 'neuron_by_pattern'
+		WHEN page LIKE '%synapse_probabilities%' THEN 'synapse_probabilities'
+		WHEN page LIKE '%synaptome%' THEN 'synaptome'
+		WHEN page LIKE '%synaptome_modeling%' THEN 'synaptome_modeling'
+		WHEN page LIKE '%synaptome_model%' THEN 'synaptome_model'
+		WHEN page LIKE '%/hipp Better than reCAPTCHA：vaptcha.cn%' THEN 'CAPTCHA'
+		WHEN page LIKE '%search_engine%' THEN 'search_engine'
+		WHEN page LIKE '%connectivity%' THEN 'connectivity'
+		WHEN page LIKE '%find_neuron_name%' THEN 'find_neuron_name'
+		WHEN page LIKE '%neuron_page%' THEN 'neuron_page'
+		WHEN page LIKE '%search.php%' THEN 'search'
+		WHEN page LIKE '%smtools%' THEN 'smtools'
+		WHEN page LIKE '%synaptic_mod_sum.php%' THEN 'synaptic_mod_sum'
+		WHEN page LIKE '%firing_patterns.php%' THEN 'firing_patterns'
+		WHEN page LIKE '%/synaptic_probabilities/php/%' THEN 'synaptic_probabilities'
+		WHEN page LIKE '%view_fp_image.php%' THEN 'view_fp_image'
+		WHEN page LIKE '%markers.php%' THEN 'markers landing'
+		WHEN page LIKE '%counts.php%' THEN 'counts landing'
+		WHEN page LIKE '%morphology.php%' THEN 'morphology landing'
+		WHEN page LIKE '%simulation_parameters.php%' THEN 'simulation_parameters'
+		WHEN page LIKE '%tools.php%' THEN 'tools'
+		WHEN page = '/php/' and day_index is null THEN '/php/' 
+		WHEN page = '/php/' and day_index is not null THEN 'not php' 
+		ELSE 'Landing Page'
+		END AS property_page,
+		    SUM(REPLACE(page_views, ',', '')) AS views
+			    FROM ga_analytics_pages
+			    GROUP BY property_page
+			    ORDER BY 
+			    views DESC ";
+	//echo $page_functionality_views_query;
+	$table_string .= format_functionality_table($conn, $page_functionality_views_query, $table_string, 2, 'not php');
 	$table_string .= get_table_skeleton_end();
 	
 	echo $table_string;

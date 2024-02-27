@@ -133,7 +133,8 @@ tr:nth-child(even){
 				<li><a href="#markersproperty">Markers Property Statistics</a></li>
 				<li><a href="#morphologyproperty">Morphology Property Statistics</a></li>
 				<li><a href="#phases_counts">Phases Statistics</a></li>
-				<li><a href="#functionality">Functionality Domain Page Statistics</a></li>
+				<li><a href="#property_functionality">Functionality Property Domain Page Statistics</a></li>
+				<li><a href="#page_functionality">Functionality Domain Page Statistics</a></li>
 				<li><a href="#pageviews">Views per Page Statistics </a></li>
 				<li><a href="#pageview_monthly">Page Views Per Month Statistics</a></li>
 	    		</ul>
@@ -215,12 +216,22 @@ tr:nth-child(even){
 </div>
 <!-- Till here -->
 
-<!-- When Functionality  Statistics is clicked-->
+<!-- When Property Domain Functionality  Statistics is clicked-->
 </br></br>
-<div id="functionality" style="padding:100px 100px; align:center;">
-	<p style="align: center;">Functionality Domain Statistics  <a href="#top">Back to top</a><p>
+<div id="property_functionality" style="padding:100px 100px; align:center;">
+	<p style="align: center;">Functionality Property Domain Statistics  <a href="#top">Back to top</a><p>
 	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
-		<?php get_functionality_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
+		<?php get_domain_functionality_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
+	</div>
+</div>
+<!-- Till here -->
+
+<!-- When Property Domain Functionality  Statistics is clicked-->
+</br></br>
+<div id="page_functionality" style="padding:100px 100px; align:center;">
+	<p style="align: center;">Functionality Domain Page Statistics  <a href="#top">Back to top</a><p>
+	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+		<?php get_page_functionality_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
 	</div>
 </div>
 <!-- Till here -->
