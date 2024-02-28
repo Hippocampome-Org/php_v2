@@ -57,67 +57,52 @@ function format_table($conn, $query, $table_string, $rows, $query2=NULL){
 	return $table_string1;
 }
 
-function format_table_functionality($conn, $query, $table_string, $rows, $exclude=NULL){
-        $count = 0; 
-        $rs = mysqli_query($conn,$query);
-        $table_string1 = '';
-        if(!$rs || ($rs->num_rows < 1)){
-                $table_string1 .= "<tr><td> No Data is available </td></tr>";
-                return $table_string1; 
-        }
-        $i=0; 
-        while($row = mysqli_fetch_row($rs))
-        {       
-                $j=0;
-		if (isset($exclude) && $row[0] == $exclude) {
-			continue;
-		}
-		if($i%2==0){ $table_string .= '<tr class="white-bg" >';}
-		else{ $table_string1 .= '<tr class="blue-bg">';}//Color gradient CSS
+function format_table_combined($conn, $query, $rows, $options = []) {
+    $count = 0;
+    $rs = mysqli_query($conn, $query);
+    $table_string = '';
 
-		while($j < $rows){
-			if($row[$j] == 'fp'){ $row[$j] = 'firing pattern'; }
-			if($row[$rows-1] > 0){
-				$table_string1 .= "<td>".$row[$j]."</td>";
-			}
-			$j++;
-		}
-		$count += $row[$rows-1];
-		$table_string1 .= "</tr>";
-		$i++;//increment for color gradient of the row
-        }
-        $table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$count."</td></tr>";
-        return $table_string1;
-}
-function format_table_property($conn, $query, $table_string, $rows, $format){
-	$count = 0;
-        $rs = mysqli_query($conn,$query);
-	$table_string1 = '';
-	if(!$rs || ($rs->num_rows < 1)){
-		$table_string1 .= "<tr><td> No Data is available </td></tr>";
-		return $table_string1;
-	}
-	$i=0;
-	while($row = mysqli_fetch_row($rs))
-	{
-		$j=0;
-		if($i%2==0){ $table_string .= '<tr class="white-bg" >';}
-		else{ $table_string1 .= '<tr class="blue-bg">';}//Color gradient CSS
+    if (!$rs || mysqli_num_rows($rs) < 1) {
+        return "<tr><td colspan='{$rows}'> No Data is available </td></tr>";
+    }
 
-		while($j < $rows){
-			$row[0] = $format[$row[0]];
-			if($row[$rows-1] > 0){
-				$table_string1 .= "<td>".$row[$j]."</td>";
-			}
-			$j++;
-		}
-		$count += $row[$rows-1];
-		$table_string1 .= "</tr>";
-		$i++;//increment for color gradient of the row
-	}
-	$table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$count."</td></tr>";
-	return $table_string1;
+    $i = 0;
+    while ($row = mysqli_fetch_row($rs)) {
+        // Check for row exclusion based on 'exclude' option
+        if (isset($options['exclude']) && in_array($row[0], $options['exclude'])) {
+            continue;
+        }
+
+        // Apply transformations based on 'format' option
+        if (isset($options['format']) && array_key_exists($row[0], $options['format'])) {
+            $row[0] = $options['format'][$row[0]];
+        }
+
+        // Coloring rows alternately
+        $bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
+        $table_string .= "<tr class='$bgColor'>";
+
+        for ($j = 0; $j < $rows; $j++) {
+            // Special handling for 'fp' to 'firing pattern'
+            if ($row[$j] === 'fp') {
+                $row[$j] = 'firing pattern';
+            }
+
+            // Only add data cells if the last column value is > 0
+            if ($row[$rows - 1] > 0) {
+                $table_string .= "<td>" . htmlspecialchars($row[$j]) . "</td>";
+            }
+        }
+
+        $count += $row[$rows - 1];
+        $table_string .= "</tr>";
+        $i++;
+    }
+
+    $table_string .= "<tr><td colspan='" . ($rows - 1) . "'><b>Total Count</b></td><td>$count</td></tr>";
+    return $table_string;
 }
+
 function format_table_markers($conn, $query, $table_string, $rows, $array_subs = NULL){
 	
 	$count = 0;
@@ -189,9 +174,6 @@ function get_page_views($conn){ //Passed on Dec 3 2023
 }
 
 function get_views_per_page_report($conn){ //Passed $conn on Dec 3 2023
-	$table_string = "<table>";
-	$table_string .= "<tr><th>Page</th><th>Views</th></tr>";
-	$table_string .= "<tbody style='height: 590px !important; overflow: scroll; '>";
 
 	$page_views_query = "SELECT gap.page, SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS total_views  FROM
 					ga_analytics_pages gap WHERE gap.day_index IS NULL GROUP BY gap.page order by total_views desc";
@@ -200,25 +182,25 @@ function get_views_per_page_report($conn){ //Passed $conn on Dec 3 2023
 					ga_analytics_pages gap WHERE gap.day_index IS NOT NULL and gap.page != '/php/' GROUP BY gap.page order by total_views desc";
 	//echo $page_views_query2;
 
-	$table_string .= format_table($conn, $page_views_query, $table_string, 2, $page_views_query2);
+	$columns = ['Page', 'Views'];
+	$table_string = get_table_skeleton_first($columns);
+	$table_string .= format_table($conn, $page_views_query, $table_string, count($columns), $page_views_query2);
+	$table_string .= get_table_skeleton_end();
 
-	$table_string .= "</tbody></table>";
-	
 	echo $table_string;
 }
 
 function get_pages_views_per_month_report($conn){ //Passed $conn on Dec 3 2023
-	$table_string = "<table>";
-	$table_string .= "<tr><th>Month-Year</th><th>Views</th></tr>";
-	$table_string .= "<tbody style='height: 590px !important; overflow: scroll; '>";
 	
 	$page_views_per_month_query = "select concat(DATE_FORMAT(day_index,'%b'), '-', YEAR(day_index)) as dm, 
 				sum(replace(views,',',''))  
 			     from ga_analytics_pages_views where views > 0 
 			     GROUP BY YEAR(day_index), MONTH(day_index)";
 	//echo $page_views_per_month_query;
-	$table_string .= format_table($conn, $page_views_per_month_query, $table_string, 2);
-	$table_string .= "</tbody></table>";
+	$columns = ['Month-Year', 'Views'];
+	$table_string = get_table_skeleton_first($columns);
+	$table_string .= format_table($conn, $page_views_per_month_query, $table_string, count($columns));
+	$table_string .= get_table_skeleton_end();
 	
 	echo $table_string;
 }
@@ -241,7 +223,6 @@ function get_table_skeleton_end(){
 }
 
 function get_neurons_views_report($conn){ //Passed on Dec 3 2023
-	$table_string = get_table_skeleton_first(['Subregion', 'Neuron Name', 'Views']);
 	$page_neurons_views_query = "SELECT t.subregion, t.nickname AS neuron_name,
                 SUM(replace(page_views, ',', '')) AS count
                         FROM
@@ -262,14 +243,15 @@ function get_neurons_views_report($conn){ //Passed on Dec 3 2023
 			t.subregion order by t.position";
 	//echo $page_neurons_views_query;
      
-	$table_string .= format_table_markers($conn, $page_neurons_views_query, $table_string, 3);
+	$columns = ['Subregion', 'Neuron Name', 'Views'];
+	$table_string = get_table_skeleton_first($columns);
+	$table_string .= format_table_markers($conn, $page_neurons_views_query, $table_string, count($columns));
 	$table_string .= get_table_skeleton_end();
 	
 	echo $table_string;
 }
 
 function get_morphology_property_views_report($conn){
-	$table_string = get_table_skeleton_first(['Morphology', 'Layer', 'Views']);
 	$page_property_views_query = "SELECT
 					SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '_', 1) AS subregion,
 					SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '_', -1) AS layer,
@@ -284,7 +266,11 @@ function get_morphology_property_views_report($conn){
 	//echo $page_property_views_query;
 
 	$array_subs = ["DG"=>["SMo"=>0,"SMi"=>0,"SG"=>0,"H"=>0],"CA3"=>["SLM"=>0, "SR"=>0, "SL"=>0, "SP"=>0,"SO"=>0],"CA2"=>["SLM"=>0,"SR"=>0,"SP"=>0,"SO"=>0],"CA1"=>["SLM"=>0,"SR"=>0,"SP"=>0,"SO"=>0],"SUB"=>["SM"=>0,"SP"=>0,"PL"=>0],"EC"=>["I"=>0,"II"=>0,"III"=>0,"IV"=>0,"V"=>0,"VI"=>0]];
-        $table_string .= format_table_markers($conn, $page_property_views_query, $table_string, 3, $array_subs);
+	
+	
+	$columns = ['Morphology', 'Layer', 'Views'];
+	$table_string = get_table_skeleton_first($columns);
+        $table_string .= format_table_markers($conn, $page_property_views_query, $table_string, count($columns), $array_subs);
 	$table_string .= get_table_skeleton_end();
 
         echo $table_string;
@@ -292,7 +278,6 @@ function get_morphology_property_views_report($conn){
 
 function get_pmid_isbn_property_views_report($conn){
 
-	$table_string = get_table_skeleton_first(['pmid_isbn', 'Sub Region', 'Layer', 'Neuron Name', 'Views']);
 	$page_pmid_isbn_property_views_query = " SELECT linking_pmid_isbn, t.subregion, layer, t.nickname as neuron_name, color, SUM(REPLACE(page_views, ',', '')) AS count
                         FROM
                         (
@@ -312,6 +297,8 @@ function get_pmid_isbn_property_views_report($conn){
 linking_pmid_isbn, t.subregion, layer, t.nickname, color  order by t.position";
 	//echo $page_pmid_isbn_property_views_query;
 
+	$columns = ['pmid_isbn', 'Sub Region', 'Layer', 'Neuron Name', 'Views'];
+	$table_string = get_table_skeleton_first($columns);
         $table_string .= format_table($conn, $page_pmid_isbn_property_views_query, $table_string, 6);
 	$table_string .= get_table_skeleton_end();
 
@@ -319,7 +306,6 @@ linking_pmid_isbn, t.subregion, layer, t.nickname, color  order by t.position";
 }
 
 function get_markers_property_views_report($conn){
-	$table_string = get_table_skeleton_first(['Markers', 'Expression', 'Views']);
 
 	$page_property_views_query = "SELECT
 		SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1) AS markers,
@@ -335,7 +321,9 @@ function get_markers_property_views_report($conn){
 			ORDER BY
 			SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1)";
 	//echo $page_property_views_query;
-        $table_string .= format_table_markers($conn, $page_property_views_query, $table_string, 3);
+	$columns = ['Markers', 'Expression', 'Views'];
+	$table_string = get_table_skeleton_first($columns);
+        $table_string .= format_table_markers($conn, $page_property_views_query, $table_string, count($columns));
 	$table_string .= get_table_skeleton_end();
 
         echo $table_string;
@@ -432,15 +420,14 @@ function get_fp_property_views_report($conn){
 		ORDER BY SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'parameter=', -1), '&', 1)";
 
 	//echo $page_fp_property_views_query;
-        $table_string .= format_table_property($conn, $page_fp_property_views_query, $table_string, 2, $fp_format);
+	$options = ['format' => $fp_format,];
+	$table_string .= format_table_combined($conn, $page_fp_property_views_query, 2, $options);
 	$table_string .= get_table_skeleton_end();
 
         echo $table_string;
 }
 
 function get_domain_functionality_views_report($conn){
-	$table_string = get_table_skeleton_first(['Property', 'Views']);
-
 	$page_functionality_views_query = "SELECT
                 SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) AS property_page,
                 SUM(REPLACE(page_views, ',', '')) AS views
@@ -453,14 +440,15 @@ function get_domain_functionality_views_report($conn){
                         GROUP BY
                         SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '?', 1)";
 	//echo $page_functionality_views_query;
-	$table_string .= format_table($conn, $page_functionality_views_query, $table_string, 2);
+	$columns = ['Property', 'Views'];
+	$table_string = get_table_skeleton_first($columns);
+	$table_string .= format_table($conn, $page_functionality_views_query, $table_string, count($columns));
 	$table_string .= get_table_skeleton_end();
 	
 	echo $table_string;
 }
 
 function get_page_functionality_views_report($conn){
-	$table_string = get_table_skeleton_first(['Property', 'Views']);
 
 	$page_functionality_views_query = "SELECT 
 		CASE 
@@ -506,7 +494,11 @@ function get_page_functionality_views_report($conn){
 			    ORDER BY 
 			    views DESC ";
 	//echo $page_functionality_views_query;
-	$table_string .= format_table_functionality($conn, $page_functionality_views_query, $table_string, 2, 'not php');
+	$options = ['exclude' => ['not php'],];
+	$columns = ['Property', 'Views'];
+	$table_string = get_table_skeleton_first($columns);
+	$table_string .= format_table_combined($conn, $page_functionality_views_query,  2, $options);
+
 	$table_string .= get_table_skeleton_end();
 	
 	echo $table_string;
