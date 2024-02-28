@@ -127,7 +127,7 @@ tr:nth-child(even){
 			<div id="links" style="padding: 15px; 10px;">
  	    		<ul>
 				<li><a href="#neuron">Neuron Type Statistics</a></li>
-				<li><a href="#property_counts">Count Statistics</a></li>
+				<li><a href="#property_counts">Neuron Type Census Statistics</a></li>
 				<li><a href="#firingpattern">Firing Pattern Statistics</a></li>
 				<li><a href="#markersproperty">Markers Property Statistics</a></li>
 				<li><a href="#morphologyproperty">Morphology Property Statistics</a></li>
@@ -161,7 +161,7 @@ tr:nth-child(even){
 <!-- When Property Counts Statistics is clicked-->
 </br></br>
 <div id="property_counts" style="padding:100px 100px; align:center;">
-	<p style="align: center;">Property Count Statistics  <a href="#top">Back to top</a><p>
+	<p style="align: center;">Neuron Type Census Statistics  <a href="#top">Back to top</a><p>
 	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
 		<?php get_counts_views_report($conn, 'counts'); //Passing $conn on Dec 3 2023 ?> 
 	</div>

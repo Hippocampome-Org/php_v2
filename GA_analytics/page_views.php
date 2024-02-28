@@ -1,26 +1,5 @@
 <?php
-
-function get_page_views($conn){ //Passed on Dec 3 2023
-	/*$page_views_query = "select day_index, views 
-		from ga_analytics_pages_views where views > 0 
-		GROUP BY YEAR(day_index), MONTH(day_index)"; */
-	$page_views_query = "SELECT YEAR(day_index) AS year, 
-		MONTH(day_index) AS month, 
-		SUM(views) AS total_views
-			FROM ga_analytics_pages_views 
-			WHERE views > 0
-			GROUP BY YEAR(day_index), MONTH(day_index)";
-
-	//AND day_index >= '2023-07-01' 
-	$rs = mysqli_query($conn,$page_views_query);
-	$result_page_views_array = array();
-	while($row = mysqli_fetch_row($rs))
-	{
-		array_push($result_page_views_array, $row);
-	}
-	return $result_page_views_array;
-
-}
+require_once('class/class.type.php');
 
 function format_table($conn, $query, $table_string, $rows, $query2=NULL){
 	$count = 0;
@@ -191,6 +170,24 @@ function format_table_markers($conn, $query, $table_string, $rows, $array_subs =
         return $table_string1;
 }
 
+function get_page_views($conn){ //Passed on Dec 3 2023
+	$page_views_query = "SELECT YEAR(day_index) AS year, 
+		MONTH(day_index) AS month, 
+		SUM(views) AS total_views
+			FROM ga_analytics_pages_views 
+			WHERE views > 0
+			GROUP BY YEAR(day_index), MONTH(day_index)";
+
+	$rs = mysqli_query($conn,$page_views_query);
+	$result_page_views_array = array();
+	while($row = mysqli_fetch_row($rs))
+	{
+		array_push($result_page_views_array, $row);
+	}
+	return $result_page_views_array;
+
+}
+
 function get_views_per_page_report($conn){ //Passed $conn on Dec 3 2023
 	$table_string = "<table>";
 	$table_string .= "<tr><th>Page</th><th>Views</th></tr>";
@@ -262,8 +259,9 @@ function get_neurons_views_report($conn){ //Passed on Dec 3 2023
                         JOIN Type AS t ON t.id = derived.neuronID
                         GROUP BY
                         t.nickname, 
-			 t.subregion";
+			t.subregion order by t.position";
 	//echo $page_neurons_views_query;
+     
 	$table_string .= format_table_markers($conn, $page_neurons_views_query, $table_string, 3);
 	$table_string .= get_table_skeleton_end();
 	
@@ -294,19 +292,27 @@ function get_morphology_property_views_report($conn){
 
 function get_pmid_isbn_property_views_report($conn){
 
-	$table_string = get_table_skeleton_first(['pmid_isbn', 'Views']);
-	$page_pmid_isbn_property_views_query = "SELECT
-                        SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'linking_pmid_isbn=', -1), '&', 1), '_', 1) AS linking_pmid_isbn,
-						SUM(REPLACE(page_views, ',', '')) AS count 
-                        FROM ga_analytics_pages
-                        WHERE
-                        page LIKE '%property_page_morphology_linking_pmid_isbn.php?id_neuron=%'
-                        AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
+	$table_string = get_table_skeleton_first(['pmid_isbn', 'Sub Region', 'Layer', 'Neuron Name', 'Views']);
+	$page_pmid_isbn_property_views_query = " SELECT linking_pmid_isbn, t.subregion, layer, t.nickname as neuron_name, color, SUM(REPLACE(page_views, ',', '')) AS count
+                        FROM
+                        (
+                                SELECT 
+                                IF(INSTR(page, 'linking_pmid_isbn=') > 0,SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'linking_pmid_isbn=', -1), '&', 1),'') AS linking_pmid_isbn,
+                                IF(INSTR(page, 'val_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '_', -1),'')  AS layer, 
+                                SUBSTRING_INDEX(SUBSTRING_INDEX(page, '?id_neuron=', -1), '&', 1) AS neuronID,
+                                IF(INSTR(page, 'color=') > 0,SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1),'') as color, page_views
+                                FROM ga_analytics_pages
+                                WHERE
+                                page LIKE '%property_page_morphology_linking_pmid_isbn.php?id_neuron=%'
+                                AND LENGTH(substring_index(substring_index(page, 'id_neuron=', -1), '&', 1)) = 4
+                                AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
+                        ) AS derived
+                        JOIN Type AS t ON t.id = derived.neuronID
                         GROUP BY
-                        linking_pmid_isbn";
+linking_pmid_isbn, t.subregion, layer, t.nickname, color  order by t.position";
 	//echo $page_pmid_isbn_property_views_query;
 
-        $table_string .= format_table($conn, $page_pmid_isbn_property_views_query, $table_string, 2);
+        $table_string .= format_table($conn, $page_pmid_isbn_property_views_query, $table_string, 6);
 	$table_string .= get_table_skeleton_end();
 
         echo $table_string;
@@ -336,33 +342,56 @@ function get_markers_property_views_report($conn){
 }
 
 function get_counts_views_report($conn, $page_string=NULL){
-	$table_string = get_table_skeleton_first(['Neuron ID', 'Neuron Name', 'Views']);
 
-        $page_counts_views_query = "SELECT
-		t.id AS neuronID, t.nickname AS neuron_name, SUM(replace(page_views, ',', '')) AS count FROM
-		( SELECT substring_index(substring_index(page, 'id_neuron=', -1), '&', 1) AS neuronID, page_views
-		FROM ga_analytics_pages WHERE page LIKE ";
-	if($page_string == 'phases'){
-		$page_counts_views_query .= " '%property_page_phases.php?id_neuron=%' ";
-	}
-	if($page_string == 'counts'){
-		$page_counts_views_query .= " '%property_page_counts.php?id_neuron=%' ";
-	}
-	if($page_string == 'synpro'){
-		$page_counts_views_query .= " '%property_page_synpro.php?id_neuron=%' ";
-	}
-	if($page_string == 'synpro_nm'){
-		$page_counts_views_query .= " '%property_page_synpro_nm.php?id_neuron=%' ";
-	}
-	$page_counts_views_query .= " AND LENGTH(substring_index(substring_index(page, 'id_neuron=', -1), '&', 1)) = 4
-					AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
-		)AS derived JOIN Type AS t ON t.id = derived.neuronID GROUP BY derived.neuronID, t.nickname";
-        //echo $page_counts_views_query;
-        $table_string .= format_table($conn, $page_counts_views_query, $table_string, 3);
-        $table_string .= get_table_skeleton_end();
+	// Initialize the table string and columns array outside the conditional logic
+	$table_string = '';
+	$columns = [];
 
+	// Base part of the SQL query
+	$page_counts_views_query = "SELECT ";
+
+	// Check for 'phases' or 'counts' page types
+	if ($page_string == 'phases' || $page_string == 'counts') {
+		$columns = ['Neuron ID', 'Neuron Name', 'Views'];
+		$pageType = $page_string == 'phases' ? 'phases' : 'counts';
+		$page_counts_views_query .= "t.id AS neuronID, t.nickname AS neuron_name, SUM(REPLACE(page_views, ',', '')) AS count 
+				FROM (SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) AS neuronID, page_views 
+					FROM ga_analytics_pages WHERE page LIKE '%property_page_{$pageType}.php?id_neuron=%' 
+					AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4 
+					AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)) 
+					AS derived JOIN Type AS t ON t.id = derived.neuronID GROUP BY derived.neuronID, t.nickname ORDER BY t.position";
+	}
+
+	// Check for 'synpro' or 'synpro_nm' page types
+	if ($page_string == 'synpro' || $page_string == 'synpro_nm') {
+		$columns = ['Sub Region', 'layer', 'Neuron Name', 'Color', 'Views'];
+		$pageType = $page_string == 'synpro' ? 'property_page_synpro.php' : 'property_page_synpro_nm.php';
+		// Add 'Sp Page' column if page_string is 'synpro'
+		if ($page_string == 'synpro') {
+			array_splice($columns, 4, 0, ['Sp Page']); // Insert 'Sp Page' at the correct position
+		}
+		$page_counts_views_query .= "t.subregion, layer, t.nickname as neuron_name, color" . ($page_string == 'synpro' ? ", sp_page" : "") . ", 
+						SUM(REPLACE(page_views, ',', '')) AS count 
+						FROM (SELECT IF(INSTR(page, 'val_property=') > 0, 
+							SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '_', -1), '') AS layer, 
+							SUBSTRING_INDEX(SUBSTRING_INDEX(page, '?id_neuron=', -1), '&', 1) AS neuronID, 
+							IF(INSTR(page, 'color=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1), '') as color" . ($page_string == 'synpro' ? ", 
+							IF(INSTR(page, 'sp_page=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'sp_page=', -1), '&', 1), '') as sp_page" : "") . ", page_views 
+							FROM ga_analytics_pages 
+							WHERE page LIKE '%$pageType?id_neuron=%' 
+							AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4 
+							AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)) 
+							AS derived JOIN Type AS t ON t.id = derived.neuronID GROUP BY t.subregion, layer, t.nickname, color" . ($page_string == 'synpro' ? ", sp_page" : "") . " ORDER BY t.position";
+	}
+
+	// Initialize table with columns and execute the query if columns array is not empty
+	if (!empty($columns)) {
+		$table_string = get_table_skeleton_first($columns);
+		$table_string .= format_table($conn, $page_counts_views_query, $table_string, count($columns));
+        	//echo $page_counts_views_query;
+        	$table_string .= get_table_skeleton_end();
+	}
         echo $table_string;
-
 }
 
 function get_fp_property_views_report($conn){
@@ -446,13 +475,13 @@ function get_page_functionality_views_report($conn){
 		WHEN page = '/' THEN '/'
 		WHEN page LIKE '%neuron_by_pattern%' THEN 'neuron_by_pattern'
 		WHEN page LIKE '%synapse_probabilities%' THEN 'synapse_probabilities'
-		WHEN page LIKE '%synaptome%' THEN 'synaptome'
-		WHEN page LIKE '%synaptome_modeling%' THEN 'synaptome_modeling'
+		WHEN page LIKE '%synaptome.php%' THEN 'synaptome'
+		WHEN page LIKE '%synaptome_modeling.php%' THEN 'synaptome_modeling'
 		WHEN page LIKE '%synaptome_model%' THEN 'synaptome_model'
 		WHEN page LIKE '%/hipp Better than reCAPTCHA：vaptcha.cn%' THEN 'CAPTCHA'
 		WHEN page LIKE '%search_engine%' THEN 'search_engine'
-		WHEN page LIKE '%connectivity%' THEN 'connectivity'
-		WHEN page LIKE '%find_neuron_name%' THEN 'find_neuron_name'
+		WHEN page LIKE '%find_neuron_name.php%' THEN 'find_neuron_name'
+		WHEN page LIKE '%find_neuron_term.php%' THEN 'find_neuron_term'
 		WHEN page LIKE '%neuron_page%' THEN 'neuron_page'
 		WHEN page LIKE '%search.php%' THEN 'search'
 		WHEN page LIKE '%smtools%' THEN 'smtools'
@@ -460,8 +489,10 @@ function get_page_functionality_views_report($conn){
 		WHEN page LIKE '%firing_patterns.php%' THEN 'firing_patterns'
 		WHEN page LIKE '%/synaptic_probabilities/php/%' THEN 'synaptic_probabilities'
 		WHEN page LIKE '%view_fp_image.php%' THEN 'view_fp_image'
+		WHEN page LIKE '%izhikevich_model.php%' THEN 'izhikevich_model'
 		WHEN page LIKE '%markers.php%' THEN 'markers landing'
 		WHEN page LIKE '%counts.php%' THEN 'counts landing'
+		WHEN page LIKE '%connectivity.php%' THEN 'connectivity'
 		WHEN page LIKE '%morphology.php%' THEN 'morphology landing'
 		WHEN page LIKE '%simulation_parameters.php%' THEN 'simulation_parameters'
 		WHEN page LIKE '%tools.php%' THEN 'tools'
