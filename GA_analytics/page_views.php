@@ -1,10 +1,52 @@
 <?php
-require_once('class/class.type.php');
+global $csv_data;
 
-function format_table($conn, $query, $table_string, $rows, $query2=NULL){
+function download_csvfile($functionName, $conn, $param = NULL) {
+	$allowedFunctions = ['get_neurons_views_report','get_markers_property_views_report', 'get_morphology_property_views_report', 'get_counts_views_report', 
+			     'get_fp_property_views_report','get_pmid_isbn_property_views_report', 'get_domain_functionality_views_report','get_page_functionality_views_report', 
+			      'get_views_per_page_report', 'get_pages_views_per_month_report']; // TO restrict any unwanted calls or anything
+
+	if (in_array($functionName, $allowedFunctions) && function_exists($functionName)) {
+		if(isset($param)){
+			$csv_data = $functionName($conn, $param, true);
+		}else{
+			$csv_data = $functionName($conn, true);
+		}
+		// Set headers to initiate file download
+		header('Content-Type: text/csv');
+		$filename=$csv_data['filename'].".csv";
+		header('Content-Disposition: attachment; filename="' . $filename . '"');
+		$output = fopen('php://output', 'w');
+
+		// Optionally add CSV headers to the first row
+		$headers = $csv_data['headers'];
+		fputcsv($output, $headers);
+
+		// Sample data for CSV
+		$sampleData = $csv_data['rows'];
+
+		// Loop through the data and write to the CSV output
+		foreach ($sampleData as $row) {
+			fputcsv($output, $row);
+		}
+
+		// Close the output stream
+		fclose($output);
+
+		// Terminate the script to prevent sending additional output to the response
+		exit();
+	} else {
+		echo "Invalid function.";
+	}
+
+}
+
+function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers, $write_file=NULL, $query2=NULL){
 	$count = 0;
+	$csv_rows = [];
         $rs = mysqli_query($conn,$query);
 	$table_string1 = '';
+	$rows = count($csv_headers);
 	if(!$rs || ($rs->num_rows < 1)){
 		$table_string1 .= "<tr><td> No Data is available </td></tr>";
 		return $table_string1;
@@ -19,6 +61,7 @@ function format_table($conn, $query, $table_string, $rows, $query2=NULL){
 	$i=0;
 	while($row = mysqli_fetch_row($rs))
 	{       
+		$csv_rows[] = $row;
 		$j=0;
 		if($i%2==0){ $table_string .= '<tr class="white-bg" >';}
 		else{ $table_string1 .= '<tr class="blue-bg">';}//Color gradient CSS
@@ -37,6 +80,7 @@ function format_table($conn, $query, $table_string, $rows, $query2=NULL){
 	if(isset($query2)){
 		while($row = mysqli_fetch_row($rs2))
 		{
+	  	 	$csv_rows[] = $row;
 			$j=0;
 			if($i%2==0){ $table_string .= '<tr class="white-bg" >';}
 			else{ $table_string1 .= '<tr class="blue-bg">';}//Color gradient CSS
@@ -53,21 +97,29 @@ function format_table($conn, $query, $table_string, $rows, $query2=NULL){
 			$i++;//increment for color gradient of the row
 		}
 	}
-	$table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$count."</td></tr>";	
-	return $table_string1;
+	if(isset($write_file)){
+		$csv_data[$csv_tablename]=['filename'=>$csv_tablename,'headers'=>$csv_headers,'rows'=>$csv_rows];
+                return $csv_data[$csv_tablename];
+        }	
+	else{
+		$table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$count."</td></tr>";	
+		return $table_string1;
+	}
 }
 
-function format_table_combined($conn, $query, $rows, $options = []) {
+function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $write_file=NULL, $options = []) {
     $count = 0;
+    $csv_rows = [];
     $rs = mysqli_query($conn, $query);
     $table_string = '';
-
+    $rows = count($csv_headers);
     if (!$rs || mysqli_num_rows($rs) < 1) {
         return "<tr><td colspan='{$rows}'> No Data is available </td></tr>";
     }
 
     $i = 0;
     while ($row = mysqli_fetch_row($rs)) {
+	$csv_rows[] = $row;
         // Check for row exclusion based on 'exclude' option
         if (isset($options['exclude']) && in_array($row[0], $options['exclude'])) {
             continue;
@@ -99,15 +151,22 @@ function format_table_combined($conn, $query, $rows, $options = []) {
         $i++;
     }
 
-    $table_string .= "<tr><td colspan='" . ($rows - 1) . "'><b>Total Count</b></td><td>$count</td></tr>";
-    return $table_string;
+    if(isset($write_file)){
+	    $csv_data[$csv_tablename]=['filename'=>$csv_tablename,'headers'=>$csv_headers,'rows'=>$csv_rows];
+	    return $csv_data[$csv_tablename];
+    } else{
+	    $csv_data[$csv_tablename]=['filename'=>$csv_tablename,'headers'=>$csv_headers,'rows'=>$csv_rows];
+	    return $table_string;
+    }
 }
 
-function format_table_markers($conn, $query, $table_string, $rows, $array_subs = NULL){
+function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv_headers, $write_file = NULL, $array_subs = NULL){
 	
 	$count = 0;
+	$csv_rows=[];
         $rs = mysqli_query($conn,$query);
         $table_string1 = '';
+	$rows = count($csv_headers);
 	if(!$rs || ($rs->num_rows < 1)){
                 $table_string1 .= "<tr><td> No Data is available </td></tr>";
 		return $table_string1;
@@ -116,6 +175,7 @@ function format_table_markers($conn, $query, $table_string, $rows, $array_subs =
 	if(!$array_subs){ $array_subs = [];}
         while($row = mysqli_fetch_row($rs))
         {
+		$csv_rows[] = $row;
 		if($array_subs[$row[0]]){
 			if($array_subs[$row[0]][$row[1]]){
 				$array_subs[$row[0]][$row[1]] += $row[2];
@@ -150,9 +210,14 @@ function format_table_markers($conn, $query, $table_string, $rows, $array_subs =
 		}
 		$j++;
         }
-	$table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$count."</td></tr>";
-
-        return $table_string1;
+	if(isset($write_file)){
+		$csv_data[$csv_tablename]=['filename'=>$csv_tablename,'headers'=>$csv_headers,'rows'=>$csv_rows];
+		return $csv_data[$csv_tablename];
+	}
+	else{
+		$table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$count."</td></tr>";
+        	return $table_string1;
+	}
 }
 
 function get_page_views($conn){ //Passed on Dec 3 2023
@@ -173,7 +238,7 @@ function get_page_views($conn){ //Passed on Dec 3 2023
 
 }
 
-function get_views_per_page_report($conn){ //Passed $conn on Dec 3 2023
+function get_views_per_page_report($conn, $write_file=NULL){ //Passed $conn on Dec 3 2023
 
 	$page_views_query = "SELECT gap.page, SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS total_views  FROM
 					ga_analytics_pages gap WHERE gap.day_index IS NULL GROUP BY gap.page order by total_views desc";
@@ -183,14 +248,18 @@ function get_views_per_page_report($conn){ //Passed $conn on Dec 3 2023
 	//echo $page_views_query2;
 
 	$columns = ['Page', 'Views'];
-	$table_string = get_table_skeleton_first($columns);
-	$table_string .= format_table($conn, $page_views_query, $table_string, count($columns), $page_views_query2);
-	$table_string .= get_table_skeleton_end();
-
-	echo $table_string;
+	if(isset($write_file)) {
+                return format_table($conn, $page_views_query, $table_string, 'views_per_page', $columns, $write_file, $page_views_query2);
+        }
+        else{
+		$table_string = get_table_skeleton_first($columns);
+		$table_string .= format_table($conn, $page_views_query, $table_string, 'views_per_page', $columns, $write_file=NULL, $page_views_query2);
+		$table_string .= get_table_skeleton_end();
+		echo $table_string;
+	}
 }
 
-function get_pages_views_per_month_report($conn){ //Passed $conn on Dec 3 2023
+function get_pages_views_per_month_report($conn, $write_file=NULL){ //Passed $conn on Dec 3 2023
 	
 	$page_views_per_month_query = "select concat(DATE_FORMAT(day_index,'%b'), '-', YEAR(day_index)) as dm, 
 				sum(replace(views,',',''))  
@@ -198,11 +267,14 @@ function get_pages_views_per_month_report($conn){ //Passed $conn on Dec 3 2023
 			     GROUP BY YEAR(day_index), MONTH(day_index)";
 	//echo $page_views_per_month_query;
 	$columns = ['Month-Year', 'Views'];
-	$table_string = get_table_skeleton_first($columns);
-	$table_string .= format_table($conn, $page_views_per_month_query, $table_string, count($columns));
-	$table_string .= get_table_skeleton_end();
-	
-	echo $table_string;
+	if(isset($write_file)) {
+		return format_table($conn, $page_views_per_month_query, $table_string, 'page_views_per_month', $columns, $write_file);
+        }else{  
+		$table_string = get_table_skeleton_first($columns);
+		$table_string .= format_table($conn, $page_views_per_month_query, $table_string, 'page_views_per_month', $columns);
+		$table_string .= get_table_skeleton_end();
+		echo $table_string;
+	}
 }
 
 function get_table_skeleton_first($cols){
@@ -222,7 +294,7 @@ function get_table_skeleton_end(){
 	return "</tbody></table>";
 }
 
-function get_neurons_views_report($conn){ //Passed on Dec 3 2023
+function get_neurons_views_report($conn, $write_file=NULL){ //Passed on Dec 3 2023
 	$page_neurons_views_query = "SELECT t.subregion, t.nickname AS neuron_name,
                 SUM(replace(page_views, ',', '')) AS count
                         FROM
@@ -244,14 +316,17 @@ function get_neurons_views_report($conn){ //Passed on Dec 3 2023
 	//echo $page_neurons_views_query;
      
 	$columns = ['Subregion', 'Neuron Name', 'Views'];
-	$table_string = get_table_skeleton_first($columns);
-	$table_string .= format_table_markers($conn, $page_neurons_views_query, $table_string, count($columns));
-	$table_string .= get_table_skeleton_end();
-	
-	echo $table_string;
+	if(isset($write_file)) {
+		return format_table_markers($conn, $page_neurons_views_query, $table_string, 'neurons_views', $columns, $write_file);
+	}else{
+		$table_string = get_table_skeleton_first($columns);
+		$table_string .= format_table_markers($conn, $page_neurons_views_query, $table_string, 'neurons_views', $columns);
+		$table_string .= get_table_skeleton_end();
+		echo $table_string;
+	}
 }
 
-function get_morphology_property_views_report($conn){
+function get_morphology_property_views_report($conn, $write_file=NULL){
 	$page_property_views_query = "SELECT
 					SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '_', 1) AS subregion,
 					SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '_', -1) AS layer,
@@ -269,14 +344,17 @@ function get_morphology_property_views_report($conn){
 	
 	
 	$columns = ['Morphology', 'Layer', 'Views'];
-	$table_string = get_table_skeleton_first($columns);
-        $table_string .= format_table_markers($conn, $page_property_views_query, $table_string, count($columns), $array_subs);
-	$table_string .= get_table_skeleton_end();
-
-        echo $table_string;
+	if(isset($write_file)) {
+		return format_table_markers($conn, $page_property_views_query, $table_string, 'morphology_property', $columns, $write_file, $array_subs);
+        }else{
+		$table_string = get_table_skeleton_first($columns);
+		$table_string .= format_table_markers($conn, $page_property_views_query, $table_string, 'morphology_property', $columns, $write_file=NULL, $array_subs);
+		$table_string .= get_table_skeleton_end();
+		echo $table_string;
+	}
 }
 
-function get_pmid_isbn_property_views_report($conn){
+function get_pmid_isbn_property_views_report($conn, $write_file=NULL){
 
 	$page_pmid_isbn_property_views_query = " SELECT linking_pmid_isbn, t.subregion, layer, t.nickname as neuron_name, color, SUM(REPLACE(page_views, ',', '')) AS count
                         FROM
@@ -297,15 +375,18 @@ function get_pmid_isbn_property_views_report($conn){
 linking_pmid_isbn, t.subregion, layer, t.nickname, color  order by t.position";
 	//echo $page_pmid_isbn_property_views_query;
 
-	$columns = ['pmid_isbn', 'Sub Region', 'Layer', 'Neuron Name', 'Views'];
-	$table_string = get_table_skeleton_first($columns);
-        $table_string .= format_table($conn, $page_pmid_isbn_property_views_query, $table_string, 6);
-	$table_string .= get_table_skeleton_end();
-
-        echo $table_string;
+	$columns = ['pmid_isbn', 'Sub Region', 'Layer', 'Neuron Name', 'Color', 'Views'];
+	if(isset($write_file)) {
+		return format_table($conn, $page_pmid_isbn_property_views_query, $table_string, 'pmid_isbn_table', $columns, $write_file);
+        }else{
+		$table_string = get_table_skeleton_first($columns);
+		$table_string .= format_table($conn, $page_pmid_isbn_property_views_query, $table_string, 'pmid_isbn_table', $columns);
+		$table_string .= get_table_skeleton_end();
+		echo $table_string;
+	}
 }
 
-function get_markers_property_views_report($conn){
+function get_markers_property_views_report($conn, $write_file = NULL){
 
 	$page_property_views_query = "SELECT
 		SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1) AS markers,
@@ -322,14 +403,18 @@ function get_markers_property_views_report($conn){
 			SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1)";
 	//echo $page_property_views_query;
 	$columns = ['Markers', 'Expression', 'Views'];
-	$table_string = get_table_skeleton_first($columns);
-        $table_string .= format_table_markers($conn, $page_property_views_query, $table_string, count($columns));
-	$table_string .= get_table_skeleton_end();
+	if(isset($write_file)) {
+		return format_table_markers($conn, $page_property_views_query, $table_string, 'markers_property_table', $columns, $write_file);
+        }else{
+		$table_string = get_table_skeleton_first($columns);
+		$table_string .= format_table_markers($conn, $page_property_views_query, $table_string, 'markers_property_table', $columns);
+		$table_string .= get_table_skeleton_end();
 
-        echo $table_string;
+		echo $table_string;
+	}
 }
 
-function get_counts_views_report($conn, $page_string=NULL){
+function get_counts_views_report($conn, $page_string=NULL, $write_file = NULL){
 
 	// Initialize the table string and columns array outside the conditional logic
 	$table_string = '';
@@ -375,15 +460,19 @@ function get_counts_views_report($conn, $page_string=NULL){
 	// Initialize table with columns and execute the query if columns array is not empty
 	if (!empty($columns)) {
 		$table_string = get_table_skeleton_first($columns);
-		$table_string .= format_table($conn, $page_counts_views_query, $table_string, count($columns));
-        	//echo $page_counts_views_query;
-        	$table_string .= get_table_skeleton_end();
+		$csv_tablename = $page_string."_table";
+		if(isset($write_file)) {
+			return format_table($conn, $page_counts_views_query, $table_string, $csv_tablename, $columns, $write_file);
+        	}else{
+			$table_string .= format_table($conn, $page_counts_views_query, $table_string, $csv_tablename, $columns);
+			//echo $page_counts_views_query;
+			$table_string .= get_table_skeleton_end();
+        		echo $table_string;
+		}
 	}
-        echo $table_string;
 }
 
-function get_fp_property_views_report($conn){
-	$table_string = get_table_skeleton_first(['Firing Pattern', 'Views']);
+function get_fp_property_views_report($conn, $write_file=NULL){
 	$fp_format = [
 		'ASP.' => 'adapting spiking',
 		'ASP.ASP.' => 'adapting spiking followed by (slower) adapting spiking',
@@ -420,14 +509,19 @@ function get_fp_property_views_report($conn){
 		ORDER BY SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'parameter=', -1), '&', 1)";
 
 	//echo $page_fp_property_views_query;
+	$columns = ['Firing Pattern', 'Views'];
 	$options = ['format' => $fp_format,];
-	$table_string .= format_table_combined($conn, $page_fp_property_views_query, 2, $options);
-	$table_string .= get_table_skeleton_end();
-
-        echo $table_string;
+	if(isset($write_file)) {
+		return format_table_combined($conn, $page_fp_property_views_query, 'fp_property_table', $columns, $write_file, $options);
+	}else{
+		$table_string = get_table_skeleton_first($columns);
+		$table_string .= format_table_combined($conn, $page_fp_property_views_query, 'fp_property_table', $columns, $write_file=NULL, $options);
+		$table_string .= get_table_skeleton_end();
+		echo $table_string;
+	}
 }
 
-function get_domain_functionality_views_report($conn){
+function get_domain_functionality_views_report($conn, $write_file = NULL){
 	$page_functionality_views_query = "SELECT
                 SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) AS property_page,
                 SUM(REPLACE(page_views, ',', '')) AS views
@@ -441,14 +535,17 @@ function get_domain_functionality_views_report($conn){
                         SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '?', 1)";
 	//echo $page_functionality_views_query;
 	$columns = ['Property', 'Views'];
-	$table_string = get_table_skeleton_first($columns);
-	$table_string .= format_table($conn, $page_functionality_views_query, $table_string, count($columns));
-	$table_string .= get_table_skeleton_end();
-	
-	echo $table_string;
+	if(isset($write_file)) {
+		return format_table($conn, $page_functionality_views_query, $table_string, 'domain_func_table', $columns, $write_file);
+	}else{
+		$table_string = get_table_skeleton_first($columns);
+		$table_string .= format_table($conn, $page_functionality_views_query, $table_string, 'domain_func_table', $columns);
+		$table_string .= get_table_skeleton_end();
+		echo $table_string;
+	}
 }
 
-function get_page_functionality_views_report($conn){
+function get_page_functionality_views_report($conn, $write_file=NULL){
 
 	$page_functionality_views_query = "SELECT 
 		CASE 
@@ -496,12 +593,14 @@ function get_page_functionality_views_report($conn){
 	//echo $page_functionality_views_query;
 	$options = ['exclude' => ['not php'],];
 	$columns = ['Property', 'Views'];
-	$table_string = get_table_skeleton_first($columns);
-	$table_string .= format_table_combined($conn, $page_functionality_views_query,  2, $options);
-
-	$table_string .= get_table_skeleton_end();
-	
-	echo $table_string;
+	if(isset($write_file)) {
+		return format_table_combined($conn, $page_functionality_views_query, 'func_views_table',  $columns, $write_file, $options);
+	}else{
+		$table_string = get_table_skeleton_first($columns);
+		$table_string .= format_table_combined($conn, $page_functionality_views_query, 'func_views_table',  $columns, $write_file=NULL, $options);
+		$table_string .= get_table_skeleton_end();
+		echo $table_string;
+	}
 }
 
 ?>
