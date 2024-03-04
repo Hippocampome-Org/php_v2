@@ -159,7 +159,17 @@ function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $wri
 	    return $table_string;
     }
 }
-
+function flattenArray($array) {
+    $result = [];
+    foreach ($array as $value) {
+        if (is_array($value)) {
+            $result = array_merge($result, flattenArray($value));
+        } else {
+            $result[] = $value;
+        }
+    }
+    return $result;
+}
 function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv_headers, $write_file = NULL, $array_subs = NULL){
 	
 	$count = 0;
@@ -167,6 +177,15 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
         $rs = mysqli_query($conn,$query);
         $table_string1 = '';
 	$rows = count($csv_headers);
+	if($rows > 3){
+		$neuron_data = ['blue'=>'Dendrites',
+			'blueSoma'=>'Dendrites-Somata',
+			'red'=>'Axons',
+			'redSoma'=>'Axons-Somata',
+			'somata'=>'Somata',
+			'violet'=>'Axons-Dendrites',
+			'violetSoma'=>'Axons-Dendrites-Somata'];
+	}
 	if(!$rs || ($rs->num_rows < 1)){
                 $table_string1 .= "<tr><td> No Data is available </td></tr>";
 		return $table_string1;
@@ -176,40 +195,110 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
         while($row = mysqli_fetch_row($rs))
         {
 		$csv_rows[] = $row;
-		if($array_subs[$row[0]]){
-			if($array_subs[$row[0]][$row[1]]){
-				$array_subs[$row[0]][$row[1]] += $row[2];
+		if($rows >3){
+			//print("rows greater than 3");
+			if ($array_subs[$row[0]]) {
+				// Check if subkey exists
+				if ($array_subs[$row[0]][$row[1]]) {
+					// Perform operations based on isset
+					if (isset($array_subs[$row[0]][$row[1]][$row[2]])) {
+						//print("Increment value if isset");
+						$array_subs[$row[0]][$row[1]][$row[2]] += $row[$rows - 1];
+					} else {
+						//print("Set value if not isset".$row[2]);
+						$array_subs[$row[0]][$row[1]][$row[2]] = $row[$rows - 1];
+					}
+				} else {
+					//print("Subkey doesn't exist, set value".$row[0]."----".$row[1]);
+					$array_subs[$row[0]][$row[1]][$row[2]] = $row[$rows - 1];
+				}
+			} else {
+				//print("Key doesn't exist, set value".$row[1]);
+				$array_subs[$row[0]][$row[1]] = $row[$rows - 1];
+			}
+		}else{
+			if($array_subs[$row[0]]){
+				if($array_subs[$row[0]][$row[1]]){
+					$array_subs[$row[0]][$row[1]] += $row[2];
+				}else{
+					$array_subs[$row[0]][$row[1]] = $row[2];
+				}
 			}else{
 				$array_subs[$row[0]][$row[1]] = $row[2];
 			}
-		}else{
-			$array_subs[$row[0]][$row[1]] = $row[2];
 		}
         }
 	$i=$j=0;
-        foreach($array_subs as $key => $value){
-		$table_string1 .= "<tr>";    
+	$table_string2='';
+	$table_string2 = "<tr>";    
+        foreach($array_subs as $groupKey => $subgroups){
 		if($j%2==0){
-       			$table_string1 .= "<td class='lightgreen-bg' rowspan='".count($value)."'>".$key."</td>";
+			if($rows > 3){
+				$keyCounts = count(array_keys($subgroups));
+				$flattenedArray = flattenArray($subgroups);
+				$values = array_values($flattenedArray);
+				$valueCounts = count(array_keys($values));
+				$rowspan = $valueCounts;
+				$table_string2 .= "<td class='lightgreen-bg' rowspan='".$rowspan."'>".$groupKey."</td>";
+			}else{
+				$table_string2 .= "<td class='lightgreen-bg' rowspan='".count($subgroups)."'>".$groupKey."</td>";
+			}
 		}else{
-       			$table_string1 .= "<td class='green-bg' rowspan='".count($value)."'>".$key."</td>";
+			if($rows > 3){
+				$keyCounts = count(array_keys($subgroups));
+				$flattenedArray = flattenArray($subgroups);
+				$values = array_values($flattenedArray);
+				$valueCounts = count(array_keys($values));
+				$rowspan = $valueCounts;
+				$table_string2 .= "<td class='green-bg' rowspan='".$rowspan."'>".$groupKey."</td>";
+			}else{
+				$table_string2 .= "<td class='green-bg' rowspan='".count($subgroups)."'>".$groupKey."</td>";
+			}
 		}
-		foreach($value as $key1 => $value1){
+    		foreach ($subgroups as $subgroupKey => $colors) {
 			if($i%2==0){
-				$table_string1 .= "<td class='white-bg' >".$key1."</td>";
-				$table_string1 .= "<td class='white-bg' >".$value1."</td>";
+				if($rows > 3){
+					$table_string2 .= "<td class='white-bg' rowspan='".count($colors)."'>".$subgroupKey;
+					$table_string2 .= "</td>";
+					foreach($colors as $colorKey => $value){
+						$table_string2 .= "<td class='white-bg' >".$neuron_data[$colorKey]."</td>";
+						$table_string2 .= "<td class='white-bg' >".$value."</td>";
+						$table_string2 .= "</tr>";
+						$count += $value;
+						$i++;
+					}
+				}else{
+					$table_string2 .= "<td class='white-bg' >".$subgroupKey."</td>";
+					$table_string2 .= "<td class='white-bg' >".$colors."</td>";
+					$table_string2 .= "</tr>";
+					$count += $colors;
+					$i++;
+				}
 			}
 			else{ 
-				$table_string1 .= "<td class='blue-bg' >".$key1."</td>";
-                                $table_string1 .= "<td class='blue-bg' >".$value1."</td>";
+				if($rows > 3){
+					$table_string2 .= "<td class='blue-bg' rowspan='".count($colors)."'>".$subgroupKey;
+					$table_string2 .= "</td>";
+					foreach($colors as $colorKey => $value){
+						$table_string2 .= "<td class='blue-bg' >".$neuron_data[$colorKey]."</td>";
+						$table_string2 .= "<td class='blue-bg' >".$value."</td>";
+						$table_string2 .= "</tr>";
+						$count += $value;
+						$i++;
+					}
+				}else{
+					$table_string2 .= "<td class='blue-bg' >".$subgroupKey."</td>";
+                                	$table_string2 .= "<td class='blue-bg' >".$colors."</td>";
+					$table_string2 .= "</tr>";
+					$count += $colors;
+					$i++;
+				}
 			}//Color gradient CSS
 
-			$table_string1 .= "</tr>";
-			$count += $value1;
-			$i++;
 		}
 		$j++;
         }
+	$table_string1 .= $table_string2;
 	if(isset($write_file)){
 		$csv_data[$csv_tablename]=['filename'=>$csv_tablename,'headers'=>$csv_headers,'rows'=>$csv_rows];
 		return $csv_data[$csv_tablename];
@@ -330,6 +419,7 @@ function get_morphology_property_views_report($conn, $write_file=NULL){
 	$page_property_views_query = "SELECT
 					SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '_', 1) AS subregion,
 					SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '_', -1) AS layer,
+					SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1), '_', -1) AS color,
 					SUM(REPLACE(page_views, ',', '')) AS count
 			FROM
 			ga_analytics_pages
@@ -337,13 +427,15 @@ function get_morphology_property_views_report($conn, $write_file=NULL){
 			page LIKE '%property_page_morphology.php?id_neuron=%'
 			AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
 			GROUP BY
-			subregion, layer";
+			subregion, layer, color";
 	//echo $page_property_views_query;
 
-	$array_subs = ["DG"=>["SMo"=>0,"SMi"=>0,"SG"=>0,"H"=>0],"CA3"=>["SLM"=>0, "SR"=>0, "SL"=>0, "SP"=>0,"SO"=>0],"CA2"=>["SLM"=>0,"SR"=>0,"SP"=>0,"SO"=>0],"CA1"=>["SLM"=>0,"SR"=>0,"SP"=>0,"SO"=>0],"SUB"=>["SM"=>0,"SP"=>0,"PL"=>0],"EC"=>["I"=>0,"II"=>0,"III"=>0,"IV"=>0,"V"=>0,"VI"=>0]];
+	//$array_subs = ["DG"=>["SMo"=>0,"SMi"=>0,"SG"=>0,"H"=>0],"CA3"=>["SLM"=>0, "SR"=>0, "SL"=>0, "SP"=>0,"SO"=>0],"CA2"=>["SLM"=>0,"SR"=>0,"SP"=>0,"SO"=>0],"CA1"=>["SLM"=>0,"SR"=>0,"SP"=>0,"SO"=>0],"SUB"=>["SM"=>0,"SP"=>0,"PL"=>0],"EC"=>["I"=>0,"II"=>0,"III"=>0,"IV"=>0,"V"=>0,"VI"=>0]];
+
+	$array_subs = ["DG"=>["SMo"=>[],"SMi"=>[],"SG"=>[],"H"=>[]],"CA3"=>["SLM"=>[], "SR"=>[], "SL"=>[], "SP"=>[],"SO"=>[]],"CA2"=>["SLM"=>[],"SR"=>[],"SP"=>[],"SO"=>[]],"CA1"=>["SLM"=>[],"SR"=>[],"SP"=>[],"SO"=>[]],"SUB"=>["SM"=>[],"SP"=>[],"PL"=>[]],"EC"=>["I"=>[],"II"=>[],"III"=>[],"IV"=>[],"V"=>[],"VI"=>[]]];
 	
 	
-	$columns = ['Morphology', 'Layer', 'Views'];
+	$columns = ['Morphology', 'Layer', 'Neuron Part', 'Views'];
 	if(isset($write_file)) {
 		return format_table_markers($conn, $page_property_views_query, $table_string, 'morphology_property', $columns, $write_file, $array_subs);
         }else{
