@@ -47,6 +47,8 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
         $rs = mysqli_query($conn,$query);
 	$table_string1 = '';
 	$rows = count($csv_headers);
+	$phase_evidences=['all_other'=>'Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau,
+  AP threshold, fAHP, or APpeak trough.', 'theta'=>'Theta', 'swr_ratio'=>'SWR ratio','firingRate'=>'Firing rate'];
 	if(!$rs || ($rs->num_rows < 1)){
 		$table_string1 .= "<tr><td> No Data is available </td></tr>";
 		return $table_string1;
@@ -68,6 +70,7 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 
 		while($j < $rows){
 			if($row[$j] == 'fp'){ $row[$j] = 'firing pattern'; }
+			if(isset($phase_evidences[$row[$j]])){ $row[$j] = $phase_evidences[$row[$j]]; }
 			if($row[$rows-1] > 0){
 				$table_string1 .= "<td>".$row[$j]."</td>";
 			}
@@ -516,7 +519,7 @@ function get_counts_views_report($conn, $page_string=NULL, $write_file = NULL){
 	$page_counts_views_query = "SELECT ";
 
 	// Check for 'phases' or 'counts' page types
-	if ($page_string == 'phases' || $page_string == 'counts') {
+	if ($page_string == 'counts') {
 		$columns = ['Neuron ID', 'Neuron Name', 'Views'];
 		$pageType = $page_string == 'phases' ? 'phases' : 'counts';
 		$page_counts_views_query .= "t.id AS neuronID, t.nickname AS neuron_name, SUM(REPLACE(page_views, ',', '')) AS count 
@@ -527,6 +530,18 @@ function get_counts_views_report($conn, $page_string=NULL, $write_file = NULL){
 					AS derived JOIN Type AS t ON t.id = derived.neuronID GROUP BY derived.neuronID, t.nickname ORDER BY t.position";
 	}
 
+	// Check for 'phases' page types
+	if ($page_string == 'phases') {
+		$columns = ['Neuron ID', 'Neuron Name', 'Evidence', 'Views'];
+		$pageType = $page_string == 'phases' ? 'phases' : 'counts';
+		$page_counts_views_query .= "t.id AS neuronID, t.nickname AS neuron_name, derived.evidence, SUM(REPLACE(page_views, ',', '')) AS count 
+				FROM (SELECT IF(INSTR(page, 'val_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '') as evidence,
+					SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) AS neuronID, page_views 
+					FROM ga_analytics_pages WHERE page LIKE '%property_page_{$pageType}.php?id_neuron=%' 
+					AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4 
+					AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)) 
+					AS derived JOIN Type AS t ON t.id = derived.neuronID GROUP BY derived.neuronID, t.nickname ORDER BY t.position";
+	}
 	// Check for 'synpro' or 'synpro_nm' page types
 	if ($page_string == 'synpro' || $page_string == 'synpro_nm') {
 		$columns = ['Sub Region', 'layer', 'Neuron Name', 'Color', 'Views'];
