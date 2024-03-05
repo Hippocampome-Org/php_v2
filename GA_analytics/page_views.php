@@ -407,7 +407,7 @@ function get_neurons_views_report($conn, $write_file=NULL){ //Passed on Dec 3 20
 			t.subregion order by t.position";
 	//echo $page_neurons_views_query;
      
-	$columns = ['Subregion', 'Neuron Name', 'Views'];
+	$columns = ['Subregion', 'Neuron Type Name', 'Views'];
 	if(isset($write_file)) {
 		return format_table_markers($conn, $page_neurons_views_query, $table_string, 'neurons_views', $columns, $write_file);
 	}else{
@@ -470,7 +470,7 @@ function get_pmid_isbn_property_views_report($conn, $write_file=NULL){
 linking_pmid_isbn, t.subregion, layer, t.nickname, color  order by t.position";
 	//echo $page_pmid_isbn_property_views_query;
 
-	$columns = ['pmid_isbn', 'Sub Region', 'Layer', 'Neuron Name', 'Color', 'Views'];
+	$columns = ['pmid_isbn', 'Sub Region', 'Layer', 'Neuron Type Name', 'Color', 'Views'];
 	if(isset($write_file)) {
 		return format_table($conn, $page_pmid_isbn_property_views_query, $table_string, 'pmid_isbn_table', $columns, $write_file);
         }else{
@@ -520,7 +520,7 @@ function get_counts_views_report($conn, $page_string=NULL, $write_file = NULL){
 
 	// Check for 'phases' or 'counts' page types
 	if ($page_string == 'counts') {
-		$columns = ['Neuron ID', 'Neuron Name', 'Views'];
+		$columns = ['Neuron ID', 'Neuron Type Name', 'Views'];
 		$pageType = $page_string == 'phases' ? 'phases' : 'counts';
 		$page_counts_views_query .= "t.id AS neuronID, t.nickname AS neuron_name, SUM(REPLACE(page_views, ',', '')) AS count 
 				FROM (SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) AS neuronID, page_views 
@@ -532,7 +532,7 @@ function get_counts_views_report($conn, $page_string=NULL, $write_file = NULL){
 
 	// Check for 'phases' page types
 	if ($page_string == 'phases') {
-		$columns = ['Neuron ID', 'Neuron Name', 'Evidence', 'Views'];
+		$columns = ['Neuron ID', 'Neuron Type Name', 'Evidence', 'Views'];
 		$pageType = $page_string == 'phases' ? 'phases' : 'counts';
 		$page_counts_views_query .= "t.id AS neuronID, t.nickname AS neuron_name, derived.evidence, SUM(REPLACE(page_views, ',', '')) AS count 
 				FROM (SELECT IF(INSTR(page, 'val_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '') as evidence,
@@ -544,7 +544,7 @@ function get_counts_views_report($conn, $page_string=NULL, $write_file = NULL){
 	}
 	// Check for 'synpro' or 'synpro_nm' page types
 	if ($page_string == 'synpro' || $page_string == 'synpro_nm') {
-		$columns = ['Sub Region', 'layer', 'Neuron Name', 'Color', 'Views'];
+		$columns = ['Sub Region', 'layer', 'Neuron Type Name', 'Color', 'Views'];
 		$pageType = $page_string == 'synpro' ? 'property_page_synpro.php' : 'property_page_synpro_nm.php';
 		// Add 'Sp Page' column if page_string is 'synpro'
 		if ($page_string == 'synpro') {
@@ -581,31 +581,31 @@ function get_counts_views_report($conn, $page_string=NULL, $write_file = NULL){
 
 function get_fp_property_views_report($conn, $write_file=NULL){
 	$fp_format = [
-		'ASP.' => 'adapting spiking',
-		'ASP.ASP.' => 'adapting spiking followed by (slower) adapting spiking',
-		'ASP.NASP' => 'non-adapting spiking preceded by adapting spiking',
-		'ASP.SLN' => 'silence preceded by adapting spiking',
-		'D.' => 'delayed spiking',
-		'D.ASP.' => 'delayed adapting spiking',
-		'D.NASP' => 'delayed non-adapting spiking',
-		'D.PSTUT' => 'delayed persistent stuttering',
-		'D.RASP.NASP' => 'non-adapting spiking preceded by delayed rapidly adapting spiking',
-		'NASP' => 'non-adapting spiking',
-		'PSTUT' => 'persistent stuttering',
-		'PSWB' => 'persistent slow-wave bursting',
-		'RASP.' => 'rapidly adapting spiking',
-		'RASP.ASP.' => 'rapidly adapting spiking followed by adapting spiking',
-		'RASP.NASP' => 'non-adapting spiking preceded by rapidly adapting spiking',
-		'RASP.SLN' => 'silence preceded by rapidly adapting spiking',
-		'TSTUT.' => 'transient stuttering',
-		'TSTUT.NASP' => 'non-adapting spiking preceded by transient stuttering',
-		'TSTUT.PSTUT' => 'transient stuttering followed by persistent stuttering',
-		'TSTUT.SLN' => 'silence preceded by transient stuttering',
-		'TSWB.NASP' => 'non-adapting spiking preceded by transient slow-wave bursting',
-		'TSWB.SLN' => 'silence preceded by transient slow-wave bursting',
-		'D.TSWB.NASP' => 'non-adapting spiking preceded by delayed transient slow-wave bursting',
-		'D.TSTUT.' => 'delayed persistent stuttering',
-		'TSTUT.ASP.' => 'transient stuttering followed by adapting spiking'
+		'ASP.' => 'Adapting Spiking',
+		'ASP.ASP.' => 'Adapting Apiking followed by (slower) Adapting Spiking',
+		'ASP.NASP' => 'Non-Adapting spiking preceded by Adapting Spiking',
+		'ASP.SLN' => 'silence preceded by Adapting Spiking',
+		'D.' => 'Delayed Spiking',
+		'D.ASP.' => 'Delayed Adapting Spiking',
+		'D.NASP' => 'Delayed Non-Sdapting Spiking',
+		'D.PSTUT' => 'Delayed Persistent Stuttering',
+		'D.RASP.NASP' => 'Non-Adapting Spiking preceded by Delayed Rapidly Adapting Spiking',
+		'NASP' => 'Non-Adapting Spiking',
+		'PSTUT' => 'Persistent Stuttering',
+		'PSWB' => 'Persistent Slow-Wave Bursting',
+		'RASP.' => 'Rapidly Adapting Spiking',
+		'RASP.ASP.' => 'Rapidly Adapting Spiking followed by Adapting Spiking',
+		'RASP.NASP' => 'Non-Adapting Spiking preceded by Rapidly Adapting Spiking',
+		'RASP.SLN' => 'Silence preceded by Rapidly Adapting Spiking',
+		'TSTUT.' => 'Transient Stuttering',
+		'TSTUT.NASP' => 'Non-Adapting Spiking preceded by Transient Stuttering',
+		'TSTUT.PSTUT' => 'Transient Stuttering followed by Persistent Stuttering',
+		'TSTUT.SLN' => 'Silence preceded by Transient Stuttering',
+		'TSWB.NASP' => 'Non-Adapting Spiking preceded by Transient Slow-Wave Bursting',
+		'TSWB.SLN' => 'Silence preceded by Transient Slow-Wave Bursting',
+		'D.TSWB.NASP' => 'Non-Adapting Spiking preceded by Delayed Transient Slow-Wave Bursting',
+		'D.TSTUT.' => 'Delayed Persistent Stuttering',
+		'TSTUT.ASP.' => 'Transient Stuttering followed by Adapting Spiking'
 			];
 
 	$page_fp_property_views_query = "SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'parameter=', -1), '&', 1) AS fp,
