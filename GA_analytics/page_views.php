@@ -47,8 +47,11 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
         $rs = mysqli_query($conn,$query);
 	$table_string1 = '';
 	$rows = count($csv_headers);
+	//For Phases page to replciate the string we show
 	$phase_evidences=['all_other'=>'Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau,
   AP threshold, fAHP, or APpeak trough.', 'theta'=>'Theta', 'swr_ratio'=>'SWR ratio','firingRate'=>'Firing rate'];
+	//Neuronal Segment Data
+	$neuronal_segments = ['blue'=>'Dendrites','blueSoma'=>'Dendrites-Somata','red'=>'Axons','redSoma'=>'Axons-Somata','somata'=>'Somata','violet'=>'Axons-Dendrites','violetSoma'=>'Axons-Dendrites-Somata'];
 	if(!$rs || ($rs->num_rows < 1)){
 		$table_string1 .= "<tr><td> No Data is available </td></tr>";
 		return $table_string1;
@@ -69,10 +72,11 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 		else{ $table_string1 .= '<tr class="blue-bg">';}//Color gradient CSS
 
 		while($j < $rows){
-			if($row[$j] == 'fp'){ $row[$j] = 'firing pattern'; }
+			//if($row[$j] == 'fp'){ $row[$j] = 'Firing Pattern'; }
 			if(isset($phase_evidences[$row[$j]])){ $row[$j] = $phase_evidences[$row[$j]]; }
+			if(isset($neuronal_segments[$row[$j]])){ $row[$j] = $neuronal_segments[$row[$j]]; }
 			if($row[$rows-1] > 0){
-				$table_string1 .= "<td>".$row[$j]."</td>";
+				$table_string1 .= "<td>".ucwords($row[$j])."</td>";
 			}
 			$j++;
 		}
@@ -89,7 +93,8 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 			else{ $table_string1 .= '<tr class="blue-bg">';}//Color gradient CSS
 
 			while($j < $rows){
-				if($row[$j] == 'fp'){ $row[$j] = 'firing pattern'; }
+				if(isset($phase_evidences[$row[$j]])){ $row[$j] = $phase_evidences[$row[$j]]; }
+				if(isset($neuronal_segments[$row[$j]])){ $row[$j] = $neuronal_segments[$row[$j]]; }
 				if($row[$rows-1] > 0){
 					$table_string1 .= "<td>".$row[$j]."</td>";
 				}
@@ -181,13 +186,7 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
         $table_string1 = '';
 	$rows = count($csv_headers);
 	if($rows > 3){
-		$neuron_data = ['blue'=>'Dendrites',
-			'blueSoma'=>'Dendrites-Somata',
-			'red'=>'Axons',
-			'redSoma'=>'Axons-Somata',
-			'somata'=>'Somata',
-			'violet'=>'Axons-Dendrites',
-			'violetSoma'=>'Axons-Dendrites-Somata'];
+		$neuronal_segments = ['blue'=>'Dendrites','blueSoma'=>'Dendrites-Somata','red'=>'Axons','redSoma'=>'Axons-Somata','somata'=>'Somata','violet'=>'Axons-Dendrites','violetSoma'=>'Axons-Dendrites-Somata'];
 	}
 	if(!$rs || ($rs->num_rows < 1)){
                 $table_string1 .= "<tr><td> No Data is available </td></tr>";
@@ -199,24 +198,17 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
         {
 		$csv_rows[] = $row;
 		if($rows >3){
-			//print("rows greater than 3");
 			if ($array_subs[$row[0]]) {
-				// Check if subkey exists
 				if ($array_subs[$row[0]][$row[1]]) {
-					// Perform operations based on isset
 					if (isset($array_subs[$row[0]][$row[1]][$row[2]])) {
-						//print("Increment value if isset");
 						$array_subs[$row[0]][$row[1]][$row[2]] += $row[$rows - 1];
 					} else {
-						//print("Set value if not isset".$row[2]);
 						$array_subs[$row[0]][$row[1]][$row[2]] = $row[$rows - 1];
 					}
 				} else {
-					//print("Subkey doesn't exist, set value".$row[0]."----".$row[1]);
 					$array_subs[$row[0]][$row[1]][$row[2]] = $row[$rows - 1];
 				}
 			} else {
-				//print("Key doesn't exist, set value".$row[1]);
 				$array_subs[$row[0]][$row[1]] = $row[$rows - 1];
 			}
 		}else{
@@ -264,7 +256,7 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 					$table_string2 .= "<td class='white-bg' rowspan='".count($colors)."'>".$subgroupKey;
 					$table_string2 .= "</td>";
 					foreach($colors as $colorKey => $value){
-						$table_string2 .= "<td class='white-bg' >".$neuron_data[$colorKey]."</td>";
+						$table_string2 .= "<td class='white-bg' >".$neuronal_segments[$colorKey]."</td>";
 						$table_string2 .= "<td class='white-bg' >".$value."</td>";
 						$table_string2 .= "</tr>";
 						$count += $value;
@@ -283,7 +275,7 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 					$table_string2 .= "<td class='blue-bg' rowspan='".count($colors)."'>".$subgroupKey;
 					$table_string2 .= "</td>";
 					foreach($colors as $colorKey => $value){
-						$table_string2 .= "<td class='blue-bg' >".$neuron_data[$colorKey]."</td>";
+						$table_string2 .= "<td class='blue-bg' >".$neuronal_segments[$colorKey]."</td>";
 						$table_string2 .= "<td class='blue-bg' >".$value."</td>";
 						$table_string2 .= "</tr>";
 						$count += $value;
@@ -297,7 +289,6 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 					$i++;
 				}
 			}//Color gradient CSS
-
 		}
 		$j++;
         }
@@ -327,7 +318,6 @@ function get_page_views($conn){ //Passed on Dec 3 2023
 		array_push($result_page_views_array, $row);
 	}
 	return $result_page_views_array;
-
 }
 
 function get_views_per_page_report($conn, $write_file=NULL){ //Passed $conn on Dec 3 2023
@@ -433,12 +423,10 @@ function get_morphology_property_views_report($conn, $write_file=NULL){
 			subregion, layer, color";
 	//echo $page_property_views_query;
 
-	//$array_subs = ["DG"=>["SMo"=>0,"SMi"=>0,"SG"=>0,"H"=>0],"CA3"=>["SLM"=>0, "SR"=>0, "SL"=>0, "SP"=>0,"SO"=>0],"CA2"=>["SLM"=>0,"SR"=>0,"SP"=>0,"SO"=>0],"CA1"=>["SLM"=>0,"SR"=>0,"SP"=>0,"SO"=>0],"SUB"=>["SM"=>0,"SP"=>0,"PL"=>0],"EC"=>["I"=>0,"II"=>0,"III"=>0,"IV"=>0,"V"=>0,"VI"=>0]];
-
 	$array_subs = ["DG"=>["SMo"=>[],"SMi"=>[],"SG"=>[],"H"=>[]],"CA3"=>["SLM"=>[], "SR"=>[], "SL"=>[], "SP"=>[],"SO"=>[]],"CA2"=>["SLM"=>[],"SR"=>[],"SP"=>[],"SO"=>[]],"CA1"=>["SLM"=>[],"SR"=>[],"SP"=>[],"SO"=>[]],"SUB"=>["SM"=>[],"SP"=>[],"PL"=>[]],"EC"=>["I"=>[],"II"=>[],"III"=>[],"IV"=>[],"V"=>[],"VI"=>[]]];
 	
 	
-	$columns = ['Morphology', 'Layer', 'Neuron Part', 'Views'];
+	$columns = ['Morphology', 'Layer', 'Neuronal Segment', 'Views'];
 	if(isset($write_file)) {
 		return format_table_markers($conn, $page_property_views_query, $table_string, 'morphology_property', $columns, $write_file, $array_subs);
         }else{
@@ -470,7 +458,7 @@ function get_pmid_isbn_property_views_report($conn, $write_file=NULL){
 linking_pmid_isbn, t.subregion, layer, t.nickname, color  order by t.position";
 	//echo $page_pmid_isbn_property_views_query;
 
-	$columns = ['pmid_isbn', 'Sub Region', 'Layer', 'Neuron Type Name', 'Color', 'Views'];
+	$columns = ['PubMed ID/ISBN', 'Subregion', 'Layer', 'Neuron Type Name', 'Neuronal Segment', 'Views'];
 	if(isset($write_file)) {
 		return format_table($conn, $page_pmid_isbn_property_views_query, $table_string, 'pmid_isbn_table', $columns, $write_file);
         }else{
@@ -520,7 +508,7 @@ function get_counts_views_report($conn, $page_string=NULL, $write_file = NULL){
 
 	// Check for 'phases' or 'counts' page types
 	if ($page_string == 'counts') {
-		$columns = ['Neuron ID', 'Neuron Type Name', 'Views'];
+		$columns = ['Subregion', 'Neuron Type Name', 'Views'];
 		$pageType = $page_string == 'phases' ? 'phases' : 'counts';
 		$page_counts_views_query .= "t.id AS neuronID, t.nickname AS neuron_name, SUM(REPLACE(page_views, ',', '')) AS count 
 				FROM (SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) AS neuronID, page_views 
@@ -542,9 +530,10 @@ function get_counts_views_report($conn, $page_string=NULL, $write_file = NULL){
 					AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)) 
 					AS derived JOIN Type AS t ON t.id = derived.neuronID GROUP BY derived.neuronID, t.nickname ORDER BY t.position";
 	}
+
 	// Check for 'synpro' or 'synpro_nm' page types
 	if ($page_string == 'synpro' || $page_string == 'synpro_nm') {
-		$columns = ['Sub Region', 'layer', 'Neuron Type Name', 'Color', 'Views'];
+		$columns = ['Subregion', 'Layer', 'Neuron Type Name', 'Neuronal Segment', 'Views'];
 		$pageType = $page_string == 'synpro' ? 'property_page_synpro.php' : 'property_page_synpro_nm.php';
 		// Add 'Sp Page' column if page_string is 'synpro'
 		if ($page_string == 'synpro') {
@@ -565,9 +554,9 @@ function get_counts_views_report($conn, $page_string=NULL, $write_file = NULL){
 	}
 
 	// Initialize table with columns and execute the query if columns array is not empty
-	if (!empty($columns)) {
-		$table_string = get_table_skeleton_first($columns);
-		$csv_tablename = $page_string."_table";
+	$table_string = get_table_skeleton_first($columns);
+	$csv_tablename = $page_string."_table";
+	if ($page_string == 'synpro' || $page_string == 'synpro_nm') {
 		if(isset($write_file)) {
 			return format_table($conn, $page_counts_views_query, $table_string, $csv_tablename, $columns, $write_file);
         	}else{
@@ -576,7 +565,18 @@ function get_counts_views_report($conn, $page_string=NULL, $write_file = NULL){
 			$table_string .= get_table_skeleton_end();
         		echo $table_string;
 		}
+	}else{
+		if(isset($write_file)) {
+			return format_table($conn, $page_counts_views_query, $table_string, $csv_tablename, $columns, $write_file);
+        	}else{
+			$table_string .= format_table($conn, $page_counts_views_query, $table_string, $csv_tablename, $columns);
+			//echo $page_counts_views_query;
+			$table_string .= get_table_skeleton_end();
+        		echo $table_string;
+		}
+
 	}
+	
 }
 
 function get_fp_property_views_report($conn, $write_file=NULL){
@@ -613,7 +613,7 @@ function get_fp_property_views_report($conn, $write_file=NULL){
 		FROM ga_analytics_pages WHERE page LIKE '%property_page_fp.php?id_neuron=%'
 		AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
 		GROUP BY SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'parameter=', -1), '&', 1)
-		ORDER BY SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'parameter=', -1), '&', 1)";
+		ORDER BY count DESC";
 
 	//echo $page_fp_property_views_query;
 	$columns = ['Firing Pattern', 'Views'];
