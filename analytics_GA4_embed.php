@@ -101,7 +101,7 @@ tr:nth-child(even){
 }
 
 .blue-bg {   background: #98AFC7; }
-.white-bg { backgrou: #ffffff; }
+.white-bg { background: #ffffff; }
 .green-bg {  background: #A2D7A7; }
 .lightgreen-bg { background: #E2F1E3; }
 
