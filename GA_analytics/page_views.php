@@ -251,12 +251,12 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 		}else{
 			if($array_subs[$row[0]]){
 				if($array_subs[$row[0]][$row[1]]){
-					$array_subs[$row[0]][$row[1]] += $row[2];
+					$array_subs[$row[0]][$row[1]] += $row[$rows-1];
 				}else{
-					$array_subs[$row[0]][$row[1]] = $row[2];
+					$array_subs[$row[0]][$row[1]] = $row[$rows-1];
 				}
 			}else{
-				$array_subs[$row[0]][$row[1]] = $row[2];
+				$array_subs[$row[0]][$row[1]] = $row[$rows-1];
 			}
 		}
         }
@@ -413,7 +413,7 @@ function get_table_skeleton_end(){
 }
 
 function get_neurons_views_report($conn, $write_file=NULL){ //Passed on Dec 3 2023
-	$page_neurons_views_query = "SELECT t.subregion, t.nickname AS neuron_name,
+	$page_neurons_views_query = "SELECT t.subregion, t.page_statistics_name AS neuron_name,
                 SUM(replace(page_views, ',', '')) AS count
                         FROM
                         (
@@ -429,7 +429,7 @@ function get_neurons_views_report($conn, $write_file=NULL){ //Passed on Dec 3 20
                         ) AS derived
                         JOIN Type AS t ON t.id = derived.neuronID
                         GROUP BY
-                        t.nickname, 
+                        t.page_statistics_name, 
 			t.subregion order by t.position";
 	//echo $page_neurons_views_query;
      
@@ -475,7 +475,7 @@ function get_morphology_property_views_report($conn, $write_file=NULL){
 
 function get_pmid_isbn_property_views_report($conn, $write_file=NULL){
 
-	$page_pmid_isbn_property_views_query = " SELECT linking_pmid_isbn, t.subregion, layer, t.nickname as neuron_name, color, SUM(REPLACE(page_views, ',', '')) AS count
+	$page_pmid_isbn_property_views_query = " SELECT linking_pmid_isbn, t.subregion, layer, t.page_statistics_name as neuron_name, color, SUM(REPLACE(page_views, ',', '')) AS count
                         FROM
                         (
                                 SELECT 
@@ -491,7 +491,7 @@ function get_pmid_isbn_property_views_report($conn, $write_file=NULL){
                         ) AS derived
                         JOIN Type AS t ON t.id = derived.neuronID
                         GROUP BY
-linking_pmid_isbn, t.subregion, layer, t.nickname, color  order by t.position";
+linking_pmid_isbn, t.subregion, layer, t.page_statistics_name, color  order by t.position";
 	//echo $page_pmid_isbn_property_views_query;
 
 	$columns = ['PubMed ID/ISBN', 'Subregion', 'Layer', 'Neuron Type Name', 'Neuronal Segment', 'Views'];
@@ -546,12 +546,12 @@ function get_counts_views_report($conn, $page_string=NULL, $write_file = NULL){
 	if ($page_string == 'counts') {
 		$columns = ['Subregion', 'Neuron Type Name', 'Views'];
 		$pageType = $page_string == 'phases' ? 'phases' : 'counts';
-		$page_counts_views_query .= "t.subregion, t.nickname AS neuron_name, SUM(REPLACE(page_views, ',', '')) AS count 
+		$page_counts_views_query .= "t.subregion, t.page_statistics_name AS neuron_name, SUM(REPLACE(page_views, ',', '')) AS count 
 				FROM (SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) AS neuronID, page_views 
 					FROM ga_analytics_pages WHERE page LIKE '%property_page_{$pageType}.php?id_neuron=%' 
 					AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4 
 					AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)) 
-					AS derived JOIN Type AS t ON t.id = derived.neuronID GROUP BY derived.neuronID, t.nickname ORDER BY t.position";
+					AS derived JOIN Type AS t ON t.id = derived.neuronID GROUP BY derived.neuronID, t.page_statistics_name ORDER BY t.position";
         //echo $page_neurons_views_query;
 
 	}
@@ -560,13 +560,13 @@ function get_counts_views_report($conn, $page_string=NULL, $write_file = NULL){
 	if ($page_string == 'phases') {
 		$columns = ['Subregion', 'Neuron Type Name', 'Evidence', 'Views'];
 		$pageType = $page_string == 'phases' ? 'phases' : 'counts';
-		$page_counts_views_query .= "t.subregion, t.nickname AS neuron_name, derived.evidence, SUM(REPLACE(page_views, ',', '')) AS count 
+		$page_counts_views_query .= "t.subregion, t.page_statistics_name AS neuron_name, derived.evidence, SUM(REPLACE(page_views, ',', '')) AS count 
 				FROM (SELECT IF(INSTR(page, 'val_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '') as evidence,
 					SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) AS neuronID, page_views 
 					FROM ga_analytics_pages WHERE page LIKE '%property_page_{$pageType}.php?id_neuron=%' 
 					AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4 
 					AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)) 
-					AS derived JOIN Type AS t ON t.id = derived.neuronID GROUP BY derived.neuronID, t.nickname ORDER BY t.position";
+					AS derived JOIN Type AS t ON t.id = derived.neuronID GROUP BY derived.neuronID, t.page_statistics_name ORDER BY t.position";
 		//echo  $page_counts_views_query;
 	}
 
@@ -578,7 +578,7 @@ function get_counts_views_report($conn, $page_string=NULL, $write_file = NULL){
 		if ($page_string == 'synpro') {
 			array_splice($columns, 4, 0, ['Sp Page']); // Insert 'Sp Page' at the correct position
 		}
-		$page_counts_views_query .= "t.subregion, layer, t.nickname as neuron_name, color" . ($page_string == 'synpro' ? ", sp_page" : "") . ", 
+		$page_counts_views_query .= "t.subregion, layer, t.page_statistics_name as neuron_name, color" . ($page_string == 'synpro' ? ", sp_page" : "") . ", 
 						SUM(REPLACE(page_views, ',', '')) AS count 
 						FROM (SELECT IF(INSTR(page, 'val_property=') > 0, 
 							SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '_', -1), '') AS layer, 
@@ -589,7 +589,7 @@ function get_counts_views_report($conn, $page_string=NULL, $write_file = NULL){
 							WHERE page LIKE '%$pageType?id_neuron=%' 
 							AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4 
 							AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)) 
-							AS derived JOIN Type AS t ON t.id = derived.neuronID GROUP BY t.subregion, layer, t.nickname, color" . ($page_string == 'synpro' ? ", sp_page" : "") . " ORDER BY t.position";
+							AS derived JOIN Type AS t ON t.id = derived.neuronID GROUP BY t.subregion, layer, t.page_statistics_name, color" . ($page_string == 'synpro' ? ", sp_page" : "") . " ORDER BY t.position";
 	}
 
 	// Initialize table with columns and execute the query if columns array is not empty
