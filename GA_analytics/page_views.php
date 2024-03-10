@@ -1,6 +1,27 @@
 <?php
 global $csv_data;
 
+function get_neuron_ids($conn){
+	$neuron_ids = [];
+	$query = "SELECT page_statistics_name, id from Type";
+	$rs = mysqli_query($conn,$query);
+        if(!$rs || ($rs->num_rows < 1)){
+                return $neuron_ids;
+        }
+	while($row = mysqli_fetch_row($rs))
+	{
+		$neuron_ids[$row[0]]=$row[1];
+	}
+	return $neuron_ids;	
+}
+function get_link($text, $id, $path, $str=NULL){
+	//https://hippocampome.org/php/neuron_page.php?id=1000
+	if($str == 'pmid'){	$path .= $id."/";	}
+	if($str == 'neuron'){	$path .= "?id=".$id;	}
+	$url_text = "<a href={$path} target='blank'>{$text}</a>";
+	return $url_text;
+}
+
 function download_csvfile($functionName, $conn, $param = NULL) {
 	$allowedFunctions = ['get_neurons_views_report','get_markers_property_views_report', 'get_morphology_property_views_report', 'get_counts_views_report', 
 			     'get_fp_property_views_report','get_pmid_isbn_property_views_report', 'get_domain_functionality_views_report','get_page_functionality_views_report', 
@@ -70,11 +91,15 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 		$j=0;
 		if($i%2==0){ $table_string .= '<tr class="white-bg" >';}
 		else{ $table_string1 .= '<tr class="blue-bg">';}//Color gradient CSS
-
+		if($csv_tablename == 'pmid_isbn_table'){
+			$row[0] = get_link($row[0], $row[0], 'https://pubmed.ncbi.nlm.nih.gov/', 'pmid');
+			$row[3] = get_link($row[3], $neuron_ids[$row[3]], './neuron_page.php','neuron');
+		}
 		while($j < $rows){
 			//if($row[$j] == 'fp'){ $row[$j] = 'Firing Pattern'; }
 			if(isset($phase_evidences[$row[$j]])){ $row[$j] = $phase_evidences[$row[$j]]; }
 			if(isset($neuronal_segments[$row[$j]])){ $row[$j] = $neuronal_segments[$row[$j]]; }
+			if(isset($neuron_ids[$row[$j]])){ $row[$j] = neuron_ids[$row[$j]]; }
 			if($row[$rows-1] > 0){
 				$table_string1 .= "<td>".ucwords($row[$j])."</td>";
 			}
@@ -84,17 +109,18 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 		$table_string1 .= "</tr>";
 		$i++;//increment for color gradient of the row
 	}
+
 	if(isset($query2)){
-		while($row = mysqli_fetch_row($rs2))
-		{
+		while($row = mysqli_fetch_row($rs2)){
 	  	 	$csv_rows[] = $row;
 			$j=0;
-			if($i%2==0){ $table_string .= '<tr class="white-bg" >';}
+			if($i%2==0){ $table_string1 .= '<tr class="white-bg" >';}
 			else{ $table_string1 .= '<tr class="blue-bg">';}//Color gradient CSS
 
 			while($j < $rows){
 				if(isset($phase_evidences[$row[$j]])){ $row[$j] = $phase_evidences[$row[$j]]; }
 				if(isset($neuronal_segments[$row[$j]])){ $row[$j] = $neuronal_segments[$row[$j]]; }
+				if(isset($neuron_ids[$row[$j]])){ $row[$j] = neuron_ids[$row[$j]]; }
 				if($row[$rows-1] > 0){
 					$table_string1 .= "<td>".$row[$j]."</td>";
 				}
@@ -126,7 +152,7 @@ function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $wri
     }
 
     $i = 0;
-    while ($row = mysqli_fetch_row($rs)) {
+    while($row = mysqli_fetch_row($rs)){
 	$csv_rows[] = $row;
         // Check for row exclusion based on 'exclude' option
         if (isset($options['exclude']) && in_array($row[0], $options['exclude'])) {
@@ -197,7 +223,7 @@ function bg_wg($colors, $count, $neuronal_segments, $k){
 	return array($table_string2, $count);
 }
 
-function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv_headers, $write_file = NULL, $array_subs = NULL){
+function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file = NULL, $array_subs = NULL){
 	
 	$count = 0;
 	$csv_rows=[];
@@ -217,38 +243,44 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
         }
         $i=0;
 	if(!$array_subs){ $array_subs = [];}
-        while($row = mysqli_fetch_row($rs))
-        {
+	while($row = mysqli_fetch_row($rs)){
 		$csv_rows[] = $row;
 		if(($rows > 3) && ($csv_tablename=='morphology_property')){
 			if ($array_subs[$row[0]]) {
 				if ($array_subs[$row[0]][$row[1]]) {
 					if (isset($array_subs[$row[0]][$row[1]][$row[2]])) {
-						$array_subs[$row[0]][$row[1]][$row[2]] += $row[$rows - 1];
+						$array_subs[$row[0]][$row[1]][$row[2]] += $row[$rows-1];
 					} else {
-						$array_subs[$row[0]][$row[1]][$row[2]] = $row[$rows - 1];
+						$array_subs[$row[0]][$row[1]][$row[2]] = $row[$rows-1];
 					}
 				} else {
-					$array_subs[$row[0]][$row[1]][$row[2]] = $row[$rows - 1];
+					$array_subs[$row[0]][$row[1]][$row[2]] = $row[$rows-1];
 				}
 			} else {
-				$array_subs[$row[0]][$row[1]] = $row[$rows - 1];
+				$array_subs[$row[0]][$row[1]] = $row[$rows-1];
 			}
-		}else if(($rows > 3) && ($csv_tablename=='phases')){
+		}else if(($rows > 3) && ($csv_tablename=='phases')){ 
+			if(isset($neuron_ids[$row[1]])){
+					$row[1] = get_link($row[1], $neuron_ids[$row[1]], './neuron_page.php','neuron');
+			}
+			//if morphology -- color  //if phases -- evidence
 			if ($array_subs[$row[0]]) {
 				if ($array_subs[$row[0]][$row[1]]) {
-					if (isset($array_subs[$row[0]][$row[1]][$row[2]])) {
-						$array_subs[$row[0]][$row[1]][$row[2]] += $row[$rows - 1];
+					if (isset($array_subs[$row[0]][$row[1]][$row[3]])) {
+						$array_subs[$row[0]][$row[1]][$row[3]] += $row[$rows-1];
 					} else {
-						$array_subs[$row[0]][$row[1]][$row[2]] = $row[$rows - 1];
+						$array_subs[$row[0]][$row[1]][$row[3]] = $row[$rows-1];
 					}
 				} else {
-					$array_subs[$row[0]][$row[1]][$row[2]] = $row[$rows - 1];
+					$array_subs[$row[0]][$row[1]][$row[3]] = $row[$rows-1];
 				}
 			} else {
-				$array_subs[$row[0]][$row[1]][$row[2]] = $row[$rows - 1];
+				$array_subs[$row[0]][$row[1]][$row[3]] = $row[$rows-1];
 			}
 		}else{
+			if(isset($neuron_ids[$row[1]])){
+					$row[1] = get_link($row[1], $neuron_ids[$row[1]], './neuron_page.php', 'neuron');
+			}
 			if($array_subs[$row[0]]){
 				if($array_subs[$row[0]][$row[1]]){
 					$array_subs[$row[0]][$row[1]] += $row[$rows-1];
@@ -262,7 +294,7 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
         }
 	$i=$j=0;
 	$table_string2='';
-	$table_string2 = "<tr>";    
+	$table_string2 = "<tr>";
         foreach($array_subs as $groupKey => $subgroups){
 		if($j%2==0){
 			if(($rows > 3) && ($csv_tablename=='morphology_property')){
@@ -342,7 +374,7 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 function get_page_views($conn){ //Passed on Dec 3 2023
 	$page_views_query = "SELECT YEAR(day_index) AS year, 
 		MONTH(day_index) AS month, 
-		SUM(views) AS total_views
+		SUM(views) AS views
 			FROM ga_analytics_pages_views 
 			WHERE views > 0
 			GROUP BY YEAR(day_index), MONTH(day_index)";
@@ -358,11 +390,11 @@ function get_page_views($conn){ //Passed on Dec 3 2023
 
 function get_views_per_page_report($conn, $write_file=NULL){ //Passed $conn on Dec 3 2023
 
-	$page_views_query = "SELECT gap.page, SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS total_views  FROM
-					ga_analytics_pages gap WHERE gap.day_index IS NULL GROUP BY gap.page order by total_views desc";
+	$page_views_query = "SELECT gap.page, SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS views  FROM
+					ga_analytics_pages gap WHERE gap.day_index IS NULL GROUP BY gap.page order by views desc";
 	//echo $page_views_query;
-	$page_views_query2 = "SELECT gap.page, SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS total_views FROM
-					ga_analytics_pages gap WHERE gap.day_index IS NOT NULL and gap.page != '/php/' GROUP BY gap.page order by total_views desc";
+	$page_views_query2 = "SELECT gap.page, SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS views FROM
+					ga_analytics_pages gap WHERE gap.day_index IS NOT NULL and gap.page != '/php/' GROUP BY gap.page order by views desc";
 	//echo $page_views_query2;
 
 	$columns = ['Page', 'Views'];
@@ -380,7 +412,7 @@ function get_views_per_page_report($conn, $write_file=NULL){ //Passed $conn on D
 function get_pages_views_per_month_report($conn, $write_file=NULL){ //Passed $conn on Dec 3 2023
 	
 	$page_views_per_month_query = "select concat(DATE_FORMAT(day_index,'%b'), '-', YEAR(day_index)) as dm, 
-				sum(replace(views,',',''))  
+				sum(replace(views,',','')) as views 
 			     from ga_analytics_pages_views where views > 0 
 			     GROUP BY YEAR(day_index), MONTH(day_index)";
 	//echo $page_views_per_month_query;
@@ -412,9 +444,9 @@ function get_table_skeleton_end(){
 	return "</tbody></table>";
 }
 
-function get_neurons_views_report($conn, $write_file=NULL){ //Passed on Dec 3 2023
-	$page_neurons_views_query = "SELECT t.subregion, t.page_statistics_name AS neuron_name,
-                SUM(replace(page_views, ',', '')) AS count
+function get_neurons_views_report($conn, $neuron_ids=NULL, $write_file=NULL){ //Passed on Dec 3 2023
+	$page_neurons_views_query = "SELECT t.subregion, t.page_statistics_name AS neuron_name, 
+                SUM(replace(page_views, ',', '')) AS views
                         FROM
                         (
                          SELECT
@@ -435,10 +467,10 @@ function get_neurons_views_report($conn, $write_file=NULL){ //Passed on Dec 3 20
      
 	$columns = ['Subregion', 'Neuron Type Name', 'Views'];
 	if(isset($write_file)) {
-		return format_table_markers($conn, $page_neurons_views_query, $table_string, 'neurons_views', $columns, $write_file);
+		return format_table_markers($conn, $page_neurons_views_query, $table_string, 'neurons_views', $columns, $neuron_ids= NULL, $write_file);
 	}else{
 		$table_string = get_table_skeleton_first($columns);
-		$table_string .= format_table_markers($conn, $page_neurons_views_query, $table_string, 'neurons_views', $columns);
+		$table_string .= format_table_markers($conn, $page_neurons_views_query, $table_string, 'neurons_views', $columns, $neuron_ids);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
@@ -449,7 +481,7 @@ function get_morphology_property_views_report($conn, $write_file=NULL){
 					SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '_', 1) AS subregion,
 					SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '_', -1) AS layer,
 					SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1), '_', -1) AS color,
-					SUM(REPLACE(page_views, ',', '')) AS count
+					SUM(REPLACE(page_views, ',', '')) AS views
 			FROM
 			ga_analytics_pages
 			WHERE
@@ -462,12 +494,12 @@ function get_morphology_property_views_report($conn, $write_file=NULL){
 	$array_subs = ["DG"=>["SMo"=>[],"SMi"=>[],"SG"=>[],"H"=>[]],"CA3"=>["SLM"=>[], "SR"=>[], "SL"=>[], "SP"=>[],"SO"=>[]],"CA2"=>["SLM"=>[],"SR"=>[],"SP"=>[],"SO"=>[]],"CA1"=>["SLM"=>[],"SR"=>[],"SP"=>[],"SO"=>[]],"SUB"=>["SM"=>[],"SP"=>[],"PL"=>[]],"EC"=>["I"=>[],"II"=>[],"III"=>[],"IV"=>[],"V"=>[],"VI"=>[]]];
 	
 	
-	$columns = ['Morphology', 'Layer', 'Neuronal Segment', 'Views'];
+	$columns = ['Subregion', 'Layer', 'Neuronal Segment', 'Views'];
 	if(isset($write_file)) {
-		return format_table_markers($conn, $page_property_views_query, $table_string, 'morphology_property', $columns, $write_file, $array_subs);
+		return format_table_markers($conn, $page_property_views_query, $table_string, 'morphology_property', $columns, $neuron_ids = NULL, $write_file, $array_subs);
         }else{
 		$table_string = get_table_skeleton_first($columns);
-		$table_string .= format_table_markers($conn, $page_property_views_query, $table_string, 'morphology_property', $columns, $write_file=NULL, $array_subs);
+		$table_string .= format_table_markers($conn, $page_property_views_query, $table_string, 'morphology_property', $columns, $neuron_ids=NULL, $write_file=NULL, $array_subs);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
@@ -475,7 +507,7 @@ function get_morphology_property_views_report($conn, $write_file=NULL){
 
 function get_pmid_isbn_property_views_report($conn, $write_file=NULL){
 
-	$page_pmid_isbn_property_views_query = " SELECT linking_pmid_isbn, t.subregion, layer, t.page_statistics_name as neuron_name, color, SUM(REPLACE(page_views, ',', '')) AS count
+	$page_pmid_isbn_property_views_query = " SELECT linking_pmid_isbn, t.subregion, layer, t.page_statistics_name as neuron_name, color, SUM(REPLACE(page_views, ',', '')) AS views
                         FROM
                         (
                                 SELECT 
@@ -510,7 +542,7 @@ function get_markers_property_views_report($conn, $write_file = NULL){
 	$page_property_views_query = "SELECT
 		SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1) AS markers,
 		SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1) AS color,
-		SUM(REPLACE(page_views, ',', '')) AS count
+		SUM(REPLACE(page_views, ',', '')) AS views
 			FROM
 			ga_analytics_pages
 			WHERE
@@ -523,7 +555,7 @@ function get_markers_property_views_report($conn, $write_file = NULL){
 	//echo $page_property_views_query;
 	$columns = ['Markers', 'Expression', 'Views'];
 	if(isset($write_file)) {
-		return format_table_markers($conn, $page_property_views_query, $table_string, 'markers_property_table', $columns, $write_file);
+		return format_table_markers($conn, $page_property_views_query, $table_string, 'markers_property_table', $columns, $neuron_ids = NULL, $write_file);
         }else{
 		$table_string = get_table_skeleton_first($columns);
 		$table_string .= format_table_markers($conn, $page_property_views_query, $table_string, 'markers_property_table', $columns);
@@ -533,7 +565,7 @@ function get_markers_property_views_report($conn, $write_file = NULL){
 	}
 }
 
-function get_counts_views_report($conn, $page_string=NULL, $write_file = NULL){
+function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $write_file = NULL){
 
 	// Initialize the table string and columns array outside the conditional logic
 	$table_string = '';
@@ -546,12 +578,12 @@ function get_counts_views_report($conn, $page_string=NULL, $write_file = NULL){
 	if ($page_string == 'counts') {
 		$columns = ['Subregion', 'Neuron Type Name', 'Views'];
 		$pageType = $page_string == 'phases' ? 'phases' : 'counts';
-		$page_counts_views_query .= "t.subregion, t.page_statistics_name AS neuron_name, SUM(REPLACE(page_views, ',', '')) AS count 
+		$page_counts_views_query .= "t.subregion, t.page_statistics_name AS neuron_name, SUM(REPLACE(page_views, ',', '')) AS views 
 				FROM (SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) AS neuronID, page_views 
 					FROM ga_analytics_pages WHERE page LIKE '%property_page_{$pageType}.php?id_neuron=%' 
 					AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4 
 					AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)) 
-					AS derived JOIN Type AS t ON t.id = derived.neuronID GROUP BY derived.neuronID, t.page_statistics_name ORDER BY t.position";
+					AS derived JOIN Type AS t ON t.id = derived.neuronID GROUP BY t.page_statistics_name ORDER BY t.position";
         //echo $page_neurons_views_query;
 
 	}
@@ -560,13 +592,13 @@ function get_counts_views_report($conn, $page_string=NULL, $write_file = NULL){
 	if ($page_string == 'phases') {
 		$columns = ['Subregion', 'Neuron Type Name', 'Evidence', 'Views'];
 		$pageType = $page_string == 'phases' ? 'phases' : 'counts';
-		$page_counts_views_query .= "t.subregion, t.page_statistics_name AS neuron_name, derived.evidence, SUM(REPLACE(page_views, ',', '')) AS count 
+		$page_counts_views_query .= "t.subregion, t.page_statistics_name AS neuron_name, derived.evidence, SUM(REPLACE(page_views, ',', '')) AS views 
 				FROM (SELECT IF(INSTR(page, 'val_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '') as evidence,
 					SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) AS neuronID, page_views 
 					FROM ga_analytics_pages WHERE page LIKE '%property_page_{$pageType}.php?id_neuron=%' 
 					AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4 
 					AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)) 
-					AS derived JOIN Type AS t ON t.id = derived.neuronID GROUP BY derived.neuronID, t.page_statistics_name ORDER BY t.position";
+					AS derived JOIN Type AS t ON t.id = derived.neuronID GROUP BY t.page_statistics_name ORDER BY t.position";
 		//echo  $page_counts_views_query;
 	}
 
@@ -579,7 +611,7 @@ function get_counts_views_report($conn, $page_string=NULL, $write_file = NULL){
 			array_splice($columns, 4, 0, ['Sp Page']); // Insert 'Sp Page' at the correct position
 		}
 		$page_counts_views_query .= "t.subregion, layer, t.page_statistics_name as neuron_name, color" . ($page_string == 'synpro' ? ", sp_page" : "") . ", 
-						SUM(REPLACE(page_views, ',', '')) AS count 
+						SUM(REPLACE(page_views, ',', '')) AS views 
 						FROM (SELECT IF(INSTR(page, 'val_property=') > 0, 
 							SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '_', -1), '') AS layer, 
 							SUBSTRING_INDEX(SUBSTRING_INDEX(page, '?id_neuron=', -1), '&', 1) AS neuronID, 
@@ -606,9 +638,9 @@ function get_counts_views_report($conn, $page_string=NULL, $write_file = NULL){
 		}
 	}else{
 		if(isset($write_file)) {
-			return format_table_markers($conn, $page_counts_views_query, $table_string, $page_string, $columns, $write_file);
+			return format_table_markers($conn, $page_counts_views_query, $table_string, $page_string, $columns, $neuron_ids = NULL, $write_file);
         	}else{
-			$table_string .= format_table_markers($conn, $page_counts_views_query, $table_string, $page_string, $columns);
+			$table_string .= format_table_markers($conn, $page_counts_views_query, $table_string, $page_string, $columns, $neuron_ids);
 			//echo $page_counts_views_query;
 			$table_string .= get_table_skeleton_end();
         		echo $table_string;
@@ -648,11 +680,11 @@ function get_fp_property_views_report($conn, $write_file=NULL){
 			];
 
 	$page_fp_property_views_query = "SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'parameter=', -1), '&', 1) AS fp,
-				 SUM(REPLACE(page_views, ',', '')) AS count
+				 SUM(REPLACE(page_views, ',', '')) AS views
 		FROM ga_analytics_pages WHERE page LIKE '%property_page_fp.php?id_neuron=%'
 		AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
 		GROUP BY SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'parameter=', -1), '&', 1)
-		ORDER BY count DESC";
+		ORDER BY views DESC";
 
 	//echo $page_fp_property_views_query;
 	$columns = ['Firing Pattern', 'Views'];

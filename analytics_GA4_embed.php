@@ -2,6 +2,7 @@
  
   include ("permission_check.php");
   include ("./GA_analytics/page_views.php");
+  $neuron_ids = get_neuron_ids($conn);  
   if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["download_csv"])) {
 	if(isset($_POST["param"])){
 		download_csvfile($_POST['download_csv'], $conn, $_POST['param']);
@@ -167,7 +168,7 @@ tr:nth-child(even){
 		</span>
 	</div></p>
 	<div id="neuron-inside" style="width: 950px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
-		<?php get_neurons_views_report($conn); //Passing $conn on Dec 3 2023 ?>
+		<?php get_neurons_views_report($conn, $neuron_ids); //Passing $conn on Dec 3 2023 ?>
 	</div>
 </div>
 <!-- Till here -->
@@ -182,7 +183,7 @@ tr:nth-child(even){
                 </span>
         </div></p>
 	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
-		<?php get_counts_views_report($conn, 'counts'); //Passing $conn on Dec 3 2023 ?> 
+		<?php get_counts_views_report($conn, 'counts', $neuron_ids); //Passing $conn on Dec 3 2023 ?> 
 	</div>
 </div>
 <!-- Till here -->
@@ -247,7 +248,7 @@ tr:nth-child(even){
 </div>
 <!-- Till here -->
 
-<!-- When Phase Counts Statistics is clicked-->
+<!-- When Phase Statistics is clicked-->
 </br></br>
 <div id="phases_counts" style="padding:100px 100px; align:center;">
 	<p><div style="text-align: left;">
@@ -257,7 +258,7 @@ tr:nth-child(even){
                 </span>
         </div></p>
 	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
-		<?php get_counts_views_report($conn, 'phases'); //Passing $conn on Dec 3 2023 ?> 
+		<?php get_counts_views_report($conn, 'phases', $neuron_ids); //Passing $conn on Dec 3 2023 ?> 
 	</div>
 </div>
 <!-- Till here -->
@@ -272,7 +273,7 @@ tr:nth-child(even){
                 </span>
         </div></p>
 	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
-		<?php get_counts_views_report($conn, 'synpro'); //Passing $conn on Dec 3 2023 ?> 
+		<?php get_counts_views_report($conn, 'synpro', $neuron_ids); //Passing $conn on Dec 3 2023 ?> 
 	</div>
 </div>
 <!-- Till here -->
@@ -287,7 +288,7 @@ tr:nth-child(even){
                 </span>
         </div></p>
 	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
-		<?php get_counts_views_report($conn, 'synpro_nm'); //Passing $conn on Dec 3 2023 ?> 
+		<?php get_counts_views_report($conn, 'synpro_nm', $neuron_ids); //Passing $conn on Dec 3 2023 ?> 
 	</div>
 </div>
 <!-- Till here -->
