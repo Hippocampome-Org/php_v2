@@ -245,42 +245,32 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 	if(!$array_subs){ $array_subs = [];}
 	while($row = mysqli_fetch_row($rs)){
 		$csv_rows[] = $row;
-		if(($rows > 3) && ($csv_tablename=='morphology_property')){
-			if ($array_subs[$row[0]]) {
-				if ($array_subs[$row[0]][$row[1]]) {
-					if (isset($array_subs[$row[0]][$row[1]][$row[2]])) {
-						$array_subs[$row[0]][$row[1]][$row[2]] += $row[$rows-1];
+
+		if(isset($neuron_ids[$row[1]])){
+			$row[1] = get_link($row[1], $neuron_ids[$row[1]], './neuron_page.php','neuron');
+		}
+
+		if(($rows > 3)){
+			if ($csv_tablename == 'morphology_property' || $csv_tablename == 'phases') {
+			 	$index2 = ($csv_tablename == 'morphology_property') ? $row[2] : $row[3];
+				 $index2 = ($csv_tablename == 'phases') ? $row[3] : $row[2];
+				$index2 = $row[2];
+				if ($array_subs[$row[0]]) {
+					if ($array_subs[$row[0]][$row[1]]) {
+						if (isset($array_subs[$row[0]][$row[1]][$index2])) {
+							$array_subs[$row[0]][$row[1]][$index2] += $row[$rows-1];
+						} else {
+							$array_subs[$row[0]][$row[1]][$index2] = $row[$rows-1];
+						}
 					} else {
-						$array_subs[$row[0]][$row[1]][$row[2]] = $row[$rows-1];
+						$array_subs[$row[0]][$row[1]][$index2] = $row[$rows-1];
 					}
 				} else {
-					$array_subs[$row[0]][$row[1]][$row[2]] = $row[$rows-1];
+					$array_subs[$row[0]][$row[1]][$index2] = $row[$rows-1];
 				}
-			} else {
-				$array_subs[$row[0]][$row[1]] = $row[$rows-1];
-			}
-		}else if(($rows > 3) && ($csv_tablename=='phases')){ 
-			if(isset($neuron_ids[$row[1]])){
-					$row[1] = get_link($row[1], $neuron_ids[$row[1]], './neuron_page.php','neuron');
-			}
-			//if morphology -- color  //if phases -- evidence
-			if ($array_subs[$row[0]]) {
-				if ($array_subs[$row[0]][$row[1]]) {
-					if (isset($array_subs[$row[0]][$row[1]][$row[3]])) {
-						$array_subs[$row[0]][$row[1]][$row[3]] += $row[$rows-1];
-					} else {
-						$array_subs[$row[0]][$row[1]][$row[3]] = $row[$rows-1];
-					}
-				} else {
-					$array_subs[$row[0]][$row[1]][$row[3]] = $row[$rows-1];
-				}
-			} else {
-				$array_subs[$row[0]][$row[1]][$row[3]] = $row[$rows-1];
-			}
-		}else{
-			if(isset($neuron_ids[$row[1]])){
-					$row[1] = get_link($row[1], $neuron_ids[$row[1]], './neuron_page.php', 'neuron');
-			}
+			 }
+		}
+		else{
 			if($array_subs[$row[0]]){
 				if($array_subs[$row[0]][$row[1]]){
 					$array_subs[$row[0]][$row[1]] += $row[$rows-1];
