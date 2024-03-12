@@ -837,16 +837,26 @@ function get_fp_property_views_report($conn, $write_file=NULL){
 
 function get_domain_functionality_views_report($conn, $write_file = NULL){
 	$page_functionality_views_query = "SELECT
-                SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) AS property_page,
-                SUM(REPLACE(page_views, ',', '')) AS views
-                        FROM
-                        ga_analytics_pages 
-                        WHERE
-                        page LIKE '%/property_page_%'
-                        AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, '?id_neuron=', -1), '&', 1)) = 4
-                        AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
-                        GROUP BY
-                        SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '?', 1)";
+		SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) AS property_page,
+		SUM(REPLACE(page_views, ',', '')) AS views
+			FROM
+			ga_analytics_pages
+			WHERE
+			page LIKE '%/property_page_%'
+			AND (LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, '?id_neuron=', -1), '&', 1)) = 4
+					OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) = 4
+					OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) = 4)
+			AND (SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
+					OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
+					OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN (4168, 4181, 2232)
+			    )
+			AND page NOT LIKE '%connectivity_orig%'
+			AND page NOT LIKE '%connectivity%'
+			AND page NOT LIKE '%connectivity_test%'
+			AND page NOT LIKE '%synpro_nm_old2%'
+			GROUP BY
+			SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '?', 1)";
+	//Excluded above as we are not showing the pages as tables to tally
 	//echo $page_functionality_views_query;
 	$columns = ['Property', 'Views'];
 	if(isset($write_file)) {
