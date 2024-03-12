@@ -14,12 +14,23 @@ function get_neuron_ids($conn){
 	}
 	return $neuron_ids;	
 }
+
 function get_link($text, $id, $path, $str=NULL){
-	//https://hippocampome.org/php/neuron_page.php?id=1000
 	if($str == 'pmid'){	$path .= $id."/";	}
 	if($str == 'neuron'){	$path .= "?id=".$id;	}
 	$url_text = "<a href={$path} target='blank'>{$text}</a>";
 	return $url_text;
+}
+
+function parseUrl($url) {
+    $parsedUrl = parse_url($url);
+    
+    if (isset($parsedUrl['query'])) {
+        parse_str($parsedUrl['query'], $params);
+        return $params;
+    }
+
+    return array();
 }
 
 function download_csvfile($functionName, $conn, $param = NULL) {
@@ -60,6 +71,121 @@ function download_csvfile($functionName, $conn, $param = NULL) {
 		echo "Invalid function.";
 	}
 
+}
+
+function processNeuronLink($neuron_id, $neuron_ids_array, $linkText) {
+    $neuron_name = array_search($neuron_id, $neuron_ids_array);
+	
+    if ($neuron_name !== false) {
+        //print($neuron_name); // Print the index (for debugging)
+        //print($neuron_id); // Print the original value (for debugging)
+        $neuron_id = get_link($neuron_name, $neuron_id, './neuron_page.php', $linkText);
+    }
+    return $neuron_id;
+}
+
+function format_table_synpro($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file=NULL){
+	$count = 0;
+	$csv_rows = [];
+        $rs = mysqli_query($conn,$query);
+	$table_string1 = '';
+	$rows = count($csv_headers);
+	//For Phases page to replciate the string we show
+	$phase_evidences=['all_other'=>'Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau,
+  AP threshold, fAHP, or APpeak trough.', 'theta'=>'Theta', 'swr_ratio'=>'SWR ratio','firingRate'=>'Firing rate'];
+	//Neuronal Segment Data
+	$neuronal_segments = ['blue'=>'Dendrites','blueSoma'=>'Dendrites-Somata','red'=>'Axons','redSoma'=>'Axons-Somata','somata'=>'Somata','violet'=>'Axons-Dendrites','violetSoma'=>'Axons-Dendrites-Somata'];
+	if(!$rs || ($rs->num_rows < 1)){
+		$table_string1 .= "<tr><td> No Data is available </td></tr>";
+		return $table_string1;
+	}
+	if($csv_tablename == 'synpro_table'){
+		$csv_headers = ['Subregion', 'Layer', 'Neuron Name', 'Neuronal Segment', 'Page', 'Views'];
+		$table_string1 = get_table_skeleton_first($csv_headers);
+	}
+	else if($csv_tablename == 'synpro_nm_table'){
+		$csv_headers = ['Subregion', 'Layer', 'Neuron1 Name', 'Neuronal Segment', 'Subregion', 'Layer', 'Neuron2 Name', 'Neuronal Segment', 'Connection Type', 'Known Connection', 'Axonic Basket', 'Page', 'Views'];
+		$table_string1 = get_table_skeleton_first($csv_headers);
+	}
+	$i=0;
+	while($rowvalue = mysqli_fetch_array($rs, MYSQLI_ASSOC))
+	{      
+		$row = parseUrl($rowvalue['page']);
+		if($csv_tablename == 'synpro_table'){
+			if(isset($neuronal_segments[$row['color']])){ $row['color'] = $neuronal_segments[$row['color']]; }
+			list($subregion, $layer) = explode('_', $row['val_property']);
+			$row['id_neuron'] = processNeuronLink( $row['id_neuron'], $neuron_ids, 'neuron');
+ 			if(!isset($row['sp_page'])){
+				$row['sp_page'] = '';
+			}
+
+			$row1=[];$row1['subregion']=$subregion; $row1['layer']=$layer;$row1['neuron_name']=$row['id_neuron']; $row1['neuronal_segment']=$row['color'];$row1['page']=$row['sp_page']; $row1['views']=$rowvalue['views']; 
+		}
+		else if($csv_tablename == 'synpro_nm_table'){
+			$connection_types = ['2'=>'Potential Excitatory Connections', '1'=>'Potential Inhibitory Connections'];
+			$row1=[];
+			if(isset($row['id1_neuron']) && isset($row['id2_neuron']) ){
+				$row['id1_neuron'] = processNeuronLink( $row['id1_neuron'], $neuron_ids, 'neuron');
+				$row['id2_neuron'] = processNeuronLink( $row['id2_neuron'], $neuron_ids, 'neuron');
+
+				if(isset($neuronal_segments[$row['color1']])){ $row['color1'] = $neuronal_segments[$row['color1']]; }
+				if(isset($neuronal_segments[$row['color2']])){ $row['color2'] = $neuronal_segments[$row['color2']]; }
+				list($subregion1, $layer1) = explode('_', $row['val1_property']);
+				list($subregion2, $layer2) = explode('_', $row['val2_property']);
+				if(isset($connection_types[$row['connection_type']])){ $row['connection_type'] = $connection_types[$row['connection_type']]; }
+
+				$row1['subregion1']=$subregion1; $row1['layer1']=$layer1; $row1['id1_neuron']=$row['id1_neuron'];$row1['neuronal_segment1']=$row['color1']; 
+				$row1['subregion2']=$subregion2; $row1['layer2']=$layer2; $row1['id2_neuron']=$row['id2_neuron'];$row1['neuronal_segment2']=$row['color2']; 
+			}else{
+				$row['id_neuron'] = processNeuronLink( $row['id_neuron'], $neuron_ids, 'neuron');
+				if(isset($neuronal_segments[$row['color']])){ $row['color'] = $neuronal_segments[$row['color']]; }
+				list($subregion, $layer) = explode('_', $row['val_property']);
+				$row1['subregion1']=$subregion; $row1['layer1']=$layer; $row1['id1_neuron']=$row['id_neuron'];$row1['neuronal_segment1']=$row['color']; 
+				$row1['subregion2']=''; $row1['layer2']=''; $row1['id2_neuron']='';$row1['neuronal_segment2']=''; 
+			}
+			if(!isset($row['nm_page'])){
+				$row['nm_page'] = '';
+			}
+
+
+			$row1['connection_type']=$row['connection_type'];$row1['known_conn_flag']=$row['known_conn_flag'];
+			$row1['axonic_basket_flag']=$row['axonic_basket_flag'];
+			$row1['page']=$row['nm_page'];$row1['views']=$rowvalue['views'];
+		}
+		 /*              
+                if($csv_tablename == 'synpro_table'){
+                        if(isset($neuronal_segments[$row['color']])){ $row['color'] = $neuronal_segments[$row['color']]; }
+                        $row['id_neuron_source'] = processNeuronLink( $row['id_neuron_source'], $neuron_ids, 'neuron');
+                        $row['id_neuron_target'] = processNeuronLink( $row['id_neuron_target'], $neuron_ids, 'neuron');
+                        $csv_headers = ['Source Neuron Name', 'Target Neuron Name', 'Neuronal Segment', 'Page', 'Views'];
+                        $table_string1 = get_table_skeleton_first($csv_headers);
+                        if(!isset($row['nm_page'])){
+                                $row['nm_page'] = '';
+                        }
+                        $row1=[];$row1['source_neuron_name']=$row['id_neuron_source']; $row1['target_neuron_name']=$row['id_neuron_target']; $row1['neuronal_segment']=$row['color'];$row1['page']=$row['nm_page']; $row1['views']=$rowvalue['views'];
+                        $csv_rows[] = $row1;
+
+                }*/     
+
+		$csv_rows[] = $row1;
+		if($i%2==0){ $table_string1 .= '<tr class="white-bg" >';}
+		else{ $table_string1 .= '<tr class="blue-bg">';}//Color gradient CSS
+		foreach($row1 as $key => $value) {
+			$table_string1 .= "<td>".ucwords($value)."</td>";
+		}
+		$count += $row1['views'];
+		$table_string1 .= "</tr>";
+		$i++;//increment for color gradient of the row
+	}
+
+	if(isset($write_file)){
+		$csv_data[$csv_tablename]=['filename'=>$csv_tablename,'headers'=>$csv_headers,'rows'=>$csv_rows];
+		return $csv_data[$csv_tablename];
+	}	
+	else{
+		$table_string1 .= "<tr><td colspan='".(count($csv_headers)-1)."'><b>Total Count</b></td><td>".$count."</td></tr>";	
+		return $table_string1;
+	}
 }
 
 function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers, $write_file=NULL, $query2=NULL){
@@ -600,28 +726,48 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $wr
 		if ($page_string == 'synpro') {
 			array_splice($columns, 4, 0, ['Sp Page']); // Insert 'Sp Page' at the correct position
 		}
-		$page_counts_views_query .= "t.subregion, layer, t.page_statistics_name as neuron_name, color" . ($page_string == 'synpro' ? ", sp_page" : "") . ", 
-						SUM(REPLACE(page_views, ',', '')) AS views 
-						FROM (SELECT IF(INSTR(page, 'val_property=') > 0, 
-							SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '_', -1), '') AS layer, 
-							SUBSTRING_INDEX(SUBSTRING_INDEX(page, '?id_neuron=', -1), '&', 1) AS neuronID, 
-							IF(INSTR(page, 'color=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1), '') as color" . ($page_string == 'synpro' ? ", 
-							IF(INSTR(page, 'sp_page=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'sp_page=', -1), '&', 1), '') as sp_page" : "") . ", page_views 
-							FROM ga_analytics_pages 
-							WHERE page LIKE '%$pageType?id_neuron=%' 
-							AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4 
-							AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)) 
-							AS derived JOIN Type AS t ON t.id = derived.neuronID GROUP BY t.subregion, layer, t.page_statistics_name, color" . ($page_string == 'synpro' ? ", sp_page" : "") . " ORDER BY t.position";
+
+		$page_counts_views_query .= "  derived.page, SUM(REPLACE(page_views, ',', '')) AS views
+                                                FROM (SELECT page, page_views, SUBSTRING_INDEX(SUBSTRING_INDEX(page, '?id_neuron=', -1), '&', 1) AS neuronID 
+                                                        FROM ga_analytics_pages
+                                                        WHERE ";
+		if($page_string == 'synpro') {
+			$page_counts_views_query .= " ( page LIKE '%property_page_synpro.php?id_neuron=%'
+                                                       OR page LIKE '%property_page_synpro_pvals.php?id_neuron=%' ) ";
+                	$page_counts_views_query .=  "    AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4
+						AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)) ";
+		}
+		if($page_string == 'synpro_nm') {
+			$page_counts_views_query .= " page LIKE '%property_page_synpro_nm.php?id_neuron=%' 
+						AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4
+						AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
+
+						UNION ALL
+
+						SELECT page, page_views, 
+						       SUBSTRING_INDEX(SUBSTRING_INDEX(page, '?id1_neuron=', -1), '&', 1) AS neuronID
+							       FROM ga_analytics_pages 
+							       WHERE page LIKE '%property_page_synpro_nm.php?id1_neuron=%' 
+							       AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) = 4
+							       AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
+					       ) "; 
+		}
+		$page_counts_views_query .=  " 	AS derived JOIN Type AS t ON t.id = derived.neuronID 
+						GROUP BY  t.page_statistics_name ORDER BY t.position";
+		
 	}
+
 
 	// Initialize table with columns and execute the query if columns array is not empty
 	$table_string = get_table_skeleton_first($columns);
 	$csv_tablename = $page_string."_table";
 	if ($page_string == 'synpro' || $page_string == 'synpro_nm') {
 		if(isset($write_file)) {
-			return format_table($conn, $page_counts_views_query, $table_string, $csv_tablename, $columns, $write_file);
+			$table_string = '';
+			return format_table_synpro($conn, $page_counts_views_query, $table_string, $csv_tablename, $columns, $neuron_ids = NULL, $write_file);
         	}else{
-			$table_string .= format_table($conn, $page_counts_views_query, $table_string, $csv_tablename, $columns);
+			$table_string = '';
+			$table_string .= format_table_synpro($conn, $page_counts_views_query, $table_string, $csv_tablename, $columns, $neuron_ids);
 			//echo $page_counts_views_query;
 			$table_string .= get_table_skeleton_end();
         		echo $table_string;
