@@ -137,7 +137,6 @@ tr:nth-child(even){
 			<div id="links" style="padding: 15px; 10px;">
  	    		<ul>
 				<li><a href="#neuron">Neuron Type Statistics</a></li>
-				<li><a href="#property_counts">Neuron Type Census Statistics</a></li>
 				<li><a href="#firingpattern">Firing Pattern Statistics</a></li>
 				<li><a href="#markersproperty">Markers Property Statistics</a></li>
 				<li><a href="#morphologyproperty">Morphology Property Statistics</a></li>
@@ -145,6 +144,7 @@ tr:nth-child(even){
 				<li><a href="#phases_counts">Phases Statistics</a></li>
 				<li><a href="#synpro_counts">Synpro Statistics</a></li>
 				<li><a href="#synpro_nm_counts">Synpro NM Statistics</a></li>
+				<li><a href="#synpro_pvals_counts">Synpro Pvals Statistics</a></li>
 				<li><a href="#property_functionality">Functionality Property Domain Page Statistics</a></li>
 				<li><a href="#page_functionality">Functionality Domain Page Statistics</a></li>
 				<li><a href="#pageviews">Views per Page Statistics </a></li>
@@ -169,21 +169,6 @@ tr:nth-child(even){
 	</div></p>
 	<div id="neuron-inside" style="width: 950px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
 		<?php get_neurons_views_report($conn, $neuron_ids); //Passing $conn on Dec 3 2023 ?>
-	</div>
-</div>
-<!-- Till here -->
-
-<!-- When Property Counts Statistics is clicked-->
-</br></br>
-<div id="property_counts" style="padding:100px 100px; align:center;">
-	<p><div style="text-align: left;">
-                <span style="display: inline-block; vertical-align: middle;">Neuron Type Census Statistics <a href="#top">Back to top</a></span>
-                <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
-			<form method="POST"><input type="hidden" name="download_csv" value="get_counts_views_report"><input type="hidden" name="param" value="counts"><button type="submit">Download CSV</button></form>
-                </span>
-        </div></p>
-	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
-		<?php get_counts_views_report($conn, 'counts', $neuron_ids); //Passing $conn on Dec 3 2023 ?> 
 	</div>
 </div>
 <!-- Till here -->
@@ -289,6 +274,21 @@ tr:nth-child(even){
         </div></p>
 	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
 		<?php get_counts_views_report($conn, 'synpro_nm', $neuron_ids); //Passing $conn on Dec 3 2023 ?> 
+	</div>
+</div>
+<!-- Till here -->
+
+<!-- When Synpro Pvals Counts Statistics is clicked-->
+</br></br>
+<div id="synpro_pvals_counts" style="padding:100px 100px; align:center;">
+	<p><div style="text-align: left;">
+                <span style="display: inline-block; vertical-align: middle;">Synpro Pvals Statistics <a href="#top">Back to top</a></span>
+                <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
+			<form method="POST"><input type="hidden" name="download_csv" value="get_counts_views_report"><input type="hidden" name="param" value="synpro_nm"><button type="submit">Download CSV</button></form>
+                </span>
+        </div></p>
+	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+		<?php get_counts_views_report($conn, 'synpro_pvals', $neuron_ids); //Passing $conn on Dec 3 2023 ?> 
 	</div>
 </div>
 <!-- Till here -->
