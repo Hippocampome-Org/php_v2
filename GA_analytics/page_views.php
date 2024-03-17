@@ -37,8 +37,6 @@ function download_csvfile($functionName, $conn, $param = NULL) {
 	$allowedFunctions = ['get_neurons_views_report','get_markers_property_views_report', 'get_morphology_property_views_report', 'get_counts_views_report', 
 			     'get_fp_property_views_report','get_pmid_isbn_property_views_report', 'get_domain_functionality_views_report','get_page_functionality_views_report', 
 			      'get_views_per_page_report', 'get_pages_views_per_month_report']; // TO restrict any unwanted calls or anything
-	print("in download");
-	exit;
 	if (in_array($functionName, $allowedFunctions) && function_exists($functionName)) {
 		if(isset($param)){
 			$csv_data = $functionName($conn, $param, true);
@@ -88,7 +86,7 @@ function processNeuronLink($neuron_id, $neuron_ids_array, $linkText) {
 function format_table_synpro($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file=NULL){
 	$count = 0;
 	$csv_rows = [];
-	echo $query;
+	//echo $query;
         $rs = mysqli_query($conn,$query);
 	$table_string1 = '';
 	$rows = count($csv_headers);
@@ -353,24 +351,21 @@ function flattenArray($array) {
     return $result;
 }
 
-function bg_wg($colors, $count, $neuronal_segments=NULL, $k){
-	$table_string2 ='';
-	foreach($colors as $colorKey => $value){
-		$colorKeyVal = $colorKey;
-		if(isset($neuronal_segments) && isset($neuronal_segments[$colorKey]) ){ $colorKeyVal = $neuronal_segments[$colorKey]; }
-		if($k%2==0){
-			$table_string2 .= "<td class='white-bg' >".$colorKeyVal."</td>";
-			$table_string2 .= "<td class='white-bg' >".$value."</td>";
-			$table_string2 .= "</tr>";
-		}else{
-			$table_string2 .= "<td class='blue-bg' >".$colorKeyVal."</td>";
-			$table_string2 .= "<td class='blue-bg' >".$value."</td>";
-			$table_string2 .= "</tr>";
-		}
-		$count += $value;
-		$k++;
-	}
-	return array($table_string2, $count);
+function bg_wg($colors, $count, $neuronal_segments = NULL, $k)
+{
+    $table_string2 = '';
+    foreach ($colors as $colorKey => $value) {
+        $bg_class = ($k % 2 == 0) ? 'white-bg' : 'blue-bg';
+        $neuronal_segment = isset($neuronal_segments) ? $neuronal_segments[$colorKey] : $colorKey;
+
+        $table_string2 .= "<td class='$bg_class'>$neuronal_segment</td>";
+        $table_string2 .= "<td class='$bg_class'>$value</td>";
+        $table_string2 .= "</tr>";
+
+        $count += $value;
+        $k++;
+    }
+    return array($table_string2, $count);
 }
 
 function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file = NULL, $array_subs = NULL){
@@ -437,11 +432,6 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
         }
 	$table_string1 .= $table_string2;
 	if(isset($write_file)){
-		print("In write file");
-		exit;
-		print($csv_tablename);
-		var_dump($csv_headers);
-		var_dump($csv_rows);
 		$csv_data[$csv_tablename]=['filename'=>$csv_tablename,'headers'=>$csv_headers,'rows'=>$csv_rows];
 		return $csv_data[$csv_tablename];
 	}
@@ -480,9 +470,10 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 
 		if(($rows > 3)){
 			if ($csv_tablename == 'morphology_property' || $csv_tablename == 'phases') {
-			 	$index2 = ($csv_tablename == 'morphology_property') ? $row[2] : $row[3];
-				 $index2 = ($csv_tablename == 'phases') ? $row[3] : $row[2];
-				//$index2 = $row[2];
+				$index2 = ($csv_tablename == 'morphology_property') ? $row[2] : $row[3];
+				$index2 = ($csv_tablename == 'phases') ? $row[3] : $row[2];
+				$index2 = $row[2];
+
 				if ($array_subs[$row[0]]) {
 					if ($array_subs[$row[0]][$row[1]]) {
 						if (isset($array_subs[$row[0]][$row[1]][$index2])) {
