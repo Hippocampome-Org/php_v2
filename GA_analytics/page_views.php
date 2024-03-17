@@ -37,11 +37,20 @@ function download_csvfile($functionName, $conn, $param = NULL) {
 	$allowedFunctions = ['get_neurons_views_report','get_markers_property_views_report', 'get_morphology_property_views_report', 'get_counts_views_report', 
 			     'get_fp_property_views_report','get_pmid_isbn_property_views_report', 'get_domain_functionality_views_report','get_page_functionality_views_report', 
 			      'get_views_per_page_report', 'get_pages_views_per_month_report']; // TO restrict any unwanted calls or anything
+	$neuron_ids_func = ['get_counts_views_report', 'get_neurons_views_report'];
 	if (in_array($functionName, $allowedFunctions) && function_exists($functionName)) {
 		if(isset($param)){
-			$csv_data = $functionName($conn, $param, true);
+			if (in_array($functionName, $neuron_ids_func)){
+				$csv_data = $functionName($conn, $param, $neuron_ids = NULL, true);
+			}else{
+				$csv_data = $functionName($conn, $param, true);
+			}
 		}else{
-			$csv_data = $functionName($conn, true);
+			if (in_array($functionName, $neuron_ids_func)){
+				$csv_data = $functionName($conn, $neuron_ids = NULL, true);
+			}else{
+				$csv_data = $functionName($conn, true);
+			}
 		}
 		// Set headers to initiate file download
 		header('Content-Type: text/csv');
@@ -382,24 +391,31 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
         $i=0;
 	if(!$array_subs){ $array_subs = [];}
 	while($row = mysqli_fetch_row($rs)){
-		$csv_rows[] = $row;
-		if(isset($neuron_ids[$row[1]])){
-			$row[1] = get_link($row[1], $neuron_ids[$row[1]], './neuron_page.php','neuron');
-		}
-		if ($array_subs[$row[0]]) {
-			if ($array_subs[$row[0]][$row[1]]) {
-				if (isset($array_subs[$row[0]][$row[1]][$row[2]])) {
-					$array_subs[$row[0]][$row[1]][$row[2]] += $row[$rows-1];
+		if(isset($write_file)){
+			$csv_rows[] = $row;
+		}else{
+			if(isset($neuron_ids[$row[1]])){
+				$row[1] = get_link($row[1], $neuron_ids[$row[1]], './neuron_page.php','neuron');
+			}
+			if ($array_subs[$row[0]]) {
+				if ($array_subs[$row[0]][$row[1]]) {
+					if (isset($array_subs[$row[0]][$row[1]][$row[2]])) {
+						$array_subs[$row[0]][$row[1]][$row[2]] += $row[$rows-1];
+					} else {
+						$array_subs[$row[0]][$row[1]][$row[2]] = $row[$rows-1];
+					}
 				} else {
 					$array_subs[$row[0]][$row[1]][$row[2]] = $row[$rows-1];
 				}
 			} else {
 				$array_subs[$row[0]][$row[1]][$row[2]] = $row[$rows-1];
 			}
-		} else {
-			$array_subs[$row[0]][$row[1]][$row[2]] = $row[$rows-1];
 		}
         }
+	if(isset($write_file)){
+		$csv_data[$csv_tablename]=['filename'=>$csv_tablename,'headers'=>$csv_headers,'rows'=>$csv_rows];
+		return $csv_data[$csv_tablename];
+	} //If write file it will exit here
 	$i=$j=0;
 	$table_string2='';
 	$table_string2 = "<tr>";
@@ -431,14 +447,9 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 		$j++;
         }
 	$table_string1 .= $table_string2;
-	if(isset($write_file)){
-		$csv_data[$csv_tablename]=['filename'=>$csv_tablename,'headers'=>$csv_headers,'rows'=>$csv_rows];
-		return $csv_data[$csv_tablename];
-	}
-	else{
-		$table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$count."</td></tr>";
-        	return $table_string1;
-	}
+
+	$table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$count."</td></tr>";
+	return $table_string1;
 }
 
 function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file = NULL, $array_subs = NULL){
@@ -674,10 +685,10 @@ function get_neurons_views_report($conn, $neuron_ids=NULL, $write_file=NULL){ //
 			END, t.position";
      
 	$columns = ['Subregion', 'Neuron Type Name', 'Census', 'Views'];
+	$table_string = get_table_skeleton_first($columns);
 	if(isset($write_file)) {
 		return format_table_neurons($conn, $page_neurons_views_query, $table_string, 'neurons_views', $columns, $neuron_ids= NULL, $write_file);
 	}else{
-		$table_string = get_table_skeleton_first($columns);
 		$table_string .= format_table_neurons($conn, $page_neurons_views_query, $table_string, 'neurons_views', $columns, $neuron_ids);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
