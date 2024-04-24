@@ -346,12 +346,15 @@ jQuery(document).ready(function() {
             <a href =' http://creativecommons.org/licenses/by-sa/3.0/' target="_blank">Creative Commons
             Attribution-ShareAlike [CC BY-SA] license</a>. 
 
-          <!-- <br /><p><?php echo $info; ?> -->
-          <br /><p><?php $webpage_id_number = 1; include('report_hits.php'); ?>
+          <br>
           <br>
           528,945 Pieces of Knowledge (PoK) and 46,292 Pieces of Evidence (PoE)
+          <br>
           <br />Last Update: 24 Apr 2024 (<a href="Help_Release_Notes.php">v2.0 R 1A</a>)</font>
           <br />
+
+          <!-- <br /><p><?php echo $info; ?> -->
+<!--          <br /><p><?php $webpage_id_number = 1; include('report_hits.php'); ?> -->
         </div>
     </td>   
   </tr>
