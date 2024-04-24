@@ -333,7 +333,7 @@ jQuery(document).ready(function() {
         <!--      <div class='version'> -->
         <div class='version2'>
           <!--  <a href='http://peg.gd/2yN' target="_blank">http://peg.gd/2yN</a> -->
-		  <a class="twitter-timeline" data-lang="en" data-width="400" data-height="500" data-theme="light" href="https://twitter.com/Hippocampome?ref_src=twsrc%5Etfw">Tweets by Hippocampome</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    		  <!-- <a class="twitter-timeline" data-lang="en" data-width="400" data-height="500" data-theme="light" href="https://twitter.com/Hippocampome?ref_src=twsrc%5Etfw">Tweets by Hippocampome</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> -->
           <hr class='hr2'/>
           <font class='font3' color='#000000'>
           <a href="Help_Terms_of_Use.php">Terms of Use</a>
