@@ -99,7 +99,7 @@ font-family:"Arial","sans-serif"'>Release Notes for v2.0:</span></u></b></p>
 </BR>
 
 <p class=MsoNormal><span style='font-size:16.0pt;line-height:115%;
-font-family:"Arial","sans-serif"'>v2.0 (24 Apr 2024):</span></p>
+font-family:"Arial","sans-serif"'>v2.0 R 1A (24 Apr 2024):</span></p>
 
 <p class=MsoListParagraphCxSpFirst style='text-indent:-.25in'><span
 style='font-size:14.0pt;line-height:115%;font-family:Symbol'>&#8226;<span
