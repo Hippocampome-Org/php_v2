@@ -1,7 +1,7 @@
 <?php
  
   include ("permission_check.php");
-  include ("./GA_analytics/page_views_mar20.php");
+  include ("./GA_analytics/page_views.php");
   $neuron_ids = get_neuron_ids($conn);  
   if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["download_csv"])) {
 	if(isset($_POST["param"])){

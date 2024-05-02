@@ -629,10 +629,13 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
         $rs = mysqli_query($conn,$query);
         $table_string1 = '';
 	$rows = count($csv_headers);
-	
 	$color_segments = ['red'=>'Axon Locations','blue'=>'Dendrite Locations','somata'=>'Soma Locations','violet'=>'Axon-Dendrite Locations','redSoma'=>'Axon-Somata Locations',
-			   'blueSoma'=>'Dendrite-Somata Locations', 'violetSoma'=>'Axon-Dendrite-Somata Locations'];
-	$color_cols = ['Axon Locations', 'Dendrite Locations', 'Soma Locations', 'Axon-Dendrite Locations', 'Axon-Somata Locations','Dendrite-Somata Locations', 'Axon-Dendrite-Somata Locations']; 
+			   'blueSoma'=>'Dendrite-Somata Locations', 'violetSoma'=>'Axon-Dendrite-Somata Locations',
+			   'reddal'=>'Axon Lengths', 'bluedal'=>'Dendrite Lengths', 'redsd'=>'Somatic Distances of Axons', 'bluesd'=>'Somatic Distances of Dendrites', 
+			   'violetSomadal'=>'Unknown', 'violetSomasd'=>'Unknown', ''=>'Unknown'];
+
+	$color_cols = ['Axon Locations', 'Dendrite Locations', 'Soma Locations', 'Axon-Dendrite Locations', 'Axon-Somata Locations','Dendrite-Somata Locations', 
+			'Axon-Dendrite-Somata Locations', 'Axon Lengths', 'Dendrite Lengths', 'Somatic Distances of Axons', 'Somatic Distances of Dendrites', 'Unknown'];
 	$cols = ['DG:SMo', 'DG:SMi','DG:SG','DG:H','CA3:SLM','CA3:SR','CA3:SL','CA3:SP','CA3:SO','CA2:SLM','CA2:SR','CA2:SP','CA2:SO','CA1:SLM','CA1:SR','CA1:SP','CA1:SO',
 			'Sub:SM','Sub:SP','Sub:PL','EC:I','EC:II','EC:III','EC:IV','EC:V','EC:VI','Unknown'];
 	$neuronal_segments = ['DG_SMo'=>'DG:SMo', 'DG_SMi'=>'DG:SMi','DG_SG'=>'DG:SG','DG_H'=>'DG:H',
@@ -658,13 +661,13 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 		// Extract relevant values
 		$subregion = $rowvalue['subregion'];
 		$neuron_name = $rowvalue['neuron_name'];
-		$color = $color_segments[$rowvalue['color']];
+		$color_sp = $color_segments[$rowvalue['color_sp']];
 		$evidence = $neuronal_segments[$rowvalue['evidence']];
 		//Exception for this entry -- /php/property_page_markers.php?id_neuron=5001&val_property=GABAa\\alpha 2&color=&page=markers
 		if($evidence == 'GABAa_alpha2'){
-			if(strlen($rowvalue['color']) ==0){
-				$rowvalue['color']='positive';
-				$color =$color_segments[$rowvalue['color']];
+			if(strlen($rowvalue['color_sp']) ==0){
+				$rowvalue['color_sp']='positive';
+				$color_sp =$color_segments[$rowvalue['color_sp']];
 			}
 		}
 		$views = intval($rowvalue['views']);
@@ -677,31 +680,31 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 		if (!isset($array_subs[$subregion][$neuron_name])) {
 			$array_subs[$subregion][$neuron_name] = initializeNeuronArray($cols, $color_cols);
 		}
-		if(!isset($array_subs[$subregion][$neuron_name][$color][$evidence])){
+		if(!isset($array_subs[$subregion][$neuron_name][$color_sp][$evidence])){
 			/*echo "evidence does not exist and trying to initiate to 0:".$evidence."Evidence from DB:".$rowvalue['evidence'];
 			  echo $neuronal_segments[$rowvalue['evidence']];
-			  echo "Color is:".$color;
-			  echo "db color is:".$rowvalue['color'];
+			  echo "Color is:".$color_sp;
+			  echo "db color is:".$rowvalue['color_sp'];
 			  echo "Sub Region is:".$subregion;
 			  echo "Neuron Name:".$neuron_name; */
-			$array_subs[$subregion][$neuron_name][$color][$evidence] = 0;
+			$array_subs[$subregion][$neuron_name][$color_sp][$evidence] = 0;
 		}else{
 			// Increment values
-			$array_subs[$subregion][$neuron_name][$color][$evidence] += intval($views);
-			$array_subs[$subregion][$neuron_name][$color]['total'] += intval($views);
+			$array_subs[$subregion][$neuron_name][$color_sp][$evidence] += intval($views);
+			$array_subs[$subregion][$neuron_name][$color_sp]['total'] += intval($views);
 		}
-		if(!isset($array_subs[$subregion][$neuron_name][$color]['total'])){
-			$array_subs[$subregion][$neuron_name][$color]['total']=0;
+		if(!isset($array_subs[$subregion][$neuron_name][$color_sp]['total'])){
+			$array_subs[$subregion][$neuron_name][$color_sp]['total']=0;
 		}
 		else{
-			//$array_subs[$subregion][$neuron_name][$color]['total'] += intval($views);
+			//$array_subs[$subregion][$neuron_name][$color_sp]['total'] += intval($views);
 		}
 	}
 	foreach($array_subs as $subregion => $neuron_names){
 		foreach($neuron_names as $neuron_name=>$colors){
-			foreach($colors as $color=>$colorVals){
-				if (!isset($array_subs[$subregion][$neuron_name][$color]['total'])) {
-					$array_subs[$subregion][$neuron_name][$color]['total']=0;
+			foreach($colors as $colorvalue=>$colorVals){
+				if (!isset($array_subs[$subregion][$neuron_name][$colorvalue]['total'])) {
+					$array_subs[$subregion][$neuron_name][$colorvalue]['total']=0;
 				}
 			}
 		}
@@ -1349,14 +1352,16 @@ ORDER BY
 
 function get_morphology_property_views_report($conn, $neuron_ids = NULL, $write_file=NULL){
     
-	$page_property_views_query = "SELECT t.subregion, t.page_statistics_name AS neuron_name, derived.evidence AS evidence, derived.color, SUM(REPLACE(page_views, ',', '')) AS views 
+	$page_property_views_query = "SELECT t.subregion, t.page_statistics_name AS neuron_name, derived.evidence AS evidence, concat(derived.color, trim(derived.sp_page)) AS 'color_sp', 
+						SUM(REPLACE(page_views, ',', '')) AS views 
 						FROM (
 							SELECT page_views, IF( INSTR(page, 'id_neuron=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1),
 										IF( INSTR(page, 'id1_neuron=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1),
 										IF( INSTR(page, 'id_neuron_source=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1), '' ) ) 
 									     ) AS neuronID,
 								IF(INSTR(page, 'val_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '') AS evidence,
-								IF(INSTR(page, 'val_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1), '') AS color 
+								IF(INSTR(page, 'val_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1), '') AS color, 
+								IF(INSTR(page, 'sp_page=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'sp_page=', -1), '&', 1), '') AS sp_page  
 								FROM ga_analytics_pages 
 								WHERE page LIKE '%/property_page_%' 
 									AND (SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'morphology' 
@@ -1373,7 +1378,7 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $write_
 							    		)
 						) AS derived 
 						JOIN Type AS t ON t.id = derived.neuronID
-						GROUP BY t.page_statistics_name, t.subregion, derived.color, derived.evidence 
+						GROUP BY t.page_statistics_name, t.subregion, color_sp, derived.evidence
 						ORDER BY t.position"; 
 
         //echo $page_property_views_query;
@@ -1698,8 +1703,8 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $wr
 function get_fp_property_views_report($conn, $write_file=NULL){
 	$fp_format = [
 		'ASP.' => 'Adapting Spiking',
-		'ASP.ASP.' => 'Adapting Apiking followed by (slower) Adapting Spiking',
-		'ASP.NASP' => 'Non-Adapting spiking preceded by Adapting Spiking',
+		'ASP.ASP.' => 'Adapting Spiking followed by (slower) Adapting Spiking',
+		'ASP.NASP' => 'Non-Adapting Spiking preceded by Adapting Spiking',
 		'ASP.SLN' => 'silence preceded by Adapting Spiking',
 		'D.' => 'Delayed Spiking',
 		'D.ASP.' => 'Delayed Adapting Spiking',
