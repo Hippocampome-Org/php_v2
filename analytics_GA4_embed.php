@@ -162,10 +162,9 @@ tr:nth-child(even){
 <div id="neuron" style="padding:100px 100px; align:center;">
 	<p><div style="text-align: left;">
 		<span style="display: inline-block; vertical-align: middle;">Neuron Type Evidence Page Views <a href="#top">Back to top</a></span>
-		<!--
 		<span style="display: inline-block; padding-left:10px; vertical-align: middle;">
 			<form method="POST" style="display: inline;"><input type="hidden" name="download_csv" value="get_neurons_views_report"><button type="submit">Download CSV</button></form>
-		</span> -->
+		</span>
 	</div></p>
 	<div id="neuron-inside" style="width: 950px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
 		<?php get_neurons_views_report($conn, $neuron_ids); //Passing $conn on Dec 3 2023 ?>
@@ -178,10 +177,9 @@ tr:nth-child(even){
 <div id="morphologyproperty" style="padding:100px 100px; align:center;">
 	<p><div style="text-align: left;">
                 <span style="display: inline-block; vertical-align: middle;">Morphology / Axonal and Dendritic Lengths / Somatic Distances Evidence Page Views <a href="#top">Back to top</a></span>
-		<!--
                 <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
 			<form method="POST"><input type="hidden" name="download_csv" value="get_morphology_property_views_report"><button type="submit">Download CSV</button></form>
-                </span> -->
+                </span>
         </div></p>
 	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
 		<?php get_morphology_property_views_report($conn, $neuron_ids); //Passing $conn on Dec 3 2023 ?> 
@@ -194,10 +192,9 @@ tr:nth-child(even){
 <div id="markersproperty" style="padding:100px 100px; align:center;">
 	<p><div style="text-align: left;">
                 <span style="display: inline-block; vertical-align: middle;">Markers Evidence Page Views <a href="#top">Back to top</a></span>
-		<!--
                 <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
 			<form method="POST"><input type="hidden" name="download_csv" value="get_markers_property_views_report"><button type="submit">Download CSV</button></form>
-                </span> -->
+                </span>
         </div></p>
 	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
 		<?php  get_markers_property_views_report($conn, $neuron_ids); //Passing $conn on Dec 3 2023 ?> 
@@ -210,10 +207,9 @@ tr:nth-child(even){
 <div id="biophysics" style="padding:100px 100px; align:center;">
         <p><div style="text-align: left;">
                 <span style="display: inline-block; vertical-align: middle;">Membrane Biophysics Evidence Page Views <a href="#top">Back to top</a></span>
-		<!-- 
                 <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
-                        <form method="POST"><input type="hidden" name="download_csv" value="get_counts_views_report"><input type="hidden" name="param" value="phases"><button type="submit">Download CSV</button></form>
-                </span> -->
+                        <form method="POST"><input type="hidden" name="download_csv" value="get_counts_views_report"><input type="hidden" name="param" value="biophysics"><button type="submit">Download CSV</button></form>
+                </span>
         </div></p>
         <div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
                 <?php get_counts_views_report($conn, 'biophysics', $neuron_ids); //Passing $conn on Dec 3 2023 ?>
@@ -226,10 +222,9 @@ tr:nth-child(even){
 <div id="firingpattern" style="padding:100px 100px; align:center;">
 	<p><div style="text-align: left;">
                 <span style="display: inline-block; vertical-align: middle;">Firing Pattern Page Views <a href="#top">Back to top</a></span>
-		<!--
                 <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
 			<form method="POST"><input type="hidden" name="download_csv" value="get_fp_property_views_report"><button type="submit">Download CSV</button></form>
-                </span> -->
+                </span>
         </div></p>
 	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
 		<?php get_fp_property_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
@@ -242,10 +237,9 @@ tr:nth-child(even){
 <div id="pmid_isbn_property" style="padding:100px 100px; align:center;">
 	<p><div style="text-align: left;">
                 <span style="display: inline-block; vertical-align: middle;">Morphology Linking pmid isbn Property Page Views <a href="#top">Back to top</a></span>
-		<!--
                 <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
 			<form method="POST"><input type="hidden" name="download_csv" value="get_pmid_isbn_property_views_report"><button type="submit">Download CSV</button></form>
-                </span> -->
+                </span>
         </div></p>
 	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
 		<?php  get_pmid_isbn_property_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
@@ -258,10 +252,9 @@ tr:nth-child(even){
 <div id="phases_counts" style="padding:100px 100px; align:center;">
 	<p><div style="text-align: left;">
                 <span style="display: inline-block; vertical-align: middle;">In Vivo Evidence Page Views <a href="#top">Back to top</a></span>
-		<!--
                 <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
 			<form method="POST"><input type="hidden" name="download_csv" value="get_counts_views_report"><input type="hidden" name="param" value="phases"><button type="submit">Download CSV</button></form>
-                </span> -->
+                </span>
         </div></p>
 	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
 		<?php get_counts_views_report($conn, 'phases', $neuron_ids); //Passing $conn on Dec 3 2023 ?> 
@@ -275,10 +268,9 @@ tr:nth-child(even){
 <div id="connectivity_counts" style="padding:100px 100px; align:center;">
         <p><div style="text-align: left;">
                 <span style="display: inline-block; vertical-align: middle;">Connectivity Page Views <a href="#top">Back to top</a></span>
-		<!--
                 <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
-                        <form method="POST"><input type="hidden" name="download_csv" value="get_counts_views_report"><input type="hidden" name="param" value="phases"><button type="submit">Download CSV</button></form>
-                </span> -->
+                        <form method="POST"><input type="hidden" name="download_csv" value="get_counts_views_report"><input type="hidden" name="param" value="connectivity"><button type="submit">Download CSV</button></form>
+                </span>
         </div></p>
         <div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
                 <?php get_counts_views_report($conn, 'connectivity', $neuron_ids); //Passing $conn on Dec 3 2023 ?>
@@ -291,10 +283,9 @@ tr:nth-child(even){
 <div id="property_functionality" style="padding:100px 100px; align:center;">
 	<p><div style="text-align: left;">
                 <span style="display: inline-block; vertical-align: middle;">Functionality Property Domain Page Views <a href="#top">Back to top</a></span>
-		<!--
                 <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
 			<form method="POST"><input type="hidden" name="download_csv" value="get_domain_functionality_views_report"><button type="submit">Download CSV</button></form>
-                </span> -->
+                </span>
         </div></p>
 	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
 		<?php get_domain_functionality_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
@@ -307,10 +298,9 @@ tr:nth-child(even){
 <div id="page_functionality" style="padding:100px 100px; align:center;">
 	<p><div style="text-align: left;">
                 <span style="display: inline-block; vertical-align: middle;">Functionality Domain Page Views <a href="#top">Back to top</a></span>
-		<!-- 
                 <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
 			<form method="POST"><input type="hidden" name="download_csv" value="get_page_functionality_views_report"><button type="submit">Download CSV</button></form>
-                </span> -->
+                </span>
         </div></p>
 	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
 		<?php get_page_functionality_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
@@ -323,10 +313,9 @@ tr:nth-child(even){
 <div id="pageviews" style="padding:100px 100px; align:center;">
 	<p><div style="text-align: left;">
                 <span style="display: inline-block; vertical-align: middle;">Views Per Page <a href="#top">Back to top</a></span>
-		<!--
                 <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
 			<form method="POST"><input type="hidden" name="download_csv" value="get_views_per_page_report"><button type="submit">Download CSV</button></form>
-                </span> -->
+                </span>
         </div></p>
 	<div id="pageview-inside" style="width: 800px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
 		<?php get_views_per_page_report($conn); //Passing $conn on Dec 3 2023 ?>	
@@ -339,10 +328,9 @@ tr:nth-child(even){
 <div id="pageview_monthly" style="padding:100px 100px; align:center;">
 	<p><div style="text-align: left;">
                 <span style="display: inline-block; vertical-align: middle;">Monthly Page Views <a href="#top">Back to top</a></span>
-		<!--
                 <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
 			<form method="POST"><input type="hidden" name="download_csv" value="get_pages_views_per_month_report"><button type="submit">Download CSV</button></form>
-                </span> -->
+                </span>
         </div></p>
 	<div id="pageview-inside" style="width: 800px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
 		<?php get_pages_views_per_month_report($conn); //Passing $conn on Dec 3 2023 ?>	
