@@ -580,27 +580,27 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 		return $table_string1;
         }
 	if(!$array_subs){ $array_subs = [];}
-
 	while ($rowvalue = mysqli_fetch_array($rs, MYSQLI_ASSOC)) {
-    		// Modify neuron name if necessary
+		// Modify neuron name if necessary
 		if (isset($neuron_ids[$rowvalue['neuron_name']])) {
-			if(!isset($write_file)){
+			// Only modify if $write_file is not set
+			if (!isset($write_file)) {
 				$rowvalue['neuron_name'] = get_link($rowvalue['neuron_name'], $neuron_ids[$rowvalue['neuron_name']], './neuron_page.php', 'neuron');
 			}
 		}
 
-		// Extract relevant values
+		// Extract and potentially modify values
 		$subregion = $rowvalue['subregion'];
 		$neuron_name = $rowvalue['neuron_name'];
-		$color_sp = $color_segments[$rowvalue['color_sp']];
-		$evidence = $neuronal_segments[$rowvalue['evidence']];
-		//Exception for this entry -- /php/property_page_markers.php?id_neuron=5001&val_property=GABAa\\alpha 2&color=&page=markers
-		if($evidence == 'GABAa_alpha2'){
-			if(strlen($rowvalue['color_sp']) ==0){
-				$rowvalue['color_sp']='positive';
-				$color_sp =$color_segments[$rowvalue['color_sp']];
-			}
+		$color_sp = isset($color_segments[$rowvalue['color_sp']]) ? $color_segments[$rowvalue['color_sp']] : 'default_color';
+		$evidence = isset($neuronal_segments[$rowvalue['evidence']]) ? $neuronal_segments[$rowvalue['evidence']] : 'default_evidence';
+
+		// Special handling for specific evidence
+		if ($evidence == 'GABAa_alpha2' && empty($rowvalue['color_sp'])) {
+			$rowvalue['color_sp'] = 'positive';
+			$color_sp = $color_segments[$rowvalue['color_sp']] ?? 'default_color';
 		}
+
 		$views = intval($rowvalue['views']);
 
 		// Initialize arrays if necessary
@@ -611,26 +611,20 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 		if (!isset($array_subs[$subregion][$neuron_name])) {
 			$array_subs[$subregion][$neuron_name] = initializeNeuronArray($cols, $color_cols);
 		}
-		if(!isset($array_subs[$subregion][$neuron_name][$color_sp][$evidence])){
-			/*echo "evidence does not exist and trying to initiate to 0:".$evidence."Evidence from DB:".$rowvalue['evidence'];
-			  echo $neuronal_segments[$rowvalue['evidence']];
-			  echo "Color is:".$color_sp;
-			  echo "db color is:".$rowvalue['color_sp'];
-			  echo "Sub Region is:".$subregion;
-			  echo "Neuron Name:".$neuron_name; */
+
+		if (!isset($array_subs[$subregion][$neuron_name][$color_sp][$evidence])) {
 			$array_subs[$subregion][$neuron_name][$color_sp][$evidence] = 0;
-		}else{
-			// Increment values
-			$array_subs[$subregion][$neuron_name][$color_sp][$evidence] += intval($views);
-			$array_subs[$subregion][$neuron_name][$color_sp]['total'] += intval($views);
 		}
-		if(!isset($array_subs[$subregion][$neuron_name][$color_sp]['total'])){
-			$array_subs[$subregion][$neuron_name][$color_sp]['total']=0;
+
+		if (!isset($array_subs[$subregion][$neuron_name][$color_sp]['total'])) {
+			$array_subs[$subregion][$neuron_name][$color_sp]['total'] = 0;
 		}
-		else{
-			//$array_subs[$subregion][$neuron_name][$color_sp]['total'] += intval($views);
-		}
+
+		// Increment values
+		$array_subs[$subregion][$neuron_name][$color_sp][$evidence] += $views;
+		$array_subs[$subregion][$neuron_name][$color_sp]['total'] += $views;
 	}
+
 	foreach($array_subs as $subregion => $neuron_names){
 		foreach($neuron_names as $neuron_name=>$colors){
 			foreach($colors as $colorvalue=>$colorVals){
@@ -1119,38 +1113,35 @@ function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_
 		return $table_string1;
         }
 	if(!$array_subs){ $array_subs = [];}
-	while($rowvalue = mysqli_fetch_array($rs, MYSQLI_ASSOC)){
-		//var_dump($rowvalue);
-		if(isset($neuron_ids[$row['neuron_name']])){
-			$rowvalue['neuron_name'] = get_link($rowvalue['neuron_name'], $neuron_ids[$rowvalue['neuron_name']], './neuron_page.php','neuron');
+	while ($rowvalue = mysqli_fetch_array($rs, MYSQLI_ASSOC)) {
+		// Link the neuron_name if it exists in the neuron_ids array
+		if (isset($neuron_ids[$rowvalue['neuron_name']])) {
+			$rowvalue['neuron_name'] = get_link($rowvalue['neuron_name'], $neuron_ids[$rowvalue['neuron_name']], './neuron_page.php', 'neuron');
 		}
-		if(!isset($array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']])){
+
+		// Initialize subregion and neuron name if not already set
+		if (!isset($array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']])) {
 			$array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']] = [];
-                        foreach($cols as $col){
-                                $array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$col] = 0;
-                        }
-			if(isset($array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$neuronal_segments[$rowvalue['evidence']]]) && $array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$neuronal_segments[$rowvalue['evidence']]] == 0){
-				$array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$neuronal_segments[$rowvalue['evidence']]] += intval($rowvalue['views']);
-			}
-		}else{
-			if(isset($array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$neuronal_segments[$rowvalue['evidence']]]) && $array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$neuronal_segments[$rowvalue['evidence']]] == 0){
-				$array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$neuronal_segments[$rowvalue['evidence']]] += intval($rowvalue['views']);
-				//$array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$rowvalue['evidence']]['views'] += $rowvalue['views'];
+			foreach ($cols as $col) {
+				$array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$col] = 0;
 			}
 		}
-		if(!isset($array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']]['total'])){
+
+		// Get the segment based on evidence
+		$segment = $neuronal_segments[$rowvalue['evidence']] ?? null;
+
+		// Increment count for the segment if it exists
+		if ($segment && isset($array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$segment])) {
+			$array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$segment] += intval($rowvalue['views']);
+		}
+
+		// Initialize and increment the total views for neuron
+		if (!isset($array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']]['total'])) {
 			$array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']]['total'] = 0;
 		}
-		if(isset($array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']]['total'])) { 
-			$array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']]['total'] += intval($rowvalue['views']);
-		}
-		//var_dump($array_subs);//exit;
-		if(isset($write_file)){
-			#array_unshift($row1, $rowvalue['neuron_name']);
-			#array_unshift($row1, $rowvalue['subregion']);
-			#$csv_rows[] = $row1;
-		}
+		$array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']]['total'] += intval($rowvalue['views']);
 	}
+
 	if(isset($write_file)){
 		$i = $j = 0;
 		$count = 0;
@@ -1356,34 +1347,48 @@ function get_neurons_views_report($conn, $neuron_ids=NULL, $write_file=NULL){ //
 
 function get_morphology_property_views_report($conn, $neuron_ids = NULL, $write_file=NULL){
     
-	$page_property_views_query = "SELECT t.subregion, t.page_statistics_name AS neuron_name, derived.evidence AS evidence, concat(derived.color, trim(derived.sp_page)) AS 'color_sp', 
-						SUM(REPLACE(page_views, ',', '')) AS views 
-						FROM (
-							SELECT page_views, IF( INSTR(page, 'id_neuron=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1),
-										IF( INSTR(page, 'id1_neuron=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1),
-										IF( INSTR(page, 'id_neuron_source=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1), '' ) ) 
-									     ) AS neuronID,
-								IF(INSTR(page, 'val_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '') AS evidence,
-								IF(INSTR(page, 'val_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1), '') AS color, 
-								IF(INSTR(page, 'sp_page=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'sp_page=', -1), '&', 1), '') AS sp_page  
-								FROM ga_analytics_pages 
-								WHERE page LIKE '%/property_page_%' 
-									AND (SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'morphology' 
-										OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro' ) 
-									AND (
-										LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4 OR 
-										LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) = 4 OR 
-										LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) = 4
-							    		)
-									AND (
-										SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232) OR
-										SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232) OR
-										SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN (4168, 4181, 2232)
-							    		)
+	$page_property_views_query = "SELECT t.subregion, t.page_statistics_name AS neuron_name, derived.evidence AS evidence, 
+    						CONCAT(derived.color, TRIM(derived.sp_page)) AS 'color_sp', SUM(REPLACE(derived.page_views, ',', '')) AS views
+					FROM (
+						SELECT page_views, 
+							IF(
+								INSTR(page, 'id_neuron=') > 0, 
+								SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1),
+								IF(
+									INSTR(page, 'id1_neuron=') > 0, 
+									SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1),
+									IF(
+										INSTR(page, 'id_neuron_source=') > 0, 
+										SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1), 
+										''
+									  )
+								  )
+							  ) AS neuronID,
+							IF(INSTR(page, 'val_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '') AS evidence,
+							IF(INSTR(page, 'val_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1), '') AS color,
+							IF(INSTR(page, 'sp_page=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'sp_page=', -1), '&', 1), '') AS sp_page
+							FROM 
+							ga_analytics_pages
+							WHERE 
+							page LIKE '%/property_page_%'
+							AND (
+									SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'morphology'
+									OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro'
+							    )
+							AND (
+									LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4 OR
+									LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) = 4 OR
+									LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) = 4
+							    )
+							AND (
+									SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232) OR
+									SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232) OR
+									SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN (4168, 4181, 2232)
+							    )
 						) AS derived 
-						JOIN Type AS t ON t.id = derived.neuronID
-						GROUP BY t.page_statistics_name, t.subregion, color_sp, derived.evidence
-						ORDER BY t.position"; 
+						LEFT JOIN Type AS t ON t.id = derived.neuronID
+						GROUP BY 
+						t.page_statistics_name, t.subregion, color_sp, derived.evidence ORDER BY t.position";
 
         //echo $page_property_views_query;
         
