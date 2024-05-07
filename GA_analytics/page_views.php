@@ -1535,48 +1535,52 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $wr
                      
                 $columns = ['Presynaptic Subregion', 'Presynaptic Neuron Type Name', 'Postsynaptic Subregion', 'Postsynaptic Neuron Type Name', 'Potential Connectivity Evidence', 'Number of Potential Synapses Parcel-Specific Table', 'Number of Potential Synapses Evidence', 'Number of Contacts Parcel-Specific Table', 'Number of Contacts Evidence', 'Synaptic Probability Parcel-Specific Table', 'Synaptic Probability Evidence', 'Unknown', 'Total'];
                 $pageType = $page_string = 'connectivity';
-                $page_counts_views_query = "SELECT derived.page, t_source.subregion AS source_subregion, t_source.page_statistics_name AS source_neuron_name, 
-							 derived.source_evidence, derived.source_color, t_target.subregion AS target_subregion, 
-							 t_target.page_statistics_name AS target_neuron_name, derived.target_evidence, derived.target_color, derived.connection_type, 
-							 derived.known_conn_flag, derived.axonic_basket_flag, derived.page_type, derived.nm_page, 
-							 SUM(REPLACE(derived.page_views, ',', '')) AS views, derived.parcel_specific 
-							FROM (
-								SELECT page, page_views, 
-								IF( INSTR(page, 'id1_neuron=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1), IF( INSTR(page, 'id_neuron_source=') > 0, 
-										SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1), '' ) )  AS source_neuronID,
-								IF(INSTR(page, 'val1_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val1_property=', -1), '&', 1), '') AS source_evidence, 
-								IF( INSTR(page, 'color=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1), IF( INSTR(page, 'color1=') > 0, 
-										SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color1=', -1), '&', 1), '' ) )  AS source_color,
-								IF( INSTR(page, 'id2_neuron=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id2_neuron=', -1), '&', 1), IF( INSTR(page, 'id_neuron_target=') > 0, 
-										SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_target=', -1), '&', 1), '' ) )  AS target_neuronID,
-								IF(INSTR(page, 'val2_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val2_property=', -1), '&', 1), '') AS target_evidence, 
-								IF(INSTR(page, 'color2=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color2=', -1), '&', 1), '' )   AS target_color,
-								IF(INSTR(page, 'connection_type=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'connection_type=', -1), '&', 1), '') AS connection_type, 
-								IF(INSTR(page, 'known_conn_flag=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'known_conn_flag=', -1), '&', 1), '') AS known_conn_flag, 
-								IF(INSTR(page, 'axonic_basket_flag=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'axonic_basket_flag=', -1), '&', 1), '') AS axonic_basket_flag, 
-								IF(INSTR(page, '&page=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, '&page=', -1), '&', 1), '') AS page_type, 
-								IF(INSTR(page, 'nm_page=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'nm_page=', -1), '&', 1), '') AS nm_page,
-								SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) AS parcel_specific        
-								FROM ga_analytics_pages WHERE page LIKE '%/property_page_%' 
-								AND (SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro_nm_old2' 
-								     OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro_nm'
-								     OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro_pvals' 
-								     OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'connectivity' 
-								     OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'connectivity_test' 
-								     OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'connectivity_orig') 
-								AND ( LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id2_neuron=', -1), '&', 1)) = 4 
-									OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) = 4 
-									OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_target=', -1), '&', 1)) = 4 
-									OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) = 4 ) 
-								AND ( SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id2_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232) 
-									OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232) 
-									OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN (4168, 4181, 2232) 
-									OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_target=', -1), '&', 1) NOT IN (4168, 4181, 2232) ) 
-							   ) AS derived 
-								JOIN Type AS t_source ON t_source.id = derived.source_neuronID 
-							   	JOIN Type AS t_target ON t_target.id = derived.target_neuronID
-							   	GROUP BY derived.page, t_source.page_statistics_name, t_source.subregion, derived.source_color, derived.source_evidence,
-							 		t_target.page_statistics_name, t_target.subregion, derived.target_color, derived.target_evidence,derived.nm_page ";
+		$page_counts_views_query = "SELECT derived.page, t_source.subregion AS source_subregion, t_source.page_statistics_name AS source_neuron_name, derived.source_evidence, 
+						   derived.source_color, t_target.subregion AS target_subregion, t_target.page_statistics_name AS target_neuron_name, derived.target_evidence, derived.target_color, 
+						   derived.connection_type, derived.known_conn_flag, derived.axonic_basket_flag, derived.page_type, derived.nm_page, SUM(REPLACE(derived.page_views, ',', '')) AS views, 
+						   derived.parcel_specific FROM 
+							   (
+							    SELECT page, page_views, 
+							    IF(INSTR(page, 'id1_neuron=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1), 
+									IF(INSTR(page, 'id_neuron_source=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1), '')) AS source_neuronID, 
+							    IF(INSTR(page, 'val1_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val1_property=', -1), '&', 1), '') AS source_evidence, 
+							    IF(INSTR(page, 'color=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1), IF(INSTR(page, 'color1=') > 0, 
+									SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color1=', -1), '&', 1), '')) AS source_color, 
+							    IF(INSTR(page, 'id2_neuron=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id2_neuron=', -1), '&', 1), 
+									IF(INSTR(page, 'id_neuron_target=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_target=', -1), '&', 1), '')) AS target_neuronID, 
+							    IF(INSTR(page, 'val2_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val2_property=', -1), '&', 1), '') AS target_evidence, 
+							    IF(INSTR(page, 'color2=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color2=', -1), '&', 1), '') AS target_color, 
+							    IF(INSTR(page, 'connection_type=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'connection_type=', -1), '&', 1), '') AS connection_type, 
+							    IF(INSTR(page, 'known_conn_flag=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'known_conn_flag=', -1), '&', 1), '') AS known_conn_flag, 
+							    IF(INSTR(page, 'axonic_basket_flag=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'axonic_basket_flag=', -1), '&', 1), '') AS axonic_basket_flag, 
+							    IF(INSTR(page, '&page=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, '&page=', -1), '&', 1), '') AS page_type, 
+							    IF(INSTR(page, 'nm_page=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'nm_page=', -1), '&', 1), '') AS nm_page, 
+							    SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) AS parcel_specific
+							    FROM 
+							    ga_analytics_pages 
+							    WHERE 
+							    page LIKE '%/property_page_%' AND 
+							    (
+							     LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, '?id_neuron=', -1), '&', 1)) = 4 OR 
+							     LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) = 4 OR 
+							     LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) = 4 OR 
+							     LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_target=', -1), '&', 1)) = 4
+							    ) AND 
+							    (
+							     SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN ('4168', '4181', '2232') AND 
+							     SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN ('4168', '4181', '2232') AND 
+							     SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN ('4168', '4181', '2232') AND 
+							     SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_target=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
+							    ) AND 
+							    SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('synpro_nm_old2', 'synpro_nm', 'synpro_pvals', 'connectivity', 'connectivity_test', 'connectivity_orig')
+							    ) AS derived 
+							    LEFT JOIN 
+							    Type AS t_source ON t_source.id = derived.source_neuronID 
+							    LEFT JOIN 
+							    Type AS t_target ON t_target.id = derived.target_neuronID
+							    GROUP BY derived.page, t_source.page_statistics_name, t_source.subregion, derived.source_color, 
+						   derived.source_evidence, t_target.page_statistics_name, t_target.subregion, derived.target_color, derived.target_evidence,derived.nm_page";
+
                 //echo page_counts_views_query;
         }
 
