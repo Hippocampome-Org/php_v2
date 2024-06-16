@@ -581,6 +581,10 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
         }
 	if(!$array_subs){ $array_subs = [];}
 	while ($rowvalue = mysqli_fetch_array($rs, MYSQLI_ASSOC)) {
+		if (empty($rowvalue['neuron_name']) || empty($rowvalue['subregion'])) {
+			// If either neuron_name or subregion is empty, skip processing or handle accordingly
+			continue;
+		}
 		// Modify neuron name if necessary
 		if (isset($neuron_ids[$rowvalue['neuron_name']])) {
 			// Only modify if $write_file is not set
@@ -1387,6 +1391,7 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $write_
 							    )
 						) AS derived 
 						LEFT JOIN Type AS t ON t.id = derived.neuronID
+						WHERE   derived.neuronID NOT IN ('4168', '4181', '2232') 
 						GROUP BY 
 						t.page_statistics_name, t.subregion, color_sp, derived.evidence ORDER BY t.position";
 
