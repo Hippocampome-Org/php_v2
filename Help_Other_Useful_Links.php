@@ -128,6 +128,12 @@ style='font-size:14.0pt;line-height:115%;font-family:Symbol'>·<span
 style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span><span style='font-size:14.0pt;line-height:115%;font-family:"Arial","sans-serif"'><a href="http://krasnow1.gmu.edu/cn3/hippocampus3d/" target='_blank'>Hippocampus 3D Model</a></span></p>
 
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in'><span
+style='font-size:14.0pt;line-height:115%;font-family:Symbol'>·<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span style='font-size:14.0pt;line-height:115%;font-family:"Arial","sans-serif"'><a href="analytics_GA4_embed.php" target='_blank'>Google Analytics Data Reports</a></span></p>
+
+
 </div>
 <!-- ------------------------ -->
 
