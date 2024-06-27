@@ -1242,17 +1242,22 @@ function get_views_per_page_report($conn, $write_file=NULL){ //Passed $conn on D
 	$page_views_query = "SELECT gap.page, SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS views  FROM
 					ga_analytics_pages gap WHERE gap.day_index IS NULL GROUP BY gap.page order by views desc";
 	//echo $page_views_query;
+	/*$page_views_query2 = "SELECT gap.page, SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS views FROM
+					ga_analytics_pages gap WHERE gap.day_index IS NOT NULL and gap.page != '/php/' GROUP BY gap.page order by views desc"; */
 	$page_views_query2 = "SELECT gap.page, SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS views FROM
-					ga_analytics_pages gap WHERE gap.day_index IS NOT NULL and gap.page != '/php/' GROUP BY gap.page order by views desc";
+					ga_analytics_pages gap WHERE gap.day_index IS NOT NULL GROUP BY gap.page order by views desc";
 	//echo $page_views_query2;
 
 	$columns = ['Page', 'Views'];
 	if(isset($write_file)) {
-                return format_table($conn, $page_views_query, $table_string, 'views_per_page', $columns, $write_file, $page_views_query2);
+                //return format_table($conn, $page_views_query, $table_string, 'views_per_page', $columns, $write_file, $page_views_query2);
+                return format_table($conn, $page_views_query2, $table_string, 'views_per_page', $columns, $write_file);
         }
         else{
 		$table_string = get_table_skeleton_first($columns);
-		$table_string .= format_table($conn, $page_views_query, $table_string, 'views_per_page', $columns, $write_file=NULL, $page_views_query2);
+		//$table_string .= format_table($conn, $page_views_query, $table_string, 'views_per_page', $columns, $write_file=NULL, $page_views_query2);
+
+		$table_string .= format_table($conn, $page_views_query2, $table_string, 'views_per_page', $columns);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
@@ -1260,10 +1265,16 @@ function get_views_per_page_report($conn, $write_file=NULL){ //Passed $conn on D
 
 function get_pages_views_per_month_report($conn, $write_file=NULL){ //Passed $conn on Dec 3 2023
 	
-	$page_views_per_month_query = "select concat(DATE_FORMAT(day_index,'%b'), '-', YEAR(day_index)) as dm, 
+	/*$page_views_per_month_query = "select concat(DATE_FORMAT(day_index,'%b'), '-', YEAR(day_index)) as dm, 
 				sum(replace(views,',','')) as views 
 			     from ga_analytics_pages_views where views > 0 
-			     GROUP BY YEAR(day_index), MONTH(day_index)";
+			     GROUP BY YEAR(day_index), MONTH(day_index)"; */
+
+	//Earlier we are using ga_analytics_pages_views changed to pages
+	$page_views_per_month_query = "select concat(DATE_FORMAT(day_index,'%b'), '-', YEAR(day_index)) as dm,
+		sum(replace(page_views,',','')) as page_views
+			from ga_analytics_pages where page_views > 0 
+			GROUP BY YEAR(day_index), MONTH(day_index)";
 	//echo $page_views_per_month_query;
 	$columns = ['Month-Year', 'Views'];
 	if(isset($write_file)) {
@@ -1836,6 +1847,7 @@ function get_page_functionality_views_report($conn, $write_file=NULL){
 			    views DESC ";
 	//echo $page_functionality_views_query;
 	$options = ['exclude' => ['not php'],];
+	$options = [];//'exclude' => ['not php'],]; //Added this line to make sure we are getting all counts can remove it later
 	$columns = ['Property', 'Views'];
 	if(isset($write_file)) {
 		return format_table_combined($conn, $page_functionality_views_query, 'func_views_table',  $columns, $write_file, $options);
