@@ -33,26 +33,29 @@ function parseUrl($url) {
     return array();
 }
 
-function download_csvfile($functionName, $conn, $neuron_ids = NULL, $param = NULL) {
+function download_csvfile($functionName, $conn, $views_request = NULL, $neuron_ids = NULL, $param = NULL) {
 	$allowedFunctions = ['get_neurons_views_report','get_markers_property_views_report', 'get_morphology_property_views_report', 'get_counts_views_report', 
 			     'get_fp_property_views_report','get_pmid_isbn_property_views_report', 'get_domain_functionality_views_report','get_page_functionality_views_report', 
 			      'get_views_per_page_report', 'get_pages_views_per_month_report']; // TO restrict any unwanted calls or anything
 	$neuron_ids_func = ['get_counts_views_report', 'get_neurons_views_report','get_morphology_property_views_report', 'get_markers_property_views_report'];
 
 	if (in_array($functionName, $allowedFunctions) && function_exists($functionName)) {
-		if(isset($param)){
-			if (in_array($functionName, $neuron_ids_func)){
-				$csv_data = $functionName($conn, $param, $neuron_ids, true);
-			}else{
-				$csv_data = $functionName($conn, $param, true);
-			}
+		if($functionName == "get_neurons_views_report"){
+			 $csv_data = $functionName($conn, $neuron_ids, $views_request, true);
 		}else{
-			if (in_array($functionName, $neuron_ids_func)){
-				$csv_data = $functionName($conn, $neuron_ids, true);
+			if(isset($param)){
+				if (in_array($functionName, $neuron_ids_func)){
+					$csv_data = $functionName($conn, $param, $neuron_ids, true);
+				}else{
+					$csv_data = $functionName($conn, $param, true);
+				}
 			}else{
-				$csv_data = $functionName($conn, true);
+				if (in_array($functionName, $neuron_ids_func)){
+					$csv_data = $functionName($conn, $neuron_ids, true);
+				}else{
+					$csv_data = $functionName($conn, true);
+				}
 			}
-			
 		}
 		// Set headers to initiate file download
 		header('Content-Type: text/csv');
@@ -246,7 +249,7 @@ function flattenArray($array) {
     }
     return $result;
 }
-
+/*
 function bg_wg($colors, $count, $neuronal_segments = NULL, $k)
 {
     $table_string2 = '';
@@ -263,79 +266,128 @@ function bg_wg($colors, $count, $neuronal_segments = NULL, $k)
     }
     return array($table_string2, $count);
 }
+*/
+function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file = NULL, $views_request = NULL) {
+	$count = 0;
+	$array_subs = []; 
+	$csv_rows = [];
+    //echo $query;
+    if( isset($views_request) && (($views_request == "views_per_month")  || ($views_request == "views_per_year")) ){ 
+	    if (isset($write_file)) {
+		    if (mysqli_multi_query($conn, $query)) {
+			    $header = []; // Initialize an array to store column names
+			    do {
+				    if ($result = mysqli_store_result($conn)) {
+					    if (empty($header)) {
+						    $header = array_keys(mysqli_fetch_array($result, MYSQLI_ASSOC));
+						    $rows = count($header);
+						    //$csv_headers = $header;
+						    $csv_headers = array_map(function($header) { return str_replace('_', ' ', $header); }, $header);
+						    mysqli_data_seek($result, 0);
+					    }
+					    while ($rowvalue = mysqli_fetch_assoc($result)) {
+						    $count += $rowvalue['Views'];
+						    $csv_rows[] = $rowvalue;
+					    }
+					    mysqli_free_result($result);
+				    }
+			    } while (mysqli_next_result($conn));
+			    $spaces = $rows - 2;
+			    $totalRow = array_pad([], $spaces, '');
+			    $totalRow[] = $count;
+			    // Add "Total Count" at the beginning of the array
+			    array_unshift($totalRow, "Total Count");
 
-function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file = NULL, $array_subs = NULL) {
-    $count = 0;
-    $csv_rows = [];
-    $rs = mysqli_query($conn, $query);
+			    $csv_rows[] = $totalRow;
+
+			    // Store information about the CSV file in `$csv_data` array
+			    $csv_data[$csv_tablename]=['filename'=>$csv_tablename,'headers'=>$csv_headers,'rows'=>$csv_rows];
+			    return $csv_data[$csv_tablename];
+		    } else {
+			    // Handle error if query execution fails
+			    echo "Error: " . mysqli_error($conn);
+		    }
+
+
+	    }
+    }else{
+	    $rs = mysqli_query($conn, $query);
+    }
     $table_string1 = '';
     $rows = count($csv_headers);
     if (!$rs || $rs->num_rows < 1) {
-        $table_string1 .= "<tr><td> No Data is available </td></tr>";
-        return $table_string1;
+	    $table_string1 .= "<tr><td> No Data is available </td></tr>";
+	    return $table_string1;
     }
     if (!$array_subs) {
-        $array_subs = [];
+	    $array_subs = [];
     }
-    while ($row = mysqli_fetch_row($rs)) {
-	// Increment count
-	$count += $row[$rows - 1];
-	// Modify subgroup key if neuron ID exists
-	if (isset($neuron_ids[$row[1]])) {
-		if (!isset($write_file)) {
-			$row[1] = get_link($row[1], $neuron_ids[$row[1]], './neuron_page.php', 'neuron');
-		}
-	}
-	// Initialize array if not set
-	if (!isset($array_subs[$row[0]][$row[1]][$row[2]])) {
-		$array_subs[$row[0]][$row[1]][$row[2]] = 0;
-	}
-	// Increment value
-	$array_subs[$row[0]][$row[1]][$row[2]] += $row[$rows - 1];
-    }
-    if (isset($write_file)) {
 
-	    // Loop through your structured array and write to CSV
-	    foreach ($array_subs as $groupKey => $subgroups) {
-		    foreach ($subgroups as $subgroupKey => $colors) {
-			    foreach ($colors as $color => $value) {
-				    // Construct a row with the group key, subgroup key, color, and value
-				    $rowData = [$groupKey, $subgroupKey, $color, $value];
-				    $csv_rows[] = $rowData;
-			    }
-		    }
+    if (isset($write_file)) {
+	    $header = array_keys(mysqli_fetch_array($rs, MYSQLI_ASSOC));
+	    $rows = count($header);
+	    $csv_rows[] = $header;
+
+	    // Rewind result set pointer back to the beginning
+	    mysqli_data_seek($rs, 0);
+
+	    // Write each row of data
+	    while ($rowvalue = mysqli_fetch_array($rs, MYSQLI_ASSOC)) {
+		    $count += $rowvalue['Views'];
+		    $csv_rows[] = $rowvalue;
 	    }
-	    $totalRow = ["Total Count", '', '', $count];
+
+	    $spaces = $rows - 2;
+	    $totalRow = array_pad([], $spaces, '');
+	    $totalRow[] = $count;
+	    // Add "Total Count" at the beginning of the array
+	    array_unshift($totalRow, "Total Count");
+
 	    $csv_rows[] = $totalRow;
 
 	    // Store information about the CSV file in `$csv_data` array
-	    $csv_data[$csv_tablename] = [
-		    'filename' => $csv_tablename . '.csv',
-		    'headers' => $csv_headers,  // Ensure $csv_headers is defined and contains column headers
-		    'rows' => $csv_rows  // Number of rows written
-	    ];
-
+	    $csv_data[$csv_tablename]=['filename'=>$csv_tablename,'headers'=>$csv_headers,'rows'=>$csv_rows];
 	    return $csv_data[$csv_tablename];
     }
-    // Construct table string
-    foreach ($array_subs as $groupKey => $subgroups) {
-        $groupBgClass = ($i % 2 == 0) ? 'lightgreen-bg' : 'green-bg';
-        $table_string1 .= "<tr><td class='$groupBgClass' rowspan='" . count($subgroups) . "'>$groupKey</td>";
-        foreach ($subgroups as $subgroupKey => $colors) {
-            $subgroupBgClass = ($i % 2 == 0) ? 'white-bg' : 'blue-bg';
-            $table_string1 .= "<td class='$subgroupBgClass' rowspan='" . count($colors) . "'>$subgroupKey</td>";
-            foreach ($colors as $color => $value) {
-                $colorBgClass = ($i % 2 == 0) ? 'white-bg' : 'blue-bg';
-                $table_string1 .= "<td class='$colorBgClass'>$color</td>";
-                $table_string1 .= "<td class='$colorBgClass'>$value</td>";
-                $table_string1 .= "</tr>";
-                $i++;
-            }
-        }
+    else{
+	    while ($row = mysqli_fetch_row($rs)) {
+		    // Increment count
+		    $count += $row[$rows - 1];
+		    // Modify subgroup key if neuron ID exists
+		    if (isset($neuron_ids[$row[1]])) {
+			    if (!isset($write_file)) {
+				    $row[1] = get_link($row[1], $neuron_ids[$row[1]], './neuron_page.php', 'neuron');
+			    }
+		    }
+		    // Initialize array if not set
+		    if (!isset($array_subs[$row[0]][$row[1]][$row[2]])) {
+			    $array_subs[$row[0]][$row[1]][$row[2]] = 0;
+		    }
+		    // Increment value
+		    $array_subs[$row[0]][$row[1]][$row[2]] += $row[$rows - 1];
+	    }
+
+	    // Construct table string
+	    $i=0;
+	    foreach ($array_subs as $groupKey => $subgroups) {
+		    $groupBgClass = ($i % 2 == 0) ? 'lightgreen-bg' : 'green-bg';
+		    $table_string1 .= "<tr><td class='$groupBgClass' rowspan='" . count($subgroups) . "'>$groupKey</td>";
+		    foreach ($subgroups as $subgroupKey => $colors) {
+			    $subgroupBgClass = ($i % 2 == 0) ? 'white-bg' : 'blue-bg';
+			    $table_string1 .= "<td class='$subgroupBgClass' rowspan='" . count($colors) . "'>$subgroupKey</td>";
+			    foreach ($colors as $color => $value) {
+				    $colorBgClass = ($i % 2 == 0) ? 'white-bg' : 'blue-bg';
+				    $table_string1 .= "<td class='$colorBgClass'>$color</td>";
+				    $table_string1 .= "<td class='$colorBgClass'>$value</td>";
+				    $table_string1 .= "</tr>";
+				    $i++;
+			    }
+		    }
+	    }
+	    // Append total count row
+	    $table_string1 .= "<tr><td colspan='" . ($rows - 1) . "'><b>Total Count</b></td><td>$count</td></tr>";
+	    return $table_string1;
     }
-    // Append total count row
-    $table_string1 .= "<tr><td colspan='" . ($rows - 1) . "'><b>Total Count</b></td><td>$count</td></tr>";
-    return $table_string1;
 }
 
 // Function to initialize neuron array
@@ -1304,11 +1356,13 @@ function get_table_skeleton_end(){
 	return "</tbody></table>";
 }
 
-function get_neurons_views_report($conn, $neuron_ids=NULL, $write_file=NULL){ //Passed on Dec 3 2023
+function get_neurons_views_report($conn, $neuron_ids=NULL, $views_request=NULL, $write_file=NULL){ //Passed on Dec 3 2023
+
+	$columns = ['Subregion', 'Neuron Type Name', 'Census','Views'];
      
-	$page_neurons_views_query = "SELECT t.subregion, t.page_statistics_name AS neuron_name,
-		SUM(CASE WHEN nd.is_property_page = 1 THEN REPLACE(nd.page_views, ',', '') ELSE 0 END) AS property_page_views,
-		SUM(CASE WHEN nd.is_property_page = 0 THEN REPLACE(nd.page_views, ',', '') ELSE 0 END) AS other_page_views
+	$page_neurons_views_query = "SELECT t.subregion as Subregion, t.page_statistics_name AS Neuron_Type_Name, 
+		SUM(CASE WHEN nd.is_property_page = 1 THEN REPLACE(nd.page_views, ',', '') ELSE 0 END) AS Census,
+		SUM(CASE WHEN nd.is_property_page = 0 THEN REPLACE(nd.page_views, ',', '') ELSE 0 END) AS Views
 			FROM 
 			(
 			 SELECT 
@@ -1318,6 +1372,7 @@ function get_neurons_views_report($conn, $neuron_ids=NULL, $write_file=NULL){ //
 			 WHEN page LIKE '%id_neuron_source=%' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)
 			 END AS neuronID,
 			 page_views,
+			 day_index,
 			 CASE 
 			 WHEN page LIKE '%property_page_counts.php%' THEN 1 
 			 ELSE 0 
@@ -1346,13 +1401,99 @@ function get_neurons_views_report($conn, $neuron_ids=NULL, $write_file=NULL){ //
 			 GROUP BY 
 			 t.page_statistics_name, 
 		t.subregion 
-			ORDER BY 
-			t.position";
+		ORDER BY 
+		t.position";
+	if (($views_request == "views_per_month")  || ($views_request == "views_per_year")) {
+		$page_neurons_views_query = "SET @sql = NULL;";
 
-	$columns = ['Subregion', 'Neuron Type Name', 'Census','Views'];
+		if ($views_request == "views_per_month") {
+			$page_neurons_views_query .= "SELECT
+				GROUP_CONCAT(DISTINCT
+						CONCAT(
+							'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+								' AND MONTH(day_index) = ', MONTH(day_index),
+								' THEN REPLACE(nd.page_views, '','', '''') ELSE 0 END) AS `',
+							YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
+						      )
+						ORDER BY YEAR(day_index), MONTH(day_index)
+						SEPARATOR ', '
+					    ) INTO @sql
+				FROM (
+						SELECT DISTINCT day_index
+						FROM ga_analytics_pages
+				     ) months;";
+		}
+		if($views_request == "views_per_year"){
+		$page_neurons_views_query .= " SELECT
+			GROUP_CONCAT(DISTINCT
+					CONCAT(
+						'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+							' THEN REPLACE(nd.page_views, \",\", \"\") ELSE 0 END) AS `',
+						YEAR(day_index), '`'
+					      )
+					ORDER BY YEAR(day_index)
+					SEPARATOR ', '
+				    ) INTO @sql
+			FROM (
+					SELECT DISTINCT day_index
+					FROM ga_analytics_pages
+			     ) years;";
+
+		}
+		$page_neurons_views_query .= "
+								SET @sql = CONCAT(
+									'SELECT t.subregion AS Subregion, t.page_statistics_name AS Neuron_Type_Name, ',
+									@sql,
+									', SUM(CASE WHEN nd.is_property_page = 1 THEN REPLACE(nd.page_views, '','', '''') ELSE 0 END) AS Census',
+									', SUM(CASE WHEN nd.is_property_page = 0 THEN REPLACE(nd.page_views, '','', '''') ELSE 0 END) AS Views',
+									' FROM (
+										SELECT
+										CASE
+										WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1)
+										WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1)
+										WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1)
+										END AS neuronID,
+										page_views,
+										day_index,
+										CASE
+										WHEN page LIKE ''%property_page_counts.php%'' THEN 1
+										ELSE 0
+										END AS is_property_page
+										FROM ga_analytics_pages
+										WHERE
+										(page LIKE ''%id_neuron=%'' OR page LIKE ''%id1_neuron=%'' OR page LIKE ''%id_neuron_source=%'') AND
+										LENGTH(
+											CASE
+											WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1)
+											WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1)
+											WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1)
+											END
+										      ) = 4 AND
+										(
+										 CASE
+										 WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1)
+										 WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1)
+										 WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1)
+										 END
+										) NOT IN (''4168'', ''4181'', ''2232'')
+										) AS nd
+										JOIN Type AS t ON nd.neuronID = t.id
+										GROUP BY t.subregion, t.page_statistics_name
+										ORDER BY t.position'); 	PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;"; 
+	}
+
+//Till Here on Jul 2 2024
+
 	$table_string = get_table_skeleton_first($columns);
 	if(isset($write_file)) {
-		return format_table_neurons($conn, $page_neurons_views_query, $table_string, 'neurons_views', $columns, $neuron_ids, $write_file);
+		$file_name = "neurons_";
+		if($views_request == 'views_per_month' || $views_request == 'views_per_year'){
+			$file_name .= $views_request;
+		}else{$file_name .= "views"; }
+		
+		return format_table_neurons($conn, $page_neurons_views_query, $table_string, $file_name, $columns, $neuron_ids, $write_file, $views_request);
 	}else{
 		$table_string .= format_table_neurons($conn, $page_neurons_views_query, $table_string, 'neurons_views', $columns, $neuron_ids);
 		$table_string .= get_table_skeleton_end();

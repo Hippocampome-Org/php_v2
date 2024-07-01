@@ -3,11 +3,20 @@
   include ("permission_check.php");
   include ("./GA_analytics/page_views.php");
   $neuron_ids = get_neuron_ids($conn);  
-  if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["download_csv"])) {
+  if ($_SERVER["REQUEST_METHOD"] === "POST" && ( isset($_POST["download_csv"]) || isset($_POST["views_per_month"]) || isset($_POST["views_per_year"]) ) ) {
+	$views_request ="download_csv";
+	if(isset($_POST["views_per_month"])){
+		$_POST['download_csv'] = $_POST["views_per_month"];
+		$views_request = "views_per_month";
+	}
+	if(isset($_POST["views_per_year"])){
+		$_POST['download_csv'] = $_POST["views_per_year"];
+		$views_request = "views_per_year";
+	}
 	if(isset($_POST["param"])){
-		download_csvfile($_POST['download_csv'], $conn, $neuron_ids, $_POST['param']);
+		download_csvfile($_POST['download_csv'], $conn, $views_request, $neuron_ids, $_POST['param']);
 	}else{
-		download_csvfile($_POST['download_csv'], $conn, $neuron_ids);
+		download_csvfile($_POST['download_csv'], $conn, $views_request, $neuron_ids);
 	}
 	exit();
   }
@@ -164,6 +173,8 @@ tr:nth-child(even){
 		<span style="display: inline-block; vertical-align: middle;">Neuron Type Evidence Page Views <a href="#top">Back to top</a></span>
 		<span style="display: inline-block; padding-left:10px; vertical-align: middle;">
 			<form method="POST" style="display: inline;"><input type="hidden" name="download_csv" value="get_neurons_views_report"><button type="submit">Download CSV</button></form>
+			<form method="POST" style="display: inline;"><input type="hidden" name="views_per_month" value="get_neurons_views_report"><button type="submit">Download Views Per Month CSV</button></form>
+			<form method="POST" style="display: inline;"><input type="hidden" name="views_per_year" value="get_neurons_views_report"><button type="submit">Download Views Per Year CSV</button></form>
 		</span>
 	</div></p>
 	<div id="neuron-inside" style="width: 950px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
