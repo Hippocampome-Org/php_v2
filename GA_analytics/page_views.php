@@ -793,6 +793,7 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 			}
 			 $table_string2 .= "</tr>";
 		}
+		$j++;
 	}
 	$table_string1 .= $table_string2;
 	$table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$total_count."</td></tr>";
@@ -1022,6 +1023,7 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 			}
 			 $table_string2 .= "</tr>";
 		}
+		$j++;
 	}
 	$table_string1 .= $table_string2;
 	$table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$total_count."</td></tr>";
@@ -1415,7 +1417,6 @@ SELECT
     t.subregion AS Subregion,
     t.page_statistics_name AS Neuron_Type_Name,
     ', @sql, ',
-    SUM(CASE WHEN nd.is_property_page = 1 THEN REPLACE(nd.page_views, '','', '''') ELSE 0 END) AS Views,
     SUM(REPLACE(nd.page_views, '','', '''')) AS Total_Views
 FROM
     (SELECT
