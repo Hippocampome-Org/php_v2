@@ -250,6 +250,28 @@ function flattenArray($array) {
     return $result;
 }
 
+function camel_replace($header, $char = NULL)
+{
+	if(!isset($char)){
+		$csv_headers = array_map(function($header) {
+                        return str_replace('_', ' ', $header);
+                    }, $header);
+                    
+                    // Capitalize headers containing "SYNPRO"
+                    foreach ($csv_headers as $key => $val) {
+                        if (stripos($val, 'SYNPRO') !== false) {
+                            $csv_headers[$key] = ucwords(strtolower($val));
+                        }
+                    }
+		return $csv_headers;
+	}else{
+		$csv_headers = array_map(function($header) {
+                        return str_replace('_', $char, $header);
+                    }, $header);
+		return $csv_headers;
+	}
+}
+
 function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file = NULL, $views_request = NULL) {
 	$count = 0;
 	$array_subs = []; 
@@ -262,8 +284,7 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 					if (empty($header)) {
 						$header = array_keys(mysqli_fetch_array($result, MYSQLI_ASSOC));
 						$rows = count($header);
-						//$csv_headers = $header;
-						$csv_headers = array_map(function($header) { return str_replace('_', ' ', $header); }, $header);
+						$csv_headers = camel_replace($header);
 						mysqli_data_seek($result, 0);
 					}
 					while ($rowvalue = mysqli_fetch_assoc($result)) {
@@ -294,46 +315,6 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 		$array_subs = [];
 	}
 
-/*
-	    while ($row = mysqli_fetch_row($rs)) {
-		    // Increment count
-		    $count += $row[$rows - 1];
-		    // Modify subgroup key if neuron ID exists
-		    if (isset($neuron_ids[$row[1]])) {
-			    if (!isset($write_file)) {
-				    $row[1] = get_link($row[1], $neuron_ids[$row[1]], './neuron_page.php', 'neuron');
-			    }
-		    }
-		    // Initialize array if not set
-		    if (!isset($array_subs[$row[0]][$row[1]][$row[2]])) {
-			    $array_subs[$row[0]][$row[1]][$row[2]] = 0;
-		    }
-		    // Increment value
-		    $array_subs[$row[0]][$row[1]][$row[2]] += $row[$rows - 1];
-	    }
-
-	    // Construct table string
-	    $i=0;
-	    foreach ($array_subs as $groupKey => $subgroups) {
-		    $groupBgClass = ($i % 2 == 0) ? 'lightgreen-bg' : 'green-bg';
-		    $table_string1 .= "<tr><td class='$groupBgClass' rowspan='" . count($subgroups) . "'>$groupKey</td>";
-		    foreach ($subgroups as $subgroupKey => $colors) {
-			    $subgroupBgClass = ($i % 2 == 0) ? 'white-bg' : 'blue-bg';
-			    $table_string1 .= "<td class='$subgroupBgClass' rowspan='" . count($colors) . "'>$subgroupKey</td>";
-			    foreach ($colors as $color => $value) {
-				    $colorBgClass = ($i % 2 == 0) ? 'white-bg' : 'blue-bg';
-				    $table_string1 .= "<td class='$colorBgClass'>$color</td>";
-				    $table_string1 .= "<td class='$colorBgClass'>$value</td>";
-				    $table_string1 .= "</tr>";
-				    $i++;
-			    }
-		    }
-	    }
-	    // Append total count row
-	    $table_string1 .= "<tr><td colspan='" . ($rows - 1) . "'><b>Total Count</b></td><td>$count</td></tr>";
-	    return $table_string1;
-    */
-
     $header = []; // Initialize an array to store column names
     $array_subs = []; // Initialize array to store CSV rows
     $count = 0; // Initialize count for total views
@@ -345,7 +326,7 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 			    if (empty($header)) {
 				    $header = array_keys(mysqli_fetch_array($result, MYSQLI_ASSOC));
 				    $rows = count($header);
-				    $csv_headers = array_map(function($header) { return str_replace('_', ' ', $header); }, $header);
+				    $csv_headers = camel_replace($header);
 				    mysqli_data_seek($result, 0);
 				    $table_string1 = get_table_skeleton_first($csv_headers);
 			    }
@@ -564,7 +545,6 @@ function format_table_connectivity($conn, $query, $table_string, $csv_tablename,
                 $csv_data[$csv_tablename]=['filename'=>$csv_tablename,'headers'=>$csv_headers,'rows'=>$csv_rows];
                 return $csv_data[$csv_tablename];
         }
-        //var_dump($array_subs);//exit;
         $i = $j = $k = $total_count =0;
         $table_string2 = '';
 	foreach($array_subs as $type => $subtypes){
