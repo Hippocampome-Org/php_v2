@@ -1138,7 +1138,7 @@ function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_
 	
 	$count = 0;
 	$csv_rows=[];
-	//echo $query;
+	echo $query;
         $rs = mysqli_query($conn,$query);
         $table_string1 = '';
 	$rows = count($csv_headers);
@@ -1643,7 +1643,8 @@ function get_pmid_isbn_property_views_report($conn, $write_file=NULL){
                                 AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
                         ) AS derived
                         JOIN Type AS t ON t.id = derived.neuronID
-                        GROUP BY linking_pmid_isbn, t.subregion, layer, t.page_statistics_name, color  
+			 WHERE   derived.neuronID NOT IN ('4168', '4181', '2232')
+                         GROUP BY linking_pmid_isbn, t.subregion, layer, t.page_statistics_name, color  
 			ORDER BY CAST(linking_pmid_isbn AS UNSIGNED) ASC";
 	//echo $page_pmid_isbn_property_views_query;
 
@@ -1680,6 +1681,7 @@ function get_markers_property_views_report($conn, $neuron_ids, $write_file = NUL
 								  )
 						     ) AS derived
 						JOIN Type AS t ON t.id = derived.neuronID
+                                                 WHERE   derived.neuronID NOT IN ('4168', '4181', '2232')
 						GROUP BY t.subregion, t.page_statistics_name, evidence
 						ORDER BY t.position";
 	//echo $page_property_views_query;
@@ -1717,7 +1719,9 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $wr
 					FROM ga_analytics_pages WHERE page LIKE '%property_page_{$pageType}.php?id_neuron=%' 
 					AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4 
 					AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)) 
-					AS derived JOIN Type AS t ON t.id = derived.neuronID GROUP BY t.page_statistics_name ORDER BY t.position";
+					AS derived JOIN Type AS t ON t.id = derived.neuronID
+					 WHERE derived.neuronID NOT IN ('4168', '4181', '2232') 
+					GROUP BY t.page_statistics_name ORDER BY t.position";
         //echo $page_neurons_views_query;
 
 	}
@@ -1748,6 +1752,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $wr
 							    )
 						     ) AS derived
 						LEFT JOIN Type AS t ON t.id = derived.neuronID
+						WHERE   derived.neuronID NOT IN ('4168', '4181', '2232')
 						GROUP BY derived.page, t.subregion, t.page_statistics_name, derived.evidence 
 						ORDER BY t.position";
 		//echo  $page_counts_views_query;
@@ -1826,6 +1831,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $wr
                                                                 AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
                                                      ) AS derived
                                                 JOIN Type AS t ON t.id = derived.neuronID
+						WHERE   derived.neuronID NOT IN ('4168', '4181', '2232')
                                                 GROUP BY t.subregion, t.page_statistics_name, evidence
                                                 ORDER BY t.position"; 
 
@@ -1869,7 +1875,8 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $wr
                                                                AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN (4168, 4181, 2232)
                                                
                                                )   AS derived JOIN Type AS t ON t.id = derived.neuronID
-                                                GROUP BY  derived.page ORDER BY t.position DESC";
+					        WHERE   derived.neuronID NOT IN ('4168', '4181', '2232')
+                                                 GROUP BY  derived.page ORDER BY t.position DESC";
 	}
 
 	// Initialize table with columns and execute the query if columns array is not empty
