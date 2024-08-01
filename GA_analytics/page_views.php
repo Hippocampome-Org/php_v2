@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 global $csv_data;
 
 function get_neuron_ids($conn){
@@ -37,7 +40,7 @@ function download_csvfile($functionName, $conn, $views_request = NULL, $neuron_i
 	$allowedFunctions = ['get_neurons_views_report','get_markers_property_views_report', 'get_morphology_property_views_report', 'get_counts_views_report', 
 			     'get_fp_property_views_report','get_pmid_isbn_property_views_report', 'get_domain_functionality_views_report','get_page_functionality_views_report', 
 			      'get_views_per_page_report', 'get_pages_views_per_month_report']; // TO restrict any unwanted calls or anything
-	$neuron_ids_func = ['get_counts_views_report', 'get_neurons_views_report','get_morphology_property_views_report', 'get_markers_property_views_report'];
+	$neuron_ids_func = ['get_counts_views_report', 'get_neurons_views_report','get_morphology_property_views_report', 'get_markers_property_views_report', 'get_pmid_isbn_property_views_report'];
 
 	if (in_array($functionName, $allowedFunctions) && function_exists($functionName)) {
 		if($functionName == "get_neurons_views_report"){
@@ -98,7 +101,7 @@ function processNeuronLink($neuron_id, $neuron_ids_array, $linkText, $write_file
     return $neuron_id;
 }
 
-function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers, $write_file=NULL, $query2=NULL){
+function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids=NULL, $write_file=NULL, $query2=NULL){
 	$count = 0;
 	$csv_rows = [];
         $rs = mysqli_query($conn,$query);
@@ -785,6 +788,8 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 
 	$count = 0;
 	$csv_rows=[];
+	echo $query;
+
         $rs = mysqli_query($conn,$query);
         $table_string1 = '';
 	$rows = count($csv_headers);
@@ -856,6 +861,7 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 		// Extract relevant values
 		$subregion = $rowvalue['subregion'];
 		$neuron_name = $rowvalue['neuron_name'];
+		if(!isset($color_segments[$rowvalue['color']])){ var_dump($rowvalue); }
 		$color = $color_segments[$rowvalue['color']];
 		$evidence = $neuronal_segments[$rowvalue['evidence']];
 		//Exception for this entry -- /php/property_page_markers.php?id_neuron=5001&val_property=GABAa\\alpha 2&color=&page=markers
@@ -1039,7 +1045,7 @@ function format_table_biophysics($conn, $query, $table_string, $csv_tablename, $
         }
 	if(!$array_subs){ $array_subs = [];}
 	while($rowvalue = mysqli_fetch_array($rs, MYSQLI_ASSOC)){
-		if(isset($neuron_ids[$row['neuron_name']])){
+		if(isset($neuron_ids[$rowvalue['neuron_name']])){
 			$rowvalue['neuron_name'] = get_link($rowvalue['neuron_name'], $neuron_ids[$rowvalue['neuron_name']], './neuron_page.php','neuron');
 		}
 		if(!isset($array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']])){
@@ -1138,7 +1144,6 @@ function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_
 	
 	$count = 0;
 	$csv_rows=[];
-	echo $query;
         $rs = mysqli_query($conn,$query);
         $table_string1 = '';
 	$rows = count($csv_headers);
@@ -1291,7 +1296,7 @@ function get_views_per_page_report($conn, $write_file=NULL){ //Passed $conn on D
 	$columns = ['Page', 'Views'];
 	if(isset($write_file)) {
                 //return format_table($conn, $page_views_query, $table_string, 'views_per_page', $columns, $write_file, $page_views_query2);
-                return format_table($conn, $page_views_query2, $table_string, 'views_per_page', $columns, $write_file);
+                return format_table($conn, $page_views_query2, $table_string, 'views_per_page', $columns, $neuron_ids=NULL, $write_file);
         }
         else{
 		$table_string = get_table_skeleton_first($columns);
@@ -1318,7 +1323,7 @@ function get_pages_views_per_month_report($conn, $write_file=NULL){ //Passed $co
 	//echo $page_views_per_month_query;
 	$columns = ['Month-Year', 'Views'];
 	if(isset($write_file)) {
-		return format_table($conn, $page_views_per_month_query, $table_string, 'page_views_per_month', $columns, $write_file);
+		return format_table($conn, $page_views_per_month_query, $table_string, 'page_views_per_month', $columns, $neuron_ids=NULL, $write_file);
         }else{  
 		$table_string = get_table_skeleton_first($columns);
 		$table_string .= format_table($conn, $page_views_per_month_query, $table_string, 'page_views_per_month', $columns);
@@ -1626,7 +1631,7 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $write_
                 echo $table_string;
         }       
 } 
-function get_pmid_isbn_property_views_report($conn, $write_file=NULL){
+function get_pmid_isbn_property_views_report($conn, $neuron_ids, $write_file=NULL){
 
 	$page_pmid_isbn_property_views_query = " SELECT linking_pmid_isbn, t.subregion, layer, t.page_statistics_name as neuron_name, color, SUM(REPLACE(page_views, ',', '')) AS views
                         FROM
@@ -1650,10 +1655,10 @@ function get_pmid_isbn_property_views_report($conn, $write_file=NULL){
 
 	$columns = ['PubMed ID/ISBN', 'Subregion', 'Layer', 'Neuron Type Name', 'Neuronal Segment', 'Views'];
 	if(isset($write_file)) {
-		return format_table($conn, $page_pmid_isbn_property_views_query, $table_string, 'pmid_isbn_table', $columns, $write_file);
+		return format_table($conn, $page_pmid_isbn_property_views_query, $table_string, 'pmid_isbn_table', $columns, $neuron_ids, $write_file);
         }else{
 		$table_string = get_table_skeleton_first($columns);
-		$table_string .= format_table($conn, $page_pmid_isbn_property_views_query, $table_string, 'pmid_isbn_table', $columns);
+		$table_string .= format_table($conn, $page_pmid_isbn_property_views_query, $table_string, 'pmid_isbn_table', $columns, $neuron_ids);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
@@ -1661,29 +1666,50 @@ function get_pmid_isbn_property_views_report($conn, $write_file=NULL){
 
 function get_markers_property_views_report($conn, $neuron_ids, $write_file = NULL){
 
-	$page_property_views_query = "select t.subregion, t.page_statistics_name AS neuron_name, derived.color as color, derived.evidence as evidence,
-                                                SUM(REPLACE(page_views, ',', '')) AS views
-                                                FROM ( SELECT IF(INSTR(page, 'id_neuron=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1),
-							      IF(INSTR(page, 'id1_neuron=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1),
-							      IF(INSTR(page, 'id_neuron_source=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1), '' ))) AS neuronID,
-                                                              IF(INSTR(page, 'val_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '') AS evidence,
-							      IF(INSTR(page, 'val_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1), '') AS color, page_views FROM
-                                                              ga_analytics_pages WHERE page LIKE '%/property_page_%' AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'markers'
-							      AND (
-								      LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4 OR 
-								      LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) = 4 OR 
-								      LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) = 4
-								  )
-							      AND (
-								      SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232) OR
-								      SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232) OR
-								      SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN (4168, 4181, 2232)
-								  )
-						     ) AS derived
-						JOIN Type AS t ON t.id = derived.neuronID
-                                                 WHERE   derived.neuronID NOT IN ('4168', '4181', '2232')
-						GROUP BY t.subregion, t.page_statistics_name, evidence
-						ORDER BY t.position";
+	$page_property_views_query = "SELECT t.subregion,
+		t.page_statistics_name AS neuron_name,
+		derived.color AS color,
+		derived.evidence AS evidence,
+		SUM(REPLACE(page_views, ',', '')) AS views
+			FROM (
+					SELECT
+					CASE
+					WHEN INSTR(page, 'id_neuron=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
+					WHEN INSTR(page, 'id1_neuron=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)
+					WHEN INSTR(page, 'id_neuron_source=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)
+					ELSE ''
+					END AS neuronID,
+					CASE
+					WHEN INSTR(page, 'val_property=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1)
+					ELSE ''
+					END AS evidence,
+					CASE
+					WHEN INSTR(page, 'color=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1)
+					ELSE ''
+					END AS color,
+					page_views
+					FROM ga_analytics_pages
+					WHERE page LIKE '%/property_page_%'
+					AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'markers'
+					AND (
+						LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4
+						OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) = 4
+						OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) = 4
+					    )
+					AND (
+							SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
+							OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
+							OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN (4168, 4181, 2232)
+					    )
+					) AS derived
+					JOIN Type AS t ON t.id = derived.neuronID
+					WHERE derived.neuronID NOT IN ('4168', '4181', '2232')
+					AND t.subregion IS NOT NULL AND t.subregion <> ''
+					AND t.page_statistics_name IS NOT NULL AND t.page_statistics_name <> ''
+					AND derived.color IS NOT NULL AND derived.color <> ''
+					AND derived.evidence IS NOT NULL AND derived.evidence <> ''
+					GROUP BY t.subregion, t.page_statistics_name, derived.evidence, derived.color
+					ORDER BY t.position";
 	//echo $page_property_views_query;
 	$columns = ["Subregion", "Neuron Type Name", "Expression", "CB", "CR", "PV", "5HT-3", "CB1", "GABAa_alfa", "mGluR1a", "Mus2R", "Sub P Rec", "vGluT3", "CCK", "ENK", "NG", "NPY", "SOM", "VIP", "a-act2", 
 			"CoupTF_2", "nNOS", "RLN", "AChE", "AMIGO2", "AR-beta1", "AR-beta2", "Astn2", "BDNF", "Bok", "Caln", "CaM", "CaMKII_alpha", "CGRP", "ChAT", "Chrna2", "CRF", "Ctip2", "Cx36", "CXCR4", 
@@ -2005,7 +2031,7 @@ function get_domain_functionality_views_report($conn, $write_file = NULL){
 	//echo $page_functionality_views_query;
 	$columns = ['Property', 'Views'];
 	if(isset($write_file)) {
-		return format_table($conn, $page_functionality_views_query, $table_string, 'domain_func_table', $columns, $write_file);
+		return format_table($conn, $page_functionality_views_query, $table_string, 'domain_func_table', $columns, $neuron_ids=NULL, $write_file);
 	}else{
 		$table_string = get_table_skeleton_first($columns);
 		$table_string .= format_table($conn, $page_functionality_views_query, $table_string, 'domain_func_table', $columns);

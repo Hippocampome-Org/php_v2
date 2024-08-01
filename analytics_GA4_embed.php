@@ -253,7 +253,7 @@ tr:nth-child(even){
                 </span>
         </div></p>
 	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
-		<?php  get_pmid_isbn_property_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
+		<?php  get_pmid_isbn_property_views_report($conn, $neuron_ids); //Passing $conn on Dec 3 2023 ?> 
 	</div>
 </div>
 <!-- Till here -->
