@@ -788,7 +788,6 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 
 	$count = 0;
 	$csv_rows=[];
-	echo $query;
 
         $rs = mysqli_query($conn,$query);
         $table_string1 = '';
@@ -892,7 +891,7 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 		}else{
 			// Increment values
 			$array_subs[$subregion][$neuron_name][$color][$evidence] += intval($views);
-			$array_subs[$subregion][$neuron_name][$color]['total'] += intval($views);
+			#$array_subs[$subregion][$neuron_name][$color]['total'] += intval($views);
 		}
 		if(!isset($array_subs[$subregion][$neuron_name][$color]['total'])){
 			$array_subs[$subregion][$neuron_name][$color]['total']=0;
