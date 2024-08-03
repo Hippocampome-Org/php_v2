@@ -1,7 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 global $csv_data;
 
 function get_neuron_ids($conn){
@@ -716,16 +713,12 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 		$csv_data[$csv_tablename]=['filename'=>$csv_tablename,'headers'=>$csv_headers,'rows'=>$csv_rows];
 		return $csv_data[$csv_tablename];
 	}
-	//var_dump($array_subs);//exit;
 	$i = $j = $k = $total_count =0;
 	$table_string2 = '';
 	foreach ($array_subs as $type => $subtypes) {
-
 		$keyCounts = count($subtypes);
-
 		// Flag to track if the type cell has been added
 		$typeCellAdded = false;
-
 		foreach ($subtypes as $subtype => $values) {
 			// Count the number of properties for the current subtype
 			$keyCounts2 = count($values)+1;//Added this 1 as count is giving 6 but then one row is showing as seperate Added on April 25 2024
@@ -737,7 +730,7 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 			// Add the type cell only once for each type
 			if (!$typeCellAdded) {
 				//echo "typerowspan is:".$typerowspan;
-				if ($j % 2 == 0) {
+				if ($j%2==0) {
 					$table_string2 .= "<tr><td class='lightgreen-bg' rowspan='".$typerowspan."'>".$type."</td>";
 				} else {
 					$table_string2 .= "<tr><td class='green-bg' rowspan='".$typerowspan."'>".$type."</td>";
@@ -745,19 +738,21 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 				// Set the flag to true once the type cell is added
 				$typeCellAdded = true;
 			}
-			
-				//echo "subtyperowspan is:".$subtyperowspan;
-			// Add the subtype cell
-			$table_string2 .= "<td rowspan='".$subtyperowspan."'>".$subtype."</td>";
-
+			if($i%2==0){
+				$table_string2 .= "<td  class='white-bg' rowspan='".$subtyperowspan."'>".$subtype."</td>";
+			}else{
+				$table_string2 .= "<td  class='blue-bg' rowspan='".$subtyperowspan."'>".$subtype."</td>";
+			}
 			// Iterate over categories and properties
 			foreach ($values as $category => $properties) {
 				if (in_array($category, $color_cols)) {
 					// Open a new row if the category is a color column
-					$table_string2 .= "<tr><td>".$category."</td>";
-				} else {
-					// Otherwise, add the category without starting a new row
-					$table_string2 .= "<td>".$category."</td>";
+					$table_string2 .= "<tr>";
+				}
+				if($i%2==0){
+					$table_string2 .= "<td class='white-bg'>".$category."</td>";
+				}else{
+					$table_string2 .= "<td class='blue-bg'>".$category."</td>";
 				}
 
 				foreach ($properties as $property => $value) {
@@ -765,16 +760,21 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 					if($property == ""){continue;}
 					$showval='';
 					if($value >= 1){$showval = $value;}
+					if($i%2==0){
+						$table_string2 .= "<td class='white-bg'>".$showval."</td>";
+					}else{
+						$table_string2 .= "<td class='blue-bg'>".$showval."</td>";
+					}
 					if ($property == 'total') {
 						// Close the row if the property is "total"
-						$table_string2 .= "<td>$showval</td></tr>";
+						$table_string2 .= "</tr>";
 						$total_count += $value;
-					} else {
-						$table_string2 .= "<td>$showval</td>";
+						$i++;
 					}
 				}
 			}
-			 $table_string2 .= "</tr>";
+			$k++;
+			$table_string2 .= "</tr>";
 		}
 		$j++;
 	}
@@ -944,7 +944,6 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
                 // Write the total count row at the end of the CSV file
                 $totalCountRow = ['Total Count', '', '', '', '', '', '','', '','', '','', '','', '','', '','', '','', '','', '','', '','', '','', '', '','', '', '', '', '', '','', '','', '','', '','', '','', '','', '','', '','', '','', '','', '','', '', '','', '', '', '', '', '','', '','', '','', '','', '','', '','', '','', '','', '','', '','', '','', '', '','', '', '', '', '', '','', '','', '','', '','', '','', '','', '','', '','', '','', '','', '','', '', '', '', '', '', '', '', '', '', '', '', $total_count];
                 $csv_rows[] = $totalCountRow;
-
                 $csv_data[$csv_tablename]=['filename'=>$csv_tablename,'headers'=>$csv_headers,'rows'=>$csv_rows];
                 return $csv_data[$csv_tablename];
 	}
