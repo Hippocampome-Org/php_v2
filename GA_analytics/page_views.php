@@ -888,16 +888,11 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 			  echo "Sub Region is:".$subregion;
 			  echo "Neuron Name:".$neuron_name; */
 			$array_subs[$subregion][$neuron_name][$color][$evidence] = 0;
+			$array_subs[$subregion][$neuron_name][$color]['total']=0;
 		}else{
 			// Increment values
 			$array_subs[$subregion][$neuron_name][$color][$evidence] += intval($views);
-			#$array_subs[$subregion][$neuron_name][$color]['total'] += intval($views);
-		}
-		if(!isset($array_subs[$subregion][$neuron_name][$color]['total'])){
-			$array_subs[$subregion][$neuron_name][$color]['total']=0;
-		}
-		else{
-			//$array_subs[$subregion][$neuron_name][$color]['total'] += intval($views);
+			$array_subs[$subregion][$neuron_name][$color]['total'] += intval($views);
 		}
 	}
 	foreach($array_subs as $subregion => $neuron_names){
@@ -1975,12 +1970,27 @@ function get_fp_property_views_report($conn, $write_file=NULL){
 		'TSTUT.ASP.' => 'Transient Stuttering followed by Adapting Spiking'
 			];
 
-	$page_fp_property_views_query = "SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'parameter=', -1), '&', 1) AS fp,
-				 SUM(REPLACE(page_views, ',', '')) AS views
-		FROM ga_analytics_pages WHERE page LIKE '%property_page_fp.php?id_neuron=%'
-		AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
-		GROUP BY SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'parameter=', -1), '&', 1)
-		ORDER BY views DESC";
+	$page_fp_property_views_query = "SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'meter=', -1), '&', 1) AS fp,
+		SUM(REPLACE(page_views, ',', '')) AS views FROM ga_analytics_pages
+			WHERE page LIKE '%/property_page_%'
+			AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'fp'
+			AND LENGTH(
+					CASE
+					WHEN LOCATE('%', SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) > 0 THEN
+					SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '%', 1)
+					ELSE
+					SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
+					END
+				  ) = 4
+			AND
+			CASE
+			WHEN LOCATE('%', SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) > 0 THEN
+			SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '%', 1)
+			ELSE
+			SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
+			END NOT IN (4168, 4181, 2232)
+			GROUP BY SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'meter=', -1), '&', 1)
+			ORDER BY views DESC";
 
 	$columns = ['Firing Pattern', 'Views'];
 	$options = ['format' => $fp_format,];
@@ -1996,36 +2006,70 @@ function get_fp_property_views_report($conn, $write_file=NULL){
 
 
 function get_domain_functionality_views_report($conn, $write_file = NULL){
-	$page_functionality_views_query = "SELECT
+	$page_functionality_views_query = "SELECT 
 		CASE 
-		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('connectivity', 'connectivity_orig', 'connectivity_test') THEN 'Connectivity: Known / Potential'
-		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'counts' THEN 'Census'
+		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('connectivity', 'connectivity_orig', 'connectivity_test') THEN 'Connectivity: Known / Potential' 
+		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'counts' THEN 'Census' 
 		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'ephys' THEN 'Membrane Biophysics' 
 		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'fp' THEN 'FP'
-		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases' THEN 'In Vivo'
-		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro' THEN 'Morphology: Axon and Dendrite Lengths / Somatic Distances'
-		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('synpro_nm', 'synpro_nm_old2') THEN 'Connectivity: Number of Potential Synapses / Number of Contacts / Synaptic Probability'
-		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro_pvals' THEN 'Connectivity: Parcel-Specific Tables'
-		ELSE SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1)
+		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases' THEN 'In Vivo' 
+		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'markers' THEN 'Markers' 
+		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro' THEN 'Morphology: Axon and Dendrite Lengths / Somatic Distances' 
+		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('synpro_nm', 'synpro_nm_old2') THEN 'Connectivity: Number of Potential Synapses / Number of Contacts / Synaptic Probability' 
+		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro_pvals' THEN 'Connectivity: Parcel-Specific Tables' 
+		ELSE SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) 
 		END AS property_page_category,
-		    SUM(REPLACE(page_views, ',', '')) AS views
-			    FROM    
-			    ga_analytics_pages
-			    WHERE   
-			    page LIKE '%/property_page_%'
+		    SUM(REPLACE(page_views, ',', '')) AS views 
+			    FROM ga_analytics_pages 
+			    WHERE page LIKE '%/property_page_%' 
 			    AND (
-					    LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4
-					    OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) = 4
-					    OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) = 4
-				)
-			    AND (
-					    SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
-					    OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
-					    OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN (4168, 4181, 2232)
-				)
-			    GROUP BY
-			    property_page_category";
-	//Excluded above as we are not showing the pages as tables to tally
+					    LENGTH(
+						    CASE 
+						    WHEN LOCATE('%', SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) > 0 THEN
+						    SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '%', 1)
+						    ELSE
+						    SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
+						    END
+						  ) = 4 
+					    OR LENGTH(
+						    CASE 
+						    WHEN LOCATE('%', SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) > 0 THEN
+						    SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '%', 1)
+						    ELSE
+						    SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)
+						    END
+						    ) = 4 
+					    OR LENGTH(
+						    CASE 
+						    WHEN LOCATE('%', SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) > 0 THEN
+						    SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '%', 1)
+						    ELSE
+						    SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)
+						    END
+						    ) = 4
+					    )
+					    AND (
+							    CASE 
+							    WHEN LOCATE('%', SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) > 0 THEN
+							    SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '%', 1)
+							    ELSE
+							    SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
+							    END NOT IN (4168, 4181, 2232)
+							    OR CASE 
+							    WHEN LOCATE('%', SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) > 0 THEN
+							    SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '%', 1)
+							    ELSE
+							    SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)
+							    END NOT IN (4168, 4181, 2232)
+							    OR CASE 
+							    WHEN LOCATE('%', SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) > 0 THEN
+							    SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '%', 1)
+							    ELSE
+							    SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)
+							    END NOT IN (4168, 4181, 2232)
+						)
+					    GROUP BY property_page_category
+					    ORDER BY views DESC";
 	//echo $page_functionality_views_query;
 	$columns = ['Property', 'Views'];
 	if(isset($write_file)) {
