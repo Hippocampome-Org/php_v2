@@ -289,6 +289,9 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 					}
 					while ($rowvalue = mysqli_fetch_assoc($result)) {
 						foreach ($rowvalue as $key => $value) {
+							if($key == 'Subregion' || $key == 'Neuron_Type_Name'){
+								continue;
+							}
 							if ($value == 0) {
 								$rowvalue[$key] = ''; // Replace 0 with an empty string
 							} else {
