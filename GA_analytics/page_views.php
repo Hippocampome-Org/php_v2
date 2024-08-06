@@ -288,7 +288,16 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 						mysqli_data_seek($result, 0);
 					}
 					while ($rowvalue = mysqli_fetch_assoc($result)) {
-						$count += $rowvalue['Total_Views'];
+						foreach ($rowvalue as $key => $value) {
+							if ($value == 0) {
+								$rowvalue[$key] = ''; // Replace 0 with an empty string
+							} else {
+								// Add to the count if the value is numeric and not zero
+								if (is_numeric($value)) {
+									$count += $value;
+								}
+							}
+						}
 						$csv_rows[] = $rowvalue;
 					}
 					mysqli_free_result($result);
@@ -362,6 +371,9 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 			    $table_string1 .= "<td class='$subgroupBgClass' rowspan=''>$subgroupKey</td>";
 				    $colorBgClass = ($j % 2 == 0) ? 'white-bg' : 'blue-bg';
 			    foreach ($colors as $color) {
+				    if($color <=0 ){
+					$color='';
+				    }
 				    $table_string1 .= "<td class='$colorBgClass'>$color</td>";
 			    }
 				    $j++;
@@ -854,7 +866,9 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 	while ($rowvalue = mysqli_fetch_array($rs, MYSQLI_ASSOC)) {
     		// Modify neuron name if necessary
 		if (isset($neuron_ids[$rowvalue['neuron_name']])) {
-			$rowvalue['neuron_name'] = get_link($rowvalue['neuron_name'], $neuron_ids[$rowvalue['neuron_name']], './neuron_page.php', 'neuron');
+			if (!isset($write_file)) {
+				$rowvalue['neuron_name'] = get_link($rowvalue['neuron_name'], $neuron_ids[$rowvalue['neuron_name']], './neuron_page.php', 'neuron');
+			}
 		}
 
 		// Extract relevant values
