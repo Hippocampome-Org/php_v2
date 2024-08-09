@@ -328,7 +328,7 @@ tr:nth-child(even){
 			<form method="POST"><input type="hidden" name="download_csv" value="get_views_per_page_report"><button type="submit">Download CSV</button></form>
                 </span>
         </div></p>
-	<div id="pageview-inside" style="width: 800px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+	<div id="pageview-inside" style="width: 800px; height: 600px; overflow-x: hidden;overflow-y: scroll; position: relative; outline: none;overflow-wrap: break-word;">
 		<?php get_views_per_page_report($conn); //Passing $conn on Dec 3 2023 ?>	
 	</div>
 </div>

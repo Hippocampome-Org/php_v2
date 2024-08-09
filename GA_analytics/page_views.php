@@ -1309,7 +1309,31 @@ function get_views_per_page_report($conn, $write_file=NULL){ //Passed $conn on D
                 return format_table($conn, $page_views_query2, $table_string, 'views_per_page', $columns, $neuron_ids=NULL, $write_file);
         }
         else{
-		$table_string = get_table_skeleton_first($columns);
+		$table_string = "'<html><head><style>
+
+  table {
+    width: 100%;
+    table-layout: fixed; 
+  }
+
+  td, th {
+   /* overflow-wrap: break-word; 
+    word-break: break-word; */
+    overflow-wrap: break-word; 
+    word-break: break-word; 
+    white-space: normal;
+  }
+ td:first-child {
+            width: 90%; /* Adjust width as needed for the first cell */
+        }
+
+        td:last-child {
+            width: 10%; /* Adjust width as needed for the second cell */
+            text-align: center; /* Center text if desired */
+        }
+
+</style></head><body>";
+		$table_string .= get_table_skeleton_first($columns);
 		//$table_string .= format_table($conn, $page_views_query, $table_string, 'views_per_page', $columns, $write_file=NULL, $page_views_query2);
 
 		$table_string .= format_table($conn, $page_views_query2, $table_string, 'views_per_page', $columns);
@@ -1568,15 +1592,14 @@ DEALLOCATE PREPARE stmt;";
 
 	//$table_string = get_table_skeleton_first($columns);
 	if(isset($write_file)) {
-		$file_name = "neurons_";
+		$file_name = "neuron_types_";
 		if($views_request == 'views_per_month' || $views_request == 'views_per_year'){
 			$file_name .= $views_request;
 		}else{$file_name .= "views"; }
-		
 		return format_table_neurons($conn, $page_neurons_views_query, $table_string, $file_name, $columns, $neuron_ids, $write_file, $views_request);
 	}else{
 		$table_string = '';
-		$table_string .= format_table_neurons($conn, $page_neurons_views_query, $table_string, 'neurons_views', $columns, $neuron_ids);
+		$table_string .= format_table_neurons($conn, $page_neurons_views_query, $table_string, 'neuron_types_views', $columns, $neuron_ids);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
