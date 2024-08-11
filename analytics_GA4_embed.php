@@ -102,6 +102,10 @@ ul
 -->
 </style>
 <style>
+table {
+ width: 100%;
+ table-layout: auto;
+}
 table, th, td {
   border: 1px solid black;
 }
@@ -177,7 +181,7 @@ tr:nth-child(even){
 			<form method="POST" style="display: inline;"><input type="hidden" name="views_per_year" value="get_neurons_views_report"><button type="submit">Download Views Per Year CSV</button></form>
 		</span>
 	</div></p>
-	<div id="neuron-inside" style="width: 950px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+	<div id="neuron-inside" style="width: 1150px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
 		<?php get_neurons_views_report($conn, $neuron_ids); //Passing $conn on Dec 3 2023 ?>
 	</div>
 </div>
@@ -192,7 +196,7 @@ tr:nth-child(even){
 			<form method="POST"><input type="hidden" name="download_csv" value="get_morphology_property_views_report"><button type="submit">Download CSV</button></form>
                 </span>
         </div></p>
-	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+	<div id="subregion-inside" style="width: 1150px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
 		<?php get_morphology_property_views_report($conn, $neuron_ids); //Passing $conn on Dec 3 2023 ?> 
 	</div>
 </div>
@@ -207,7 +211,7 @@ tr:nth-child(even){
 			<form method="POST"><input type="hidden" name="download_csv" value="get_markers_property_views_report"><button type="submit">Download CSV</button></form>
                 </span>
         </div></p>
-	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+	<div id="subregion-inside" style="width: 1150px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
 		<?php  get_markers_property_views_report($conn, $neuron_ids); //Passing $conn on Dec 3 2023 ?> 
 	</div>
 </div>
@@ -222,7 +226,7 @@ tr:nth-child(even){
                         <form method="POST"><input type="hidden" name="download_csv" value="get_counts_views_report"><input type="hidden" name="param" value="biophysics"><button type="submit">Download CSV</button></form>
                 </span>
         </div></p>
-        <div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+        <div id="subregion-inside" style="width: 1150px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
                 <?php get_counts_views_report($conn, 'biophysics', $neuron_ids); //Passing $conn on Dec 3 2023 ?>
         </div>
 </div>
@@ -237,7 +241,7 @@ tr:nth-child(even){
 			<form method="POST"><input type="hidden" name="download_csv" value="get_fp_property_views_report"><button type="submit">Download CSV</button></form>
                 </span>
         </div></p>
-	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+	<div id="subregion-inside" style="width: 1150px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
 		<?php get_fp_property_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
 	</div>
 </div>
@@ -252,7 +256,7 @@ tr:nth-child(even){
 			<form method="POST"><input type="hidden" name="download_csv" value="get_pmid_isbn_property_views_report"><button type="submit">Download CSV</button></form>
                 </span>
         </div></p>
-	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+	<div id="subregion-inside" style="width: 1150px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
 		<?php  get_pmid_isbn_property_views_report($conn, $neuron_ids); //Passing $conn on Dec 3 2023 ?> 
 	</div>
 </div>
@@ -267,7 +271,7 @@ tr:nth-child(even){
 			<form method="POST"><input type="hidden" name="download_csv" value="get_counts_views_report"><input type="hidden" name="param" value="phases"><button type="submit">Download CSV</button></form>
                 </span>
         </div></p>
-	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+	<div id="subregion-inside" style="width: 1150px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
 		<?php get_counts_views_report($conn, 'phases', $neuron_ids); //Passing $conn on Dec 3 2023 ?> 
 	</div>
 </div>
@@ -283,7 +287,7 @@ tr:nth-child(even){
                         <form method="POST"><input type="hidden" name="download_csv" value="get_counts_views_report"><input type="hidden" name="param" value="connectivity"><button type="submit">Download CSV</button></form>
                 </span>
         </div></p>
-        <div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+        <div id="subregion-inside" style="width: 1150px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
                 <?php get_counts_views_report($conn, 'connectivity', $neuron_ids); //Passing $conn on Dec 3 2023 ?>
         </div>
 </div>
@@ -298,7 +302,7 @@ tr:nth-child(even){
 			<form method="POST"><input type="hidden" name="download_csv" value="get_domain_functionality_views_report"><button type="submit">Download CSV</button></form>
                 </span>
         </div></p>
-	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+	<div id="subregion-inside" style="width: 1150px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
 		<?php get_domain_functionality_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
 	</div>
 </div>
@@ -313,7 +317,7 @@ tr:nth-child(even){
 			<form method="POST"><input type="hidden" name="download_csv" value="get_page_functionality_views_report"><button type="submit">Download CSV</button></form>
                 </span>
         </div></p>
-	<div id="subregion-inside" style="width: 1000px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+	<div id="subregion-inside" style="width: 1150px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
 		<?php get_page_functionality_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
 	</div>
 </div>
@@ -328,7 +332,7 @@ tr:nth-child(even){
 			<form method="POST"><input type="hidden" name="download_csv" value="get_views_per_page_report"><button type="submit">Download CSV</button></form>
                 </span>
         </div></p>
-	<div id="pageview-inside" style="width: 800px; height: 600px; overflow-x: hidden;overflow-y: scroll; position: relative; outline: none;overflow-wrap: break-word;">
+	<div id="pageview-inside" style="width: 1150px; height: 600px; overflow-x: scroll;overflow-y: scroll; position: relative; outline: none;">
 		<?php get_views_per_page_report($conn); //Passing $conn on Dec 3 2023 ?>	
 	</div>
 </div>
@@ -343,7 +347,7 @@ tr:nth-child(even){
 			<form method="POST"><input type="hidden" name="download_csv" value="get_pages_views_per_month_report"><button type="submit">Download CSV</button></form>
                 </span>
         </div></p>
-	<div id="pageview-inside" style="width: 800px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+	<div id="pageview-inside" style="width: 1150px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
 		<?php get_pages_views_per_month_report($conn); //Passing $conn on Dec 3 2023 ?>	
 	</div>
 </div>

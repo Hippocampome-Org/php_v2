@@ -98,88 +98,117 @@ function processNeuronLink($neuron_id, $neuron_ids_array, $linkText, $write_file
     return $neuron_id;
 }
 
-function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids=NULL, $write_file=NULL, $query2=NULL){
-	$count = 0;
-	$csv_rows = [];
-        $rs = mysqli_query($conn,$query);
-	$table_string1 = '';
-	$rows = count($csv_headers);
-	//For Phases page to replciate the string we show
-	$phase_evidences=['all_other'=>'Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau, AP threshold, fAHP, or APpeak trough.', 
-				'theta'=>'Theta', 'swr_ratio'=>'SWR ratio','firingRate'=>'Firing rate'];
-	//Neuronal Segment Data
-	$neuronal_segments = ['blue'=>'Dendrites','blueSoma'=>'Dendrites-Somata','red'=>'Axons','redSoma'=>'Axons-Somata','somata'=>'Somata','violet'=>'Axons-Dendrites','violetSoma'=>'Axons-Dendrites-Somata'];
-	if(!$rs || ($rs->num_rows < 1)){
-		$table_string1 .= "<tr><td> No Data is available </td></tr>";
-		return $table_string1;
-	}
-	if(isset($query2)){
-		$rs2 = mysqli_query($conn,$query2);
-		if(!$rs2 || ($rs2->num_rows < 1)){
-			$table_string1 .= "<tr><td> No Data is available </td></tr>";
-			return $table_string1;
-		}
-	}
-	$i=0;
-	while($row = mysqli_fetch_row($rs))
-	{       
-		$csv_rows[] = $row;
-		$j=0;
-		if($i%2==0){ $table_string .= '<tr class="white-bg" >';}
-		else{ $table_string1 .= '<tr class="blue-bg">';}//Color gradient CSS
-		if($csv_tablename == 'pmid_isbn_table'){
-			$row[0] = get_link($row[0], $row[0], 'https://pubmed.ncbi.nlm.nih.gov/', 'pmid');
-			$row[3] = get_link($row[3], $neuron_ids[$row[3]], './neuron_page.php','neuron');
-		}
-		while($j < $rows){
-			if(isset($phase_evidences[$row[$j]])){ $row[$j] = $phase_evidences[$row[$j]]; }
-			if(isset($neuronal_segments[$row[$j]])){ $row[$j] = $neuronal_segments[$row[$j]]; }
-			if(isset($neuron_ids[$row[$j]])){ $row[$j] = neuron_ids[$row[$j]]; }
-			if($row[$rows-1] > 0){
-				$table_string1 .= "<td>".ucwords($row[$j])."</td>";
-			}
-			$j++;
-		}
-		$count += $row[$rows-1];
-		$table_string1 .= "</tr>";
-		$i++;//increment for color gradient of the row
-	}
+function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file = NULL, $query2 = NULL) {
+    $count = 0;
+    $csv_rows = [];
+    $rs = mysqli_query($conn, $query);
+    $table_string1 = '';
+    $rows = count($csv_headers);
+    $table_id = 'myTable'; // Specify your table ID here
 
-	if(isset($query2)){
-		while($row = mysqli_fetch_row($rs2)){
-	  	 	$csv_rows[] = $row;
-			$j=0;
-			if($i%2==0){ $table_string1 .= '<tr class="white-bg" >';}
-			else{ $table_string1 .= '<tr class="blue-bg">';}//Color gradient CSS
+    // Add CSS to the table string for the specific table ID
+    $css_styles = "
+    <style>
+        #$table_id {
+            width: 100%;
+            table-layout: fixed; /* Ensures columns have fixed widths */
+        }     
+        #$table_id td, #$table_id th {
+            overflow-wrap: break-word; /* Break long words */
+            word-break: break-word; /* Additional word breaking */
+            white-space: normal; /* Allow wrapping */
+        }
+	/* Targeting specific column for width */
+        #$table_id td:nth-child(2), #$table_id th:nth-child(2) {
+            width: 10%; /* Adjust this width as needed */
+        }
+    </style>";
 
-			while($j < $rows){
-				if(isset($phase_evidences[$row[$j]])){ $row[$j] = $phase_evidences[$row[$j]]; }
-				if(isset($neuronal_segments[$row[$j]])){ $row[$j] = $neuronal_segments[$row[$j]]; }
-				if(isset($neuron_ids[$row[$j]])){ $row[$j] = neuron_ids[$row[$j]]; }
-				if($row[$rows-1] > 0){
-					$table_string1 .= "<td>".$row[$j]."</td>";
-				}
-				$j++;
-			}
-			$count += $row[$rows-1];
-			$table_string1 .= "</tr>";
-			$i++;//increment for color gradient of the row
-		}
-	}
-	if(isset($write_file)){
-		if($csv_tablename == 'pmid_isbn_table'){
-			$totalRow = ["Total Count",'','','','',$count];
-		}else{
-			$totalRow = ["Total Count",$count];
-		}
-		$csv_rows[] = $totalRow;
-		$csv_data[$csv_tablename]=['filename'=>$csv_tablename,'headers'=>$csv_headers,'rows'=>$csv_rows];
-                return $csv_data[$csv_tablename];
-        }	
-	else{
-		$table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$count."</td></tr>";	
-		return $table_string1;
-	}
+    $table_string .= "<html><head>$css_styles</head><body>";
+    $table_string .= "<table id='$table_id'>"; // Set table ID here
+    $table_string .= "<thead><tr>";
+    
+    foreach ($csv_headers as $header) {
+        $table_string .= "<th>" . htmlspecialchars($header) . "</th>";
+    }
+    
+    $table_string .= "</tr></thead><tbody>";
+
+    if (!$rs || ($rs->num_rows < 1)) {
+        $table_string1 .= "<tr><td colspan='$rows'>No Data is available</td></tr>";
+        $table_string .= $table_string1;
+        $table_string .= "</tbody></table></body></html>";
+        return $table_string;
+    }
+
+    if (isset($query2)) {
+        $rs2 = mysqli_query($conn, $query2);
+        if (!$rs2 || ($rs2->num_rows < 1)) {
+            $table_string1 .= "<tr><td colspan='$rows'>No Data is available</td></tr>";
+            $table_string .= $table_string1;
+            $table_string .= "</tbody></table></body></html>";
+            return $table_string;
+        }
+    }
+
+    // Process the main query results
+    $i = 0;
+    while ($row = mysqli_fetch_row($rs)) {
+        $csv_rows[] = $row;
+        $bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
+        $table_string1 .= "<tr class='$bgColor'>";
+
+        for ($j = 0; $j < $rows; $j++) {
+            if (isset($neuron_ids[$row[$j]])) { 
+                $row[$j] = $neuron_ids[$row[$j]]; 
+            }
+            if ($row[$rows-1] > 0) {
+                $class = ($rows == 2 ? ($j == 0 ? 'col-page' : 'col-views') : '');
+                $table_string1 .= "<td class='$class'>" . htmlspecialchars($row[$j]) . "</td>";
+            }
+        }
+
+        $count += $row[$rows-1];
+        $table_string1 .= "</tr>";
+        $i++;
+    }
+
+    // Process the additional query results if provided
+    if (isset($query2)) {
+        while ($row = mysqli_fetch_row($rs2)) {
+            $csv_rows[] = $row;
+            $bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
+            $table_string1 .= "<tr class='$bgColor'>";
+
+            for ($j = 0; $j < $rows; $j++) {
+                if (isset($neuron_ids[$row[$j]])) { 
+                    $row[$j] = $neuron_ids[$row[$j]]; 
+                }
+                if ($row[$rows-1] > 0) {
+                    $class = ($rows == 2 ? ($j == 0 ? 'col-page' : 'col-views') : '');
+                    $table_string1 .= "<td class='$class'>" . htmlspecialchars($row[$j]) . "</td>";
+                }
+            }
+
+            $count += $row[$rows-1];
+            $table_string1 .= "</tr>";
+            $i++;
+        }
+    }
+
+    if (isset($write_file)) {
+        $totalRow = ($csv_tablename == 'pmid_isbn_table') ? ["Total Count", '', '', '', '', $count] : ["Total Count", $count];
+        $csv_rows[] = $totalRow;
+        $csv_data[$csv_tablename] = ['filename' => $csv_tablename, 'headers' => $csv_headers, 'rows' => $csv_rows];
+        $table_string .= $table_string1;
+        $table_string .= "</tbody></table></body></html>";
+        return $csv_data[$csv_tablename];
+    } else {
+        $table_string1 .= "<tr><td colspan='" . ($rows - 1) . "'><b>Total Count</b></td><td>" . $count . "</td></tr>";    
+        $table_string .= $table_string1;
+        $table_string .= "</tbody></table></body></html>";
+        return $table_string;
+    }
 }
 
 function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $write_file=NULL, $options = []) {
@@ -214,10 +243,13 @@ function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $wri
             if ($row[$j] === 'fp') {
                 $row[$j] = 'firing pattern';
             }
+	    
+	    // Apply inline style for the second column (index 1)
+	    $style = $j == 1 ? 'style="width: 10%;"' : '';
 
-            // Only add data cells if the last column value is > 0
-            if ($row[$rows - 1] > 0) {
-                $table_string .= "<td>" . htmlspecialchars($row[$j]) . "</td>";
+	    // Only add data cells if the last column value is > 0
+	    if ($row[$rows - 1] > 0) {
+		    $table_string .= "<td $style>" . htmlspecialchars($row[$j]) . "</td>";
             }
         }
 
@@ -604,205 +636,188 @@ function format_table_connectivity($conn, $query, $table_string, $csv_tablename,
         return $table_string1;
 }
 
-function format_table_morphology($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file = NULL, $array_subs = NULL){
-	
-	$count = 0;
-	$csv_rows=[];
-        $rs = mysqli_query($conn,$query);
-        $table_string1 = '';
-	$rows = count($csv_headers);
-	$color_segments = ['red'=>'Axon Locations','blue'=>'Dendrite Locations','somata'=>'Soma Locations','violet'=>'Axon-Dendrite Locations','redSoma'=>'Axon-Somata Locations',
-			   'blueSoma'=>'Dendrite-Somata Locations', 'violetSoma'=>'Axon-Dendrite-Somata Locations',
-			   'reddal'=>'Axon Lengths', 'bluedal'=>'Dendrite Lengths', 'redsd'=>'Somatic Distances of Axons', 'bluesd'=>'Somatic Distances of Dendrites', 
-			   'violetSomadal'=>'Unknown', 'violetSomasd'=>'Unknown', ''=>'Unknown'];
+function format_table_morphology($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file = NULL, $array_subs = NULL) {
+    $csv_rows = [];
+    $rs = mysqli_query($conn, $query);
+    $table_string1 = '';
+    $numHeaders = count($csv_headers);
+    $total_count = 0;
 
-	$color_cols = ['Axon Locations', 'Dendrite Locations', 'Soma Locations', 'Axon-Dendrite Locations', 'Axon-Somata Locations','Dendrite-Somata Locations', 
-			'Axon-Dendrite-Somata Locations', 'Axon Lengths', 'Dendrite Lengths', 'Somatic Distances of Axons', 'Somatic Distances of Dendrites', 'Unknown'];
-	$cols = ['DG:SMo', 'DG:SMi','DG:SG','DG:H','CA3:SLM','CA3:SR','CA3:SL','CA3:SP','CA3:SO','CA2:SLM','CA2:SR','CA2:SP','CA2:SO','CA1:SLM','CA1:SR','CA1:SP','CA1:SO',
-			'Sub:SM','Sub:SP','Sub:PL','EC:I','EC:II','EC:III','EC:IV','EC:V','EC:VI','Unknown'];
-	$neuronal_segments = ['DG_SMo'=>'DG:SMo', 'DG_SMi'=>'DG:SMi','DG_SG'=>'DG:SG','DG_H'=>'DG:H',
-			      'CA3_SLM'=>'CA3:SLM','CA3_SR'=>'CA3:SR','CA3_SL'=>'CA3:SL','CA3_SP'=>'CA3:SP','CA3_SO'=>'CA3:SO',
-			      'CA2_SLM'=>'CA2:SLM','CA2_SR'=>'CA2:SR','CA2_SP'=>'CA2:SP','CA2_SO'=>'CA2:SO',
-			      'CA1_SLM'=>'CA1:SLM','CA1_SR'=>'CA1:SR','CA1_SP'=>'CA1:SP','CA1_SO'=>'CA1:SO',
-			      'SUB_SM'=>'Sub:SM','SUB_SP'=>'Sub:SP','SUB_PL'=>'Sub:PL',
-			      'EC_I'=>'EC:I','EC_II'=>'EC:II','EC_III'=>'EC:III','EC_IV'=>'EC:IV','EC_V'=>'EC:V','EC_VI'=>'EC:VI',''=>'Unknown'];
-	$rows = count($csv_headers);
+    $color_segments = ['red' => 'Axon Locations', 'blue' => 'Dendrite Locations', 'somata' => 'Soma Locations', 'violet' => 'Axon-Dendrite Locations', 'redSoma' => 'Axon-Somata Locations', 
+			'blueSoma' => 'Dendrite-Somata Locations', 'violetSoma' => 'Axon-Dendrite-Somata Locations', 'reddal' => 'Axon Lengths', 'bluedal' => 'Dendrite Lengths', 
+			'redsd' => 'Somatic Distances of Axons', 'bluesd' => 'Somatic Distances of Dendrites', 'violetSomadal' => 'Unknown', 'violetSomasd' => 'Unknown', '' => 'Unknown'];
 
-	if(!$rs || ($rs->num_rows < 1)){
-                $table_string1 .= "<tr><td> No Data is available </td></tr>";
-		return $table_string1;
+    $color_cols = ['Axon Locations', 'Dendrite Locations', 'Soma Locations', 'Axon-Dendrite Locations', 'Axon-Somata Locations', 'Dendrite-Somata Locations', 'Axon-Dendrite-Somata Locations', 
+		   'Axon Lengths', 'Dendrite Lengths', 'Somatic Distances of Axons', 'Somatic Distances of Dendrites', 'Unknown'];
+
+    $cols = ['DG:SMo', 'DG:SMi', 'DG:SG', 'DG:H', 'CA3:SLM', 'CA3:SR', 'CA3:SL', 'CA3:SP', 'CA3:SO', 'CA2:SLM', 'CA2:SR', 'CA2:SP', 'CA2:SO', 'CA1:SLM', 'CA1:SR', 'CA1:SP', 'CA1:SO', 'Sub:SM', 
+		'Sub:SP', 'Sub:PL', 'EC:I', 'EC:II', 'EC:III', 'EC:IV', 'EC:V', 'EC:VI', 'Unknown'];
+
+    $neuronal_segments = ['DG_SMo' => 'DG:SMo', 'DG_SMi' => 'DG:SMi', 'DG_SG' => 'DG:SG', 'DG_H' => 'DG:H', 'CA3_SLM' => 'CA3:SLM', 'CA3_SR' => 'CA3:SR', 'CA3_SL' => 'CA3:SL', 'CA3_SP' => 'CA3:SP', 
+			  'CA3_SO' => 'CA3:SO', 'CA2_SLM' => 'CA2:SLM', 'CA2_SR' => 'CA2:SR', 'CA2_SP' => 'CA2:SP', 'CA2_SO' => 'CA2:SO', 'CA1_SLM' => 'CA1:SLM', 'CA1_SR' => 'CA1:SR', 'CA1_SP' => 'CA1:SP', 
+			  'CA1_SO' => 'CA1:SO', 'SUB_SM' => 'Sub:SM', 'SUB_SP' => 'Sub:SP', 'SUB_PL' => 'Sub:PL', 'EC_I' => 'EC:I', 'EC_II' => 'EC:II', 'EC_III' => 'EC:III', 'EC_IV' => 'EC:IV', 'EC_V' => 'EC:V', 
+			  'EC_VI' => 'EC:VI', '' => 'Unknown'];
+
+    if (!$rs || ($rs->num_rows < 1)) {
+	    $table_string1 .= "<tr><td> No Data is available </td></tr>";
+	    return $table_string1;
+    }
+
+    if (!$array_subs) { $array_subs = []; }
+
+    // Process database rows
+    while ($rowvalue = mysqli_fetch_array($rs, MYSQLI_ASSOC)) {
+        if (empty($rowvalue['neuron_name']) || empty($rowvalue['subregion'])) {
+            continue;
         }
-	if(!$array_subs){ $array_subs = [];}
-	while ($rowvalue = mysqli_fetch_array($rs, MYSQLI_ASSOC)) {
-		if (empty($rowvalue['neuron_name']) || empty($rowvalue['subregion'])) {
-			// If either neuron_name or subregion is empty, skip processing or handle accordingly
-			continue;
+
+        if (isset($neuron_ids[$rowvalue['neuron_name']])) {
+            if (!isset($write_file)) {
+                $rowvalue['neuron_name'] = get_link($rowvalue['neuron_name'], $neuron_ids[$rowvalue['neuron_name']], './neuron_page.php', 'neuron');
+            }
+        }
+
+        $subregion = $rowvalue['subregion'];
+        $neuron_name = $rowvalue['neuron_name'];
+        $color_sp = isset($color_segments[$rowvalue['color_sp']]) ? $color_segments[$rowvalue['color_sp']] : 'Unknown';
+        $evidence = isset($neuronal_segments[$rowvalue['evidence']]) ? $neuronal_segments[$rowvalue['evidence']] : 'Unknown';
+
+        if ($evidence == 'GABAa_alpha2' && empty($rowvalue['color_sp'])) {
+            $rowvalue['color_sp'] = 'positive';
+            $color_sp = $color_segments[$rowvalue['color_sp']] ?? 'Unknown';
+        }
+
+        $views = intval($rowvalue['views']);
+
+        if (!isset($array_subs[$subregion])) {
+            $array_subs[$subregion] = [];
+        }
+
+        if (!isset($array_subs[$subregion][$neuron_name])) {
+            $array_subs[$subregion][$neuron_name] = initializeNeuronArray($cols, $color_cols);
+        }
+
+        if (!isset($array_subs[$subregion][$neuron_name][$color_sp][$evidence])) {
+            $array_subs[$subregion][$neuron_name][$color_sp][$evidence] = 0;
+        }
+
+        if (!isset($array_subs[$subregion][$neuron_name][$color_sp]['total'])) {
+            $array_subs[$subregion][$neuron_name][$color_sp]['total'] = 0;
+        }
+
+        $array_subs[$subregion][$neuron_name][$color_sp][$evidence] += $views;
+        $array_subs[$subregion][$neuron_name][$color_sp]['total'] += $views;
+    }
+    foreach($array_subs as $subregion => $neuron_names){
+	    foreach($neuron_names as $neuron_name=>$colors){
+		    foreach($colors as $colorvalue=>$colorVals){
+			    if (!isset($array_subs[$subregion][$neuron_name][$colorvalue]['total'])) {
+				    $array_subs[$subregion][$neuron_name][$colorvalue]['total']=0;
+			    }
+		    }
+	    }
+    }
+    if (isset($write_file)) {
+        foreach ($array_subs as $type => $subtypes) {
+            foreach ($subtypes as $subtype => $values) {
+                $typeData = [$type];
+
+                foreach ($values as $category => $properties) {
+                    $rowData = array_merge($typeData, [$subtype, $category]);
+
+                    foreach ($properties as $property => $value) {
+                        if ($property == "") continue;
+                        $showVal = ($value >= 1) ? $value : '';
+
+                        if ($property == 'total') {
+                            $rowData[] = $showVal;
+                            $total_count += $value;
+                            $csv_rows[] = $rowData;
+                        } else {
+                            $rowData[] = $showVal;
+                        }
+                    }
+                }
+            }
+        }
+        $totalCountRow = array_merge(array_fill(0, $numHeaders - 1, ''), [$total_count]);
+        $csv_rows[] = $totalCountRow;
+
+        $csv_data[$csv_tablename] = ['filename' => $csv_tablename, 'headers' => $csv_headers, 'rows' => $csv_rows];
+        return $csv_data[$csv_tablename];
+    }
+
+    $i = $j = $k = $total_count = 0;
+    $table_string2 = '';
+
+    foreach ($array_subs as $type => $subtypes) {
+        $keyCounts = count($subtypes);
+        $typeCellAdded = false;
+
+        foreach ($subtypes as $subtype => $values) {
+            $keyCounts2 = count($values) + 1; // Adjusted count
+            $subtyperowspan = $keyCounts2;
+            $typerowspan = $keyCounts * $keyCounts2;
+	    
+	    if (!$typeCellAdded) {
+		    //echo "typerowspan is:".$typerowspan;
+		    if ($j%2==0) {
+			    $table_string2 .= "<tr><td class='lightgreen-bg' rowspan='".$typerowspan."'>".$type."</td>";
+		    } else {
+			    $table_string2 .= "<tr><td class='green-bg' rowspan='".$typerowspan."'>".$type."</td>";
+		    }
+		    // Set the flag to true once the type cell is added
+		    $typeCellAdded = true;
+	    }
+	    if($i%2==0){
+		    $table_string2 .= "<td  class='white-bg' rowspan='".$subtyperowspan."'>".$subtype."</td>";
+	    }else{
+		    $table_string2 .= "<td  class='blue-bg' rowspan='".$subtyperowspan."'>".$subtype."</td>";
+	    }
+
+            foreach ($values as $category => $properties) {
+                if (in_array($category, $color_cols)) {
+                    $table_string2 .= "<tr>";
 		}
-		// Modify neuron name if necessary
-		if (isset($neuron_ids[$rowvalue['neuron_name']])) {
-			// Only modify if $write_file is not set
-			if (!isset($write_file)) {
-				$rowvalue['neuron_name'] = get_link($rowvalue['neuron_name'], $neuron_ids[$rowvalue['neuron_name']], './neuron_page.php', 'neuron');
-			}
+		if($k%2==0){
+			$table_string2 .= "<td class='white-bg'>".$category."</td>";
+		}else{
+			$table_string2 .= "<td class='blue-bg'>".$category."</td>";
 		}
-
-		// Extract and potentially modify values
-		$subregion = $rowvalue['subregion'];
-		$neuron_name = $rowvalue['neuron_name'];
-		$color_sp = isset($color_segments[$rowvalue['color_sp']]) ? $color_segments[$rowvalue['color_sp']] : 'default_color';
-		$evidence = isset($neuronal_segments[$rowvalue['evidence']]) ? $neuronal_segments[$rowvalue['evidence']] : 'default_evidence';
-
-		// Special handling for specific evidence
-		if ($evidence == 'GABAa_alpha2' && empty($rowvalue['color_sp'])) {
-			$rowvalue['color_sp'] = 'positive';
-			$color_sp = $color_segments[$rowvalue['color_sp']] ?? 'default_color';
-		}
-
-		$views = intval($rowvalue['views']);
-
-		// Initialize arrays if necessary
-		if (!isset($array_subs[$subregion])) {
-			$array_subs[$subregion] = [];
-		}
-
-		if (!isset($array_subs[$subregion][$neuron_name])) {
-			$array_subs[$subregion][$neuron_name] = initializeNeuronArray($cols, $color_cols);
-		}
-
-		if (!isset($array_subs[$subregion][$neuron_name][$color_sp][$evidence])) {
-			$array_subs[$subregion][$neuron_name][$color_sp][$evidence] = 0;
-		}
-
-		if (!isset($array_subs[$subregion][$neuron_name][$color_sp]['total'])) {
-			$array_subs[$subregion][$neuron_name][$color_sp]['total'] = 0;
-		}
-
-		// Increment values
-		$array_subs[$subregion][$neuron_name][$color_sp][$evidence] += $views;
-		$array_subs[$subregion][$neuron_name][$color_sp]['total'] += $views;
-	}
-
-	foreach($array_subs as $subregion => $neuron_names){
-		foreach($neuron_names as $neuron_name=>$colors){
-			foreach($colors as $colorvalue=>$colorVals){
-				if (!isset($array_subs[$subregion][$neuron_name][$colorvalue]['total'])) {
-					$array_subs[$subregion][$neuron_name][$colorvalue]['total']=0;
-				}
-			}
-		}
-	}
-	if(isset($write_file)){
-		// Iterate over the types
-		foreach ($array_subs as $type => $subtypes) {
-
-			foreach ($subtypes as $subtype => $values) {
-				// Write type to the CSV file only once
-				$typeData = [$type];
-
-				foreach ($values as $category => $properties) {
-					// Construct the row data starting with type, subtype, and category
-					$rowData = array_merge($typeData, [$subtype, $category]);
-
-					foreach ($properties as $property => $value) {
-						if($property == "") continue;
-						$showVal = ($value >= 1) ? $value : '';
-
-						if ($property == 'total') {
-							// Include the total in the current row
-							$rowData[] = $showVal;
-							$total_count += $value;
-							// Write the row to the CSV file
-							$csv_rows[] = $rowData;
-						} else {
-							$rowData[] = $showVal;
-						}
-					}
-				}
-			}
-		}
-
-		// Write the total count row at the end of the CSV file
-		$totalCountRow = ['Total Count', '', '', '', '', '', '','', '','', '','', '','', '','', '','', '','', '','', '','', '','', '','', '', '', $total_count];
-		$csv_rows[] = $totalCountRow;
-
-		$csv_data[$csv_tablename]=['filename'=>$csv_tablename,'headers'=>$csv_headers,'rows'=>$csv_rows];
-		return $csv_data[$csv_tablename];
-	}
-	$i = $j = $k = $total_count =0;
-	$table_string2 = '';
-	foreach ($array_subs as $type => $subtypes) {
-		$keyCounts = count($subtypes);
-		// Flag to track if the type cell has been added
-		$typeCellAdded = false;
-		foreach ($subtypes as $subtype => $values) {
-			// Count the number of properties for the current subtype
-			$keyCounts2 = count($values)+1;//Added this 1 as count is giving 6 but then one row is showing as seperate Added on April 25 2024
-			$subtyperowspan = $keyCounts2;
-
-			// Calculate typerowspan as the product of keyCounts and keyCounts2
-			$typerowspan = $keyCounts * $keyCounts2;
-
-			// Add the type cell only once for each type
-			if (!$typeCellAdded) {
-				//echo "typerowspan is:".$typerowspan;
-				if ($j%2==0) {
-					$table_string2 .= "<tr><td class='lightgreen-bg' rowspan='".$typerowspan."'>".$type."</td>";
-				} else {
-					$table_string2 .= "<tr><td class='green-bg' rowspan='".$typerowspan."'>".$type."</td>";
-				}
-				// Set the flag to true once the type cell is added
-				$typeCellAdded = true;
-			}
-			if($i%2==0){
-				$table_string2 .= "<td  class='white-bg' rowspan='".$subtyperowspan."'>".$subtype."</td>";
+		foreach ($properties as $property => $value) {
+			// Check if the property is "total"
+			if($property == ""){continue;}
+			$showval='';
+			if($value >= 1){$showval = $value;}
+			
+			if($k%2==0){
+				$table_string2 .= "<td class='white-bg'>".$showval."</td>";
 			}else{
-				$table_string2 .= "<td  class='blue-bg' rowspan='".$subtyperowspan."'>".$subtype."</td>";
+				$table_string2 .= "<td class='blue-bg'>".$showval."</td>";
 			}
-			// Iterate over categories and properties
-			foreach ($values as $category => $properties) {
-				if (in_array($category, $color_cols)) {
-					// Open a new row if the category is a color column
-					$table_string2 .= "<tr>";
-				}
-				if($i%2==0){
-					$table_string2 .= "<td class='white-bg'>".$category."</td>";
-				}else{
-					$table_string2 .= "<td class='blue-bg'>".$category."</td>";
-				}
-
-				foreach ($properties as $property => $value) {
-					// Check if the property is "total"
-					if($property == ""){continue;}
-					$showval='';
-					if($value >= 1){$showval = $value;}
-					if($i%2==0){
-						$table_string2 .= "<td class='white-bg'>".$showval."</td>";
-					}else{
-						$table_string2 .= "<td class='blue-bg'>".$showval."</td>";
-					}
-					if ($property == 'total') {
-						// Close the row if the property is "total"
-						$table_string2 .= "</tr>";
-						$total_count += $value;
-						$i++;
-					}
-				}
+			if ($property == 'total') {
+				// Close the row if the property is "total"
+				$table_string2 .= "</tr>";
+				$total_count += $value;
+				$k++;
 			}
-			$k++;
-			$table_string2 .= "</tr>";
 		}
-		$j++;
-	}
-	$table_string1 .= $table_string2;
-	$table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$total_count."</td></tr>";
-	return $table_string1;
+            }
+	    $i++;
+            $table_string2 .= "</tr>";
+        }
+        $j++;
+    }
+    $table_string2 .= "<tr><td colspan='" . ($numHeaders - 1) . "' class='total-row'>Total Count</td><td>$total_count</td></tr>";
 
+    return $table_string2;
 }
 
 function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file = NULL, $array_subs = NULL){
 
 	$count = 0;
 	$csv_rows=[];
+    	$numHeaders = count($csv_headers);
 
         $rs = mysqli_query($conn,$query);
         $table_string1 = '';
@@ -898,12 +913,6 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 			$array_subs[$subregion][$neuron_name] = initializeNeuronArray($cols, $color_cols);
 		}
 		if(!isset($array_subs[$subregion][$neuron_name][$color][$evidence])){
-			/*echo "evidence does not exist and trying to initiate to 0:".$evidence."Evidence from DB:".$rowvalue['evidence'];
-			  echo $neuronal_segments[$rowvalue['evidence']];
-			  echo "Color is:".$color;
-			  echo "db color is:".$rowvalue['color'];
-			  echo "Sub Region is:".$subregion;
-			  echo "Neuron Name:".$neuron_name; */
 			$array_subs[$subregion][$neuron_name][$color][$evidence] = 0;
 			$array_subs[$subregion][$neuron_name][$color]['total']=0;
 		}else{
@@ -954,33 +963,27 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
                 }
 
                 // Write the total count row at the end of the CSV file
-                $totalCountRow = ['Total Count', '', '', '', '', '', '','', '','', '','', '','', '','', '','', '','', '','', '','', '','', '','', '', '','', '', '', '', '', '','', '','', '','', '','', '','', '','', '','', '','', '','', '','', '','', '', '','', '', '', '', '', '','', '','', '','', '','', '','', '','', '','', '','', '','', '','', '','', '', '','', '', '', '', '', '','', '','', '','', '','', '','', '','', '','', '','', '','', '','', '','', '', '', '', '', '', '', '', $total_count];
+        	$totalCountRow = array_merge(array_fill(0, $numHeaders - 1, ''), [$total_count]);
                 $csv_rows[] = $totalCountRow;
                 $csv_data[$csv_tablename]=['filename'=>$csv_tablename,'headers'=>$csv_headers,'rows'=>$csv_rows];
                 return $csv_data[$csv_tablename];
 	}
 	//var_dump($array_subs);//exit;
-	$i = $j = $k = $total_count =0;
+	$i = $j = $k = $total_count = 0;
 	$table_string2 = '';
+
 	foreach ($array_subs as $type => $subtypes) {
-
 		$keyCounts = count($subtypes);
-
-		// Flag to track if the type cell has been added
 		$typeCellAdded = false;
 
 		foreach ($subtypes as $subtype => $values) {
-			// Count the number of properties for the current subtype
 			$keyCounts2 = count($values)+1;//Added this 1 as count is giving 6 but then one row is showing as seperate Added on April 25 2024
 			$subtyperowspan = $keyCounts2;
-
-			// Calculate typerowspan as the product of keyCounts and keyCounts2
 			$typerowspan = $keyCounts * $keyCounts2;
 
-			// Add the type cell only once for each type
 			if (!$typeCellAdded) {
 				//echo "typerowspan is:".$typerowspan;
-				if ($j % 2 == 0) {
+				if ($j%2==0) {
 					$table_string2 .= "<tr><td class='lightgreen-bg' rowspan='".$typerowspan."'>".$type."</td>";
 				} else {
 					$table_string2 .= "<tr><td class='green-bg' rowspan='".$typerowspan."'>".$type."</td>";
@@ -988,43 +991,48 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 				// Set the flag to true once the type cell is added
 				$typeCellAdded = true;
 			}
-			
-				//echo "subtyperowspan is:".$subtyperowspan;
-			// Add the subtype cell
-			$table_string2 .= "<td rowspan='".$subtyperowspan."'>".$subtype."</td>";
+			if($i%2==0){
+				$table_string2 .= "<td  class='white-bg' rowspan='".$subtyperowspan."'>".$subtype."</td>";
+			}else{
+				$table_string2 .= "<td  class='blue-bg' rowspan='".$subtyperowspan."'>".$subtype."</td>";
+			}
 
-			// Iterate over categories and properties
 			foreach ($values as $category => $properties) {
 				if (in_array($category, $color_cols)) {
-					// Open a new row if the category is a color column
-					$table_string2 .= "<tr><td>".$category."</td>";
-				} else {
-					// Otherwise, add the category without starting a new row
-					$table_string2 .= "<td>".$category."</td>";
+					$table_string2 .= "<tr>";
 				}
-
+				if($k%2==0){
+					$table_string2 .= "<td class='white-bg'>".$category."</td>";
+				}else{
+					$table_string2 .= "<td class='blue-bg'>".$category."</td>";
+				}
 				foreach ($properties as $property => $value) {
 					// Check if the property is "total"
 					if($property == ""){continue;}
 					$showval='';
 					if($value >= 1){$showval = $value;}
+
+					if($k%2==0){
+						$table_string2 .= "<td class='white-bg'>".$showval."</td>";
+					}else{
+						$table_string2 .= "<td class='blue-bg'>".$showval."</td>";
+					}
 					if ($property == 'total') {
 						// Close the row if the property is "total"
-						$table_string2 .= "<td>$showval</td></tr>";
+						$table_string2 .= "</tr>";
 						$total_count += $value;
-					} else {
-						$table_string2 .= "<td>$showval</td>";
+						$k++;
 					}
 				}
 			}
-			 $table_string2 .= "</tr>";
+			$i++;
+			$table_string2 .= "</tr>";
 		}
 		$j++;
 	}
-	$table_string1 .= $table_string2;
-	$table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$total_count."</td></tr>";
-	return $table_string1;
+	$table_string2 .= "<tr><td colspan='" . ($numHeaders - 1) . "' class='total-row'>Total Count</td><td>$total_count</td></tr>";
 
+	return $table_string2;
 }
 
 // Function to generate alternating row color class
@@ -1294,49 +1302,32 @@ function get_page_views($conn){ //Passed on Dec 3 2023
 
 function get_views_per_page_report($conn, $write_file=NULL){ //Passed $conn on Dec 3 2023
 
-	$page_views_query = "SELECT gap.page, SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS views  FROM
-					ga_analytics_pages gap WHERE gap.day_index IS NULL GROUP BY gap.page order by views desc";
-	//echo $page_views_query;
-	/*$page_views_query2 = "SELECT gap.page, SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS views FROM
-					ga_analytics_pages gap WHERE gap.day_index IS NOT NULL and gap.page != '/php/' GROUP BY gap.page order by views desc"; */
-	$page_views_query2 = "SELECT gap.page, SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS views FROM
+	$page_views_query = "SELECT gap.page, SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS views FROM
 					ga_analytics_pages gap WHERE gap.day_index IS NOT NULL GROUP BY gap.page order by views desc";
-	//echo $page_views_query2;
+	//echo $page_views_query1;
 
 	$columns = ['Page', 'Views'];
 	if(isset($write_file)) {
-                //return format_table($conn, $page_views_query, $table_string, 'views_per_page', $columns, $write_file, $page_views_query2);
-                return format_table($conn, $page_views_query2, $table_string, 'views_per_page', $columns, $neuron_ids=NULL, $write_file);
+                return format_table($conn, $page_views_query1, $table_string, 'views_per_page', $columns, $neuron_ids=NULL, $write_file);
         }
         else{
-		$table_string = "'<html><head><style>
-
-  table {
-    width: 100%;
-    table-layout: fixed; 
-  }
-
-  td, th {
-   /* overflow-wrap: break-word; 
-    word-break: break-word; */
-    overflow-wrap: break-word; 
-    word-break: break-word; 
-    white-space: normal;
-  }
- td:first-child {
-            width: 90%; /* Adjust width as needed for the first cell */
+  $table_string = "<html><head><style>
+ #$table_id {
+            width: 100%;
+            table-layout: fixed; /* Ensures columns have fixed widths */
+        }     
+        #$table_id td, #$table_id th {
+            overflow-wrap: break-word; /* Break long words */
+            word-break: break-word; /* Additional word breaking */
+            white-space: normal; /* Allow wrapping */
         }
-
-        td:last-child {
-            width: 10%; /* Adjust width as needed for the second cell */
-            text-align: center; /* Center text if desired */
-        }
-
+  }
 </style></head><body>";
-		$table_string .= get_table_skeleton_first($columns);
-		//$table_string .= format_table($conn, $page_views_query, $table_string, 'views_per_page', $columns, $write_file=NULL, $page_views_query2);
-
-		$table_string .= format_table($conn, $page_views_query2, $table_string, 'views_per_page', $columns);
+               
+		//$table_string = get_table_skeleton_first($columns);
+		//$table_string = get_table_skeleton_first($columns, 'table_id');
+		$table_string = '';
+		$table_string .= format_table($conn, $page_views_query, $table_string, 'views_per_page', $columns);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
@@ -1359,15 +1350,19 @@ function get_pages_views_per_month_report($conn, $write_file=NULL){ //Passed $co
 	if(isset($write_file)) {
 		return format_table($conn, $page_views_per_month_query, $table_string, 'page_views_per_month', $columns, $neuron_ids=NULL, $write_file);
         }else{  
-		$table_string = get_table_skeleton_first($columns);
+		//$table_string = get_table_skeleton_first($columns);
+		$table_string = '';//get_table_skeleton_first($columns);
 		$table_string .= format_table($conn, $page_views_per_month_query, $table_string, 'page_views_per_month', $columns);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
 }
 
-function get_table_skeleton_first($cols){
+function get_table_skeleton_first($cols, $table_id = NULL){
 	$table_string1 = "<table>";
+	if($table_id){
+		$table_string1 = "<table id='$table_id'>";
+	}
 	if($cols){
 		$table_string1 .= "<tr>";
 		foreach($cols as $col){
@@ -1690,7 +1685,8 @@ function get_pmid_isbn_property_views_report($conn, $neuron_ids, $write_file=NUL
 	if(isset($write_file)) {
 		return format_table($conn, $page_pmid_isbn_property_views_query, $table_string, 'pmid_isbn_table', $columns, $neuron_ids, $write_file);
         }else{
-		$table_string = get_table_skeleton_first($columns);
+		//$table_string = get_table_skeleton_first($columns);
+		$table_string = '';
 		$table_string .= format_table($conn, $page_pmid_isbn_property_views_query, $table_string, 'pmid_isbn_table', $columns, $neuron_ids);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
@@ -2115,7 +2111,8 @@ function get_domain_functionality_views_report($conn, $write_file = NULL){
 	if(isset($write_file)) {
 		return format_table($conn, $page_functionality_views_query, $table_string, 'domain_func_table', $columns, $neuron_ids=NULL, $write_file);
 	}else{
-		$table_string = get_table_skeleton_first($columns);
+		//$table_string = get_table_skeleton_first($columns);
+		$table_string = '';
 		$table_string .= format_table($conn, $page_functionality_views_query, $table_string, 'domain_func_table', $columns);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
