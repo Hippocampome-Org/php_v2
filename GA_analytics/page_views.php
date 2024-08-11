@@ -98,6 +98,60 @@ function processNeuronLink($neuron_id, $neuron_ids_array, $linkText, $write_file
     return $neuron_id;
 }
 
+function format_table_pmid($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids=NULL, $write_file=NULL){
+	$count = 0;
+	$csv_rows = [];
+    $rs = mysqli_query($conn,$query);
+	$table_string1 = '';
+	$rows = count($csv_headers);
+	//For Phases page to replciate the string we show
+	$phase_evidences=['all_other'=>'Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau, AP threshold, fAHP, or APpeak trough.', 
+				'theta'=>'Theta', 'swr_ratio'=>'SWR ratio','firingRate'=>'Firing rate'];
+	//Neuronal Segment Data
+	$neuronal_segments = ['blue'=>'Dendrites','blueSoma'=>'Dendrites-Somata','red'=>'Axons','redSoma'=>'Axons-Somata','somata'=>'Somata','violet'=>'Axons-Dendrites','violetSoma'=>'Axons-Dendrites-Somata'];
+	if(!$rs || ($rs->num_rows < 1)){
+		$table_string1 .= "<tr><td> No Data is available </td></tr>";
+		return $table_string1;
+	}
+	$i=0;
+	while($row = mysqli_fetch_row($rs))
+	{       
+		$csv_rows[] = $row;
+		$j=0;
+		if($i%2==0){ $table_string .= '<tr class="white-bg" >';}
+		else{ $table_string1 .= '<tr class="blue-bg">';}//Color gradient CSS
+		if($csv_tablename == 'pmid_isbn_table'){
+			$row[0] = get_link($row[0], $row[0], 'https://pubmed.ncbi.nlm.nih.gov/', 'pmid');
+			$row[3] = get_link($row[3], $neuron_ids[$row[3]], './neuron_page.php','neuron');
+		}
+		while($j < $rows){
+			if(isset($phase_evidences[$row[$j]])){ $row[$j] = $phase_evidences[$row[$j]]; }
+			if(isset($neuronal_segments[$row[$j]])){ $row[$j] = $neuronal_segments[$row[$j]]; }
+			if(isset($neuron_ids[$row[$j]])){ $row[$j] = neuron_ids[$row[$j]]; }
+			if($row[$rows-1] > 0){
+				$table_string1 .= "<td>".ucwords($row[$j])."</td>";
+			}
+			$j++;
+		}
+		$count += $row[$rows-1];
+		$table_string1 .= "</tr>";
+		$i++;//increment for color gradient of the row
+	}
+
+	if(isset($write_file)){
+		if($csv_tablename == 'pmid_isbn_table'){
+			$totalRow = ["Total Count",'','','','',$count];
+		}
+		$csv_rows[] = $totalRow;
+		$csv_data[$csv_tablename]=['filename'=>$csv_tablename,'headers'=>$csv_headers,'rows'=>$csv_rows];
+        return $csv_data[$csv_tablename];
+    }	
+	else{
+		$table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$count."</td></tr>";	
+		return $table_string1;
+	}
+}
+
 function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file = NULL, $query2 = NULL) {
     $count = 0;
     $csv_rows = [];
@@ -1661,9 +1715,10 @@ function get_pmid_isbn_property_views_report($conn, $neuron_ids, $write_file=NUL
 
 	$columns = ['PubMed ID/ISBN', 'Subregion', 'Layer', 'Neuron Type Name', 'Neuronal Segment', 'Views'];
 	if(isset($write_file)) {
-		return format_table($conn, $page_pmid_isbn_property_views_query, $table_string, 'pmid_isbn_table', $columns, $neuron_ids, $write_file);
+		return format_table_pmid($conn, $page_pmid_isbn_property_views_query, $table_string, 'pmid_isbn_table', $columns, $neuron_ids, $write_file);
     }else{
-		$table_string = format_table($conn, $page_pmid_isbn_property_views_query, $table_string, 'pmid_isbn_table', $columns, $neuron_ids);
+		$table_string = get_table_skeleton_first($columns);
+		$table_string .= format_table_pmid($conn, $page_pmid_isbn_property_views_query, $table_string, 'pmid_isbn_table', $columns, $neuron_ids);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
@@ -2017,6 +2072,9 @@ function get_fp_property_views_report($conn, $write_file=NULL){
 function get_domain_functionality_views_report($conn, $write_file = NULL){
 	$page_functionality_views_query = "SELECT 
 		CASE 
+		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology') THEN 'Morphology'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology_linking_pmid_isbn') THEN 'Morphology: PMID / ISBN'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('/synaptome/php/synaptome') THEN 'Synaptome'
 		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('connectivity', 'connectivity_orig', 'connectivity_test') THEN 'Connectivity: Known / Potential' 
 		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'counts' THEN 'Census' 
 		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'ephys' THEN 'Membrane Biophysics' 
