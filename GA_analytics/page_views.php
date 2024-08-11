@@ -1308,26 +1308,10 @@ function get_views_per_page_report($conn, $write_file=NULL){ //Passed $conn on D
 
 	$columns = ['Page', 'Views'];
 	if(isset($write_file)) {
-                return format_table($conn, $page_views_query1, $table_string, 'views_per_page', $columns, $neuron_ids=NULL, $write_file);
-        }
-        else{
-  $table_string = "<html><head><style>
- #$table_id {
-            width: 100%;
-            table-layout: fixed; /* Ensures columns have fixed widths */
-        }     
-        #$table_id td, #$table_id th {
-            overflow-wrap: break-word; /* Break long words */
-            word-break: break-word; /* Additional word breaking */
-            white-space: normal; /* Allow wrapping */
-        }
-  }
-</style></head><body>";
-               
-		//$table_string = get_table_skeleton_first($columns);
-		//$table_string = get_table_skeleton_first($columns, 'table_id');
-		$table_string = '';
-		$table_string .= format_table($conn, $page_views_query, $table_string, 'views_per_page', $columns);
+        return format_table($conn, $page_views_query1, $table_string, 'views_per_page', $columns, $neuron_ids=NULL, $write_file);
+    }
+    else{
+		$table_string = format_table($conn, $page_views_query, $table_string, 'views_per_page', $columns);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
@@ -1349,10 +1333,8 @@ function get_pages_views_per_month_report($conn, $write_file=NULL){ //Passed $co
 	$columns = ['Month-Year', 'Views'];
 	if(isset($write_file)) {
 		return format_table($conn, $page_views_per_month_query, $table_string, 'page_views_per_month', $columns, $neuron_ids=NULL, $write_file);
-        }else{  
-		//$table_string = get_table_skeleton_first($columns);
-		$table_string = '';//get_table_skeleton_first($columns);
-		$table_string .= format_table($conn, $page_views_per_month_query, $table_string, 'page_views_per_month', $columns);
+    }else{  
+		$table_string = format_table($conn, $page_views_per_month_query, $table_string, 'page_views_per_month', $columns);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
@@ -1583,18 +1565,15 @@ EXECUTE stmt;
 DEALLOCATE PREPARE stmt;"; 
 	}
 
-//Till Here on Jul 2 2024
-
-	//$table_string = get_table_skeleton_first($columns);
+	//Till Here on Jul 2 2024
 	if(isset($write_file)) {
 		$file_name = "neuron_types_";
 		if($views_request == 'views_per_month' || $views_request == 'views_per_year'){
 			$file_name .= $views_request;
 		}else{$file_name .= "views"; }
-		return format_table_neurons($conn, $page_neurons_views_query, $table_string, $file_name, $columns, $neuron_ids, $write_file, $views_request);
+			return format_table_neurons($conn, $page_neurons_views_query, $table_string, $file_name, $columns, $neuron_ids, $write_file, $views_request);
 	}else{
-		$table_string = '';
-		$table_string .= format_table_neurons($conn, $page_neurons_views_query, $table_string, 'neuron_types_views', $columns, $neuron_ids);
+		$table_string = format_table_neurons($conn, $page_neurons_views_query, $table_string, 'neuron_types_views', $columns, $neuron_ids);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
@@ -1652,11 +1631,10 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $write_
         if(isset($write_file)) {
                 return format_table_morphology($conn, $page_property_views_query, $table_string, 'morphology_property', $columns, $neuron_ids, $write_file);
         }else{
-		$table_string = get_table_skeleton_first($columns);
-                $table_string .= format_table_morphology($conn, $page_property_views_query, $table_string, 'morphology_property', $columns, $neuron_ids);
-                $table_string .= get_table_skeleton_end();
-
-                echo $table_string;
+			$table_string = get_table_skeleton_first($columns);
+            $table_string .= format_table_morphology($conn, $page_property_views_query, $table_string, 'morphology_property', $columns, $neuron_ids);
+            $table_string .= get_table_skeleton_end();
+		    echo $table_string;
         }       
 } 
 function get_pmid_isbn_property_views_report($conn, $neuron_ids, $write_file=NULL){
@@ -1684,10 +1662,8 @@ function get_pmid_isbn_property_views_report($conn, $neuron_ids, $write_file=NUL
 	$columns = ['PubMed ID/ISBN', 'Subregion', 'Layer', 'Neuron Type Name', 'Neuronal Segment', 'Views'];
 	if(isset($write_file)) {
 		return format_table($conn, $page_pmid_isbn_property_views_query, $table_string, 'pmid_isbn_table', $columns, $neuron_ids, $write_file);
-        }else{
-		//$table_string = get_table_skeleton_first($columns);
-		$table_string = '';
-		$table_string .= format_table($conn, $page_pmid_isbn_property_views_query, $table_string, 'pmid_isbn_table', $columns, $neuron_ids);
+    }else{
+		$table_string = format_table($conn, $page_pmid_isbn_property_views_query, $table_string, 'pmid_isbn_table', $columns, $neuron_ids);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
@@ -1750,11 +1726,10 @@ function get_markers_property_views_report($conn, $neuron_ids, $write_file = NUL
 
 	if(isset($write_file)) {
 		return format_table_markers($conn, $page_property_views_query, $table_string, 'markers_property_table', $columns, $neuron_ids, $write_file);
-        }else{
+    }else{
 		$table_string = get_table_skeleton_first($columns);
 		$table_string .= format_table_markers($conn, $page_property_views_query, $table_string, 'markers_property_table', $columns, $neuron_ids);
 		$table_string .= get_table_skeleton_end();
-
 		echo $table_string;
 	}
 }
@@ -1939,14 +1914,12 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $wr
 	$csv_tablename = $page_string."_table";
 	if ($page_string == 'synpro' || $page_string == 'synpro_nm' || $page_string == 'synpro_pvals') {
 		if(isset($write_file)) {
-			$table_string = '';
 			return format_table_synpro($conn, $page_counts_views_query, $table_string, $csv_tablename, $columns, $neuron_ids = NULL, $write_file);
-        	}else{
-			$table_string = '';
-			$table_string .= format_table_synpro($conn, $page_counts_views_query, $table_string, $csv_tablename, $columns, $neuron_ids);
+        }else{
+			$table_string = format_table_synpro($conn, $page_counts_views_query, $table_string, $csv_tablename, $columns, $neuron_ids);
 			//echo $page_counts_views_query;
 			$table_string .= get_table_skeleton_end();
-        		echo $table_string;
+        	echo $table_string;
 		}
 	}
 	if($page_string == 'biophysics'){
@@ -2111,9 +2084,7 @@ function get_domain_functionality_views_report($conn, $write_file = NULL){
 	if(isset($write_file)) {
 		return format_table($conn, $page_functionality_views_query, $table_string, 'domain_func_table', $columns, $neuron_ids=NULL, $write_file);
 	}else{
-		//$table_string = get_table_skeleton_first($columns);
-		$table_string = '';
-		$table_string .= format_table($conn, $page_functionality_views_query, $table_string, 'domain_func_table', $columns);
+		$table_string = format_table($conn, $page_functionality_views_query, $table_string, 'domain_func_table', $columns);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
@@ -2177,5 +2148,4 @@ function get_page_functionality_views_report($conn, $write_file=NULL){
 		echo $table_string;
 	}
 }
-
 ?>
