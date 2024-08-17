@@ -1,4 +1,8 @@
 <?php
+#ini_set('display_errors', '1');
+#ini_set('display_startup_errors', '1');
+#error_reporting(E_ALL);
+
 global $csv_data;
 
 function get_neuron_ids($conn){
@@ -141,11 +145,12 @@ function format_table_pmid($conn, $query, $table_string, $csv_tablename, $csv_he
 	if(isset($write_file)){
 		if($csv_tablename == 'pmid_isbn_table'){
 			$totalRow = ["Total Count",'','','','',$count];
+			$csv_tablename='morphology_linking_PMID_ISBN_property_page_views';
 		}
 		$csv_rows[] = $totalRow;
-		$csv_data[$csv_tablename]=['filename'=>$csv_tablename,'headers'=>$csv_headers,'rows'=>$csv_rows];
-        return $csv_data[$csv_tablename];
-    }	
+		$csv_data[$csv_tablename]=['filename'=>toCamelCase($csv_tablename),'headers'=>$csv_headers,'rows'=>$csv_rows];
+		return $csv_data[$csv_tablename];
+	}	
 	else{
 		$table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$count."</td></tr>";	
 		return $table_string1;
@@ -253,9 +258,7 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
     if (isset($write_file)) {
         $totalRow = ($csv_tablename == 'pmid_isbn_table') ? ["Total Count", '', '', '', '', $count] : ["Total Count", $count];
         $csv_rows[] = $totalRow;
-        $csv_data[$csv_tablename] = ['filename' => $csv_tablename, 'headers' => $csv_headers, 'rows' => $csv_rows];
-        $table_string .= $table_string1;
-        $table_string .= "</tbody></table></body></html>";
+	$csv_data[$csv_tablename] = ['filename' => toCamelCase($csv_tablename), 'headers' => $csv_headers, 'rows' => $csv_rows];
         return $csv_data[$csv_tablename];
     } else {
         $table_string1 .= "<tr><td colspan='" . ($rows - 1) . "'><b>Total Count</b></td><td>" . $count . "</td></tr>";    
@@ -315,7 +318,7 @@ function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $wri
     if(isset($write_file)){
 	    $totalRow = ["Total Count",$count]; 
 	    $csv_rows[] = $totalRow;
-	    $csv_data[$csv_tablename]=['filename'=>$csv_tablename,'headers'=>$csv_headers,'rows'=>$csv_rows];
+	    $csv_data[$csv_tablename]=['filename'=>toCamelCase($csv_tablename),'headers'=>$csv_headers,'rows'=>$csv_rows];
 	    return $csv_data[$csv_tablename];
     } else{
 	    $table_string .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$count."</td></tr>";	
@@ -334,6 +337,12 @@ function flattenArray($array) {
         }
     }
     return $result;
+}
+
+function toCamelCase($string) {
+	$result = str_replace('_', ' ', $string);
+	$result = ucwords($result);
+	return $result;
 }
 
 function camel_replace($header, $char = NULL)
@@ -401,7 +410,7 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 			$csv_rows[] = $totalRow;
 
 			// Store information about the CSV file in `$csv_data` array
-			$csv_data[$csv_tablename]=['filename'=>$csv_tablename,'headers'=>$csv_headers,'rows'=>$csv_rows];
+			$csv_data[$csv_tablename]=['filename'=>toCamelCase($csv_tablename),'headers'=>$csv_headers,'rows'=>$csv_rows];
 			return $csv_data[$csv_tablename];
 		} else {
 			// Handle error if query execution fails
@@ -473,9 +482,7 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
             // Append total count row
             $table_string1 .= "<tr><td colspan='" . ($rows - 1) . "'><b>Total Count</b></td><td>$count</td></tr>";
             return $table_string1;
-
     }
-
 }
 
 // Function to initialize neuron array
@@ -643,7 +650,7 @@ function format_table_connectivity($conn, $query, $table_string, $csv_tablename,
 		// Optionally, write the total count at the end of the CSV
 		$totalCountRow = ["Total Count", '', '', '', '', '', '', '', '', '', '', '', $total_count];
 		$csv_rows[] = $totalCountRow;
-                $csv_data[$csv_tablename]=['filename'=>$csv_tablename,'headers'=>$csv_headers,'rows'=>$csv_rows];
+		$csv_data[$csv_tablename]=['filename'=>toCamelCase($csv_tablename),'headers'=>$csv_headers,'rows'=>$csv_rows];
                 return $csv_data[$csv_tablename];
         }
         $i = $j = $k = $total_count =0;
@@ -797,7 +804,7 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
         $totalCountRow = array_merge(array_fill(0, $numHeaders - 1, ''), [$total_count]);
         $csv_rows[] = $totalCountRow;
 
-        $csv_data[$csv_tablename] = ['filename' => $csv_tablename, 'headers' => $csv_headers, 'rows' => $csv_rows];
+        $csv_data[$csv_tablename] = ['filename' => toCamelCase($csv_tablename), 'headers' => $csv_headers, 'rows' => $csv_rows];
         return $csv_data[$csv_tablename];
     }
 
@@ -956,24 +963,34 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 				$color =$color_segments[$rowvalue['color']];
 			}
 		}
-		$views = intval($rowvalue['views']);
+		 $views = intval($rowvalue['views']);
 
-		// Initialize arrays if necessary
-		if (!isset($array_subs[$subregion])) {
-			$array_subs[$subregion] = [];
-		}
+		 // Initialize arrays if necessary
+		 if (!isset($array_subs[$subregion])) {
+			 $array_subs[$subregion] = [];
+		 }
 
-		if (!isset($array_subs[$subregion][$neuron_name])) {
-			$array_subs[$subregion][$neuron_name] = initializeNeuronArray($cols, $color_cols);
-		}
-		if(!isset($array_subs[$subregion][$neuron_name][$color][$evidence])){
-			$array_subs[$subregion][$neuron_name][$color][$evidence] = 0;
-			$array_subs[$subregion][$neuron_name][$color]['total']=0;
-		}else{
-			// Increment values
-			$array_subs[$subregion][$neuron_name][$color][$evidence] += intval($views);
-			$array_subs[$subregion][$neuron_name][$color]['total'] += intval($views);
-		}
+		 if (!isset($array_subs[$subregion][$neuron_name])) {
+			 $array_subs[$subregion][$neuron_name] = initializeNeuronArray($cols, $color_cols);
+		 }
+
+		 if (!isset($array_subs[$subregion][$neuron_name][$color])) {
+			 $array_subs[$subregion][$neuron_name][$color] = [];
+		 }
+
+		 if (!isset($array_subs[$subregion][$neuron_name][$color][$evidence])) {
+			 $array_subs[$subregion][$neuron_name][$color][$evidence] = 0;
+		 }
+
+		 // Initialize 'total' if it does not exist
+		 if (!isset($array_subs[$subregion][$neuron_name][$color]['total'])) {
+			 $array_subs[$subregion][$neuron_name][$color]['total'] = 0;
+		 }
+
+		 // Increment values
+		 $array_subs[$subregion][$neuron_name][$color][$evidence] += intval($views);
+		 $array_subs[$subregion][$neuron_name][$color]['total'] += intval($views);
+
 	}
 	foreach($array_subs as $subregion => $neuron_names){
 		foreach($neuron_names as $neuron_name=>$colors){
@@ -1019,7 +1036,7 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
                 // Write the total count row at the end of the CSV file
         	$totalCountRow = array_merge(array_fill(0, $numHeaders - 1, ''), [$total_count]);
                 $csv_rows[] = $totalCountRow;
-                $csv_data[$csv_tablename]=['filename'=>$csv_tablename,'headers'=>$csv_headers,'rows'=>$csv_rows];
+		$csv_data[$csv_tablename]=['filename'=>toCamelCase($csv_tablename),'headers'=>$csv_headers,'rows'=>$csv_rows];
                 return $csv_data[$csv_tablename];
 	}
 	//var_dump($array_subs);//exit;
@@ -1171,7 +1188,7 @@ function format_table_biophysics($conn, $query, $table_string, $csv_tablename, $
 
 		// Add total count row
 		$csv_rows[] = ["Total Count", '', '', '', '', '', '', '', '', '', '', '', '', $count];
-		$csv_data[$csv_tablename]=['filename'=>$csv_tablename,'headers'=>$csv_headers,'rows'=>$csv_rows];
+		$csv_data[$csv_tablename]=['filename'=>toCamelCase($csv_tablename),'headers'=>$csv_headers,'rows'=>$csv_rows];
 		return $csv_data[$csv_tablename];
 	}
 	#var_dump($array_subs);exit;
@@ -1296,7 +1313,7 @@ function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_
 		// Optionally, add a row for total count at the end of the CSV
 		$totalCountRow = ["Total Count", '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', $count];
 		$csv_rows[] = $totalCountRow;  // Write the row to the CSV file
-		$csv_data[$csv_tablename]=['filename'=>$csv_tablename,'headers'=>$csv_headers,'rows'=>$csv_rows];
+		$csv_data[$csv_tablename]=['filename'=>toCamelCase($csv_tablename),'headers'=>$csv_headers,'rows'=>$csv_rows];
 		return $csv_data[$csv_tablename];
 	}
 	#var_dump($array_subs);exit;
@@ -1357,15 +1374,16 @@ function get_page_views($conn){ //Passed on Dec 3 2023
 function get_views_per_page_report($conn, $write_file=NULL){ //Passed $conn on Dec 3 2023
 
 	$page_views_query = "SELECT gap.page, SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS views FROM
-					ga_analytics_pages gap WHERE gap.day_index IS NOT NULL GROUP BY gap.page order by views desc";
-	//echo $page_views_query1;
+		ga_analytics_pages gap WHERE gap.day_index IS NOT NULL GROUP BY gap.page order by views desc";
+	//echo $page_views_query;
+	$table_string ='';
 
 	$columns = ['Page', 'Views'];
 	if(isset($write_file)) {
-        return format_table($conn, $page_views_query1, $table_string, 'views_per_page', $columns, $neuron_ids=NULL, $write_file);
-    }
-    else{
-		$table_string = format_table($conn, $page_views_query, $table_string, 'views_per_page', $columns);
+		return format_table($conn, $page_views_query, $table_string, 'views_per_page', $columns, $neuron_ids=NULL, $write_file);
+	}
+	else{
+		$table_string .= format_table($conn, $page_views_query, $table_string, 'views_per_page', $columns);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
@@ -1373,22 +1391,17 @@ function get_views_per_page_report($conn, $write_file=NULL){ //Passed $conn on D
 
 function get_pages_views_per_month_report($conn, $write_file=NULL){ //Passed $conn on Dec 3 2023
 	
-	/*$page_views_per_month_query = "select concat(DATE_FORMAT(day_index,'%b'), '-', YEAR(day_index)) as dm, 
-				sum(replace(views,',','')) as views 
-			     from ga_analytics_pages_views where views > 0 
-			     GROUP BY YEAR(day_index), MONTH(day_index)"; */
-
-	//Earlier we are using ga_analytics_pages_views changed to pages
 	$page_views_per_month_query = "select concat(DATE_FORMAT(day_index,'%b'), '-', YEAR(day_index)) as dm,
 		sum(replace(page_views,',','')) as page_views
 			from ga_analytics_pages where page_views > 0 
 			GROUP BY YEAR(day_index), MONTH(day_index)";
 	//echo $page_views_per_month_query;
 	$columns = ['Month-Year', 'Views'];
+	$table_string='';
 	if(isset($write_file)) {
-		return format_table($conn, $page_views_per_month_query, $table_string, 'page_views_per_month', $columns, $neuron_ids=NULL, $write_file);
+		return format_table($conn, $page_views_per_month_query, $table_string, 'monthly_page_views', $columns, $neuron_ids=NULL, $write_file);
     }else{  
-		$table_string = format_table($conn, $page_views_per_month_query, $table_string, 'page_views_per_month', $columns);
+		$table_string .= format_table($conn, $page_views_per_month_query, $table_string, 'monthly_page_views', $columns);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
@@ -1620,14 +1633,15 @@ DEALLOCATE PREPARE stmt;";
 	}
 
 	//Till Here on Jul 2 2024
+	$table_string='';
 	if(isset($write_file)) {
-		$file_name = "neuron_types_";
+		$file_name = "neuron_type_evidence_page_";
 		if($views_request == 'views_per_month' || $views_request == 'views_per_year'){
 			$file_name .= $views_request;
 		}else{$file_name .= "views"; }
 			return format_table_neurons($conn, $page_neurons_views_query, $table_string, $file_name, $columns, $neuron_ids, $write_file, $views_request);
 	}else{
-		$table_string = format_table_neurons($conn, $page_neurons_views_query, $table_string, 'neuron_types_views', $columns, $neuron_ids);
+		$table_string .= format_table_neurons($conn, $page_neurons_views_query, $table_string, 'neuron_types_views', $columns, $neuron_ids);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
@@ -1682,13 +1696,14 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $write_
         //echo $page_property_views_query;
         
         $columns = ['Subregion', 'Neuron Type Name', 'Neuronal Attribute', 'DG:SMo', 'DG:SMi','DG:SG','DG:H','CA3:SLM','CA3:SR','CA3:SL','CA3:SP','CA3:SO','CA2:SLM','CA2:SR','CA2:SP','CA2:SO','CA1:SLM','CA1:SR','CA1:SP','CA1:SO','Sub:SM','Sub:SP','Sub:PL','EC:I','EC:II','EC:III','EC:IV','EC:V','EC:VI','Unknown','Total'];
+        $table_string='';
         if(isset($write_file)) {
-                return format_table_morphology($conn, $page_property_views_query, $table_string, 'morphology_property', $columns, $neuron_ids, $write_file);
+                return format_table_morphology($conn, $page_property_views_query, $table_string, 'morphology_axonal_and_dendritic_lengths_somatic_distances_evidence_page_views', $columns, $neuron_ids, $write_file);
         }else{
-			$table_string = get_table_skeleton_first($columns);
-            $table_string .= format_table_morphology($conn, $page_property_views_query, $table_string, 'morphology_property', $columns, $neuron_ids);
-            $table_string .= get_table_skeleton_end();
-		    echo $table_string;
+		$table_string .= get_table_skeleton_first($columns);
+		$table_string .= format_table_morphology($conn, $page_property_views_query, $table_string, 'morphology_property', $columns, $neuron_ids);
+		$table_string .= get_table_skeleton_end();
+		echo $table_string;
         }       
 } 
 function get_pmid_isbn_property_views_report($conn, $neuron_ids, $write_file=NULL){
@@ -1714,10 +1729,11 @@ function get_pmid_isbn_property_views_report($conn, $neuron_ids, $write_file=NUL
 	//echo $page_pmid_isbn_property_views_query;
 
 	$columns = ['PubMed ID/ISBN', 'Subregion', 'Layer', 'Neuron Type Name', 'Neuronal Segment', 'Views'];
+	$table_string='';
 	if(isset($write_file)) {
 		return format_table_pmid($conn, $page_pmid_isbn_property_views_query, $table_string, 'pmid_isbn_table', $columns, $neuron_ids, $write_file);
-    }else{
-		$table_string = get_table_skeleton_first($columns);
+	}else{
+		$table_string .= get_table_skeleton_first($columns);
 		$table_string .= format_table_pmid($conn, $page_pmid_isbn_property_views_query, $table_string, 'pmid_isbn_table', $columns, $neuron_ids);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
@@ -1778,12 +1794,12 @@ function get_markers_property_views_report($conn, $neuron_ids, $write_file = NUL
 			"Math-2", "mGluR1", "mGluR2", "mGluR2/3", "mGluR3", "mGluR4", "mGluR5", "mGluR5a", "mGluR7a", "mGluR8a", "MOR", "Mus1R", "Mus3R", "Mus4R", "Ndst4", "NECAB1", "Neuropilin2", "NKB", "Nov",
 			"Nr3c2", "Nr4a1", "p-CREB", "PCP4", "PPE", "PPTA", "Prox1", "Prss12", "Prss23", "PSA-NCAM", "SATB1", "SATB2", "SCIP", "SPO", "SubP", "Tc1568100", "TH", "vAChT", "vGAT", "vGluT1", 
 			"vGluT2", "VILIP", "Wfs1", "Y1", "Y2", "DCX", "NeuN", "NeuroD", "CRH", "NK1R", "Unknown", "Total"];
-
+        $table_string='';
 	if(isset($write_file)) {
-		return format_table_markers($conn, $page_property_views_query, $table_string, 'markers_property_table', $columns, $neuron_ids, $write_file);
-    }else{
-		$table_string = get_table_skeleton_first($columns);
-		$table_string .= format_table_markers($conn, $page_property_views_query, $table_string, 'markers_property_table', $columns, $neuron_ids);
+		return format_table_markers($conn, $page_property_views_query, $table_string, 'markers_evidence_page_views', $columns, $neuron_ids, $write_file);
+	}else{
+		$table_string .= get_table_skeleton_first($columns);
+		$table_string .= format_table_markers($conn, $page_property_views_query, $table_string, 'markers_evidence_page_views', $columns, $neuron_ids);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
@@ -1979,26 +1995,26 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $wr
 	}
 	if($page_string == 'biophysics'){
 		if(isset($write_file)) {
-			return format_table_biophysics($conn, $page_counts_views_query, $table_string, $csv_tablename, $columns, $neuron_ids = NULL, $write_file);
+			return format_table_biophysics($conn, $page_counts_views_query, $table_string, 'membrane_biophysics_evidence_page_views', $columns, $neuron_ids = NULL, $write_file);
         	}else{
-			$table_string .= format_table_biophysics($conn, $page_counts_views_query, $table_string, $page_string, $columns, $neuron_ids);
+			$table_string .= format_table_biophysics($conn, $page_counts_views_query, $table_string, 'membrane_biophysics_evidence_page_views', $columns, $neuron_ids);
 			$table_string .= get_table_skeleton_end();
         		echo $table_string;
 		}
 	}else if($page_string == 'connectivity'){
                 if(isset($write_file)) {
-                        return format_table_connectivity($conn, $page_counts_views_query, $table_string, $page_string, $columns, $neuron_ids = NULL, $write_file);
+                        return format_table_connectivity($conn, $page_counts_views_query, $table_string, 'connectivity_page_views', $columns, $neuron_ids = NULL, $write_file);
                 }else{
 			$array_subs = ["DG"=>[],"CA3"=>[],"CA2"=>[],"CA1"=>[],"Sub"=>[],"EC"=>[]];
-                        $table_string .= format_table_connectivity($conn, $page_counts_views_query, $table_string, $page_string, $columns, $neuron_ids, $write_file = NULL, $array_subs);
+                        $table_string .= format_table_connectivity($conn, $page_counts_views_query, $table_string, 'connectivity_page_views', $columns, $neuron_ids, $write_file = NULL, $array_subs);
                         $table_string .= get_table_skeleton_end();
                         echo $table_string;
                 }
         }else{
 		if(isset($write_file)) {
-			return format_table_phases($conn, $page_counts_views_query, $table_string, $page_string, $columns, $neuron_ids = NULL, $write_file);
+			return format_table_phases($conn, $page_counts_views_query, $table_string, 'in_vivo_evidence_page_views', $columns, $neuron_ids = NULL, $write_file);
         	}else{
-			$table_string .= format_table_phases($conn, $page_counts_views_query, $table_string, $page_string, $columns, $neuron_ids);
+			$table_string .= format_table_phases($conn, $page_counts_views_query, $table_string, 'in_vivo_evidence_page_views', $columns, $neuron_ids);
 			$table_string .= get_table_skeleton_end();
         		echo $table_string;
 		}
@@ -2059,10 +2075,10 @@ function get_fp_property_views_report($conn, $write_file=NULL){
 	$columns = ['Firing Pattern', 'Views'];
 	$options = ['format' => $fp_format,];
 	if(isset($write_file)) {
-		return format_table_combined($conn, $page_fp_property_views_query, 'fp_property_table', $columns, $write_file, $options);
+		return format_table_combined($conn, $page_fp_property_views_query, 'firing_pattern_page_views', $columns, $write_file, $options);
 	}else{
 		$table_string = get_table_skeleton_first($columns);
-		$table_string .= format_table_combined($conn, $page_fp_property_views_query, 'fp_property_table', $columns, $write_file=NULL, $options);
+		$table_string .= format_table_combined($conn, $page_fp_property_views_query, 'firing_pattern_page_views', $columns, $write_file=NULL, $options);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
@@ -2139,10 +2155,11 @@ function get_domain_functionality_views_report($conn, $write_file = NULL){
 					    ORDER BY views DESC";
 	//echo $page_functionality_views_query;
 	$columns = ['Property', 'Views'];
+        $table_string='';
 	if(isset($write_file)) {
-		return format_table($conn, $page_functionality_views_query, $table_string, 'domain_func_table', $columns, $neuron_ids=NULL, $write_file);
+		return format_table($conn, $page_functionality_views_query, $table_string, 'functionality_property_domain_page_views', $columns, $neuron_ids=NULL, $write_file);
 	}else{
-		$table_string = format_table($conn, $page_functionality_views_query, $table_string, 'domain_func_table', $columns);
+		$table_string = format_table($conn, $page_functionality_views_query, $table_string, 'functionality_property_domain_page_views', $columns);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
@@ -2198,10 +2215,10 @@ function get_page_functionality_views_report($conn, $write_file=NULL){
 	$options = [];//'exclude' => ['not php'],]; //Added this line to make sure we are getting all counts can remove it later
 	$columns = ['Property', 'Views'];
 	if(isset($write_file)) {
-		return format_table_combined($conn, $page_functionality_views_query, 'func_views_table',  $columns, $write_file, $options);
+		return format_table_combined($conn, $page_functionality_views_query, 'functionality_domain_page_views',  $columns, $write_file, $options);
 	}else{
 		$table_string = get_table_skeleton_first($columns);
-		$table_string .= format_table_combined($conn, $page_functionality_views_query, 'func_views_table',  $columns, $write_file=NULL, $options);
+		$table_string .= format_table_combined($conn, $page_functionality_views_query, 'functionality_domain_page_views',  $columns, $write_file=NULL, $options);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}

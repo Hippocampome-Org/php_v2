@@ -27,7 +27,7 @@
 <!-- Google Analytics Tracking -->  
 <?php include_once("analytics.php") ?>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>Other Useful Links</title>
+<title>Google Analytics Data Reports</title>
 <script type="text/javascript" src="style/resolution.js"></script>
 <style>
 <!--
@@ -154,8 +154,8 @@ tr:nth-child(even){
 				<li><a href="#markersproperty">Markers Property Statistics</a></li>
 				<li><a href="#biophysics">Membrane Biophysics Evidence Page Views<a></li>
 				<li><a href="#firingpattern">Firing Pattern Page Views</a></li>
-				<li><a href="#pmid_isbn_property">Morphology Linking pmid isbn Property Statistics</a></li>
-                                <li><a href="#phases_counts">Invivo Evidence Page Views</a></li>
+				<li><a href="#pmid_isbn_property">Morphology Linking PMID ISBN Property Statistics</a></li>
+                                <li><a href="#phases_counts">In Vivo Evidence Page Views</a></li>
                                 <li><a href="#connectivity_counts">Connectivity Page Views</a></li>
 				<li><a href="#property_functionality">Functionality Property Domain Page Views</a></li>
                                 <li><a href="#page_functionality">Functionality Domain Page Views</a></li>
@@ -247,11 +247,11 @@ tr:nth-child(even){
 </div>
 <!-- Till here -->
 
-<!-- When Morphology Linking pmid isbn Property Page Views is clicked-->
+<!-- When Morphology Linking PMID ISBN Property Page Views is clicked-->
 </br></br>
 <div id="pmid_isbn_property" style="padding:100px 100px; align:center;">
 	<p><div style="text-align: left;">
-                <span style="display: inline-block; vertical-align: middle;">Morphology Linking pmid isbn Property Page Views <a href="#top">Back to top</a></span>
+                <span style="display: inline-block; vertical-align: middle;">Morphology Linking PMID ISBN Property Page Views <a href="#top">Back to top</a></span>
                 <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
 			<form method="POST"><input type="hidden" name="download_csv" value="get_pmid_isbn_property_views_report"><button type="submit">Download CSV</button></form>
                 </span>
