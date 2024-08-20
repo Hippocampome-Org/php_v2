@@ -143,10 +143,8 @@ function format_table_pmid($conn, $query, $table_string, $csv_tablename, $csv_he
 	}
 
 	if(isset($write_file)){
-		if($csv_tablename == 'pmid_isbn_table'){
-			$totalRow = ["Total Count",'','','','',$count];
-			$csv_tablename='morphology_linking_PMID_ISBN_property_page_views';
-		}
+		$totalRow = ["Total Count",'','','','',$count];
+		$csv_tablename='morphology_linking_PMID_ISBN_property_page_views';
 		$csv_rows[] = $totalRow;
 		$csv_data[$csv_tablename]=['filename'=>toCamelCase($csv_tablename),'headers'=>$csv_headers,'rows'=>$csv_rows];
 		return $csv_data[$csv_tablename];
@@ -213,23 +211,27 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
     // Process the main query results
     $i = 0;
     while ($row = mysqli_fetch_row($rs)) {
-        $csv_rows[] = $row;
         $bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
         $table_string1 .= "<tr class='$bgColor'>";
+	if($csv_tablename == 'monthly_page_views' && $i==0){
+		$csv_rows[] = ["Pre-Aug-2019",470480];
+		$table_string1 .= "<td>Pre-Aug-2019</td><td>470480</td>";	
+		$count += 470480;
+	}else{
+		$csv_rows[] = $row;
+		for ($j = 0; $j < $rows; $j++) {
+			if (isset($neuron_ids[$row[$j]])) { 
+				$row[$j] = $neuron_ids[$row[$j]]; 
+			}
+			if ($row[$rows-1] > 0) {
+				$table_string1 .= "<td>" . htmlspecialchars($row[$j]) . "</td>";
+			}
+		}
 
-        for ($j = 0; $j < $rows; $j++) {
-            if (isset($neuron_ids[$row[$j]])) { 
-                $row[$j] = $neuron_ids[$row[$j]]; 
-            }
-            if ($row[$rows-1] > 0) {
-                $class = ($rows == 2 ? ($j == 0 ? 'col-page' : 'col-views') : '');
-                $table_string1 .= "<td class='$class'>" . htmlspecialchars($row[$j]) . "</td>";
-            }
-        }
-
-        $count += $row[$rows-1];
-        $table_string1 .= "</tr>";
-        $i++;
+		$count += $row[$rows-1];
+	}
+	$table_string1 .= "</tr>";
+	$i++;
     }
 
     // Process the additional query results if provided
@@ -244,8 +246,7 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
                     $row[$j] = $neuron_ids[$row[$j]]; 
                 }
                 if ($row[$rows-1] > 0) {
-                    $class = ($rows == 2 ? ($j == 0 ? 'col-page' : 'col-views') : '');
-                    $table_string1 .= "<td class='$class'>" . htmlspecialchars($row[$j]) . "</td>";
+                    $table_string1 .= "<td>" . htmlspecialchars($row[$j]) . "</td>";
                 }
             }
 
@@ -256,7 +257,9 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
     }
 
     if (isset($write_file)) {
-        $totalRow = ($csv_tablename == 'pmid_isbn_table') ? ["Total Count", '', '', '', '', $count] : ["Total Count", $count];
+	//pre-Aug-2019” with 470,480 views
+        //$totalRow = ($csv_tablename == 'pmid_isbn_table') ? ["Total Count", '', '', '', '', $count] : ["Total Count", $count];
+        $totalRow = ["Total Count", $count];
         $csv_rows[] = $totalRow;
 	$csv_data[$csv_tablename] = ['filename' => toCamelCase($csv_tablename), 'headers' => $csv_headers, 'rows' => $csv_rows];
         return $csv_data[$csv_tablename];
@@ -1400,7 +1403,7 @@ function get_pages_views_per_month_report($conn, $write_file=NULL){ //Passed $co
 	$table_string='';
 	if(isset($write_file)) {
 		return format_table($conn, $page_views_per_month_query, $table_string, 'monthly_page_views', $columns, $neuron_ids=NULL, $write_file);
-    }else{  
+	}else{  
 		$table_string .= format_table($conn, $page_views_per_month_query, $table_string, 'monthly_page_views', $columns);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
