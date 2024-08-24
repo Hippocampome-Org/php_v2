@@ -150,11 +150,11 @@ tr:nth-child(even){
 			<div id="links" style="padding: 15px; 10px;">
  	    		<ul>
 				<li><a href="#neuron">Neuron Type Evidence Page Views</a></li>
-				<li><a href="#morphologyproperty">Morphology Property Statistics</a></li>
-				<li><a href="#markersproperty">Markers Property Statistics</a></li>
+				<li><a href="#morphologyproperty">Morphology Property Views</a></li>
+				<li><a href="#markersproperty">Markers Property Views</a></li>
 				<li><a href="#biophysics">Membrane Biophysics Evidence Page Views<a></li>
 				<li><a href="#firingpattern">Firing Pattern Page Views</a></li>
-				<li><a href="#pmid_isbn_property">Morphology Linking PMID ISBN Property Statistics</a></li>
+				<li><a href="#pmid_isbn_property">Morphology Linking PMID ISBN Property Views</a></li>
                                 <li><a href="#phases_counts">In Vivo Evidence Page Views</a></li>
                                 <li><a href="#connectivity_counts">Connectivity Page Views</a></li>
 				<li><a href="#property_functionality">Functionality Property Domain Page Views</a></li>
@@ -170,7 +170,7 @@ tr:nth-child(even){
 <div style="clear:both"></div>
 <!-- Main initial page ends here -->
 <font class="font3">
-<!-- When Neuron Type Statistics is clicked-->
+<!-- When Neuron Type Views is clicked-->
 </br></br>
 <div id="neuron" style="padding:100px 100px; align:center;">
 	<p><div style="text-align: left;">
@@ -187,7 +187,7 @@ tr:nth-child(even){
 </div>
 <!-- Till here -->
 
-<!-- When Morphology Property Statistics is clicked-->
+<!-- When Morphology Property Views is clicked-->
 </br></br>
 <div id="morphologyproperty" style="padding:100px 100px; align:center;">
 	<p><div style="text-align: left;">
