@@ -192,9 +192,11 @@ tr:nth-child(even){
 <div id="morphologyproperty" style="padding:100px 100px; align:center;">
 	<p><div style="text-align: left;">
                 <span style="display: inline-block; vertical-align: middle;">Morphology / Axonal and Dendritic Lengths / Somatic Distances Evidence Page Views <a href="#top">Back to top</a></span>
-                <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
-			<form method="POST"><input type="hidden" name="download_csv" value="get_morphology_property_views_report"><button type="submit">Download CSV</button></form>
-                </span>
+		<span style="display: inline-block; padding-left:10px; vertical-align: middle;">
+			<form method="POST" style="display: inline;"><input type="hidden" name="download_csv" value="get_morphology_property_views_report"><button type="submit">Download CSV</button></form>
+			<form method="POST" style="display: inline;"><input type="hidden" name="views_per_month" value="get_morphology_property_views_report"><button type="submit">Download Views Per Month CSV</button></form>
+			<form method="POST" style="display: inline;"><input type="hidden" name="views_per_year" value="get_morphology_property_views_report"><button type="submit">Download Views Per Year CSV</button></form>
+		</span>
         </div></p>
 	<div id="subregion-inside" style="width: 1150px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
 		<?php get_morphology_property_views_report($conn, $neuron_ids); //Passing $conn on Dec 3 2023 ?> 

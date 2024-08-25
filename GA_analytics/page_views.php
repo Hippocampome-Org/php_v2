@@ -1,7 +1,7 @@
 <?php
-#ini_set('display_errors', '1');
-#ini_set('display_startup_errors', '1');
-#error_reporting(E_ALL);
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+error_reporting(E_ALL);
 
 global $csv_data;
 
@@ -44,7 +44,7 @@ function download_csvfile($functionName, $conn, $views_request = NULL, $neuron_i
 	$neuron_ids_func = ['get_counts_views_report', 'get_neurons_views_report','get_morphology_property_views_report', 'get_markers_property_views_report', 'get_pmid_isbn_property_views_report'];
 
 	if (in_array($functionName, $allowedFunctions) && function_exists($functionName)) {
-		if($functionName == "get_neurons_views_report"){
+		if($functionName == "get_neurons_views_report" || $functionName == "get_morphology_property_views_report"){
 			 $csv_data = $functionName($conn, $neuron_ids, $views_request, true);
 		}else{
 			if(isset($param)){
@@ -395,7 +395,9 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 							} else {
 								// Add to the count if the value is numeric and not zero
 								if (is_numeric($value)) {
+									if($key == 'Total_Views'){
 									$count += $value;
+									}
 								}
 							}
 						}
@@ -1650,7 +1652,7 @@ DEALLOCATE PREPARE stmt;";
 	}
 }
 
-function get_morphology_property_views_report($conn, $neuron_ids = NULL, $write_file=NULL){
+function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_request=NULL, $write_file=NULL){
     
 	$page_property_views_query = "SELECT t.subregion, t.page_statistics_name AS neuron_name, derived.evidence AS evidence, 
     						CONCAT(derived.color, TRIM(derived.sp_page)) AS 'color_sp', SUM(REPLACE(derived.page_views, ',', '')) AS views
@@ -1697,11 +1699,124 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $write_
 						t.page_statistics_name, t.subregion, color_sp, derived.evidence ORDER BY t.position";
 
         //echo $page_property_views_query;
-        
+	if ($views_request == "views_per_month" || $views_request == "views_per_year") {
+		$page_property_views_query = "SET @sql = NULL;";
+		// Build dynamic SQL to create column names
+		if ($views_request == "views_per_month") {
+			$page_property_views_query .= "
+				SELECT
+				GROUP_CONCAT(
+						DISTINCT
+						  CONCAT(
+                                                        'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+                                                                ' AND MONTH(day_index) = ', MONTH(day_index),
+                                                                ' THEN REPLACE(page_views, '','', '''') ELSE 0 END) AS `',
+                                                        YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
+                                                      )
+                                                ORDER BY YEAR(day_index), MONTH(day_index)
+                                                SEPARATOR ', '
+					    ) INTO @sql
+				FROM ga_analytics_pages
+				WHERE
+				page LIKE '%/property_page_%'
+				AND (
+						SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'morphology'
+						OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro'
+				    )
+				AND (
+						LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4
+						OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) = 4
+						OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) = 4
+				    )
+				AND (
+						SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
+						OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
+						OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
+				    );";
+		} elseif ($views_request == "views_per_year") {
+			$page_property_views_query .= "
+				SELECT
+				GROUP_CONCAT(
+						DISTINCT
+						  CONCAT(
+                                                'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+                                                        ' THEN REPLACE(page_views, \",\", \"\") ELSE 0 END) AS `',
+                                                YEAR(day_index), '`'
+                                              )
+                                        ORDER BY YEAR(day_index)
+                                        SEPARATOR ', '
+
+					    ) INTO @sql
+				FROM ga_analytics_pages
+				WHERE
+				page LIKE '%/property_page_%'
+				AND (
+						SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'morphology'
+						OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro'
+				    )
+				AND (
+						LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4
+						OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) = 4
+						OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) = 4
+				    )
+				AND (
+						SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
+						OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
+						OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
+				    );";
+		}
+
+		// Build the main query
+		$page_property_views_query .= "
+			SET @sql = CONCAT(
+					'SELECT t.subregion, t.page_statistics_name AS neuron_name, derived.evidence AS evidence, ',
+					'CONCAT(derived.color, TRIM(derived.sp_page)) AS color_sp, ',
+					@sql,  -- This is the dynamic column part
+					', SUM(REPLACE(derived.page_views, '','', '''')) AS Total_Views',
+					' FROM (',
+						'    SELECT page_views,',
+						'        CASE WHEN INSTR(page, ''id_neuron='') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
+						'             WHEN INSTR(page, ''id1_neuron='') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) ',
+						'             WHEN INSTR(page, ''id_neuron_source='') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) ',
+						'             ELSE NULL END AS neuronID,',
+						'        CASE WHEN INSTR(page, ''val_property='') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''val_property='', -1), ''&'', 1) ELSE NULL END AS evidence,',
+						'        CASE WHEN INSTR(page, ''color='') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''color='', -1), ''&'', 1) ELSE NULL END AS color,',
+						'        CASE WHEN INSTR(page, ''sp_page='') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''sp_page='', -1), ''&'', 1) ELSE NULL END AS sp_page,',
+						'        day_index',
+						'    FROM ga_analytics_pages',
+						'    WHERE page LIKE ''%/property_page_%''',
+						'    AND (SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''morphology'' ',
+							'        OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''synpro'')',
+							'    AND (LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1)) = 4 ',
+								'         OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1)) = 4 ',
+								'         OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1)) = 4)',
+							'    AND (SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) NOT IN (''4168'', ''4181'', ''2232'') ',
+								'         OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) NOT IN (''4168'', ''4181'', ''2232'') ',
+								'         OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) NOT IN (''4168'', ''4181'', ''2232''))',
+							') AS derived',
+						' LEFT JOIN Type AS t ON t.id = derived.neuronID',
+						' WHERE derived.neuronID NOT IN (''4168'', ''4181'', ''2232'')',
+								' GROUP BY t.subregion, t.page_statistics_name, color_sp, derived.evidence',
+								' ORDER BY t.position'
+								); ";
+		$page_property_views_query .= "PREPARE stmt FROM @sql;
+		EXECUTE stmt;
+		DEALLOCATE PREPARE stmt;";
+
+	}
+
         $columns = ['Subregion', 'Neuron Type Name', 'Neuronal Attribute', 'DG:SMo', 'DG:SMi','DG:SG','DG:H','CA3:SLM','CA3:SR','CA3:SL','CA3:SP','CA3:SO','CA2:SLM','CA2:SR','CA2:SP','CA2:SO','CA1:SLM','CA1:SR','CA1:SP','CA1:SO','Sub:SM','Sub:SP','Sub:PL','EC:I','EC:II','EC:III','EC:IV','EC:V','EC:VI','Unknown','Total'];
         $table_string='';
         if(isset($write_file)) {
-                return format_table_morphology($conn, $page_property_views_query, $table_string, 'morphology_axonal_and_dendritic_lengths_somatic_distances_evidence_page_views', $columns, $neuron_ids, $write_file);
+		$file_name = "morphology_axonal_and_dendritic_lengths_somatic_distances_evidence_page_";
+		if($views_request == 'views_per_month' || $views_request == 'views_per_year'){
+			$file_name .= $views_request;
+			return format_table_neurons($conn, $page_property_views_query, $table_string, $file_name, $columns, $neuron_ids, $write_file, $views_request); //Using this universally as this is gonna 
+		}else{
+			$file_name .= "views"; 
+			//return format_table_morphology($conn, $page_property_views_query, $table_string, 'morphology_axonal_and_dendritic_lengths_somatic_distances_evidence_page_views', $columns, $neuron_ids, $write_file);
+			return format_table_morphology($conn, $page_property_views_query, $table_string, $file_name, $columns, $neuron_ids, $write_file);
+		}
         }else{
 		$table_string .= get_table_skeleton_first($columns);
 		$table_string .= format_table_morphology($conn, $page_property_views_query, $table_string, 'morphology_property', $columns, $neuron_ids);
