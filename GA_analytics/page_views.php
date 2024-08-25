@@ -1753,7 +1753,8 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_
 		// Build the main query
 		$page_property_views_query .= "
 			SET @sql = CONCAT(
-					'SELECT t.subregion, t.page_statistics_name AS neuron_name, derived.evidence AS evidence, ',
+					'SELECT t.subregion, t.page_statistics_name AS neuron_name, ',
+					'REPLACE(derived.evidence, \'_\', \':\') AS evidence, ',
 					'CONCAT(derived.color, TRIM(derived.sp_page)) AS color_sp, ',
 					@sql,  -- This is the dynamic column part
 					', SUM(REPLACE(derived.page_views, '','', '''')) AS Total_Views',
