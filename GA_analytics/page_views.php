@@ -1702,69 +1702,53 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_
 	if ($views_request == "views_per_month" || $views_request == "views_per_year") {
 		$page_property_views_query = "SET @sql = NULL;";
 		// Build dynamic SQL to create column names
-		if ($views_request == "views_per_month") {
-			$page_property_views_query .= "
-				SELECT
-				GROUP_CONCAT(
-						DISTINCT
-						  CONCAT(
-                                                        'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
-                                                                ' AND MONTH(day_index) = ', MONTH(day_index),
-                                                                ' THEN REPLACE(page_views, '','', '''') ELSE 0 END) AS `',
-                                                        YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
-                                                      )
-                                                ORDER BY YEAR(day_index), MONTH(day_index)
-                                                SEPARATOR ', '
-					    ) INTO @sql
-				FROM ga_analytics_pages
-				WHERE
-				page LIKE '%/property_page_%'
-				AND (
-						SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'morphology'
-						OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro'
-				    )
-				AND (
-						LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4
-						OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) = 4
-						OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) = 4
-				    )
-				AND (
-						SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
-						OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
-						OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
-				    );";
-		} elseif ($views_request == "views_per_year") {
-			$page_property_views_query .= "
-				SELECT
-				GROUP_CONCAT(
-						DISTINCT
-						  CONCAT(
-                                                'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
-                                                        ' THEN REPLACE(page_views, \",\", \"\") ELSE 0 END) AS `',
-                                                YEAR(day_index), '`'
-                                              )
-                                        ORDER BY YEAR(day_index)
-                                        SEPARATOR ', '
+		$base_query = "
+			SELECT
+			GROUP_CONCAT(
+					DISTINCT
+					CONCAT(
+						'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index), 
+							/* Dynamic part depending on the view request */
+							' THEN REPLACE(page_views, \",\", \"\") ELSE 0 END) AS `', 
+						/* Dynamic part depending on the view request */
+						@time_unit, '`'
+					      )
+					ORDER BY YEAR(day_index) /* For 'views_per_month' also add 'MONTH(day_index)' here */
+					SEPARATOR ', '
+				    ) INTO @sql
+			FROM ga_analytics_pages
+			WHERE
+			page LIKE '%/property_page_%'
+			AND (
+					SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'morphology'
+					OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro'
+			    )
+			AND (
+					LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4
+					OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) = 4
+					OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) = 4
+			    )
+			AND (
+					SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
+					OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
+					OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
+			    );";
 
-					    ) INTO @sql
-				FROM ga_analytics_pages
-				WHERE
-				page LIKE '%/property_page_%'
-				AND (
-						SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'morphology'
-						OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro'
-				    )
-				AND (
-						LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4
-						OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) = 4
-						OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) = 4
-				    )
-				AND (
-						SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
-						OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
-						OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
-				    );";
+		// Determine the specific time unit and formatting based on the request
+		if ($views_request == "views_per_month") {
+			$time_unit = "CONCAT(YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3))";
+			$ordering = "ORDER BY YEAR(day_index), MONTH(day_index)";
+		} elseif ($views_request == "views_per_year") {
+			$time_unit = "YEAR(day_index)";
+			$ordering = "ORDER BY YEAR(day_index)";
 		}
+
+		// Construct the final query
+		$page_property_views_query .= str_replace(
+				['@time_unit', '@ordering'],
+				[$time_unit, $ordering],
+				$base_query
+				);
 
 		// Build the main query
 		$page_property_views_query .= "
