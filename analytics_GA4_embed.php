@@ -209,8 +209,10 @@ tr:nth-child(even){
 <div id="markersproperty" style="padding:100px 100px; align:center;">
 	<p><div style="text-align: left;">
                 <span style="display: inline-block; vertical-align: middle;">Markers Evidence Page Views <a href="#top">Back to top</a></span>
-                <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
-			<form method="POST"><input type="hidden" name="download_csv" value="get_markers_property_views_report"><button type="submit">Download CSV</button></form>
+		 <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
+                        <form method="POST" style="display: inline;"><input type="hidden" name="download_csv" value="get_markers_property_views_report"><button type="submit">Download CSV</button></form>
+                        <form method="POST" style="display: inline;"><input type="hidden" name="views_per_month" value="get_markers_property_views_report"><button type="submit">Download Views Per Month CSV</button></form>
+                        <form method="POST" style="display: inline;"><input type="hidden" name="views_per_year" value="get_markers_property_views_report"><button type="submit">Download Views Per Year CSV</button></form>
                 </span>
         </div></p>
 	<div id="subregion-inside" style="width: 1150px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
@@ -330,8 +332,10 @@ tr:nth-child(even){
 <div id="pageviews" style="padding:100px 100px; align:center;">
 	<p><div style="text-align: left;">
                 <span style="display: inline-block; vertical-align: middle;">Views Per Page <a href="#top">Back to top</a></span>
-                <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
-			<form method="POST"><input type="hidden" name="download_csv" value="get_views_per_page_report"><button type="submit">Download CSV</button></form>
+		 <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
+                        <form method="POST" style="display: inline;"><input type="hidden" name="download_csv" value="get_views_per_page_report"><button type="submit">Download CSV</button></form>
+                        <form method="POST" style="display: inline;"><input type="hidden" name="views_per_month" value="get_views_per_page_report"><button type="submit">Download Views Per Month CSV</button></form>
+                        <form method="POST" style="display: inline;"><input type="hidden" name="views_per_year" value="get_views_per_page_report"><button type="submit">Download Views Per Year CSV</button></form>
                 </span>
         </div></p>
 	<div id="pageview-inside" style="width: 1150px; height: 600px; overflow-x: scroll;overflow-y: scroll; position: relative; outline: none;">

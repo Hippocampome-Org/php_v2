@@ -44,7 +44,7 @@ function download_csvfile($functionName, $conn, $views_request = NULL, $neuron_i
 	$neuron_ids_func = ['get_counts_views_report', 'get_neurons_views_report','get_morphology_property_views_report', 'get_markers_property_views_report', 'get_pmid_isbn_property_views_report'];
 
 	if (in_array($functionName, $allowedFunctions) && function_exists($functionName)) {
-		if($functionName == "get_neurons_views_report" || $functionName == "get_morphology_property_views_report"){
+		if($functionName == "get_neurons_views_report" || $functionName == "get_morphology_property_views_report" || $functionName == "get_markers_property_views_report"){
 			 $csv_data = $functionName($conn, $neuron_ids, $views_request, true);
 		}else{
 			if(isset($param)){
@@ -1007,6 +1007,7 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 		}
 	}
         if(isset($write_file)){
+		$total_count = 0;
                 // Iterate over the types
                 foreach ($array_subs as $type => $subtypes) {
                         $keyCounts = count($subtypes);
@@ -1843,7 +1844,7 @@ function get_pmid_isbn_property_views_report($conn, $neuron_ids, $write_file=NUL
 	}
 }
 
-function get_markers_property_views_report($conn, $neuron_ids, $write_file = NULL){
+function get_markers_property_views_report($conn, $neuron_ids, $views_request=NULL, $write_file = NULL){
 
 	$page_property_views_query = "SELECT t.subregion,
 		t.page_statistics_name AS neuron_name,
@@ -1890,6 +1891,112 @@ function get_markers_property_views_report($conn, $neuron_ids, $write_file = NUL
 					GROUP BY t.subregion, t.page_statistics_name, derived.evidence, derived.color
 					ORDER BY t.position";
 	//echo $page_property_views_query;
+	if ($views_request == "views_per_month" || $views_request == "views_per_year") {
+		$page_property_views_query = "SET @sql = NULL;";
+		// Build dynamic SQL to create column names
+		$base_query = "
+			SELECT 
+			GROUP_CONCAT(
+					DISTINCT
+					CONCAT(
+						'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index), 
+							/* Dynamic part depending on the view request */
+							' THEN REPLACE(page_views, \",\", \"\") ELSE 0 END) AS `',
+						/* Dynamic part depending on the view request */
+						@time_unit, '`'
+					      )
+					ORDER BY YEAR(day_index) /* For 'views_per_month' also add 'MONTH(day_index)' here */
+					SEPARATOR ', '
+				    ) INTO @sql                 
+			FROM ga_analytics_pages                 
+			WHERE   
+			page LIKE '%/property_page_%'
+			AND (   
+					SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'markers'
+			    )   
+			AND (   
+					LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4
+					OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) = 4
+					OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) = 4
+			    )
+			AND (
+					SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
+					OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
+					OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
+			    );";
+
+		// Determine the specific time unit and formatting based on the request
+		if ($views_request == "views_per_month") {              
+			$time_unit = "CONCAT(YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3))";
+			$ordering = "ORDER BY YEAR(day_index), MONTH(day_index)";
+		} elseif ($views_request == "views_per_year") {
+			$time_unit = "YEAR(day_index)";
+			$ordering = "ORDER BY YEAR(day_index)";
+		}
+
+		// Construct the final query
+		$page_property_views_query .= str_replace(
+				['@time_unit', '@ordering'],
+				[$time_unit, $ordering],
+				$base_query
+				);
+		$page_property_views_query .= "
+			SET @sql = CONCAT(
+					'SELECT 
+					t.subregion,
+					t.page_statistics_name AS neuron_name,
+					derived.color AS color,
+					derived.evidence AS evidence, ',
+					@sql,
+					', SUM(REPLACE(derived.page_views, '','', '''')) AS Total_Views',
+					' FROM (
+						SELECT
+						CASE
+						WHEN INSTR(page, \'id_neuron=\') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id_neuron=\', -1), \'&\', 1)
+						WHEN INSTR(page, \'id1_neuron=\') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id1_neuron=\', -1), \'&\', 1)
+						WHEN INSTR(page, \'id_neuron_source=\') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id_neuron_source=\', -1), \'&\', 1)
+						ELSE \'\'
+						END AS neuronID,
+						CASE
+						WHEN INSTR(page, \'val_property=\') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'val_property=\', -1), \'&\', 1)
+						ELSE \'\'
+						END AS evidence,
+						CASE
+						WHEN INSTR(page, \'color=\') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'color=\', -1), \'&\', 1)
+						ELSE \'\'
+						END AS color,
+						page_views,
+						day_index
+						FROM ga_analytics_pages
+						WHERE page LIKE \'%/property_page_%\'
+						AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'/property_page_\', -1), \'.\', 1) = \'markers\'
+						AND (   
+								LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id_neuron=\', -1), \'&\', 1)) = 4
+								OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id1_neuron=\', -1), \'&\', 1)) = 4
+								OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id_neuron_source=\', -1), \'&\', 1)) = 4
+						    )   
+						AND (   
+								SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id_neuron=\', -1), \'&\', 1) NOT IN (\'4168\', \'4181\', \'2232\')
+								OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id1_neuron=\', -1), \'&\', 1) NOT IN (\'4168\', \'4181\', \'2232\')
+								OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id_neuron_source=\', -1), \'&\', 1) NOT IN (\'4168\', \'4181\', \'2232\')
+						    )   
+						) AS derived    
+						JOIN Type AS t ON t.id = derived.neuronID
+						WHERE derived.neuronID NOT IN (\'4168\', \'4181\', \'2232\')
+						AND t.subregion IS NOT NULL AND t.subregion <> \'\'
+						AND t.page_statistics_name IS NOT NULL AND t.page_statistics_name <> \'\'
+						AND derived.color IS NOT NULL AND derived.color <> \'\'
+						AND derived.evidence IS NOT NULL AND derived.evidence <> \'\'
+						GROUP BY t.subregion, t.page_statistics_name, derived.evidence, derived.color
+						ORDER BY t.position;'
+						);";
+
+		 $page_property_views_query .= "
+			PREPARE stmt FROM @sql;
+		EXECUTE stmt;
+		DEALLOCATE PREPARE stmt;";
+	}
+
 	$columns = ["Subregion", "Neuron Type Name", "Expression", "CB", "CR", "PV", "5HT-3", "CB1", "GABAa_alfa", "mGluR1a", "Mus2R", "Sub P Rec", "vGluT3", "CCK", "ENK", "NG", "NPY", "SOM", "VIP", "a-act2", 
 			"CoupTF_2", "nNOS", "RLN", "AChE", "AMIGO2", "AR-beta1", "AR-beta2", "Astn2", "BDNF", "Bok", "Caln", "CaM", "CaMKII_alpha", "CGRP", "ChAT", "Chrna2", "CRF", "Ctip2", "Cx36", "CXCR4", 
 			"Dcn", "Disc1", "DYN", "EAAT3", "ErbB4", "GABAa_alpha2", "GABAa_alpha3", "GABAa_alpha4", "GABAa_alpha5", "GABAa_alpha6", "GABAa_beta1", "GABAa_beta2", "GABAa_beta3", "GABAa_delta", 
@@ -1898,8 +2005,16 @@ function get_markers_property_views_report($conn, $neuron_ids, $write_file = NUL
 			"Nr3c2", "Nr4a1", "p-CREB", "PCP4", "PPE", "PPTA", "Prox1", "Prss12", "Prss23", "PSA-NCAM", "SATB1", "SATB2", "SCIP", "SPO", "SubP", "Tc1568100", "TH", "vAChT", "vGAT", "vGluT1", 
 			"vGluT2", "VILIP", "Wfs1", "Y1", "Y2", "DCX", "NeuN", "NeuroD", "CRH", "NK1R", "Unknown", "Total"];
         $table_string='';
-	if(isset($write_file)) {
-		return format_table_markers($conn, $page_property_views_query, $table_string, 'markers_evidence_page_views', $columns, $neuron_ids, $write_file);
+	 if(isset($write_file)) {
+                $file_name = "markers_evidence_page_";
+                if($views_request == 'views_per_month' || $views_request == 'views_per_year'){
+                        $file_name .= $views_request;
+                        return format_table_neurons($conn, $page_property_views_query, $table_string, $file_name, $columns, $neuron_ids, $write_file, $views_request); //Using this universally as this is gonna
+                }else{
+                        $file_name .= "views"; 
+			//return format_table_markers($conn, $page_property_views_query, $table_string, 'markers_evidence_page_views', $columns, $neuron_ids, $write_file);
+                        return format_table_markers($conn, $page_property_views_query, $table_string, $file_name, $columns, $neuron_ids, $write_file);
+                }
 	}else{
 		$table_string .= get_table_skeleton_first($columns);
 		$table_string .= format_table_markers($conn, $page_property_views_query, $table_string, 'markers_evidence_page_views', $columns, $neuron_ids);
