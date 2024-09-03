@@ -43,7 +43,8 @@ function download_csvfile($functionName, $conn, $views_request = NULL, $neuron_i
 			      'get_views_per_page_report', 'get_pages_views_per_month_report']; // TO restrict any unwanted calls or anything
 	$neuron_ids_func = ['get_counts_views_report', 'get_neurons_views_report','get_morphology_property_views_report', 'get_markers_property_views_report', 'get_pmid_isbn_property_views_report'];
 	if (in_array($functionName, $allowedFunctions) && function_exists($functionName)) {
-		if($functionName == "get_neurons_views_report" || $functionName == "get_morphology_property_views_report" || $functionName == "get_markers_property_views_report" ){
+		if($functionName == "get_neurons_views_report" || $functionName == "get_morphology_property_views_report" || $functionName == "get_markers_property_views_report" 
+					){
 				$csv_data = $functionName($conn, $neuron_ids, $views_request, true);
 		}else{
 			if(isset($param)){
@@ -56,7 +57,7 @@ function download_csvfile($functionName, $conn, $views_request = NULL, $neuron_i
 				if (in_array($functionName, $neuron_ids_func)){
 					$csv_data = $functionName($conn, $neuron_ids, $views_request, true);
 				}else{
-					$csv_data = $functionName($conn, true);
+					$csv_data = $functionName($conn, $views_request, true);
 				}
 			}
 		}
@@ -154,11 +155,64 @@ function format_table_pmid($conn, $query, $table_string, $csv_tablename, $csv_he
 	}
 }
 
-function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file = NULL, $query2 = NULL) {
+function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file = NULL, $views_request = NULL, $query2 = NULL) {
     $count = 0;
     $csv_rows = [];
-    $rs = mysqli_query($conn, $query);
+    if (isset($write_file)) {
+	    if($views_request == 'views_per_month' || $views_request == 'views_per_year'){
+
+		    if (mysqli_multi_query($conn, $query)) {
+			    $header = []; // Initialize an array to store column names
+			    do {
+				    if ($result = mysqli_store_result($conn)) {
+					    if (empty($header)) {
+						    $header = array_keys(mysqli_fetch_array($result, MYSQLI_ASSOC));
+						    $rows = count($header);
+						    $csv_headers = camel_replace($header);
+						    mysqli_data_seek($result, 0);
+					    }
+					    while ($rowvalue = mysqli_fetch_assoc($result)) {
+						    foreach ($rowvalue as $key => $value) {
+							    if ($value == 0) {
+								    $rowvalue[$key] = ''; // Replace 0 with an empty string
+							    } else {
+								    // Add to the count if the value is numeric and not zero
+								    if (is_numeric($value)) {
+									if($key == 'Total_Views'){
+									    $count += $value;
+									}
+								    }
+							    }
+						    }
+						    if (!is_null($rowvalue['Total_Views']) && $rowvalue['Total_Views'] > 0) {
+							    $csv_rows[] = $rowvalue;
+						    }
+					    }
+					    mysqli_free_result($result);
+				    }
+			    } while (mysqli_next_result($conn));
+			    $spaces = $rows - 2;
+			    $totalRow = array_pad([], $spaces, '');
+			    $totalRow[] = $count;
+			    // Add "Total Count" at the beginning of the array
+			    array_unshift($totalRow, "Total Count");
+
+			    $csv_rows[] = $totalRow;
+
+			    // Store information about the CSV file in `$csv_data` array
+			    $csv_data[$csv_tablename]=['filename'=>toCamelCase($csv_tablename),'headers'=>$csv_headers,'rows'=>$csv_rows];
+			    return $csv_data[$csv_tablename];
+		    } else {
+			    // Handle error if query execution fails
+			    echo "Error: " . mysqli_error($conn);
+		    }
+	    }
+    }
     $table_string1 = '';
+	$count=0;
+    $array_subs = [];
+
+    $rs = mysqli_query($conn, $query);
     $rows = count($csv_headers);
     $table_id = 'myTable'; // Specify your table ID here
 
@@ -1377,19 +1431,80 @@ function get_page_views($conn){ //Passed on Dec 3 2023
 	return $result_page_views_array;
 }
 
-function get_views_per_page_report($conn, $write_file=NULL){ //Passed $conn on Dec 3 2023
+function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL){ //Passed $conn on Dec 3 2023
 
 	$page_views_query = "SELECT gap.page, SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS views FROM
 		ga_analytics_pages gap WHERE gap.day_index IS NOT NULL GROUP BY gap.page order by views desc";
+
+	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
+		$page_views_query = "SET SESSION group_concat_max_len = 1000000;
+		SET @sql = NULL;"; 
+
+			if ($views_request == "views_per_month") {
+				$page_views_query .= "SELECT
+					GROUP_CONCAT(DISTINCT
+							CONCAT( 
+								'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+									' AND MONTH(day_index) = ', MONTH(day_index),
+									' THEN REPLACE(page_views, \\'\\', \\'\\') ELSE 0 END) AS `',
+								YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
+							      )
+							ORDER BY YEAR(day_index), MONTH(day_index)
+							SEPARATOR ', '
+						    ) INTO @sql
+					FROM (          
+							SELECT DISTINCT day_index
+							FROM ga_analytics_pages
+					     ) months;";
+			}
+
+		if ($views_request == "views_per_year") {
+			$page_views_query .= "SELECT
+				GROUP_CONCAT(DISTINCT
+						CONCAT( 
+							'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+								' THEN REPLACE(page_views, \\'\\', \\'\\') ELSE 0 END) AS `',
+							YEAR(day_index), '`'
+						      )
+						ORDER BY YEAR(day_index)
+						SEPARATOR ', '
+					    ) INTO @sql
+				FROM (          
+						SELECT DISTINCT day_index
+						FROM ga_analytics_pages
+				     ) years;";
+		}
+
+		$page_views_query .= "
+			SET @sql = CONCAT(
+					'SELECT page, ',
+					@sql,
+					', SUM(CAST(REPLACE(page_views, \\'\\', \\'\\') AS SIGNED)) AS Total_Views ',
+					'FROM ga_analytics_pages ',
+					'WHERE day_index IS NOT NULL ',
+					'GROUP BY page ',
+					'ORDER BY total_views DESC'
+					);";
+
+		$page_views_query .= "
+			PREPARE stmt FROM @sql;
+		EXECUTE stmt;
+		DEALLOCATE PREPARE stmt;";
+	}
+
 	//echo $page_views_query;
 	$table_string ='';
 
 	$columns = ['Page', 'Views'];
+	$file_name='views_per_page';
 	if(isset($write_file)) {
-		return format_table($conn, $page_views_query, $table_string, 'views_per_page', $columns, $neuron_ids=NULL, $write_file);
+		if($views_request == 'views_per_month' || $views_request == 'views_per_year'){
+			$file_name .= "_".$views_request;
+		}
+		return format_table($conn, $page_views_query, $table_string, $file_name, $columns, $neuron_ids=NULL, $write_file, $views_request);
 	}
 	else{
-		$table_string .= format_table($conn, $page_views_query, $table_string, 'views_per_page', $columns);
+		$table_string .= format_table($conn, $page_views_query, $table_string, $file_name, $columns);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
