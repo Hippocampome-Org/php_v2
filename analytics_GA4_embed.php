@@ -227,7 +227,7 @@ tr:nth-child(even){
         <p><div style="text-align: left;">
                 <span style="display: inline-block; vertical-align: middle;">Membrane Biophysics Evidence Page Views <a href="#top">Back to top</a></span>
                 <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
-                        <form method="POST"><input type="hidden" name="download_csv" value="get_counts_views_report"><input type="hidden" name="param" value="biophysics"><button type="submit">Download CSV</button></form>
+                        <form method="POST" style="display: inline;"><input type="hidden" name="download_csv" value="get_counts_views_report"><input type="hidden" name="param" value="biophysics"><button type="submit">Download CSV</button></form>
 			<form method="POST" style="display: inline;"><input type="hidden" name="param" value="biophysics"><input type="hidden" name="views_per_month" value="get_counts_views_report"><button type="submit">Download Views Per Month CSV</button></form>
                         <form method="POST" style="display: inline;"><input type="hidden" name="param" value="biophysics"><input type="hidden" name="views_per_year" value="get_counts_views_report"><button type="submit">Download Views Per Year CSV</button></form>
                 </span>
@@ -274,7 +274,7 @@ tr:nth-child(even){
 	<p><div style="text-align: left;">
                 <span style="display: inline-block; vertical-align: middle;">In Vivo Evidence Page Views <a href="#top">Back to top</a></span>
 		<span style="display: inline-block; padding-left:10px; vertical-align: middle;">
-			<form method="POST"><input type="hidden" name="download_csv" value="get_counts_views_report"><input type="hidden" name="param" value="phases"><button type="submit">Download CSV</button></form>
+			<form method="POST" style="display: inline;"><input type="hidden" name="download_csv" value="get_counts_views_report"><input type="hidden" name="param" value="phases"><button type="submit">Download CSV</button></form>
                         <form method="POST" style="display: inline;"><input type="hidden" name="param" value="phases"><input type="hidden" name="views_per_month" value="get_counts_views_report"><button type="submit">Download Views Per Month CSV</button></form>
                         <form method="POST" style="display: inline;"><input type="hidden" name="param" value="phases"><input type="hidden" name="views_per_year" value="get_counts_views_report"><button type="submit">Download Views Per Year CSV</button></form>
                 </span>   
@@ -292,7 +292,9 @@ tr:nth-child(even){
         <p><div style="text-align: left;">
                 <span style="display: inline-block; vertical-align: middle;">Connectivity Page Views <a href="#top">Back to top</a></span>
                 <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
-                        <form method="POST"><input type="hidden" name="download_csv" value="get_counts_views_report"><input type="hidden" name="param" value="connectivity"><button type="submit">Download CSV</button></form>
+                        <form method="POST" style="display: inline;"><input type="hidden" name="download_csv" value="get_counts_views_report"><input type="hidden" name="param" value="connectivity"><button type="submit">Download CSV</button></form>
+                        <form method="POST" style="display: inline;"><input type="hidden" name="views_per_month" value="get_counts_views_report"><button type="submit">Download Views Per Month CSV</button></form>
+                        <form method="POST" style="display: inline;"><input type="hidden" name="views_per_year" value="get_counts_views_report"><button type="submit">Download Views Per Year CSV</button></form>
                 </span>
         </div></p>
         <div id="subregion-inside" style="width: 1150px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
@@ -307,7 +309,9 @@ tr:nth-child(even){
 	<p><div style="text-align: left;">
                 <span style="display: inline-block; vertical-align: middle;">Functionality Property Domain Page Views <a href="#top">Back to top</a></span>
                 <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
-			<form method="POST"><input type="hidden" name="download_csv" value="get_domain_functionality_views_report"><button type="submit">Download CSV</button></form>
+			<form method="POST" style="display: inline;"><input type="hidden" name="download_csv" value="get_domain_functionality_views_report"><button type="submit">Download CSV</button></form>
+                        <form method="POST" style="display: inline;"><input type="hidden" name="views_per_month" value="get_domain_functionality_views_report"><button type="submit">Download Views Per Month CSV</button></form>
+                        <form method="POST" style="display: inline;"><input type="hidden" name="views_per_year" value="get_domain_functionality_views_report"><button type="submit">Download Views Per Year CSV</button></form>
                 </span>
         </div></p>
 	<div id="subregion-inside" style="width: 1150px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
