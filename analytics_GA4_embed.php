@@ -161,6 +161,7 @@ tr:nth-child(even){
                                 <li><a href="#page_functionality">Functionality Domain Page Views</a></li>
 				<li><a href="#pageviews">Views per Page </a></li>
 				<li><a href="#pageview_monthly">Monthly Page Views</a></li>
+				<li><a href="#download_reports">Download Views Reports</a></li>
 	    		</ul>
 			</div>
 		</div>
@@ -367,5 +368,22 @@ tr:nth-child(even){
 		<?php get_pages_views_per_month_report($conn); //Passing $conn on Dec 3 2023 ?>	
 	</div>
 </div>
+
+<!-- To Download all the data -->
+
+</br></br>
+<div id="download_reports" style="padding:100px 100px; text-align:center;">
+    <p>                 
+        <div style="text-align: left;">
+            <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
+	    	<form method="POST" action="" style="display: inline;">
+	    		<input type="hidden" name="download_csv" value="download_reports">
+	    		<button type="submit">Download Views Reports</button>
+	    	</form>
+            </span>         
+        </div>  
+    </p>
+</div>
+
 <!-- Till here -->
 </font>

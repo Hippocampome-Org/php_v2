@@ -1,9 +1,76 @@
 <?php
-ini_set('display_errors', '1');
-ini_set('display_startup_errors', '1');
-error_reporting(E_ALL);
+#ini_set('display_errors', '1');
+#ini_set('display_startup_errors', '1');
+#error_reporting(E_ALL);
+
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Worksheet\Table;
+use PhpOffice\PhpSpreadsheet\Worksheet\Table\TableStyle;
+require_once('/Applications/XAMPP/vendor/autoload.php');
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 global $csv_data;
+
+function download_excel_file($conn, $neuron_ids) {
+    ini_set('memory_limit', '512M'); // Adjust as necessary
+
+    $spreadsheet = new Spreadsheet();
+    $views_requests = [
+	    'get_neurons_views_report' => null,
+	    'get_morphology_property_views_report' => null,
+	    'get_markers_property_views_report' => null,
+	    'get_counts_views_report' => 'biophysics',
+	    'get_fp_property_views_report' => null,
+	    'get_pmid_isbn_property_views_report' => null,
+	    'get_counts_views_report' => 'phases',
+	    'get_counts_views_report' => 'connectivity',
+	    'get_domain_functionality_views_report' => null,
+	    'get_page_functionality_views_report' => null,
+	    'get_views_per_page_report' => null,
+	    'get_pages_views_per_month_report' => null
+    ];
+foreach ($views_requests as $functionName => $param) {
+        $excel_data = download_csvfile($functionName, $conn, 'download_csv', $neuron_ids, $param, true);
+        
+        if (empty($excel_data) || empty($excel_data['headers']) || empty($excel_data['rows'])) {
+            error_log("No data returned for $functionName");
+            continue; // Skip to the next iteration
+        }
+
+        // Create a new sheet
+        $sheet = $spreadsheet->createSheet();
+        $filename = $excel_data['filename'];
+        $clean_title = preg_replace('/[\/:*?"<>|]/', '', $filename);
+        $sheet_title = substr($clean_title, 0, 31);
+        $sheet->setTitle($sheet_title);
+
+        // Add headers to the first row
+        $sheet->fromArray($excel_data['headers'], NULL, 'A1');
+
+        // Write data to the Excel sheet
+        $sheet->fromArray($excel_data['rows'], NULL, 'A2');
+    }
+
+    $spreadsheet->removeSheetByIndex(0);
+
+    // Clear output buffering
+    if (ob_get_length()) {
+        ob_end_clean();
+    }
+
+    // Set headers for file download
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="reports.xlsx"');
+    header('Cache-Control: max-age=0');
+
+    // Create a writer and save the output to the browser
+    $writer = new Xlsx($spreadsheet);
+    $writer->save('php://output');
+    exit();
+}
 
 function get_neuron_ids($conn){
 	$neuron_ids = [];
@@ -37,7 +104,75 @@ function parseUrl($url) {
     return array();
 }
 
-function download_csvfile($functionName, $conn, $views_request = NULL, $neuron_ids = NULL, $param = NULL) {
+function download_csvfile($functionName, $conn, $views_request = NULL, $neuron_ids = NULL, $param = NULL, $is_excel = NULL) {
+    if($functionName == 'download_reports'){
+	$functionName = 'download_excel_file';
+	return $functionName($conn, $neuron_ids);
+    }
+    $allowedFunctions = [
+        'get_neurons_views_report',
+        'get_markers_property_views_report',
+        'get_morphology_property_views_report',
+        'get_counts_views_report',
+        'get_fp_property_views_report',
+        'get_pmid_isbn_property_views_report',
+        'get_domain_functionality_views_report',
+        'get_page_functionality_views_report',
+        'get_views_per_page_report',
+        'get_pages_views_per_month_report'
+    ];
+
+    $neuron_ids_func = [
+        'get_counts_views_report',
+        'get_neurons_views_report',
+        'get_morphology_property_views_report',
+        'get_markers_property_views_report',
+        'get_pmid_isbn_property_views_report'
+    ];
+
+    if (in_array($functionName, $allowedFunctions) && function_exists($functionName)) {
+        if (in_array($functionName, ['get_neurons_views_report', 'get_morphology_property_views_report', 'get_markers_property_views_report'])) {
+            $csv_data = $functionName($conn, $neuron_ids, $views_request, true);
+        } else {
+            if (isset($param)) {
+                if (in_array($functionName, $neuron_ids_func)) {
+                    $csv_data = $functionName($conn, $param, $neuron_ids, $views_request, true);
+                } else {
+                    $csv_data = $functionName($conn, $param, $views_request, true);
+                }
+            } else {
+                if (in_array($functionName, $neuron_ids_func)) {
+                    $csv_data = $functionName($conn, $neuron_ids, $views_request, true);
+                } else {
+                    $csv_data = $functionName($conn, $views_request, true);
+                }
+            }
+        }
+
+        if ($is_excel === true) {
+            return $csv_data; // Return data for outer shell
+        } else {
+            // Prepare CSV download
+            header('Content-Type: text/csv');
+            $filename = $csv_data['filename'] . ".csv";
+            header('Content-Disposition: attachment; filename="' . $filename . '"');
+            $output = fopen('php://output', 'w');
+
+            // Add CSV headers to the first row
+            fputcsv($output, $csv_data['headers']);
+            foreach ($csv_data['rows'] as $row) {
+                fputcsv($output, $row);
+            }
+
+            fclose($output);
+            exit(); // Terminate the script
+        }
+    } else {
+        echo "Invalid function.".$functionName;
+    }
+}
+
+/*function download_csvfile($functionName, $conn, $views_request = NULL, $neuron_ids = NULL, $param = NULL) {
 	$allowedFunctions = ['get_neurons_views_report','get_markers_property_views_report', 'get_morphology_property_views_report', 'get_counts_views_report', 
 			     'get_fp_property_views_report','get_pmid_isbn_property_views_report', 'get_domain_functionality_views_report','get_page_functionality_views_report', 
 			      'get_views_per_page_report', 'get_pages_views_per_month_report']; // TO restrict any unwanted calls or anything
@@ -89,6 +224,7 @@ function download_csvfile($functionName, $conn, $views_request = NULL, $neuron_i
 		echo "Invalid function.";
 	}
 }
+*/
 
 function processNeuronLink($neuron_id, $neuron_ids_array, $linkText, $write_file=NULL) {
     $neuron_name = array_search($neuron_id, $neuron_ids_array);
@@ -1603,7 +1739,7 @@ function get_neurons_views_report($conn, $neuron_ids=NULL, $views_request=NULL, 
 
 	$columns = ['Subregion', 'Neuron Type Name', 'Census','Views'];
      
-	$page_neurons_views_query = "SET @sql = NULL;
+	$page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;
 
 SELECT GROUP_CONCAT(DISTINCT CONCAT(
     'SUM(CASE WHEN nd.property_page_category = ''', property_page_category, ''' THEN 
@@ -1701,7 +1837,7 @@ EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 ";
 	if (($views_request == "views_per_month")  || ($views_request == "views_per_year")) {
-		$page_neurons_views_query = "SET @sql = NULL;";
+		$page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
 
 		if ($views_request == "views_per_month") {
 			$page_neurons_views_query .= "SELECT
@@ -1847,7 +1983,7 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_
 
         //echo $page_property_views_query;
 	if ($views_request == "views_per_month" || $views_request == "views_per_year") {
-		$page_property_views_query = "SET @sql = NULL;";
+		$page_property_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
 		// Build dynamic SQL to create column names
 		$base_query = "
 			SELECT
@@ -2039,7 +2175,7 @@ function get_markers_property_views_report($conn, $neuron_ids, $views_request=NU
 					ORDER BY t.position";
 	//echo $page_property_views_query;
 	if ($views_request == "views_per_month" || $views_request == "views_per_year") {
-		$page_property_views_query = "SET @sql = NULL;";
+		$page_property_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
 		// Build dynamic SQL to create column names
 		$base_query = "
 			SELECT 
