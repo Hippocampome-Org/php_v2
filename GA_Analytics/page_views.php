@@ -2,41 +2,6 @@
 
 global $csv_data;
 
-// Function to generate a report section with inline CSS
-function generate_report_section($id, $title, $download_name, $report_function, $conn, $neuron_ids = null) {
-    ?>
-    <div id="<?php echo htmlspecialchars($id); ?>" style="padding:100px 100px; text-align:center;">
-        <div style="text-align: left;">
-            <span style="display: inline-block; vertical-align: middle;">
-                <?php echo htmlspecialchars($title); ?> <a href="#top">Back to top</a>
-            </span>
-            <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
-                <form method="POST" style="display: inline;">
-                    <input type="hidden" name="download_csv" value="<?php echo htmlspecialchars($download_name); ?>">
-                    <button type="submit">Download CSV</button>
-                </form>
-                <form method="POST" style="display: inline;">
-                    <input type="hidden" name="views_per_month" value="<?php echo htmlspecialchars($download_name); ?>">
-                    <button type="submit">Download Views Per Month CSV</button>
-                </form>
-                <form method="POST" style="display: inline;">
-                    <input type="hidden" name="views_per_year" value="<?php echo htmlspecialchars($download_name); ?>">
-                    <button type="submit">Download Views Per Year CSV</button>
-                </form>
-            </span>
-        </div>
-        <div id="<?php echo htmlspecialchars($id . '-inside'); ?>" style="width: 1150px; height: 600px; overflow-x: auto; overflow-y: scroll; position: relative; outline: none;">
-            <?php 
-            if (function_exists($report_function)) {
-                call_user_func($report_function, $conn, $neuron_ids);
-            } 
-            ?>
-        </div>
-    </div>
-    <?php
-}
-
-
 function get_neuron_ids($conn){
 	$neuron_ids = [];
 	$query = "SELECT page_statistics_name, id from Type";

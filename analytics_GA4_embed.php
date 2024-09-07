@@ -3,7 +3,7 @@
   include ("/Applications/XAMPP/xamppfiles/htdocs/hippocampome/php_v2/permission_check.php");
   include ("/Applications/XAMPP/xamppfiles/htdocs/hippocampome/php_v2/GA_Analytics/page_views.php");
   $neuron_ids = NULL;
- // $neuron_ids = get_neuron_ids($conn);  
+  $neuron_ids = get_neuron_ids($conn);  
   if ($_SERVER["REQUEST_METHOD"] === "POST" && ( isset($_POST["download_csv"]) || isset($_POST["views_per_month"]) || isset($_POST["views_per_year"]) ) ) {
 	$views_request ="download_csv";
 	if(isset($_POST["views_per_month"])){
@@ -131,7 +131,6 @@ tr:nth-child(even){
 	include ("/Applications/XAMPP/xamppfiles/htdocs/hippocampome/php_v2/function/title.php");
 	include ("/Applications/XAMPP/xamppfiles/htdocs/hippocampome/php_v2/function/menu_main.php");
 	include ("/Applications/XAMPP/xamppfiles/htdocs/hippocampome/php_v2/access_db.php");//Added on Dec 3 2023
-//	include ("/Applications/XAMPP/xamppfiles/htdocs/hippocampome/php_v2/GA_Analycis/index.php");//Added on Dec 3 2023
 
 ?>	
 <!-- Main page loading code -->		
