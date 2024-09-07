@@ -35,56 +35,63 @@ function parseUrl($url) {
 }
 
 function download_csvfile($functionName, $conn, $views_request = NULL, $neuron_ids = NULL, $param = NULL) {
-	$allowedFunctions = ['get_neurons_views_report','get_markers_property_views_report', 'get_morphology_property_views_report', 'get_counts_views_report', 
-			     'get_fp_property_views_report','get_pmid_isbn_property_views_report', 'get_domain_functionality_views_report','get_page_functionality_views_report', 
-			      'get_views_per_page_report', 'get_pages_views_per_month_report']; // TO restrict any unwanted calls or anything
-	$neuron_ids_func = ['get_counts_views_report', 'get_neurons_views_report','get_morphology_property_views_report', 'get_markers_property_views_report', 'get_pmid_isbn_property_views_report'];
-	if (in_array($functionName, $allowedFunctions) && function_exists($functionName)) {
-		if($functionName == "get_neurons_views_report" || $functionName == "get_morphology_property_views_report" || $functionName == "get_markers_property_views_report" 
-					){
-				$csv_data = $functionName($conn, $neuron_ids, $views_request, true);
-		}else{
-			if(isset($param)){
-				if (in_array($functionName, $neuron_ids_func)){
-					$csv_data = $functionName($conn, $param, $neuron_ids,  $views_request, true);
-				}else{
-					$csv_data = $functionName($conn, $param, $views_request, true);
-				}
-			}else{
-				if (in_array($functionName, $neuron_ids_func)){
-					$csv_data = $functionName($conn, $neuron_ids, $views_request, true);
-				}else{
-					$csv_data = $functionName($conn, $views_request, true);
-				}
-			}
-		}
-//get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $views_request=NULL, $write_file=NULL){
-		// Set headers to initiate file download
-		header('Content-Type: text/csv');
-		$filename=$csv_data['filename'].".csv";
-		header('Content-Disposition: attachment; filename="' . $filename . '"');
-		$output = fopen('php://output', 'w');
+    $allowedFunctions = [
+        'get_neurons_views_report', 'get_markers_property_views_report', 'get_morphology_property_views_report', 
+        'get_counts_views_report', 'get_fp_property_views_report', 'get_pmid_isbn_property_views_report', 
+        'get_domain_functionality_views_report', 'get_page_functionality_views_report', 
+        'get_views_per_page_report', 'get_pages_views_per_month_report'
+    ];
+    
+    $neuron_ids_func = [
+        'get_counts_views_report', 'get_neurons_views_report', 'get_morphology_property_views_report', 
+        'get_markers_property_views_report', 'get_pmid_isbn_property_views_report'
+    ];
 
-		// Optionally add CSV headers to the first row
-		$headers = $csv_data['headers'];
-		fputcsv($output, $headers);
+    if (!in_array($functionName, $allowedFunctions) || !function_exists($functionName)) {
+        echo "Invalid function.";
+        return;
+    }
 
-		// Sample data for CSV
-		$sampleData = $csv_data['rows'];
+    $csv_data = call_function($functionName, $conn, $views_request, $neuron_ids, $param, $neuron_ids_func);
 
-		// Loop through the data and write to the CSV output
-		foreach ($sampleData as $row) {
-			fputcsv($output, $row);
-		}
+    output_csv($csv_data);
+    exit();
+}
 
-		// Close the output stream
-		fclose($output);
+function call_function($functionName, $conn, $views_request, $neuron_ids, $param, $neuron_ids_func) {
+    if (in_array($functionName, ['get_neurons_views_report', 'get_morphology_property_views_report', 'get_markers_property_views_report'])) {
+        return $functionName($conn, $neuron_ids, $views_request, true);
+    }
 
-		// Terminate the script to prevent sending additional output to the response
-		exit();
-	} else {
-		echo "Invalid function.";
-	}
+    if (isset($param)) {
+        if (in_array($functionName, $neuron_ids_func)) {
+            return $functionName($conn, $param, $neuron_ids, $views_request, true);
+        }
+        return $functionName($conn, $param, $views_request, true);
+    }
+
+    if (in_array($functionName, $neuron_ids_func)) {
+        return $functionName($conn, $neuron_ids, $views_request, true);
+    }
+
+    return $functionName($conn, $views_request, true);
+}
+
+function output_csv($csv_data) {
+    // Set headers to initiate file download
+    header('Content-Type: text/csv');
+    header('Content-Disposition: attachment; filename="' . $csv_data['filename'] . '.csv"');
+    $output = fopen('php://output', 'w');
+
+    // Optionally add CSV headers to the first row
+    fputcsv($output, $csv_data['headers']);
+
+    // Write rows to CSV output
+    foreach ($csv_data['rows'] as $row) {
+        fputcsv($output, $row);
+    }
+
+    fclose($output);
 }
 
 function processNeuronLink($neuron_id, $neuron_ids_array, $linkText, $write_file=NULL) {
