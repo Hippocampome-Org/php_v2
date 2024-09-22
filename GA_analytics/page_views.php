@@ -1703,7 +1703,7 @@ function get_pages_views_per_month_report($conn, $write_file=NULL){ //Passed $co
 		sum(replace(page_views,',','')) as page_views
 			from ga_analytics_pages where page_views > 0 
 			GROUP BY YEAR(day_index), MONTH(day_index)";
-	echo $page_views_per_month_query;
+	//echo $page_views_per_month_query;
 	$columns = ['Month-Year', 'Views'];
 	$table_string='';
 	if(isset($write_file)) {
