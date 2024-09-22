@@ -630,6 +630,13 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 							if($key == 'Subregion' || $key == 'Neuron_Type_Name'){
 								continue;
 							}
+							if($key == 'Neuronal_Attribute'){
+								$color_segments = ['red' => 'Axon Locations', 'blue' => 'Dendrite Locations', 'somata' => 'Soma Locations', 'violet' => 'Axon-Dendrite Locations', 
+										   'redSoma' => 'Axon-Somata Locations', 'blueSoma' => 'Dendrite-Somata Locations', 'violetSoma' => 'Axon-Dendrite-Somata Locations', 											 'reddal' => 'Axon Lengths', 'bluedal' => 'Dendrite Lengths', 'redsd' => 'Somatic Distances of Axons', 
+									'bluesd' => 'Somatic Distances of Dendrites', 'violetSomadal' => 'Unknown', 'violetSomasd' => 'Unknown', '' => 'Unknown'];
+
+								$rowvalue[$key] = isset($color_segments[$value]) ? $color_segments[$value] : 'Unknown';
+							}
 							if ($value == 0) {
 								$rowvalue[$key] = ''; // Replace 0 with an empty string
 							} else {
@@ -663,67 +670,66 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 		$array_subs = [];
 	}
 
-    $header = []; // Initialize an array to store column names
-    $array_subs = []; // Initialize array to store CSV rows
-    $count = 0; // Initialize count for total views
-    $table_string1 = '';
-    
-    if (mysqli_multi_query($conn, $query)) {
-	    do {
-		    if ($result = mysqli_store_result($conn)) {
-			    if (empty($header)) {
-				    $header = array_keys(mysqli_fetch_array($result, MYSQLI_ASSOC));
-				    $rows = count($header);
-				    $csv_headers = camel_replace($header);
-				    mysqli_data_seek($result, 0);
-				    $table_string1 = get_table_skeleton_first($csv_headers);
-			    }
-			    while ($rowvalue = mysqli_fetch_assoc($result)) {
-				    $count += $rowvalue['Total_Views'];
-				    $value = $rowvalue['Neuron_Type_Name'];
-				    //if ($col === 'Neuron_Type_Name' && isset($neuron_ids[$value])) {
-				    if (isset($neuron_ids[$value])) {
-					    if (!isset($write_file)) {
-						    $rowvalue['Neuron_Type_Name'] = get_link($value, $neuron_ids[$value], './neuron_page.php', 'neuron');
-					    }
-				    }
-				    if (!isset($array_subs[$rowvalue['Subregion']][$rowvalue['Neuron_Type_Name']])) {
-					    $array_subs[$rowvalue['Subregion']][$rowvalue['Neuron_Type_Name']] = [];
-				    }
-				    foreach($rowvalue as $col=>$value){
-					if(($col == 'Neuron_Type_Name') || ($col == 'Subregion')){
-						continue;
+	$header = []; // Initialize an array to store column names
+	$array_subs = []; // Initialize array to store CSV rows
+	$count = 0; // Initialize count for total views
+	$table_string1 = '';
+
+	if (mysqli_multi_query($conn, $query)) {
+		do {
+			if ($result = mysqli_store_result($conn)) {
+				if (empty($header)) {
+					$header = array_keys(mysqli_fetch_array($result, MYSQLI_ASSOC));
+					$rows = count($header);
+					$csv_headers = camel_replace($header);
+					mysqli_data_seek($result, 0);
+					$table_string1 = get_table_skeleton_first($csv_headers);
+				}
+				while ($rowvalue = mysqli_fetch_assoc($result)) {
+					$count += $rowvalue['Total_Views'];
+					$value = $rowvalue['Neuron_Type_Name'];
+					if (isset($neuron_ids[$value])) {
+						if (!isset($write_file)) {
+							$rowvalue['Neuron_Type_Name'] = get_link($value, $neuron_ids[$value], './neuron_page.php', 'neuron');
+						}
 					}
-					    array_push($array_subs[$rowvalue['Subregion']][$rowvalue['Neuron_Type_Name']], $value);
-				    }
-			    }
-			    mysqli_free_result($result);
-		    }
-	    } while (mysqli_next_result($conn));
-	    $i=0;
-	    $j=0;
-	    foreach ($array_subs as $groupKey => $subgroups) {
-		    $groupBgClass = ($i % 2 == 0) ? 'lightgreen-bg' : 'green-bg';
-		    $table_string1 .= "<tr><td class='$groupBgClass' rowspan='" . count($subgroups) . "'>$groupKey</td>";
-		    foreach ($subgroups as $subgroupKey => $colors) {
-			    $subgroupBgClass = ($j % 2 == 0) ? 'white-bg' : 'blue-bg';
-			    $table_string1 .= "<td class='$subgroupBgClass' rowspan=''>$subgroupKey</td>";
-				    $colorBgClass = ($j % 2 == 0) ? 'white-bg' : 'blue-bg';
-			    foreach ($colors as $color) {
-				    if($color <=0 ){
-					$color='';
-				    }
-				    $table_string1 .= "<td class='$colorBgClass'>$color</td>";
-			    }
-				    $j++;
-				    $table_string1 .= "</tr>";
-		    }
-		    $i++;
-	    }
-            // Append total count row
-            $table_string1 .= "<tr><td colspan='" . ($rows - 1) . "'><b>Total Count</b></td><td>$count</td></tr>";
-            return $table_string1;
-    }
+					if (!isset($array_subs[$rowvalue['Subregion']][$rowvalue['Neuron_Type_Name']])) {
+						$array_subs[$rowvalue['Subregion']][$rowvalue['Neuron_Type_Name']] = [];
+					}
+					foreach($rowvalue as $col=>$value){
+						if(($col == 'Neuron_Type_Name') || ($col == 'Subregion')){
+							continue;
+						}
+						array_push($array_subs[$rowvalue['Subregion']][$rowvalue['Neuron_Type_Name']], $value);
+					}
+				}
+				mysqli_free_result($result);
+			}
+		} while (mysqli_next_result($conn));
+			$i=0;
+			$j=0;
+			foreach ($array_subs as $groupKey => $subgroups) {
+				$groupBgClass = ($i % 2 == 0) ? 'lightgreen-bg' : 'green-bg';
+				$table_string1 .= "<tr><td class='$groupBgClass' rowspan='" . count($subgroups) . "'>$groupKey</td>";
+				foreach ($subgroups as $subgroupKey => $colors) {
+					$subgroupBgClass = ($j % 2 == 0) ? 'white-bg' : 'blue-bg';
+					$table_string1 .= "<td class='$subgroupBgClass' rowspan=''>$subgroupKey</td>";
+					$colorBgClass = ($j % 2 == 0) ? 'white-bg' : 'blue-bg';
+					foreach ($colors as $color) {
+						if($color <=0 ){
+							$color='';
+						}
+						$table_string1 .= "<td class='$colorBgClass'>$color</td>";
+					}
+					$j++;
+					$table_string1 .= "</tr>";
+				}
+				$i++;
+			}
+			// Append total count row
+			$table_string1 .= "<tr><td colspan='" . ($rows - 1) . "'><b>Total Count</b></td><td>$count</td></tr>";
+			return $table_string1;
+		}
 }
 
 // Function to initialize neuron array
@@ -1664,7 +1670,7 @@ function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL)
 
 		$page_views_query .= "
 			SET @sql = CONCAT(
-					'SELECT page, ',
+					'SELECT page as Page, ',
 					@sql,
 					', SUM(CAST(REPLACE(page_views, \\'\\', \\'\\') AS SIGNED)) AS Total_Views ',
 					'FROM ga_analytics_pages ',
@@ -2036,10 +2042,10 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_
 		// Build the main query
 		$page_property_views_query .= "
 			SET @sql = CONCAT(
-					'SELECT t.subregion, t.page_statistics_name AS neuron_name, ',
-					'REPLACE(derived.evidence, \'_\', \':\') AS evidence, ',
-					'CONCAT(derived.color, TRIM(derived.sp_page)) AS color_sp, ',
-					@sql,  -- This is the dynamic column part
+					'SELECT t.subregion AS Subregion, t.page_statistics_name AS Neuron_Type_Name, ',
+					'REPLACE(derived.evidence, \'_\', \':\') AS Evidence, ',
+					'CONCAT(derived.color, TRIM(derived.sp_page)) AS Neuronal_Attribute, ',
+					@sql,  
 					', SUM(REPLACE(derived.page_views, '','', '''')) AS Total_Views',
 					' FROM (',
 						'    SELECT page_views,',
@@ -2064,7 +2070,7 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_
 							') AS derived',
 						' LEFT JOIN Type AS t ON t.id = derived.neuronID',
 						' WHERE derived.neuronID NOT IN (''4168'', ''4181'', ''2232'')',
-								' GROUP BY t.subregion, t.page_statistics_name, color_sp, derived.evidence',
+								' GROUP BY t.subregion, t.page_statistics_name, Neuronal_Attribute, derived.evidence',
 								' ORDER BY t.position'
 								); ";
 		$page_property_views_query .= "PREPARE stmt FROM @sql;
@@ -2411,8 +2417,8 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 			$page_counts_views_query .= "
 				SET @sql = CONCAT(
 						'SELECT ',
-						't.subregion, ',
-						't.page_statistics_name AS neuron_name, ',
+						't.subregion AS Subregion, ',
+						't.page_statistics_name AS Neuron_Type_Name, ',
 						'CASE ',
 						'    WHEN derived.evidence = \'theta\' THEN \'Theta (deg)\' ',
 						'    WHEN derived.evidence = \'swr_ratio\' THEN \'SWR Ratio\' ',
@@ -2430,8 +2436,8 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 						'    WHEN derived.evidence = \'APpeal\' THEN \'APpeak-trough (ms)\' ',
 						'    WHEN derived.evidence = \'all_other\' THEN \'Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau, AP threshold, fAHP, or APpeak trough.\' ',
 						'    ELSE \'Unknown\' ',
-						'END AS evidence_desc, ',
-						@sql,  -- This is the dynamic column part showing Month-Year
+						'END AS Evidence_Description, ',
+						@sql, 
 							', SUM(REPLACE(derived.page_views, \',\', \'\')) AS Total_Views ',
 						'FROM (',
 								'    SELECT page_views, ',
@@ -2453,7 +2459,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 								') AS derived ',
 						'LEFT JOIN Type AS t ON t.id = derived.neuronID ',
 						'WHERE derived.neuronID NOT IN (\'4168\', \'4181\', \'2232\') ',
-						'GROUP BY t.subregion, t.page_statistics_name, evidence_desc ',
+						'GROUP BY t.subregion, t.page_statistics_name, Evidence_Description ',
 						'ORDER BY t.position' 
 						); ";
 			$page_counts_views_query .= "PREPARE stmt FROM @sql;
@@ -2797,8 +2803,8 @@ function get_domain_functionality_views_report($conn, $views_request = NULL, $wr
 	$page_functionality_views_query = "SELECT 
 		CASE 
 		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology') THEN 'Morphology'
-        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology_linking_pmid_isbn') THEN 'Morphology: PMID / ISBN'
-        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('/synaptome/php/synaptome') THEN 'Synaptome'
+		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology_linking_pmid_isbn') THEN 'Morphology: PMID / ISBN'
+		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('/synaptome/php/synaptome') THEN 'Synaptome'
 		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('connectivity', 'connectivity_orig', 'connectivity_test') THEN 'Connectivity: Known / Potential' 
 		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'counts' THEN 'Census' 
 		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'ephys' THEN 'Membrane Biophysics' 
@@ -2917,7 +2923,7 @@ function get_domain_functionality_views_report($conn, $views_request = NULL, $wr
                     WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) IN (''synpro_nm'', ''synpro_nm_old2'') THEN ''Connectivity: Number of Potential Synapses / Number of Contacts / Synaptic Probability''
                     WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''synpro_pvals'' THEN ''Connectivity: Parcel-Specific Tables''
                     ELSE SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1)
-                END AS property_page_category, ', 
+                END AS Property, ', 
                 @sql, ',
                 SUM(REPLACE(page_views, \\'\\', \\'\\')) AS Total_Views
                 FROM ga_analytics_pages
@@ -2968,7 +2974,7 @@ function get_domain_functionality_views_report($conn, $views_request = NULL, $wr
                     SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1)
                     END NOT IN (4168, 4181, 2232)
                 )
-                GROUP BY property_page_category
+                GROUP BY Property
                 ORDER BY Total_Views DESC'
         );";
 
@@ -3120,12 +3126,12 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 					WHEN page = ''/php/'' AND day_index IS NULL THEN ''/php/''
 					WHEN page = ''/php/'' AND day_index IS NOT NULL THEN ''not php''
 					ELSE ''Landing Page''
-					END AS property_page, ', 
+					END AS Property, ', 
 					    @sql, ',
 					    SUM(CAST(REPLACE(page_views, \\'\\', \\'\\') AS SIGNED)) AS Total_Views
 						    FROM ga_analytics_pages
-						    GROUP BY property_page
-						    ORDER BY total_views DESC'
+						    GROUP BY Property
+						    ORDER BY Total_Views DESC'
 						    );";
 
 		$page_functionality_views_query .= "
