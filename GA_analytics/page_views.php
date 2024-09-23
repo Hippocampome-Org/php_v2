@@ -667,6 +667,47 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 										];
 								$rowvalue[$key] = isset($fp_format[$value]) ? $fp_format[$value] : 'Unknown';
 							}
+							if($key == 'Marker_Evidence'){
+								        $neuronal_segments = ["CB"=>"CB", "CR"=>"CR", "PV"=>"PV", "5HT-3"=>"5HT-3", "CB1"=>"CB1", "Gaba-a-alpha"=>"GABAa_alfa", "mGluR1a"=>"mGluR1a", "Mus2R"=>"Mus2R", "NPY"=>"NPY", "nNOS"=>"nNOS", "AChE"=>"AChE", "AMIGO2"=>"AMIGO2", "Astn2"=>"Astn2", "Caln"=>"Caln", "CaMKII_alpha"=>"CaMKII_alpha", "ChAT"=>"ChAT", "Chrna2"=>"Chrna2", "CRF"=>"CRF", "Ctip2"=>"Ctip2",
+                                "Cx36"=>"Cx36", "CXCR4"=>"CXCR4", "Dcn"=>"Dcn", "Disc1"=>"Disc1", "DYN"=>"DYN", "EAAT3"=>"EAAT3", "ErbB4"=>"ErbB4", "GABA-B1"=>"GABA-B1",
+                                "GAT-3"=>"GAT-3", "GluA2"=>"GluA2", "GluA3"=>"GluA3", "GluA4"=>"GluA4", "GlyT2"=>"GlyT2", "Gpc3"=>"Gpc3", "Grp"=>"Grp", "Htr2c"=>"Htr2c", "Id_2"=>"Id_2",
+                                "Kv3.1"=>"Kv3_1", "Loc432748"=>"Loc432748", "Man1a"=>"Man1a", "Math-2"=>"Math-2", "mGluR1"=>"mGluR1", "mGluR2"=>"mGluR2", "mGluR8a"=>"mGluR8a",
+                                "GABAa\beta 1"=>"GABAa_beta1", "GABAa\beta 2"=>"GABAa_beta2", "GABAa\beta 3"=>"GABAa_beta3", "GABAa \delta"=>"GABAa_delta", "GABAa\gamma%201"=>"GABAa_gamma1",
+                                "GABAa\gamma%202"=>"GABAa_gamma2", "mGluR2/3"=>"mGluR2/3", "mGluR3"=>"mGluR3", "mGluR4"=>"mGluR4", "mGluR5"=>"mGluR5", "mGluR5a"=>"mGluR5a", "mGluR7a"=>"mGluR7a",
+                                "alpha-actinin-2"=>"a-act2",
+                                "MOR"=>"MOR", "Mus1R"=>"Mus1R", "Mus3R"=>"Mus3R", "Mus4R"=>"Mus4R", "Ndst4"=>"Ndst4", "NECAB1"=>"NECAB1", "Neuropilin2"=>"Neuropilin2", "NKB"=>"NKB", "NOV"=>"Nov",
+                                "Nr3c2"=>"Nr3c2", "Nr4a1"=>"Nr4a1", "p-CREB"=>"p-CREB", "PCP4"=>"PCP4", "PPE"=>"PPE", "PPTA"=>"PPTA", "Prox1"=>"Prox1", "Prss12"=>"Prss12", "Prss23"=>"Prss23",
+                                "PSA-NCAM"=>"PSA-NCAM", "SATB1"=>"SATB1", "SATB2"=>"SATB2", "SCIP"=>"SCIP", "SPO"=>"SPO", "SubP"=>"SubP", "Tc1568100"=>"Tc1568100", "TH"=>"TH", "vAChT"=>"vAChT",
+                                "vGAT"=>"vGAT", "vGlut1"=>"vGluT1", "vGluT2"=>"vGluT2", "VILIP"=>"VILIP", "Wfs1"=>"Wfs1", "Y1"=>"Y1", "Y2"=>"Y2", "DCX"=>"DCX", "NeuN"=>"NeuN", "NeuroD"=>"NeuroD",
+                                "GAT-1"=>"GAT-1", "Sub P Rec"=>"Sub P Rec", "vGluT3"=>"vGluT3", "CCK"=>"CCK", "ENK"=>"ENK", "NG"=>"NG", "SOM"=>"SOM", "VIP"=>"VIP", "CoupTF II"=>"CoupTF_2", "RLN"=>"RLN",
+                                "CGRP"=>"CGRP", "GluA2/3"=>"GluA2/3", "GluA1"=>"GluA1", "AR-beta1"=>"AR-beta1", "AR-beta2"=>"AR-beta2", "BDNF"=>"BDNF", "Bok"=>"Bok", "CaM"=>"CaM", "GABAa\alpha 2"=>"GABAa_alpha2",
+                                "GABAa\\alpha 2"=>"GABAa_alpha2", "GABAa\\\\alpha 2"=>"GABAa_alpha2", "GABAa\alpha 3"=>"GABAa_alpha3","GABAa%5Calpha%204"=>"GABAa_alpha4", "GABAa\alpha 4"=>"GABAa_alpha4", "GABAa\alpha 5"=>"GABAa_alpha5", "GABAa\alpha 6"=>"GABAa_alpha6", "CRH"=>"CRH", "NK1R"=>"NK1R",""=>"Unknown"];
+									$rowvalue[$key] = isset($neuronal_segments[$value]) ? $neuronal_segments[$value] : 'Unknown';
+						}
+						if($key == "Expression"){
+									$color_segments = [
+										'negative-negative_inference'=>'Negative Inference',
+										'positive'=>'Positive',
+										'negative'=>'Negative',
+										'positive_inference-negative_inference'=>'Positive-Negative',
+										'positive-negative'=>'Positive-Negative',
+										'negative-positive_inference'=>'Negative',
+										'negative-negative_inference'=>'Negative Inference',
+										'positive-negative'=>'Positive-Negative',
+										'positive-negative'=>'Positive-Negative',
+										'positive-negative_inference'=>'Positive-Negative Inference',
+										'positive-negative-weak_positive'=>'Positive-Negative Inference',
+										'positive-negative-negative_inference'=>'Positive-Negative Inference',
+										'positive_inference'=>'Positive Inference',
+										'positive-positive_inference'=>'Positive Inference',
+										'positive-negative-positive_inference'=>'Positive-Negative Inference',
+										'positive-negative-weak_positive-negative_inference'=>'Positive-Negative Inference',
+										'positive-positive_inference-negative_inference'=>'Positive-Negative Inference',
+										'negative-positive_inference-negative_inference'=>'Positive-Negative Inference',
+										'weak_positive'=>'Positive Inference',
+										'negative_inference'=>'Negative Inference'];
+								$rowvalue[$key] = isset($color_segments[$value]) ? $color_segments[$value] : 'Unknown';
+							}
 							if ($value == 0) {
 								$rowvalue[$key] = ''; // Replace 0 with an empty string
 							} else {
@@ -1232,8 +1273,14 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 		$neuron_name = $rowvalue['neuron_name'];
 		if(!isset($color_segments[$rowvalue['color']])){ var_dump($rowvalue); }
 		$color = $color_segments[$rowvalue['color']];
-		$evidence = $neuronal_segments[$rowvalue['evidence']];
-		//Exception for this entry -- /php/property_page_markers.php?id_neuron=5001&val_property=GABAa\\alpha 2&color=&page=markers
+		$decodedKey = urldecode($rowvalue['evidence']);
+		// Check if the key exists in the array
+		if (array_key_exists($decodedKey, $neuronal_segments)) {
+			$evidence = $neuronal_segments[$decodedKey];
+		} else {
+			$evidence = $neuronal_segments[""];
+		}
+		//$evidence = $neuronal_segments[$rowvalue['evidence']];
 		if($evidence == 'GABAa_alpha2'){
 			if(strlen($rowvalue['color']) ==0){
 				$rowvalue['color']='positive';
@@ -2262,10 +2309,10 @@ function get_markers_property_views_report($conn, $neuron_ids, $views_request=NU
 		$page_property_views_query .= "
 			SET @sql = CONCAT(
 					'SELECT 
-					t.subregion,
-					t.page_statistics_name AS neuron_name,
-					derived.color AS color,
-					derived.evidence AS evidence, ',
+					t.subregion AS Subregion,
+					t.page_statistics_name AS Neuron_Type_Name,
+					derived.color AS Expression,
+					derived.evidence AS Marker_Evidence, ',
 					@sql,
 					', SUM(REPLACE(derived.page_views, '','', '''')) AS Total_Views',
 					' FROM (
