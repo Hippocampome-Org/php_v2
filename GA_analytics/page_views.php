@@ -684,6 +684,12 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
                                 "GABAa\\alpha 2"=>"GABAa_alpha2", "GABAa\\\\alpha 2"=>"GABAa_alpha2", "GABAa\alpha 3"=>"GABAa_alpha3","GABAa%5Calpha%204"=>"GABAa_alpha4", "GABAa\alpha 4"=>"GABAa_alpha4", "GABAa\alpha 5"=>"GABAa_alpha5", "GABAa\alpha 6"=>"GABAa_alpha6", "CRH"=>"CRH", "NK1R"=>"NK1R",""=>"Unknown"];
 									$rowvalue[$key] = isset($neuronal_segments[$value]) ? $neuronal_segments[$value] : 'Unknown';
 						}
+						if($key == "Biophysics_Evidence") {
+							$neuronal_segments = ['Vrest'=>'Vrest (mV)', 'Rin'=>'Rin (MW)', 'tm'=>'tm (ms)', 'Vthresh'=>'Vthresh(mV)','fast_AHP'=>'Fast AHP (mV)', 
+									      'AP_ampl'=>'APampl (mV)','AP_width'=>'APwidth (ms)', 'max_fr'=>'Max F.R. (Hz)','slow_AHP'=>'Slow AHP (mV)',
+										'sag_ratio'=>'Sag Ratio',''=>'Unknown'];
+							$rowvalue[$key] = isset($neuronal_segments[$value]) ? $neuronal_segments[$value] : 'Unknown';
+						}
 						if($key == "Expression"){
 									$color_segments = [
 										'negative-negative_inference'=>'Negative Inference',
@@ -2675,9 +2681,9 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
                         $page_counts_views_query .= "
                                 SET @sql = CONCAT(
                                                 'SELECT ',
-                                                't.subregion, ',
-                                                't.page_statistics_name AS neuron_name, ',
-                                                 'derived.evidence AS evidence, ',
+                                                't.subregion AS Subregion, ',
+                                                't.page_statistics_name AS Neuron_Type_Name, ',
+                                                 'derived.evidence AS Biophysics_Evidence, ',
                                                 @sql,  
                                                         ', SUM(REPLACE(derived.page_views, \',\', \'\')) AS Total_Views ',
                                                 'FROM (',
@@ -2770,7 +2776,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
                 	$file_name = "membrane_biophysics_evidence_page_";
                 	if($views_request == 'views_per_month' || $views_request == 'views_per_year'){
                         	$file_name .= $views_request;
-				echo $page_counts_views_query;
+				//echo $page_counts_views_query;
                         	return format_table_neurons($conn, $page_counts_views_query, $table_string, $file_name, $columns, $neuron_ids, $write_file, $views_request); //Using this universally as this is gonna
 			}else{
                         	$file_name .= "views";
@@ -2778,7 +2784,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 				return format_table_biophysics($conn, $page_counts_views_query, $table_string, $file_name, $columns, $neuron_ids = NULL, $write_file);
 			}
         	}else{
-			echo $page_counts_views_query;
+			//echo $page_counts_views_query;
 			$table_string .= format_table_biophysics($conn, $page_counts_views_query, $table_string, 'membrane_biophysics_evidence_page_views', $columns, $neuron_ids);
 			$table_string .= get_table_skeleton_end();
         		echo $table_string;
