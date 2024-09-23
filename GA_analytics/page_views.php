@@ -2604,7 +2604,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 							    GROUP BY derived.page, t_source.page_statistics_name, t_source.subregion, derived.source_color, 
 						   derived.source_evidence, t_target.page_statistics_name, t_target.subregion, derived.target_color, derived.target_evidence,derived.nm_page";
 
-                //echo page_counts_views_query;
+                echo $page_counts_views_query;
         }
 
 	// Check for 'biophysics' page types
@@ -2791,7 +2791,16 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 		}
 	}else if($page_string == 'connectivity'){
                 if(isset($write_file)) {
-                        return format_table_connectivity($conn, $page_counts_views_query, $table_string, 'connectivity_page_views', $columns, $neuron_ids = NULL, $write_file);
+			 $file_name = "membrane_biophysics_evidence_page_";
+                        if($views_request == 'views_per_month' || $views_request == 'views_per_year'){
+                                $file_name .= $views_request;
+                                //echo $page_counts_views_query;
+                                return format_table_neurons($conn, $page_counts_views_query, $table_string, $file_name, $columns, $neuron_ids, $write_file, $views_request); //Using this universally as this is gonna
+                        }else{
+                                $file_name .= "views";
+                        	//return format_table_connectivity($conn, $page_counts_views_query, $table_string, 'connectivity_page_views', $columns, $neuron_ids = NULL, $write_file);
+                                return format_table_connectivity($conn, $page_counts_views_query, $table_string, $file_name, $columns, $neuron_ids = NULL, $write_file);
+                        }
                 }else{
 			$array_subs = ["DG"=>[],"CA3"=>[],"CA2"=>[],"CA1"=>[],"Sub"=>[],"EC"=>[]];
                         $table_string .= format_table_connectivity($conn, $page_counts_views_query, $table_string, 'connectivity_page_views', $columns, $neuron_ids, $write_file = NULL, $array_subs);
