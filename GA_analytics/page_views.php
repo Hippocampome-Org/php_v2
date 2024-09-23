@@ -2604,7 +2604,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 							    GROUP BY derived.page, t_source.page_statistics_name, t_source.subregion, derived.source_color, 
 						   derived.source_evidence, t_target.page_statistics_name, t_target.subregion, derived.target_color, derived.target_evidence,derived.nm_page";
 
-                echo $page_counts_views_query;
+                //echo $page_counts_views_query;
         }
 
 	// Check for 'biophysics' page types

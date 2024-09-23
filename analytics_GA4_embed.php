@@ -377,7 +377,7 @@ tr:nth-child(even){
 <div id="download_reports" style="padding:100px 100px; text-align:center;">
     <p>                 
         <div style="text-align: left;">
-	<span style="display: inline-block; vertical-align: middle;">Monthly Page Views <a href="#top">Back to top</a></span>
+	<span style="display: inline-block; vertical-align: middle;"><a href="#top">Back to top</a></span>
             <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
 	    	<form method="POST" action="" style="display: inline;">
 	    		<input type="hidden" name="download_csv" value="download_reports">
