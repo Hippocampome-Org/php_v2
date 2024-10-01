@@ -372,7 +372,6 @@ tr:nth-child(even){
 </div>
 
 <!-- To Download all the data -->
-
 </br></br>
 <div id="download_reports" style="padding:100px 100px; text-align:center;">
     <p>                 

@@ -16,7 +16,6 @@ global $csv_data;
 
 function download_excel_file($conn, $neuron_ids) {
     ini_set('memory_limit', '512M'); // Adjust as necessary
-
     $spreadsheet = new Spreadsheet();
     $views_requests = [
 	    'get_neurons_views_report' => null,
