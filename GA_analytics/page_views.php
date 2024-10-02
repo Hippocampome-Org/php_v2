@@ -462,55 +462,55 @@ function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $wri
     $count = 0;
     $csv_rows = [];
     if (isset($write_file)) {
-            if($views_request == 'views_per_month' || $views_request == 'views_per_year'){
+	    if($views_request == 'views_per_month' || $views_request == 'views_per_year'){
+		    if (mysqli_multi_query($conn, $query)) {
+			    $header = []; // Initialize an array to store column names
+			    do {
+				    if ($result = mysqli_store_result($conn)) {
+					    if (empty($header)) {
+						    $header = array_keys(mysqli_fetch_array($result, MYSQLI_ASSOC));
+						    $rows = count($header);
+						    $csv_headers = camel_replace($header);
+						    mysqli_data_seek($result, 0);
+					    }
+					    while ($rowvalue = mysqli_fetch_assoc($result)) {
+						    foreach ($rowvalue as $key => $value) {
+							    if ($value == 0 && is_numeric($value)) {
+								    $rowvalue[$key] = ''; // Replace 0 with an empty string
+							    } else {
+								    // Add to the count if the value is numeric and not zero
+								    if (is_numeric($value)) {
+									    if($key == 'Total_Views'){
+										    $count += $value;
+									    }
+								    }
+							    }
+						    }
+						    if (!is_null($rowvalue['Total_Views']) && $rowvalue['Total_Views'] > 0) {
+							    $csv_rows[] = $rowvalue;
+						    }
+					    }
+					    mysqli_free_result($result);
+				    }
+			    } while (mysqli_next_result($conn));
+			    $spaces = $rows - 2;
+			    $totalRow = array_pad([], $spaces, '');
+			    $totalRow[] = $count;
+			    // Add "Total Count" at the beginning of the array
+			    array_unshift($totalRow, "Total Count");
 
-                    if (mysqli_multi_query($conn, $query)) {
-                            $header = []; // Initialize an array to store column names
-                            do {
-                                    if ($result = mysqli_store_result($conn)) {
-                                            if (empty($header)) {
-                                                    $header = array_keys(mysqli_fetch_array($result, MYSQLI_ASSOC));
-                                                    $rows = count($header);
-                                                    $csv_headers = camel_replace($header);
-                                                    mysqli_data_seek($result, 0);
-                                            }
-                                            while ($rowvalue = mysqli_fetch_assoc($result)) {
-                                                    foreach ($rowvalue as $key => $value) {
-                                                            if ($value == 0) {
-                                                                    $rowvalue[$key] = ''; // Replace 0 with an empty string
-                                                            } else {
-                                                                    // Add to the count if the value is numeric and not zero
-                                                                    if (is_numeric($value)) {
-                                                                        if($key == 'Total_Views'){
-                                                                            $count += $value;
-                                                                        }
-                                                                    }
-                                                            }
-                                                    }
-                                                    if (!is_null($rowvalue['Total_Views']) && $rowvalue['Total_Views'] > 0) {
-                                                            $csv_rows[] = $rowvalue;
-                                                    }
-                                            }
-                                            mysqli_free_result($result);
-                                    }
-                            } while (mysqli_next_result($conn));
-                            $spaces = $rows - 2;
-                            $totalRow = array_pad([], $spaces, '');
-                            $totalRow[] = $count;
-                            // Add "Total Count" at the beginning of the array
-                            array_unshift($totalRow, "Total Count");
+			    $csv_rows[] = $totalRow;
 
-                            $csv_rows[] = $totalRow;
-
-                            // Store information about the CSV file in `$csv_data` array
-                            $csv_data[$csv_tablename]=['filename'=>toCamelCase($csv_tablename),'headers'=>$csv_headers,'rows'=>$csv_rows];
-                            return $csv_data[$csv_tablename];
-                    } else {
-                            // Handle error if query execution fails
-                            echo "Error: " . mysqli_error($conn);
-                    }
-            }
+			    // Store information about the CSV file in `$csv_data` array
+			    $csv_data[$csv_tablename]=['filename'=>toCamelCase($csv_tablename),'headers'=>$csv_headers,'rows'=>$csv_rows];
+			    return $csv_data[$csv_tablename];
+		    } else {
+			    // Handle error if query execution fails
+			    echo "Error: " . mysqli_error($conn);
+		    }
+	    }
     }
+
     $count = 0;
     $rs = mysqli_query($conn, $query);
     $table_string = '';
