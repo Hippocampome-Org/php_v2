@@ -398,27 +398,31 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
     // Process the main query results
     $i = 0;
     while ($row = mysqli_fetch_row($rs)) {
-        $bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
-        $table_string1 .= "<tr class='$bgColor'>";
-	if($csv_tablename == 'monthly_page_views' && $i==0){
-		$csv_rows[] = ["Pre-Aug-2019",470480];
-		$table_string1 .= "<td>Pre-Aug-2019</td><td>470480</td>";	
-		$count += 470480;
-	}else{
-		$csv_rows[] = $row;
-		for ($j = 0; $j < $rows; $j++) {
-			if (isset($neuron_ids[$row[$j]])) { 
-				$row[$j] = $neuron_ids[$row[$j]]; 
-			}
-			if ($row[$rows-1] > 0) {
-				$table_string1 .= "<td>" . htmlspecialchars($row[$j]) . "</td>";
-			}
-		}
+	    $bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
+	    $table_string1 .= "<tr class='$bgColor'>";
+	    if($csv_tablename == 'monthly_page_views'){
+		    if($i==0){
+			    $csv_rows[] = ["Pre-Aug-2019",84313];
+			    $table_string1 .= "<td>Pre-Aug-2019</td><td>84313</td></tr>";
+			    $count += 84313;
+			    $i++;
+			    $bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
+			    $table_string1 .= "<tr class='$bgColor'>";
+		    }
+	    }
+	    $csv_rows[] = $row;
+	    for ($j = 0; $j < $rows; $j++) {
+		    if (isset($neuron_ids[$row[$j]])) {
+			    $row[$j] = $neuron_ids[$row[$j]];
+		    }
+		    if ($row[$rows-1] > 0) {
+			    $table_string1 .= "<td>" . htmlspecialchars($row[$j]) . "</td>";
+		    }
+	    }
 
-		$count += $row[$rows-1];
-	}
-	$table_string1 .= "</tr>";
-	$i++;
+	    $count += $row[$rows-1];
+	    $table_string1 .= "</tr>";
+	    $i++;
     }
 
     // Process the additional query results if provided
