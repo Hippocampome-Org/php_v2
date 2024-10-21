@@ -441,15 +441,14 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
         $totalRow = ["Total Count", $count];
         $csv_rows[] = $totalRow;
 	if($csv_tablename == 'monthly_page_views'){
-		$bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
 		$csv_rows[] = ["pre-Aug 22, 2019",86523];
-	//	$count += 86523;
 	}
 	$csv_data[$csv_tablename] = ['filename' => toCamelCase($csv_tablename), 'headers' => $csv_headers, 'rows' => $csv_rows];
         return $csv_data[$csv_tablename];
     } else {
         $table_string1 .= "<tr><td colspan='" . ($rows - 1) . "'><b>Total Count</b></td><td>" . $count . "</td></tr>";    
 	if($csv_tablename == 'monthly_page_views'){
+		$i++;
 		$bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
 		$table_string1 .= "<tr class='$bgColor'>";
 		$table_string1 .= "<td>pre-Aug 22, 2019</td><td>86523</td></tr>";
