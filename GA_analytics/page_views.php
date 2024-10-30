@@ -14,23 +14,34 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 global $csv_data;
 
-function download_excel_file($conn, $neuron_ids) {
+function download_excel_file($conn, $neuron_ids, $param) {
     ini_set('memory_limit', '512M'); // Adjust as necessary
     $spreadsheet = new Spreadsheet();
-    $views_requests = [
-	    'get_neurons_views_report' => null,
-	    'get_morphology_property_views_report' => null,
-	    'get_markers_property_views_report' => null,
-	    'get_counts_views_report' => 'biophysics',
-	    'get_fp_property_views_report' => null,
-	    'get_pmid_isbn_property_views_report' => null,
-	    'get_counts_views_report' => 'phases',
-	    'get_counts_views_report' => 'connectivity',
-	    'get_domain_functionality_views_report' => null,
-	    'get_page_functionality_views_report' => null,
-	    'get_views_per_page_report' => null,
-	    'get_pages_views_per_month_report' => null
-    ];
+    $reports_filename="reports.xlsx";
+    $views_requests = [];
+
+/*    if($param == "analytics"){
+	    $views_requests = [
+		    'get_neurons_views_report' => null,
+		    'get_domain_functionality_views_report' => null,
+		    'get_page_functionality_views_report' => null,
+		    'get_views_per_page_report' => null,
+		    'get_pages_views_per_month_report' => null
+	    ];
+	    $reports_filename = $param."_reports.xlsx";
+    }
+    if($param == "detailed_views"){
+	    $views_requests = [
+		    'get_morphology_property_views_report' => null,
+		    'get_markers_property_views_report' => null,
+		    'get_counts_views_report' => 'biophysics',
+		    'get_fp_property_views_report' => null,
+		    'get_pmid_isbn_property_views_report' => null,
+		    'get_counts_views_report' => 'phases',
+		    'get_counts_views_report' => 'connectivity',
+	    ];
+	    $reports_filename = $param."_reports.xlsx";
+    }
 foreach ($views_requests as $functionName => $param) {
         $excel_data = download_csvfile($functionName, $conn, 'download_csv', $neuron_ids, $param, true);
         
@@ -52,6 +63,78 @@ foreach ($views_requests as $functionName => $param) {
         // Write data to the Excel sheet
         $sheet->fromArray($excel_data['rows'], NULL, 'A2');
     }
+*/
+
+if ($param == "analytics") {
+    $views_requests = [
+        'get_neurons_views_report' => null,
+        'get_domain_functionality_views_report' => null,
+        'get_page_functionality_views_report' => null,
+        'get_views_per_page_report' => null,
+        'get_pages_views_per_month_report' => null
+    ];
+    $reports_filename = $param . "_reports.xlsx";
+}
+
+if ($param == "detailed_views") {
+    $views_requests = [
+        'get_morphology_property_views_report' => null,
+        'get_markers_property_views_report' => null,
+        'get_counts_views_report' => ['biophysics', 'phases', 'connectivity'], // Use an array for multiple parameters
+        'get_fp_property_views_report' => null,
+        'get_pmid_isbn_property_views_report' => null,
+    ];      
+    $reports_filename = $param . "_reports.xlsx";
+}   
+
+// Iterate through each report request
+foreach ($views_requests as $functionName => $params) {
+    if (is_array($params)) {
+        // Handle multiple parameters
+        foreach ($params as $singleParam) {
+            $excel_data = download_csvfile($functionName, $conn, 'download_csv', $neuron_ids, $singleParam, true);
+            
+            if (empty($excel_data) || empty($excel_data['headers']) || empty($excel_data['rows'])) {
+                error_log("No data returned for $functionName with parameter $singleParam");
+                continue; // Skip to the next iteration
+            }
+
+            // Create a new sheet
+            $sheet = $spreadsheet->createSheet();
+            $filename = $excel_data['filename'];
+            $clean_title = preg_replace('/[\/:*?"<>|]/', '', $filename);
+            $sheet_title = substr($clean_title, 0, 31); // Limit title to 31 characters
+            $sheet->setTitle($sheet_title);
+
+            // Add headers to the first row
+            $sheet->fromArray($excel_data['headers'], NULL, 'A1');
+
+            // Write data to the Excel sheet
+            $sheet->fromArray($excel_data['rows'], NULL, 'A2');
+        }
+    } else {
+        // Handle single parameter
+        $excel_data = download_csvfile($functionName, $conn, 'download_csv', $neuron_ids, $params, true);
+        
+        if (empty($excel_data) || empty($excel_data['headers']) || empty($excel_data['rows'])) {
+            error_log("No data returned for $functionName");
+            continue; // Skip to the next iteration
+        }
+
+        // Create a new sheet
+        $sheet = $spreadsheet->createSheet();
+        $filename = $excel_data['filename'];
+        $clean_title = preg_replace('/[\/:*?"<>|]/', '', $filename);
+        $sheet_title = substr($clean_title, 0, 31); // Limit title to 31 characters
+        $sheet->setTitle($sheet_title);
+
+        // Add headers to the first row
+        $sheet->fromArray($excel_data['headers'], NULL, 'A1');
+
+        // Write data to the Excel sheet
+        $sheet->fromArray($excel_data['rows'], NULL, 'A2');
+    }
+}
 
     $spreadsheet->removeSheetByIndex(0);
 
@@ -62,7 +145,7 @@ foreach ($views_requests as $functionName => $param) {
 
     // Set headers for file download
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    header('Content-Disposition: attachment; filename="reports.xlsx"');
+    header("Content-Disposition: attachment; filename=\"$reports_filename\"");
     header('Cache-Control: max-age=0');
 
     // Create a writer and save the output to the browser
@@ -106,7 +189,7 @@ function parseUrl($url) {
 function download_csvfile($functionName, $conn, $views_request = NULL, $neuron_ids = NULL, $param = NULL, $is_excel = NULL) {
     if($functionName == 'download_reports'){
 	$functionName = 'download_excel_file';
-	return $functionName($conn, $neuron_ids);
+	return $functionName($conn, $neuron_ids, $param);
     }
     $allowedFunctions = [
         'get_neurons_views_report',
@@ -2790,7 +2873,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 		}
 	}else if($page_string == 'connectivity'){
                 if(isset($write_file)) {
-			 $file_name = "membrane_biophysics_evidence_page_";
+			 $file_name = "connectivity_page_";
                         if($views_request == 'views_per_month' || $views_request == 'views_per_year'){
                                 $file_name .= $views_request;
                                 //echo $page_counts_views_query;
