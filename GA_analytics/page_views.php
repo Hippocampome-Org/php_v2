@@ -3248,7 +3248,6 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 				WHEN page LIKE '%synaptome_model%' THEN 'Synaptome Model'
 				WHEN page LIKE '%neuron_page.php' THEN 'Neuron Page'
 				WHEN page LIKE '%smtools%' THEN 'SM Tools'
-				WHEN page LIKE '%synaptic_mod_sum.php%' THEN 'Synaptic Mod Sum'
 
 				-- Combine all HELP pages
 				WHEN page LIKE '%Help_%' 
@@ -3295,6 +3294,8 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 				OR page LIKE '%property_page_markers.php%'
 				OR page LIKE '%property_page_morphology.php%' 
 				OR page LIKE '%property_page_connectivity.php%'
+				OR page LIKE '%property_page_phases.php%'
+				OR page LIKE '%synaptic_mod_sum.php%'
 				OR page LIKE '%property_page_ephys.php%' THEN 'Evidence'
 
 				-- TOOLS pages
@@ -3319,7 +3320,6 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 					    UNION ALL SELECT 'Synaptome Model', '0'
 					    UNION ALL SELECT 'Neuron Page', '0'
 					    UNION ALL SELECT 'SM Tools', '0'
-					    UNION ALL SELECT 'Synaptic Mod Sum', '0'
 					    UNION ALL SELECT 'Help', '0'
 					    UNION ALL SELECT 'Neuron Type', '0'
 					    UNION ALL SELECT 'Browse', '0'
@@ -3427,7 +3427,6 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 					WHEN page LIKE ''%synaptome_model%'' THEN ''Synaptome Model''
 					WHEN page LIKE ''%neuron_page.php%'' THEN ''Neuron Page''
 					WHEN page LIKE ''%smtools%'' THEN ''SM Tools''
-					WHEN page LIKE ''%synaptic_mod_sum.php%'' THEN ''Synaptic Mod Sum''
 
 					-- Combine all HELP pages
 					WHEN page LIKE ''%Help_%'' 
@@ -3474,6 +3473,8 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 					OR page LIKE ''%property_page_markers.php%'' 
 					OR page LIKE ''%property_page_morphology.php%'' 
 					OR page LIKE ''%property_page_connectivity.php%'' 
+					OR page LIKE '%property_page_phases.php%'
+					OR page LIKE '%synaptic_mod_sum.php%' 
 					OR page LIKE ''%property_page_ephys.php%'' THEN ''Evidence''
 
 					-- TOOLS pages
