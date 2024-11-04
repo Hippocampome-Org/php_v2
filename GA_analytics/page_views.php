@@ -3237,7 +3237,102 @@ function get_domain_functionality_views_report($conn, $views_request = NULL, $wr
 
 function get_page_functionality_views_report($conn, $views_request=NULL, $write_file=NULL){
 
-	$page_functionality_views_query = "SELECT 
+	$page_functionality_views_query = "SELECT property_page, SUM(REPLACE(COALESCE(page_views, '0'), ',', '')) AS views
+		FROM (
+				SELECT
+				CASE
+				WHEN page LIKE '%index.php%' OR page = '/' OR page LIKE '%Landing Page%' THEN 'Home'
+				WHEN page LIKE '%analytics%' THEN 'Analytics'
+				WHEN page LIKE '%neuron_by_pattern%' THEN 'Neuron By Pattern'
+				WHEN page LIKE '%synaptome.php%' THEN 'Synaptome'
+				WHEN page LIKE '%synaptome_model%' THEN 'Synaptome Model'
+				WHEN page LIKE '%neuron_page.php' THEN 'Neuron Page'
+				WHEN page LIKE '%smtools%' THEN 'SM Tools'
+				WHEN page LIKE '%synaptic_mod_sum.php%' THEN 'Synaptic Mod Sum'
+
+				-- Combine all HELP pages
+				WHEN page LIKE '%Help_%' 
+				OR page LIKE '%help%' 
+				OR page LIKE '%Help_Quickstart%' 
+				OR page LIKE '%Help_FAQ%' 
+				OR page LIKE '%Help_Known_Bug_List%' 
+				OR page LIKE '%user_feedback_form_entry%' 
+				OR page LIKE '%Help_Other_Useful_Links%' THEN 'Help'
+
+				-- Combine all NEURON TYPE pages
+				WHEN page LIKE '%/php/neuron_page.php?id=%' THEN 'Neuron Type'
+
+				-- Combine all BROWSE pages
+				WHEN page LIKE '%morphology.php%' 
+				OR page LIKE '%markers.php%' 
+				OR page LIKE '%ephys.php%' 
+				OR page LIKE '%connectivity.php%' 
+				OR page LIKE '%synaptome_modeling.php%' 
+				OR page LIKE '%firing_patterns.php%' 
+				OR page LIKE '%izhikevich_model.php%' 
+				OR page LIKE '%synapse_probabilities.php%' 
+				OR page LIKE '%phases.php%' 
+				OR page LIKE '%/cognome/%' 
+				OR page LIKE '%counts.php%' 
+				OR page LIKE '%simulation_parameters.php%' THEN 'Browse'
+
+				WHEN page LIKE '%view_fp_image.php%' THEN 'View Firing Pattern Image'
+
+				-- Combine all SEARCH pages
+				WHEN page LIKE '%search%' 
+				OR page LIKE '%find_author%' 
+				OR page LIKE '%find_neuron_name%' 
+				OR page LIKE '%find_neuron_term%' 
+				OR page LIKE '%find_pmid%' 
+				OR page LIKE '%search_engine_custom%' THEN 'Search'
+
+				-- Combine specific categories for evidence
+				WHEN page LIKE '%property_page_synpro.php%' 
+				OR page LIKE '%property_page_synpro_nm.php%' 
+				OR page LIKE '%property_page_synpro_pvals.php%' 
+				OR page LIKE '%property_page_fp.php%' 
+				OR page LIKE '%property_page_counts.php%' 
+				OR page LIKE '%property_page_markers.php%'
+				OR page LIKE '%property_page_morphology.php%' 
+				OR page LIKE '%property_page_connectivity.php%'
+				OR page LIKE '%property_page_ephys.php%' THEN 'Evidence'
+
+				-- TOOLS pages
+				WHEN page LIKE '%tools.php%' OR page LIKE '%connection_probabilities%' OR page LIKE '%synapse_modeler%' THEN 'Tools'
+
+				-- Combine remaining bot and not-php pages as ALL OTHERS
+				WHEN page LIKE '%bot-traffic%' 
+				OR page LIKE '%/hipp Better than reCAPTCHA：vaptcha.cn%' 
+				OR (page = '/php/' AND day_index IS NOT NULL) THEN 'All Others'
+				ELSE 'Home'
+				END AS property_page,
+				    page_views
+					    FROM ga_analytics_pages
+
+					    UNION ALL
+
+					    -- Define rows for each category to ensure they appear, even if they have 0 views
+					    SELECT 'Home', '0'
+					    UNION ALL SELECT 'Analytics', '0'
+					    UNION ALL SELECT 'Neuron By Pattern', '0'
+					    UNION ALL SELECT 'Synaptome', '0'
+					    UNION ALL SELECT 'Synaptome Model', '0'
+					    UNION ALL SELECT 'Neuron Page', '0'
+					    UNION ALL SELECT 'SM Tools', '0'
+					    UNION ALL SELECT 'Synaptic Mod Sum', '0'
+					    UNION ALL SELECT 'Help', '0'
+					    UNION ALL SELECT 'Neuron Type', '0'
+					    UNION ALL SELECT 'Browse', '0'
+					    UNION ALL SELECT 'View Firing Pattern Image', '0'
+					    UNION ALL SELECT 'Search', '0'
+					    UNION ALL SELECT 'Evidence', '0'
+					    UNION ALL SELECT 'Tools', '0'
+					    UNION ALL SELECT 'All Others', '0'
+					    ) AS combined
+					    GROUP BY property_page
+					    ORDER BY views DESC";
+
+/*	$page_functionality_views_query = "SELECT 
 		CASE 
 		WHEN page LIKE '%find_author.php%' THEN 'find_author'
 		WHEN page LIKE '%index.php%' THEN 'index'
@@ -3280,6 +3375,7 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 			    GROUP BY property_page
 			    ORDER BY 
 			    views DESC ";
+*/
 
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_functionality_views_query = "SET SESSION group_concat_max_len = 1000000;
@@ -3324,41 +3420,73 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 			SET @sql = CONCAT(
 					'SELECT
 					CASE
-					WHEN page LIKE ''%find_author.php%'' THEN ''find_author''
-					WHEN page LIKE ''%index.php%'' THEN ''index''
-					WHEN page LIKE ''%ephys.php%'' THEN ''ephys''
-					WHEN page LIKE ''%Help_%'' THEN ''Help''
-					WHEN page LIKE ''%analytics%'' THEN ''analytics''
-					WHEN page LIKE ''%user_feedback%'' THEN ''user_feedback''
-					WHEN page LIKE ''%phases%'' THEN ''phases''
-					WHEN page LIKE ''%bot-traffic%'' THEN ''bot''
-					WHEN page = ''/'' THEN ''/''
-					WHEN page LIKE ''%neuron_by_pattern%'' THEN ''neuron_by_pattern''
-					WHEN page LIKE ''%synapse_probabilities%'' THEN ''synapse_probabilities''
-					WHEN page LIKE ''%synaptome.php%'' THEN ''synaptome''
-					WHEN page LIKE ''%synaptome_modeling.php%'' THEN ''synaptome_modeling''
-					WHEN page LIKE ''%synaptome_model%'' THEN ''synaptome_model''
-					WHEN page LIKE ''%/hipp Better than reCAPTCHA：vaptcha.cn%'' THEN ''CAPTCHA''
-					WHEN page LIKE ''%search_engine%'' THEN ''search_engine''
-					WHEN page LIKE ''%find_neuron_name.php%'' THEN ''find_neuron_name''
-					WHEN page LIKE ''%find_neuron_term.php%'' THEN ''find_neuron_term''
-					WHEN page LIKE ''%neuron_page%'' THEN ''neuron_page''
-					WHEN page LIKE ''%search.php%'' THEN ''search''
-					WHEN page LIKE ''%smtools%'' THEN ''smtools''
-					WHEN page LIKE ''%synaptic_mod_sum.php%'' THEN ''synaptic_mod_sum''
-					WHEN page LIKE ''%firing_patterns.php%'' THEN ''firing_patterns''
-					WHEN page LIKE ''%/synaptic_probabilities/php/%'' THEN ''synaptic_probabilities''
-					WHEN page LIKE ''%view_fp_image.php%'' THEN ''view_fp_image''
-					WHEN page LIKE ''%izhikevich_model.php%'' THEN ''izhikevich_model''
-					WHEN page LIKE ''%markers.php%'' THEN ''markers landing''
-					WHEN page LIKE ''%counts.php%'' THEN ''counts landing''
-					WHEN page LIKE ''%connectivity.php%'' THEN ''connectivity''
-					WHEN page LIKE ''%morphology.php%'' THEN ''morphology landing''
-					WHEN page LIKE ''%simulation_parameters.php%'' THEN ''simulation_parameters''
-					WHEN page LIKE ''%tools.php%'' THEN ''tools''
-					WHEN page = ''/php/'' AND day_index IS NULL THEN ''/php/''
-					WHEN page = ''/php/'' AND day_index IS NOT NULL THEN ''not php''
-					ELSE ''Landing Page''
+					WHEN page LIKE ''%index.php%'' OR page = ''/'' OR page LIKE ''%Landing Page%'' THEN ''Home''
+					WHEN page LIKE ''%analytics%'' THEN ''Analytics''
+					WHEN page LIKE ''%neuron_by_pattern%'' THEN ''Neuron By Pattern''
+					WHEN page LIKE ''%synaptome.php%'' THEN ''Synaptome''
+					WHEN page LIKE ''%synaptome_model%'' THEN ''Synaptome Model''
+					WHEN page LIKE ''%neuron_page.php%'' THEN ''Neuron Page''
+					WHEN page LIKE ''%smtools%'' THEN ''SM Tools''
+					WHEN page LIKE ''%synaptic_mod_sum.php%'' THEN ''Synaptic Mod Sum''
+
+					-- Combine all HELP pages
+					WHEN page LIKE ''%Help_%'' 
+					OR page LIKE ''%help%'' 
+					OR page LIKE ''%Help_Quickstart%'' 
+					OR page LIKE ''%Help_FAQ%'' 
+					OR page LIKE ''%Help_Known_Bug_List%'' 
+					OR page LIKE ''%user_feedback_form_entry%'' 
+					OR page LIKE ''%Help_Other_Useful_Links%'' THEN ''Help''
+
+					-- Combine all NEURON TYPE pages
+					WHEN page LIKE ''%/php/neuron_page.php?id=%'' THEN ''Neuron Type''
+
+					-- Combine all BROWSE pages
+					WHEN page LIKE ''%morphology.php%'' 
+					OR page LIKE ''%markers.php%'' 
+					OR page LIKE ''%ephys.php%'' 
+					OR page LIKE ''%connectivity.php%'' 
+					OR page LIKE ''%synaptome_modeling.php%'' 
+					OR page LIKE ''%firing_patterns.php%'' 
+					OR page LIKE ''%izhikevich_model.php%'' 
+					OR page LIKE ''%synapse_probabilities.php%'' 
+					OR page LIKE ''%phases.php%'' 
+					OR page LIKE ''%/cognome/%'' 
+					OR page LIKE ''%counts.php%'' 
+					OR page LIKE ''%simulation_parameters.php%'' THEN ''Browse''
+
+					WHEN page LIKE ''%view_fp_image.php%'' THEN ''View Firing Pattern Image''
+
+					-- Combine all SEARCH pages
+					WHEN page LIKE ''%search%'' 
+					OR page LIKE ''%find_author%'' 
+					OR page LIKE ''%find_neuron_name%'' 
+					OR page LIKE ''%find_neuron_term%'' 
+					OR page LIKE ''%find_pmid%'' 
+					OR page LIKE ''%search_engine_custom%'' THEN ''Search''
+
+					-- Combine specific categories for evidence
+					WHEN page LIKE ''%property_page_synpro.php%'' 
+					OR page LIKE ''%property_page_synpro_nm.php%'' 
+					OR page LIKE ''%property_page_synpro_pvals.php%'' 
+					OR page LIKE ''%property_page_fp.php%'' 
+					OR page LIKE ''%property_page_counts.php%'' 
+					OR page LIKE ''%property_page_markers.php%'' 
+					OR page LIKE ''%property_page_morphology.php%'' 
+					OR page LIKE ''%property_page_connectivity.php%'' 
+					OR page LIKE ''%property_page_ephys.php%'' THEN ''Evidence''
+
+					-- TOOLS pages
+					WHEN page LIKE ''%tools.php%'' 
+					OR page LIKE ''%connection_probabilities%'' 
+					OR page LIKE ''%synapse_modeler%'' THEN ''Tools''
+
+					-- Combine remaining bot and not-php pages as ALL OTHERS
+					WHEN page LIKE ''%bot-traffic%'' 
+					OR page LIKE ''%/hipp Better than reCAPTCHA：vaptcha.cn%'' 
+					OR (page = ''/php/'' AND day_index IS NOT NULL) THEN ''All Others''
+
+					ELSE ''Home''
 					END AS Property, ', 
 					    @sql, ',
 					    SUM(CAST(REPLACE(page_views, \\'\\', \\'\\') AS SIGNED)) AS Total_Views
