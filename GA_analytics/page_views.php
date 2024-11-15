@@ -23,6 +23,7 @@ function download_excel_file($conn, $neuron_ids, $param) {
 /*    if($param == "analytics"){
 	    $views_requests = [
 		    'get_neurons_views_report' => null,
+		    'get_neuron_types_views_report' => null,
 		    'get_domain_functionality_views_report' => null,
 		    'get_page_functionality_views_report' => null,
 		    'get_views_per_page_report' => null,
@@ -68,6 +69,7 @@ foreach ($views_requests as $functionName => $param) {
 if ($param == "analytics") {
     $views_requests = [
         'get_neurons_views_report' => null,
+	'get_neuron_types_views_report' => null, 
         'get_domain_functionality_views_report' => null,
         'get_page_functionality_views_report' => null,
         'get_views_per_page_report' => null,
@@ -193,6 +195,7 @@ function download_csvfile($functionName, $conn, $views_request = NULL, $neuron_i
     }
     $allowedFunctions = [
         'get_neurons_views_report',
+	'get_neuron_types_views_report',
         'get_markers_property_views_report',
         'get_morphology_property_views_report',
         'get_counts_views_report',
@@ -207,13 +210,15 @@ function download_csvfile($functionName, $conn, $views_request = NULL, $neuron_i
     $neuron_ids_func = [
         'get_counts_views_report',
         'get_neurons_views_report',
+	'get_neuron_types_views_report',
+	'get_neuron_types_views_report', 
         'get_morphology_property_views_report',
         'get_markers_property_views_report',
         'get_pmid_isbn_property_views_report'
     ];
 
     if (in_array($functionName, $allowedFunctions) && function_exists($functionName)) {
-        if (in_array($functionName, ['get_neurons_views_report', 'get_morphology_property_views_report', 'get_markers_property_views_report'])) {
+        if (in_array($functionName, ['get_neurons_views_report', 'get_neuron_types_views_report', 'get_morphology_property_views_report', 'get_markers_property_views_report'])) {
             $csv_data = $functionName($conn, $neuron_ids, $views_request, true);
         } else {
             if (isset($param)) {
@@ -1791,9 +1796,118 @@ function get_page_views($conn){ //Passed on Dec 3 2023
 
 function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL){ //Passed $conn on Dec 3 2023
 
-	$page_views_query = "SELECT gap.page, SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS views FROM
-		ga_analytics_pages gap WHERE gap.day_index IS NOT NULL GROUP BY gap.page order by views desc";
+	//$page_views_query = "SELECT gap.page, SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS views FROM
+	//	ga_analytics_pages gap WHERE gap.day_index IS NOT NULL GROUP BY gap.page order by views desc";
+	
+	$page_views_query = "SELECT gap.page, 
+		SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS views
+		FROM ga_analytics_pages gap
+		WHERE gap.day_index IS NOT NULL 
+		AND gap.day_index < '2023-07-01'
+		GROUP BY gap.page
+		UNION ALL
+		SELECT galp.landing_page, 
+		SUM(CAST(REPLACE(galp.sessions, ',', '') AS SIGNED)) AS views
+		FROM ga_analytics_landing_pages galp
+		WHERE galp.day_index IS NOT NULL 
+		AND galp.day_index >= '2023-07-01'
+		GROUP BY galp.landing_page
 
+		ORDER BY views DESC";
+
+if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
+    $page_views_query = "SET SESSION group_concat_max_len = 1000000;
+                         SET @sql_pages = NULL;
+                         SET @sql_landing_pages = NULL;";
+
+    if ($views_request == "views_per_month") {
+        // Generate dynamic SQL for monthly aggregation for ga_analytics_pages
+        $page_views_query .= "SELECT
+                                GROUP_CONCAT(
+                                    DISTINCT CONCAT(
+                                        'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+                                        ' AND MONTH(day_index) = ', MONTH(day_index),
+                                        ' THEN CAST(REPLACE(page_views, \\'\\', \\'\\') AS SIGNED) ELSE 0 END) AS `',
+                                        YEAR(day_index), '_', MONTH(day_index), '`'
+                                    )
+                                    ORDER BY YEAR(day_index), MONTH(day_index)
+                                    SEPARATOR ', '
+                                ) INTO @sql_pages
+                              FROM ga_analytics_pages
+                              WHERE day_index < '2023-07-01';";
+
+        // Generate dynamic SQL for monthly aggregation for ga_analytics_landing_pages
+        $page_views_query .= "SELECT
+                                GROUP_CONCAT(
+                                    DISTINCT CONCAT(
+                                        'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+                                        ' AND MONTH(day_index) = ', MONTH(day_index),
+                                        ' THEN CAST(REPLACE(sessions, \\'\\', \\'\\') AS SIGNED) ELSE 0 END) AS `',
+                                        YEAR(day_index), '_', MONTH(day_index), '`'
+                                    )
+                                    ORDER BY YEAR(day_index), MONTH(day_index)
+                                    SEPARATOR ', '
+                                ) INTO @sql_landing_pages
+                              FROM ga_analytics_landing_pages
+                              WHERE day_index >= '2023-07-01';";
+    }
+
+    if ($views_request == "views_per_year") {
+        // Generate dynamic SQL for yearly aggregation for ga_analytics_pages
+        $page_views_query .= "SELECT
+                                GROUP_CONCAT(
+                                    DISTINCT CONCAT(
+                                        'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+                                        ' THEN CAST(REPLACE(page_views, \\'\\', \\'\\') AS SIGNED) ELSE 0 END) AS `',
+                                        YEAR(day_index), '`'
+                                    )
+                                    ORDER BY YEAR(day_index)
+                                    SEPARATOR ', '
+                                ) INTO @sql_pages
+                              FROM ga_analytics_pages
+                              WHERE day_index < '2023-07-01';";
+
+        // Generate dynamic SQL for yearly aggregation for ga_analytics_landing_pages
+        $page_views_query .= "SELECT
+                                GROUP_CONCAT(
+                                    DISTINCT CONCAT(
+                                        'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+                                        ' THEN CAST(REPLACE(sessions, \\'\\', \\'\\') AS SIGNED) ELSE 0 END) AS `',
+                                        YEAR(day_index), '`'
+                                    )
+                                    ORDER BY YEAR(day_index)
+                                    SEPARATOR ', '
+                                ) INTO @sql_landing_pages
+                              FROM ga_analytics_landing_pages
+                              WHERE day_index >= '2023-07-01';";
+    }
+
+    // Concatenate the dynamic parts and form the final query
+    $page_views_query .= "
+        SET @sql = CONCAT(
+            'SELECT page as Page, ', 
+            @sql_pages, ', ', 
+            @sql_landing_pages, ', ',
+            'SUM(CASE WHEN day_index < \\'2023-07-01\\' THEN CAST(REPLACE(page_views, \\'\\', \\'\\') AS SIGNED) ELSE 0 END) AS Total_Views_Pages, ',
+            'SUM(CASE WHEN day_index >= \\'2023-07-01\\' THEN CAST(REPLACE(sessions, \\'\\', \\'\\') AS SIGNED) ELSE 0 END) AS Total_Views_Landing ',
+            'FROM (',
+                'SELECT page, day_index, page_views FROM ga_analytics_pages WHERE day_index < \\'2023-07-01\\' ',
+                'UNION ALL ',
+                'SELECT landing_page AS page, day_index, sessions as page_views FROM ga_analytics_landing_pages WHERE day_index >= \\'2023-07-01\\' ',
+            ') AS combined_table ',
+            'GROUP BY page ',
+            'ORDER BY Total_Views_Pages + Total_Views_Landing DESC'
+        );";
+
+    $page_views_query .= "
+        PREPARE stmt FROM @sql;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;";
+echo $page_views_query;
+}
+
+
+/*
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_views_query = "SET SESSION group_concat_max_len = 1000000;
 		SET @sql = NULL;"; 
@@ -1849,8 +1963,8 @@ function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL)
 		EXECUTE stmt;
 		DEALLOCATE PREPARE stmt;";
 	}
-
-	//echo $page_views_query;
+*/
+//	echo $page_views_query;
 	$table_string ='';
 
 	$columns = ['Page', 'Views'];
@@ -2089,7 +2203,7 @@ DEALLOCATE PREPARE stmt;";
 	}
 
 //Till Here on Jul 2 2024
-
+	$table_string='';
 	//$table_string = get_table_skeleton_first($columns);
 	if(isset($write_file)) {
 		$file_name = "neurons_";
@@ -2101,6 +2215,227 @@ DEALLOCATE PREPARE stmt;";
 	}else{
 		$table_string = '';
 		$table_string .= format_table_neurons($conn, $page_neurons_views_query, $table_string, 'neurons_views', $columns, $neuron_ids);
+		$table_string .= get_table_skeleton_end();
+		echo $table_string;
+	}
+}
+
+function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=NULL, $write_file=NULL){ //Passed on Nov 12 2024
+
+	$columns = ['Subregion', 'Neuron Type Name', 'Census','Views'];
+     
+	$page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000;
+
+-- Construct the query to count neuron page views and evidence page views separately
+SET @sql = CONCAT(
+    'SELECT t.subregion AS Subregion, ',
+    't.page_statistics_name AS Neuron_Type_Name, ',
+    
+    -- Include nd.neuronID and t.id for verification
+    -- 'nd.neuronID AS Neuron_Page_ID, ',
+    -- 't.id AS Neuron_Type_ID, ',
+    
+    -- Neuron page view count
+    'SUM(CASE WHEN nd.page LIKE ''%neuron_page.php?id=%'' THEN REPLACE(nd.page_views, '','', '''') ELSE 0 END) AS Neuron_Page_Views, ',
+    
+    -- Evidence page view count
+    'SUM(CASE WHEN nd.page LIKE ''%property_page_%'' THEN REPLACE(nd.page_views, '','', '''') ELSE 0 END) AS Evidence_Page_Views, ',
+    
+    -- Total views as the sum of both
+    'SUM(REPLACE(nd.page_views, '','', '''')) AS Total_Views ',
+    
+    'FROM (',
+        'SELECT ',
+            'CASE ',
+                'WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
+                'WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) ',
+                'WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) ',
+            'END AS neuronID, ',
+            'page, ',
+            'page_views ',
+        'FROM ga_analytics_pages ',
+        'WHERE (page LIKE ''%neuron_page.php?id=%'' OR page LIKE ''%property_page_%'') ',
+        'AND LENGTH(CASE ',
+            'WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
+            'WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) ',
+            'WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) ',
+        'END) = 4 ',
+        'AND (CASE ',
+            'WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
+            'WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) ',
+            'WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) ',
+        'END NOT IN (4168, 4181, 2232)) ',
+    ') AS nd ',
+    'JOIN Type AS t ON nd.neuronID = t.id ',
+    'GROUP BY t.page_statistics_name, t.subregion ',
+    'ORDER BY t.position;'
+);
+
+-- Execute the dynamically constructed SQL
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+";
+//echo $page_neurons_views_query;
+if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
+    $page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
+    
+    if ($views_request == "views_per_month") {
+        $page_neurons_views_query .= "SELECT
+            GROUP_CONCAT(DISTINCT
+                CONCAT(
+                    'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+                    ' AND MONTH(day_index) = ', MONTH(day_index),
+                    ' THEN REPLACE(nd.page_views, '','', '''') ELSE 0 END) AS `',
+                    YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
+                )    
+                ORDER BY YEAR(day_index), MONTH(day_index)
+                SEPARATOR ', '
+            ) INTO @sql 
+        FROM (
+            SELECT DISTINCT day_index
+            FROM ga_analytics_pages
+        ) months;";
+    }    
+    
+    if ($views_request == "views_per_year") {
+        $page_neurons_views_query .= "SELECT
+            GROUP_CONCAT(DISTINCT
+                CONCAT(
+                    'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+                    ' THEN REPLACE(nd.page_views, '','', '''') ELSE 0 END) AS `',
+                    YEAR(day_index), '`'
+                )    
+                ORDER BY YEAR(day_index)
+                SEPARATOR ', '
+            ) INTO @sql 
+        FROM (
+            SELECT DISTINCT day_index
+            FROM ga_analytics_pages
+        ) years;";
+    }
+    
+    $page_neurons_views_query .= " SET @sql = CONCAT(
+        'SELECT t.subregion AS Subregion, t.page_statistics_name AS Neuron_Type_Name, ',
+        @sql,
+        ', SUM(REPLACE(nd.page_views, '','', '''')) AS Total_Views',
+        ' FROM (',
+            'SELECT ',
+                'CASE ',
+                    'WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
+                    'WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) ',
+                    'WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) ',
+                'END AS neuronID, ',
+                'page_views, ',
+                'day_index, ',
+                'CASE WHEN page LIKE ''%property_page_counts.php%'' THEN 1 ELSE 0 END AS is_property_page ',
+            'FROM ga_analytics_pages ',
+            'WHERE (page LIKE ''%id_neuron=%'' OR page LIKE ''%id1_neuron=%'' OR page LIKE ''%id_neuron_source=%'') ',
+            'AND LENGTH(CASE ',
+                'WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
+                'WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) ',
+                'WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) ',
+            'END) = 4 ',
+            'AND (CASE ',
+                'WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
+                'WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) ',
+                'WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) ',
+            'END NOT IN (4168, 4181, 2232)) ',
+        ') AS nd ',
+        'JOIN Type AS t ON nd.neuronID = t.id ',
+        'GROUP BY t.subregion, t.page_statistics_name ',
+        'ORDER BY t.position'
+    );
+
+    PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;";
+}
+
+/*
+	if (($views_request == "views_per_month")  || ($views_request == "views_per_year")) {
+		$page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
+		if ($views_request == "views_per_month") {
+			$page_neurons_views_query .= "SELECT
+				GROUP_CONCAT(DISTINCT
+						CONCAT(
+							'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+								' AND MONTH(day_index) = ', MONTH(day_index),
+								' THEN REPLACE(nd.page_views, '','', '''') ELSE 0 END) AS `',
+							YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
+						      )
+						ORDER BY YEAR(day_index), MONTH(day_index)
+						SEPARATOR ', '
+					    ) INTO @sql
+				FROM (
+						SELECT DISTINCT day_index
+						FROM ga_analytics_pages
+				     ) months;";
+		}
+		if($views_request == "views_per_year"){
+		$page_neurons_views_query .= " SELECT
+			GROUP_CONCAT(DISTINCT
+					CONCAT(
+						'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+							' THEN REPLACE(nd.page_views, \",\", \"\") ELSE 0 END) AS `',
+						YEAR(day_index), '`'
+					      )
+					ORDER BY YEAR(day_index)
+					SEPARATOR ', '
+				    ) INTO @sql
+			FROM ( SELECT DISTINCT day_index FROM ga_analytics_pages ) years;";
+		}
+		$page_neurons_views_query .= " SET @sql = CONCAT(
+									'SELECT t.subregion AS Subregion, t.page_statistics_name AS Neuron_Type_Name, ',
+									@sql,
+									', SUM(REPLACE(nd.page_views, '','', '''')) AS Total_Views',
+									' FROM (
+										SELECT
+										CASE
+										WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1)
+										WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1)
+										WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1)
+										END AS neuronID,
+										page_views,
+										day_index,
+										CASE
+										WHEN page LIKE ''%property_page_counts.php%'' THEN 1
+										ELSE 0
+										END AS is_property_page
+										FROM ga_analytics_pages
+										WHERE
+										(page LIKE ''%id_neuron=%'' OR page LIKE ''%id1_neuron=%'' OR page LIKE ''%id_neuron_source=%'') AND
+										LENGTH(
+											CASE
+											WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1)
+											WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1)
+											WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1)
+											END
+										      ) = 4 AND
+										(
+										 CASE
+										 WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1)
+										 WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1)
+										 WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1)
+										 END
+										) NOT IN (''4168'', ''4181'', ''2232'')
+										) AS nd
+										JOIN Type AS t ON nd.neuronID = t.id
+										GROUP BY t.subregion, t.page_statistics_name
+										ORDER BY t.position'); 	PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;"; 
+	} */
+	$table_string='';
+	//$table_string = get_table_skeleton_first($columns);
+	if(isset($write_file)) {
+		$file_name = "neuron_types_";
+		if($views_request == 'views_per_month' || $views_request == 'views_per_year'){
+			$file_name .= $views_request;
+		}else{$file_name .= "views"; }
+		
+		return format_table_neurons($conn, $page_neurons_views_query, $table_string, $file_name, $columns, $neuron_ids, $write_file, $views_request);
+	}else{
+		$table_string = '';
+		$table_string .= format_table_neurons($conn, $page_neurons_views_query, $table_string, 'neuron_types_views', $columns, $neuron_ids);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
@@ -3502,7 +3837,7 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 		DEALLOCATE PREPARE stmt;";
 	}
 
-	//echo $page_functionality_views_query;
+	echo $page_functionality_views_query;
 	$options = ['exclude' => ['not php'],];
 	$options = [];//'exclude' => ['not php'],]; //Added this line to make sure we are getting all counts can remove it later
 	$columns = ['Property', 'Views'];

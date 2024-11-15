@@ -143,6 +143,7 @@ tr:nth-child(even){
 			<div id="links" style="padding: 15px; 10px;">
  	    		<ul>
 				<li><a href="#neuron">Neuron Type Evidence Page Views</a></li>
+				<li><a href="#neuron_types">Neuron Type Page Views</a></li>
 				<li><a href="#property_functionality">Functionality Property Domain Page Views</a></li>
                                 <li><a href="#page_functionality">Functionality Domain Page Views</a></li>
 				<li><a href="#pageviews">Views per Page </a></li>
@@ -175,6 +176,23 @@ tr:nth-child(even){
 	</div>
 </div>
 <!-- Till here -->
+
+<!-- When Neuron Type Views is clicked-->
+</br></br>                              
+<div id="neuron_types" style="padding:100px 100px; align:center;">
+        <p><div style="text-align: left;"> 
+                <span style="display: inline-block; vertical-align: middle;">Neuron Type Page Views <a href="#top">Back to top</a></span>
+                <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
+                        <form method="POST" style="display: inline;"><input type="hidden" name="download_csv" value="get_neuron_types_views_report"><button type="submit">Download CSV</button></form>
+                        <form method="POST" style="display: inline;"><input type="hidden" name="views_per_month" value="get_neuron_types_views_report"><button type="submit">Download Views Per Month CSV</button></form>                                    
+                        <form method="POST" style="display: inline;"><input type="hidden" name="views_per_year" value="get_neuron_types_views_report"><button type="submit">Download Views Per Year CSV</button></form>
+                </span>                 
+        </div></p>                      
+        <div id="neuron-inside" style="width: 1150px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+                <?php get_neuron_types_views_report($conn, $neuron_ids); //Passing $conn on Dec 3 2023 ?> 
+        </div>                                      
+</div>                                              
+<!-- Till here -->   
 
 <!-- When Functionality Property Domain Page Views is clicked-->
 </br></br>
