@@ -112,6 +112,7 @@ function download_excel_file($conn, $neuron_ids, $param) {
 
 function get_neuron_ids($conn){
 	$neuron_ids = [];
+	//drop_or_create_aggregate_table($conn); // Commented out as this code is gonna be in python after we pull data every morning
 	$query = "SELECT page_statistics_name, id from Type";
 	$rs = mysqli_query($conn,$query);
         if(!$rs || ($rs->num_rows < 1)){
@@ -123,6 +124,72 @@ function get_neuron_ids($conn){
 	}
 	return $neuron_ids;	
 }
+
+function drop_or_create_aggregate_table($conn) {
+    // Step 1: Drop the table if it exists
+    $dropQuery = "DROP TABLE IF EXISTS temp_combined_analytics;";
+    if ($conn->query($dropQuery) === FALSE) {
+        die("Error dropping the table: " . $conn->error);
+    }
+
+    // Step 2: Create the table
+    $createQuery = "
+        CREATE TABLE temp_combined_analytics AS
+        SELECT 
+            CASE 
+                WHEN gap.page IS NOT NULL AND gap.page NOT LIKE '%not set%' THEN gap.page
+                WHEN galp.landing_page IS NOT NULL AND galp.landing_page NOT LIKE '%not set%' THEN galp.landing_page
+                ELSE NULL
+            END AS page,
+            COALESCE(gap.day_index, galp.day_index) AS day_index,
+            COALESCE(gap.page_views, 0) AS page_views,
+            COALESCE(galp.sessions, 0) AS sessions,
+            COALESCE(gap.page_views, 0) + COALESCE(galp.sessions, 0) AS combined_views,
+            COALESCE(gap.bounce_rate_percentage, NULL) AS page_bounce_rate,
+            COALESCE(galp.bounce_rate_percentage, NULL) AS landing_bounce_rate,
+            gap.page AS source_page,
+            galp.landing_page AS source_landing_page
+        FROM 
+            (SELECT page, page_views, day_index, bounce_rate_percentage FROM ga_analytics_pages) AS gap
+        LEFT JOIN 
+            (SELECT landing_page, sessions, day_index, bounce_rate_percentage FROM ga_analytics_landing_pages) AS galp
+        ON 
+            gap.page = galp.landing_page AND gap.day_index = galp.day_index
+
+        UNION ALL
+
+        SELECT 
+            CASE 
+                WHEN gap.page IS NOT NULL AND gap.page NOT LIKE '%not set%' THEN gap.page
+                WHEN galp.landing_page IS NOT NULL AND galp.landing_page NOT LIKE '%not set%' THEN galp.landing_page
+                ELSE NULL
+            END AS page,
+            COALESCE(gap.day_index, galp.day_index) AS day_index,
+            COALESCE(gap.page_views, 0) AS page_views,
+            COALESCE(galp.sessions, 0) AS sessions,
+            COALESCE(gap.page_views, 0) + COALESCE(galp.sessions, 0) AS combined_views,
+            COALESCE(gap.bounce_rate_percentage, NULL) AS page_bounce_rate,
+            COALESCE(galp.bounce_rate_percentage, NULL) AS landing_bounce_rate,
+            gap.page AS source_page,
+            galp.landing_page AS source_landing_page
+        FROM 
+            (SELECT page, page_views, day_index, bounce_rate_percentage FROM ga_analytics_pages) AS gap
+        RIGHT JOIN 
+            (SELECT landing_page, sessions, day_index, bounce_rate_percentage FROM ga_analytics_landing_pages) AS galp
+        ON 
+            gap.page = galp.landing_page AND gap.day_index = galp.day_index
+        WHERE
+            (gap.page IS NOT NULL AND gap.page NOT LIKE '%not set%')
+            OR (galp.landing_page IS NOT NULL AND galp.landing_page NOT LIKE '%not set%');
+    ";
+
+    if ($conn->query($createQuery) === TRUE) {
+        echo "Table 'temp_combined_analytics' created successfully with 'page' column.\n";
+    } else {
+        die("Error creating the table: " . $conn->error);
+    }
+}
+
 
 function get_link($text, $id, $path, $str=NULL){
 	if($str == 'pmid'){	$path .= $id."/";	}
@@ -1698,115 +1765,64 @@ function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL)
 
 	//$page_views_query = "SELECT gap.page, SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS views FROM
 	//	ga_analytics_pages gap WHERE gap.day_index IS NOT NULL GROUP BY gap.page order by views desc";
-	
-	$page_views_query = "SELECT gap.page, 
-		SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS views
-		FROM ga_analytics_pages gap
-		WHERE gap.day_index IS NOT NULL 
-		AND gap.day_index < '2023-07-01'
-		GROUP BY gap.page
-		UNION ALL
-		SELECT galp.landing_page, 
-		SUM(CAST(REPLACE(galp.sessions, ',', '') AS SIGNED)) AS views
-		FROM ga_analytics_landing_pages galp
-		WHERE galp.day_index IS NOT NULL 
-		AND galp.day_index >= '2023-07-01'
-		GROUP BY galp.landing_page
+	$page_views_query = " SELECT gap.page, SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS views FROM 
+				temp_combined_analytics gap WHERE gap.day_index IS NOT NULL GROUP BY gap.page order by views desc";
 
-		ORDER BY views DESC";
+	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
+		$page_views_query = "SET SESSION group_concat_max_len = 1000000;
+		SET @sql = NULL;"; 
 
-if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
-    $page_views_query = "SET SESSION group_concat_max_len = 1000000;
-                         SET @sql_pages = NULL;
-                         SET @sql_landing_pages = NULL;";
+			if ($views_request == "views_per_month") {
+				$page_views_query .= "SELECT
+					GROUP_CONCAT(DISTINCT
+							CONCAT( 
+								'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+									' AND MONTH(day_index) = ', MONTH(day_index),
+									' THEN REPLACE(page_views, \\'\\', \\'\\') ELSE 0 END) AS `',
+								YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
+							      )
+							ORDER BY YEAR(day_index), MONTH(day_index)
+							SEPARATOR ', '
+						    ) INTO @sql
+					FROM (          
+							SELECT DISTINCT day_index
+							FROM temp_combined_analytics 
+					     ) months;";
+			}
 
-    if ($views_request == "views_per_month") {
-        // Generate dynamic SQL for monthly aggregation for ga_analytics_pages
-        $page_views_query .= "SELECT
-                                GROUP_CONCAT(
-                                    DISTINCT CONCAT(
-                                        'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
-                                        ' AND MONTH(day_index) = ', MONTH(day_index),
-                                        ' THEN CAST(REPLACE(page_views, \\'\\', \\'\\') AS SIGNED) ELSE 0 END) AS `',
-                                        YEAR(day_index), '_', MONTH(day_index), '`'
-                                    )
-                                    ORDER BY YEAR(day_index), MONTH(day_index)
-                                    SEPARATOR ', '
-                                ) INTO @sql_pages
-                              FROM ga_analytics_pages
-                              WHERE day_index < '2023-07-01';";
+		if ($views_request == "views_per_year") {
+			$page_views_query .= "SELECT
+				GROUP_CONCAT(DISTINCT
+						CONCAT( 
+							'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+								' THEN REPLACE(page_views, \\'\\', \\'\\') ELSE 0 END) AS `',
+							YEAR(day_index), '`'
+						      )
+						ORDER BY YEAR(day_index)
+						SEPARATOR ', '
+					    ) INTO @sql
+				FROM (          
+						SELECT DISTINCT day_index
+						FROM temp_combined_analytics
+				     ) years;";
+		}
 
-        // Generate dynamic SQL for monthly aggregation for ga_analytics_landing_pages
-        $page_views_query .= "SELECT
-                                GROUP_CONCAT(
-                                    DISTINCT CONCAT(
-                                        'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
-                                        ' AND MONTH(day_index) = ', MONTH(day_index),
-                                        ' THEN CAST(REPLACE(sessions, \\'\\', \\'\\') AS SIGNED) ELSE 0 END) AS `',
-                                        YEAR(day_index), '_', MONTH(day_index), '`'
-                                    )
-                                    ORDER BY YEAR(day_index), MONTH(day_index)
-                                    SEPARATOR ', '
-                                ) INTO @sql_landing_pages
-                              FROM ga_analytics_landing_pages
-                              WHERE day_index >= '2023-07-01';";
-    }
+		$page_views_query .= "
+			SET @sql = CONCAT(
+					'SELECT page as Page, ',
+					@sql,
+					', SUM(CAST(REPLACE(page_views, \\'\\', \\'\\') AS SIGNED)) AS Total_Views ',
+					'FROM temp_combined_analytics ',
+					'WHERE day_index IS NOT NULL ',
+					'GROUP BY page ',
+					'ORDER BY total_views DESC'
+					);";
 
-    if ($views_request == "views_per_year") {
-        // Generate dynamic SQL for yearly aggregation for ga_analytics_pages
-        $page_views_query .= "SELECT
-                                GROUP_CONCAT(
-                                    DISTINCT CONCAT(
-                                        'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
-                                        ' THEN CAST(REPLACE(page_views, \\'\\', \\'\\') AS SIGNED) ELSE 0 END) AS `',
-                                        YEAR(day_index), '`'
-                                    )
-                                    ORDER BY YEAR(day_index)
-                                    SEPARATOR ', '
-                                ) INTO @sql_pages
-                              FROM ga_analytics_pages
-                              WHERE day_index < '2023-07-01';";
-
-        // Generate dynamic SQL for yearly aggregation for ga_analytics_landing_pages
-        $page_views_query .= "SELECT
-                                GROUP_CONCAT(
-                                    DISTINCT CONCAT(
-                                        'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
-                                        ' THEN CAST(REPLACE(sessions, \\'\\', \\'\\') AS SIGNED) ELSE 0 END) AS `',
-                                        YEAR(day_index), '`'
-                                    )
-                                    ORDER BY YEAR(day_index)
-                                    SEPARATOR ', '
-                                ) INTO @sql_landing_pages
-                              FROM ga_analytics_landing_pages
-                              WHERE day_index >= '2023-07-01';";
-    }
-
-    // Concatenate the dynamic parts and form the final query
-    $page_views_query .= "
-        SET @sql = CONCAT(
-            'SELECT page as Page, ', 
-            @sql_pages, ', ', 
-            @sql_landing_pages, ', ',
-            'SUM(CASE WHEN day_index < \\'2023-07-01\\' THEN CAST(REPLACE(page_views, \\'\\', \\'\\') AS SIGNED) ELSE 0 END) AS Total_Views_Pages, ',
-            'SUM(CASE WHEN day_index >= \\'2023-07-01\\' THEN CAST(REPLACE(sessions, \\'\\', \\'\\') AS SIGNED) ELSE 0 END) AS Total_Views_Landing ',
-            'FROM (',
-                'SELECT page, day_index, page_views FROM ga_analytics_pages WHERE day_index < \\'2023-07-01\\' ',
-                'UNION ALL ',
-                'SELECT landing_page AS page, day_index, sessions as page_views FROM ga_analytics_landing_pages WHERE day_index >= \\'2023-07-01\\' ',
-            ') AS combined_table ',
-            'GROUP BY page ',
-            'ORDER BY Total_Views_Pages + Total_Views_Landing DESC'
-        );";
-
-    $page_views_query .= "
-        PREPARE stmt FROM @sql;
-        EXECUTE stmt;
-        DEALLOCATE PREPARE stmt;";
-echo $page_views_query;
-}
-
-
+		$page_views_query .= "
+			PREPARE stmt FROM @sql;
+		EXECUTE stmt;
+		DEALLOCATE PREPARE stmt;";
+	}
 /*
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_views_query = "SET SESSION group_concat_max_len = 1000000;
@@ -1862,9 +1878,8 @@ echo $page_views_query;
 			PREPARE stmt FROM @sql;
 		EXECUTE stmt;
 		DEALLOCATE PREPARE stmt;";
-	}
-*/
-//	echo $page_views_query;
+	} */
+	//echo $page_views_query;
 	$table_string ='';
 
 	$columns = ['Page', 'Views'];
