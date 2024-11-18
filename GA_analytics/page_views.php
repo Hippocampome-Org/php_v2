@@ -1823,62 +1823,6 @@ function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL)
 		EXECUTE stmt;
 		DEALLOCATE PREPARE stmt;";
 	}
-/*
-	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
-		$page_views_query = "SET SESSION group_concat_max_len = 1000000;
-		SET @sql = NULL;"; 
-
-			if ($views_request == "views_per_month") {
-				$page_views_query .= "SELECT
-					GROUP_CONCAT(DISTINCT
-							CONCAT( 
-								'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
-									' AND MONTH(day_index) = ', MONTH(day_index),
-									' THEN REPLACE(page_views, \\'\\', \\'\\') ELSE 0 END) AS `',
-								YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
-							      )
-							ORDER BY YEAR(day_index), MONTH(day_index)
-							SEPARATOR ', '
-						    ) INTO @sql
-					FROM (          
-							SELECT DISTINCT day_index
-							FROM ga_analytics_pages
-					     ) months;";
-			}
-
-		if ($views_request == "views_per_year") {
-			$page_views_query .= "SELECT
-				GROUP_CONCAT(DISTINCT
-						CONCAT( 
-							'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
-								' THEN REPLACE(page_views, \\'\\', \\'\\') ELSE 0 END) AS `',
-							YEAR(day_index), '`'
-						      )
-						ORDER BY YEAR(day_index)
-						SEPARATOR ', '
-					    ) INTO @sql
-				FROM (          
-						SELECT DISTINCT day_index
-						FROM ga_analytics_pages
-				     ) years;";
-		}
-
-		$page_views_query .= "
-			SET @sql = CONCAT(
-					'SELECT page as Page, ',
-					@sql,
-					', SUM(CAST(REPLACE(page_views, \\'\\', \\'\\') AS SIGNED)) AS Total_Views ',
-					'FROM ga_analytics_pages ',
-					'WHERE day_index IS NOT NULL ',
-					'GROUP BY page ',
-					'ORDER BY total_views DESC'
-					);";
-
-		$page_views_query .= "
-			PREPARE stmt FROM @sql;
-		EXECUTE stmt;
-		DEALLOCATE PREPARE stmt;";
-	} */
 	//echo $page_views_query;
 	$table_string ='';
 
