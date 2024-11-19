@@ -3428,7 +3428,7 @@ ORDER BY FIELD(
 ";
     }
 
-//	echo $page_functionality_views_query;
+	echo $page_functionality_views_query;
 	$columns = ['Property', 'Views'];
         $table_string='';
 	$file_name='functionality_property_domain_page_';
@@ -3458,12 +3458,6 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 				SELECT
 				CASE
 				WHEN page LIKE '%index.php%' OR page = '/' OR page LIKE '%Landing Page%' THEN 'Home'
-				WHEN page LIKE '%analytics%' THEN 'Analytics'
-				WHEN page LIKE '%neuron_by_pattern%' THEN 'Neuron By Pattern'
-				WHEN page LIKE '%synaptome.php%' THEN 'Synaptome'
-				WHEN page LIKE '%synaptome_model%' THEN 'Synaptome Model'
-				WHEN page LIKE '%neuron_page.php' THEN 'Neuron Page'
-				WHEN page LIKE '%smtools%' THEN 'SM Tools'
 
 				WHEN page LIKE '%Help_%' 
 				OR page LIKE '%help%' 
@@ -3481,14 +3475,13 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 				OR page LIKE '%connectivity.php%' 
 				OR page LIKE '%synaptome_modeling.php%' 
 				OR page LIKE '%firing_patterns.php%' 
-				OR page LIKE '%izhikevich_model.php%' 
+				OR page LIKE '%Izhikevich_model.php%' 
 				OR page LIKE '%synapse_probabilities.php%' 
 				OR page LIKE '%phases.php%' 
 				OR page LIKE '%/cognome/%' 
 				OR page LIKE '%counts.php%' 
 				OR page LIKE '%simulation_parameters.php%' THEN 'Browse'
 
-				WHEN page LIKE '%view_fp_image.php%' THEN 'View Firing Pattern Image'
 
 				WHEN page LIKE '%search%' 
 				OR page LIKE '%find_author%' 
@@ -3522,23 +3515,26 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 					    UNION ALL
 
 					    SELECT 'Home', '0'
-					    UNION ALL SELECT 'Analytics', '0'
-					    UNION ALL SELECT 'Neuron By Pattern', '0'
-					    UNION ALL SELECT 'Synaptome', '0'
-					    UNION ALL SELECT 'Synaptome Model', '0'
-					    UNION ALL SELECT 'Neuron Page', '0'
-					    UNION ALL SELECT 'SM Tools', '0'
 					    UNION ALL SELECT 'Help', '0'
 					    UNION ALL SELECT 'Neuron Type Pages', '0'
 					    UNION ALL SELECT 'Browse', '0'
-					    UNION ALL SELECT 'View Firing Pattern Image', '0'
 					    UNION ALL SELECT 'Search', '0'
 					    UNION ALL SELECT 'Evidence', '0'
 					    UNION ALL SELECT 'Tools', '0'
 					    UNION ALL SELECT 'All Others', '0'
 					    ) AS combined
 					    GROUP BY property_page
-					    ORDER BY views DESC";
+					    ORDER BY FIELD(                 
+							property_page, 
+							'Home',
+							'Browse',
+							'Search',
+							'Tools',
+							'Help',
+							'Neuron Type Pages',
+							'Evidence',
+							'All Others'
+							)";
 
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_functionality_views_query = "SET SESSION group_concat_max_len = 1000000;
@@ -3584,12 +3580,6 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 					'SELECT
 					CASE
 					WHEN page LIKE ''%index.php%'' OR page = ''/'' OR page LIKE ''%Landing Page%'' THEN ''Home''
-					WHEN page LIKE ''%analytics%'' THEN ''Analytics''
-					WHEN page LIKE ''%neuron_by_pattern%'' THEN ''Neuron By Pattern''
-					WHEN page LIKE ''%synaptome.php%'' THEN ''Synaptome''
-					WHEN page LIKE ''%synaptome_model%'' THEN ''Synaptome Model''
-					WHEN page LIKE ''%neuron_page.php%'' THEN ''Neuron Page''
-					WHEN page LIKE ''%smtools%'' THEN ''SM Tools''
 
 					WHEN page LIKE ''%Help_%'' 
 					OR page LIKE ''%help%'' 
@@ -3607,14 +3597,12 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 					OR page LIKE ''%connectivity.php%'' 
 					OR page LIKE ''%synaptome_modeling.php%'' 
 					OR page LIKE ''%firing_patterns.php%'' 
-					OR page LIKE ''%izhikevich_model.php%'' 
+					OR page LIKE ''%Izhikevich_model.php%'' 
 					OR page LIKE ''%synapse_probabilities.php%'' 
 					OR page LIKE ''%phases.php%'' 
 					OR page LIKE ''%/cognome/%'' 
 					OR page LIKE ''%counts.php%'' 
 					OR page LIKE ''%simulation_parameters.php%'' THEN ''Browse''
-
-					WHEN page LIKE ''%view_fp_image.php%'' THEN ''View Firing Pattern Image''
 
 					WHEN page LIKE ''%search%'' 
 					OR page LIKE ''%find_author%'' 
@@ -3631,8 +3619,8 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 					OR page LIKE ''%property_page_markers.php%'' 
 					OR page LIKE ''%property_page_morphology.php%'' 
 					OR page LIKE ''%property_page_connectivity.php%'' 
-					OR page LIKE '%property_page_phases.php%'
-					OR page LIKE '%synaptic_mod_sum.php%' 
+					OR page LIKE ''%property_page_phases.php%''
+					OR page LIKE ''%synaptic_mod_sum.php%'' 
 					OR page LIKE ''%property_page_ephys.php%'' THEN ''Evidence''
 
 					WHEN page LIKE ''%tools.php%'' 
@@ -3649,7 +3637,17 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 					    SUM(CAST(REPLACE(page_views, \\'\\', \\'\\') AS SIGNED)) AS Total_Views
 						    FROM temp_combined_analytics 
 						    GROUP BY Property
-						    ORDER BY Total_Views DESC'
+						    ORDER BY FIELD ( 
+							Property,
+							\"Home\",
+							\"Browse\", 
+							\"Search\", 
+							\"Tools\", 
+							\"Help\", 
+							\"Neuron Type Pages\", 
+							\"Evidence\", 
+							\"All Others\"
+							) '
 						    );";
 
 		$page_functionality_views_query .= "
@@ -3658,7 +3656,7 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 		DEALLOCATE PREPARE stmt;";
 	}
 
-	//echo $page_functionality_views_query;
+	echo $page_functionality_views_query;
 	$options = ['exclude' => ['not php'],];
 	$options = [];//'exclude' => ['not php'],]; //Added this line to make sure we are getting all counts can remove it later
 	$columns = ['Property', 'Views'];
