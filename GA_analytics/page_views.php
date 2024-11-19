@@ -452,6 +452,10 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 
     // Process the main query results
     $i = 0;
+    if($csv_tablename == 'functionality_property_domain_page_views'){
+	$matrix_views_count = 0;
+	$evidences_count = 0 ;
+    }
     while ($row = mysqli_fetch_row($rs)) {
 	    $bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
 	    $table_string1 .= "<tr class='$bgColor'>";
@@ -463,6 +467,10 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 		    if ($row[$rows-1] > 0) {
 			    $table_string1 .= "<td>" . htmlspecialchars($row[$j]) . "</td>";
 		    }
+	    }
+	    if($csv_tablename == 'functionality_property_domain_page_views'){
+		    $matrix_views_count += $row[1];
+		    $evidences_count += $row[2] ;
 	    }
 
 	    $count += $row[$rows-1];
@@ -486,6 +494,10 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
                 }
             }
 
+	    if($csv_tablename == 'functionality_property_domain_page_views'){
+		    $matrix_views_count += $row[1];
+		    $evidences_count += $row[2] ;
+	    }
             $count += $row[$rows-1];
             $table_string1 .= "</tr>";
             $i++;
@@ -501,7 +513,11 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 	$csv_data[$csv_tablename] = ['filename' => toCamelCase($csv_tablename), 'headers' => $csv_headers, 'rows' => $csv_rows];
         return $csv_data[$csv_tablename];
     } else {
-        $table_string1 .= "<tr><td colspan='" . ($rows - 1) . "'><b>Total Count</b></td><td>" . $count . "</td></tr>";    
+	    if($csv_tablename == 'functionality_property_domain_page_views'){
+        	    $table_string1 .= "<tr><td><b>Total Count</b></td><td>".$matrix_views_count."</td><td>".$evidences_count."</td><td>" . $count . "</td></tr>";    
+	    }else{
+        	$table_string1 .= "<tr><td colspan='" . ($rows - 1) . "'><b>Total Count</b></td><td>" . $count . "</td></tr>";    
+	}
 	if($csv_tablename == 'monthly_page_views'){
 		$i++;
 		$bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
@@ -1845,7 +1861,7 @@ function get_pages_views_per_month_report($conn, $write_file=NULL){ //Passed $co
 	
 	$page_views_per_month_query = "select concat(DATE_FORMAT(day_index,'%b'), '-', YEAR(day_index)) as dm,
 		sum(replace(page_views,',','')) as page_views
-			from ga_analytics_pages where page_views > 0 
+			from temp_combined_analytics where page_views > 0 
 			GROUP BY YEAR(day_index), MONTH(day_index)";
 	//echo $page_views_per_month_query;
 	$columns = ['Month-Year', 'Views'];
@@ -1905,7 +1921,7 @@ FROM (
             WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('/synaptome/php/synaptome', 'synaptome') THEN 'Synaptome'
             ELSE CONCAT( UPPER(SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1)) )
         END AS property_page_category
-    FROM ga_analytics_pages 
+    FROM temp_combined_analytics 
     WHERE (page LIKE '%property_page_counts.php%' OR page LIKE '%id_neuron=%' OR page LIKE '%id1_neuron=%' OR page LIKE '%id_neuron_source=%')
         AND LENGTH(
             CASE 
@@ -1954,7 +1970,7 @@ SET @sql = CONCAT(
                 ELSE CONCAT(UPPER(SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1)))
             END AS property_page_category, 
             page_views 
-        FROM ga_analytics_pages 
+        FROM temp_combined_analytics 
         WHERE (page LIKE ''%property_page_counts.php%'' OR page LIKE ''%id_neuron=%'' OR page LIKE ''%id1_neuron=%'' OR page LIKE ''%id_neuron_source=%'')
             AND LENGTH(
                 CASE 
@@ -1997,7 +2013,7 @@ DEALLOCATE PREPARE stmt;
 					    ) INTO @sql
 				FROM (
 						SELECT DISTINCT day_index
-						FROM ga_analytics_pages
+						FROM temp_combined_analytics 
 				     ) months;";
 		}
 		if($views_request == "views_per_year"){
@@ -2013,7 +2029,7 @@ DEALLOCATE PREPARE stmt;
 				    ) INTO @sql
 			FROM (
 					SELECT DISTINCT day_index
-					FROM ga_analytics_pages
+					FROM temp_combined_analytics 
 			     ) years;";
 
 		}
@@ -2036,7 +2052,7 @@ DEALLOCATE PREPARE stmt;
 										WHEN page LIKE ''%property_page_counts.php%'' THEN 1
 										ELSE 0
 										END AS is_property_page
-										FROM ga_analytics_pages
+										FROM temp_combined_analytics 
 										WHERE
 										(page LIKE ''%id_neuron=%'' OR page LIKE ''%id1_neuron=%'' OR page LIKE ''%id_neuron_source=%'') AND
 										LENGTH(
@@ -2112,7 +2128,7 @@ SET @sql = CONCAT(
             'END AS neuronID, ',
             'page, ',
             'page_views ',
-        'FROM ga_analytics_pages ',
+        'FROM temp_combined_analytics ', 
         'WHERE (page LIKE ''%neuron_page.php?id=%'' OR page LIKE ''%property_page_%'') ',
         'AND LENGTH(CASE ',
             'WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
@@ -2153,7 +2169,7 @@ if (($views_request == "views_per_month") || ($views_request == "views_per_year"
             ) INTO @sql 
         FROM (
             SELECT DISTINCT day_index
-            FROM ga_analytics_pages
+            FROM temp_combined_analytics 
         ) months;";
     }    
     
@@ -2170,7 +2186,7 @@ if (($views_request == "views_per_month") || ($views_request == "views_per_year"
             ) INTO @sql 
         FROM (
             SELECT DISTINCT day_index
-            FROM ga_analytics_pages
+            FROM temp_combined_analytics 
         ) years;";
     }
     
@@ -2188,7 +2204,7 @@ if (($views_request == "views_per_month") || ($views_request == "views_per_year"
                 'page_views, ',
                 'day_index, ',
                 'CASE WHEN page LIKE ''%property_page_counts.php%'' THEN 1 ELSE 0 END AS is_property_page ',
-            'FROM ga_analytics_pages ',
+            'FROM temp_combined_analytics ', 
             'WHERE (page LIKE ''%id_neuron=%'' OR page LIKE ''%id1_neuron=%'' OR page LIKE ''%id_neuron_source=%'') ',
             'AND LENGTH(CASE ',
                 'WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
@@ -2226,7 +2242,7 @@ if (($views_request == "views_per_month") || ($views_request == "views_per_year"
 					    ) INTO @sql
 				FROM (
 						SELECT DISTINCT day_index
-						FROM ga_analytics_pages
+						FROM temp_combined_analytics 
 				     ) months;";
 		}
 		if($views_request == "views_per_year"){
@@ -2240,7 +2256,7 @@ if (($views_request == "views_per_month") || ($views_request == "views_per_year"
 					ORDER BY YEAR(day_index)
 					SEPARATOR ', '
 				    ) INTO @sql
-			FROM ( SELECT DISTINCT day_index FROM ga_analytics_pages ) years;";
+			FROM ( SELECT DISTINCT day_index FROM temp_combined_analytics ) years;";
 		}
 		$page_neurons_views_query .= " SET @sql = CONCAT(
 									'SELECT t.subregion AS Subregion, t.page_statistics_name AS Neuron_Type_Name, ',
@@ -2259,7 +2275,7 @@ if (($views_request == "views_per_month") || ($views_request == "views_per_year"
 										WHEN page LIKE ''%property_page_counts.php%'' THEN 1
 										ELSE 0
 										END AS is_property_page
-										FROM ga_analytics_pages
+										FROM temp_combined_analytics 
 										WHERE
 										(page LIKE ''%id_neuron=%'' OR page LIKE ''%id1_neuron=%'' OR page LIKE ''%id_neuron_source=%'') AND
 										LENGTH(
@@ -2323,7 +2339,7 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_
 							IF(INSTR(page, 'val_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1), '') AS color,
 							IF(INSTR(page, 'sp_page=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'sp_page=', -1), '&', 1), '') AS sp_page
 							FROM 
-							ga_analytics_pages
+							temp_combined_analytics 
 							WHERE 
 							page LIKE '%/property_page_%'
 							AND (
@@ -2364,7 +2380,7 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_
 					ORDER BY YEAR(day_index) /* For 'views_per_month' also add 'MONTH(day_index)' here */
 					SEPARATOR ', '
 				    ) INTO @sql
-			FROM ga_analytics_pages
+			FROM temp_combined_analytics 
 			WHERE
 			page LIKE '%/property_page_%'
 			AND (
@@ -2416,7 +2432,7 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_
 						'        CASE WHEN INSTR(page, ''color='') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''color='', -1), ''&'', 1) ELSE NULL END AS color,',
 						'        CASE WHEN INSTR(page, ''sp_page='') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''sp_page='', -1), ''&'', 1) ELSE NULL END AS sp_page,',
 						'        day_index',
-						'    FROM ga_analytics_pages',
+						'    FROM temp_combined_analytics', 
 						'    WHERE page LIKE ''%/property_page_%''',
 						'    AND (SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''morphology'' ',
 							'        OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''synpro'')',
@@ -2468,7 +2484,7 @@ function get_pmid_isbn_property_views_report($conn, $neuron_ids, $write_file=NUL
                                 IF(INSTR(page, 'val_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '_', -1),'')  AS layer, 
                                 SUBSTRING_INDEX(SUBSTRING_INDEX(page, '?id_neuron=', -1), '&', 1) AS neuronID,
                                 IF(INSTR(page, 'color=') > 0,SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1),'') as color, page_views
-                                FROM ga_analytics_pages
+                                FROM temp_combined_analytics 
                                 WHERE
                                 page LIKE '%property_page_morphology_linking_pmid_isbn.php?id_neuron=%'
                                 AND LENGTH(substring_index(substring_index(page, 'id_neuron=', -1), '&', 1)) = 4
@@ -2516,7 +2532,7 @@ function get_markers_property_views_report($conn, $neuron_ids, $views_request=NU
 					ELSE ''
 					END AS color,
 					page_views
-					FROM ga_analytics_pages
+					FROM temp_combined_analytics 
 					WHERE page LIKE '%/property_page_%'
 					AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'markers'
 					AND (
@@ -2556,7 +2572,7 @@ function get_markers_property_views_report($conn, $neuron_ids, $views_request=NU
 					ORDER BY YEAR(day_index) /* For 'views_per_month' also add 'MONTH(day_index)' here */
 					SEPARATOR ', '
 				    ) INTO @sql                 
-			FROM ga_analytics_pages                 
+			FROM temp_combined_analytics 
 			WHERE   
 			page LIKE '%/property_page_%'
 			AND (   
@@ -2615,7 +2631,7 @@ function get_markers_property_views_report($conn, $neuron_ids, $views_request=NU
 						END AS color,
 						page_views,
 						day_index
-						FROM ga_analytics_pages
+						FROM temp_combined_analytics 
 						WHERE page LIKE \'%/property_page_%\'
 						AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'/property_page_\', -1), \'.\', 1) = \'markers\'
 						AND (   
@@ -2683,7 +2699,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 		$pageType = $page_string == 'phases' ? 'phases' : 'counts';
 		$page_counts_views_query = "SELECT t.subregion, t.page_statistics_name AS neuron_name, SUM(REPLACE(page_views, ',', '')) AS views 
 				FROM (SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) AS neuronID, page_views 
-					FROM ga_analytics_pages WHERE page LIKE '%property_page_{$pageType}.php?id_neuron=%' 
+					FROM temp_combined_analytics WHERE page LIKE '%property_page_{$pageType}.php?id_neuron=%' 
 					AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4 
 					AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)) 
 					AS derived JOIN Type AS t ON t.id = derived.neuronID
@@ -2706,7 +2722,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 										 IF( INSTR(page, 'id1_neuron=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1),
 										 IF( INSTR(page, 'id_neuron_source=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1), ''))) AS neuronID,
 										 IF(INSTR(page, 'val_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '') AS evidence 
-							FROM ga_analytics_pages WHERE page LIKE '%/property_page_%' AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases'
+							FROM temp_combined_analytics WHERE page LIKE '%/property_page_%' AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases'
 							AND (
 								LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4 OR 
 								LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) = 4 OR 
@@ -2739,7 +2755,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 						ORDER BY YEAR(day_index) /* For 'views_per_month' also add 'MONTH(day_index)' here */
 						SEPARATOR ', '
 					    ) INTO @sql
-				FROM ga_analytics_pages
+				FROM temp_combined_analytics 
 				WHERE
 				page LIKE '%/property_page_%'
 				AND (
@@ -2806,7 +2822,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 											'           ))) AS neuronID, ',
 								'        IF(INSTR(page, \'val_property=\') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'val_property=\', -1), \'&\', 1), \'\') AS evidence, ',
 								'        day_index ',
-								'    FROM ga_analytics_pages ',
+								'    FROM temp_combined_analytics ',
 								'    WHERE page LIKE \'%/property_page_%\' ',
 								'      AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'/property_page_\', -1), \'.\', 1) = \'phases\' ',
 								'      AND (LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id_neuron=\', -1), \'&\', 1)) = 4 ',
@@ -2856,7 +2872,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 							    IF(INSTR(page, 'nm_page=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'nm_page=', -1), '&', 1), '') AS nm_page, 
 							    SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) AS parcel_specific
 							    FROM 
-							    ga_analytics_pages 
+							    temp_combined_analytics 
 							    WHERE 
 							    page LIKE '%/property_page_%' AND 
 							    (
@@ -2895,7 +2911,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
                                                                 IF(INSTR(page, 'ep=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'ep=', -1), '&', 1), '') AS evidence, 
                                                                 page_views
                                                                 FROM
-                                                                ga_analytics_pages
+                                                                temp_combined_analytics 
                                                                 WHERE
                                                                 page LIKE '%property_page_ephys.php?id_ephys=%'
                                                                 AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4                          
@@ -2920,7 +2936,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
                                                 ORDER BY YEAR(day_index) 
                                                 SEPARATOR ', '
                                             ) INTO @sql
-                                FROM ga_analytics_pages
+                                FROM temp_combined_analytics 
                                 WHERE
                                 page LIKE '%/property_page_%'
                                 AND (
@@ -2970,7 +2986,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
                                                                                         '           ))) AS neuronID, ',
 							    '        IF(INSTR(page, \'ep=\') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'ep=\', -1), \'&\', 1), \'\') AS evidence, ',
                                                                 '        day_index ',
-                                                                '    FROM ga_analytics_pages ',
+                                                                '    FROM temp_combined_analytics ',
                                                              '    WHERE page LIKE \'%property_page_ephys.php?id_ephys=%\' ',
                                                                 '      AND (LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id_neuron=\', -1), \'&\', 1)) = 4 ',
                                                                         '           OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id1_neuron=\', -1), \'&\', 1)) = 4 ',
@@ -3006,7 +3022,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 
 		 $page_counts_views_query = "SELECT derived.page, SUM(REPLACE(page_views, ',', '')) AS views
                                                 FROM (SELECT page, page_views, SUBSTRING_INDEX(SUBSTRING_INDEX(page, '?id_neuron=', -1), '&', 1) AS neuronID
-                                                        FROM ga_analytics_pages
+                                                        FROM temp_combined_analytics 
                                                         WHERE  page LIKE '%$pageType?id_neuron=%'
                                                 AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4
                                                 AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
@@ -3015,7 +3031,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 
                                                 SELECT page, page_views,
                                                        SUBSTRING_INDEX(SUBSTRING_INDEX(page, '?id1_neuron=', -1), '&', 1) AS neuronID
-                                                               FROM ga_analytics_pages
+                                                               FROM temp_combined_analytics 
                                                                WHERE page LIKE '%$pageType?id1_neuron=%'
                                                                AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) = 4
                                                                AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
@@ -3024,7 +3040,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 
                                                 SELECT page, page_views,
                                                        SUBSTRING_INDEX(SUBSTRING_INDEX(page, '?id_neuron_source=', -1), '&', 1) AS neuronID
-                                                               FROM ga_analytics_pages
+                                                               FROM temp_combined_analytics 
                                                                WHERE page LIKE '%$pageType?id_neuron_source=%'
                                                                AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) = 4
                                                                AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN (4168, 4181, 2232)
@@ -3133,7 +3149,7 @@ function get_fp_property_views_report($conn, $views_request=NULL, $write_file=NU
 			];
 
 	$page_fp_property_views_query = "SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'meter=', -1), '&', 1) AS Firing_Pattern,
-		SUM(REPLACE(page_views, ',', '')) AS Total_Views FROM ga_analytics_pages
+		SUM(REPLACE(page_views, ',', '')) AS Total_Views FROM temp_combined_analytics 
 			WHERE page LIKE '%/property_page_%'
 			AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'fp'
 			AND LENGTH(
@@ -3166,7 +3182,7 @@ function get_fp_property_views_report($conn, $views_request=NULL, $write_file=NU
 							  ORDER BY YEAR(day_index), MONTH(day_index) SEPARATOR ', ' ) INTO @sql ";
 		}
 		$page_fp_property_views_query .= "
-				FROM ga_analytics_pages
+				FROM temp_combined_analytics 
 				WHERE page LIKE '%/property_page_%'
 				AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'fp'
 				AND LENGTH(
@@ -3186,7 +3202,7 @@ function get_fp_property_views_report($conn, $views_request=NULL, $write_file=NU
 						'SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''meter='', -1), ''&'', 1) AS Firing_Pattern, ',
 						@sql, ', ', 
 						'SUM(REPLACE(page_views, \",\", \"\")) AS Total_Views ',
-						'FROM ga_analytics_pages ',
+						'FROM temp_combined_analytics ', 
 						'WHERE page LIKE ''%/property_page_%'' ',
 						'AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''fp'' ',
 						'AND LENGTH(CASE ',
@@ -3227,73 +3243,121 @@ function get_fp_property_views_report($conn, $views_request=NULL, $write_file=NU
 
 
 function get_domain_functionality_views_report($conn, $views_request = NULL, $write_file = NULL){
-	$page_functionality_views_query = "SELECT 
-		CASE 
-		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology') THEN 'Morphology'
-		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology_linking_pmid_isbn') THEN 'Morphology: PMID / ISBN'
-		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('/synaptome/php/synaptome') THEN 'Synaptome'
-		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('connectivity', 'connectivity_orig', 'connectivity_test') THEN 'Connectivity: Known / Potential' 
-		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'counts' THEN 'Census' 
-		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'ephys' THEN 'Membrane Biophysics' 
-		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'fp' THEN 'FP'
-		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases' THEN 'In Vivo' 
-		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'markers' THEN 'Markers' 
-		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro' THEN 'Morphology: Axon and Dendrite Lengths / Somatic Distances' 
-		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('synpro_nm', 'synpro_nm_old2') THEN 'Connectivity: Number of Potential Synapses / Number of Contacts / Synaptic Probability' 
-		WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro_pvals' THEN 'Connectivity: Parcel-Specific Tables' 
-		ELSE SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) 
-		END AS property_page_category,
-		    SUM(REPLACE(page_views, ',', '')) AS views 
-			    FROM ga_analytics_pages 
-			    WHERE page LIKE '%/property_page_%' 
-			    AND (
-					    LENGTH(
-						    CASE 
-						    WHEN LOCATE('%', SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) > 0 THEN
-						    SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '%', 1)
-						    ELSE
-						    SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
-						    END
-						  ) = 4 
-					    OR LENGTH(
-						    CASE 
-						    WHEN LOCATE('%', SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) > 0 THEN
-						    SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '%', 1)
-						    ELSE
-						    SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)
-						    END
-						    ) = 4 
-					    OR LENGTH(
-						    CASE 
-						    WHEN LOCATE('%', SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) > 0 THEN
-						    SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '%', 1)
-						    ELSE
-						    SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)
-						    END
-						    ) = 4
-					    )
-					    AND (
-							    CASE 
-							    WHEN LOCATE('%', SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) > 0 THEN
-							    SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '%', 1)
-							    ELSE
-							    SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
-							    END NOT IN (4168, 4181, 2232)
-							    OR CASE 
-							    WHEN LOCATE('%', SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) > 0 THEN
-							    SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '%', 1)
-							    ELSE
-							    SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)
-							    END NOT IN (4168, 4181, 2232)
-							    OR CASE 
-							    WHEN LOCATE('%', SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) > 0 THEN
-							    SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '%', 1)
-							    ELSE
-							    SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)
-							    END NOT IN (4168, 4181, 2232)
-						)
-					    GROUP BY property_page_category
-					    ORDER BY views DESC";
+$page_functionality_views_query = "SELECT 
+    CASE 
+        WHEN page LIKE '%morphology.php%' THEN 'Morphology'
+        WHEN page LIKE '%markers.php%' THEN 'Markers'
+        WHEN page LIKE '%ephys.php%' THEN 'Membrane Biophysics'
+        WHEN page LIKE '%connectivity.php%' THEN 'Connectivity: Known / Potential'
+        WHEN page LIKE '%synaptome_modeling.php%' THEN 'Synaptome Modeling'
+        WHEN page LIKE '%firing_patterns.php%' THEN 'Firing Patterns'
+        WHEN page LIKE '%izhikevich_model.php%' THEN 'Izhikevich Model'
+        WHEN page LIKE '%synapse_probabilities.php%' THEN 'Synapse Probabilities'
+        WHEN page LIKE '%phases.php%' THEN 'In Vivo'
+        WHEN page LIKE '%/cognome/%' THEN 'Cognome'
+        WHEN page LIKE '%counts.php%' THEN 'Census'
+        WHEN page LIKE '%simulation_parameters.php%' THEN 'Simulation Parameters'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology') THEN 'Morphology'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology_linking_pmid_isbn') THEN 'Morphology: PMID / ISBN'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('/synaptome/php/synaptome') THEN 'Synaptome'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('connectivity', 'connectivity_orig', 'connectivity_test') THEN 'Connectivity: Known / Potential'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'counts' THEN 'Census'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'ephys' THEN 'Membrane Biophysics'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'fp' THEN 'FP'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases' THEN 'In Vivo'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'markers' THEN 'Markers'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro' THEN 'Morphology: Axon and Dendrite Lengths / Somatic Distances'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('synpro_nm', 'synpro_nm_old2') THEN 'Connectivity: Number of Potential Synapses / Number of Contacts / Synaptic Probability'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro_pvals' THEN 'Connectivity: Parcel-Specific Tables'
+        ELSE SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1)
+    END AS property_page_category,
+    
+    SUM(
+        CASE 
+            WHEN page NOT LIKE '%id_neuron=%' 
+                 AND page NOT LIKE '%id1_neuron=%' 
+                 AND page NOT LIKE '%id_neuron_source=%'
+            THEN REPLACE(page_views, ',', '') 
+            ELSE 0
+        END
+    ) AS main_matrix_accesses,
+    
+    SUM(
+        CASE 
+            WHEN page LIKE '%id_neuron=%' 
+                 OR page LIKE '%id1_neuron=%' 
+                 OR page LIKE '%id_neuron_source=%'
+            THEN REPLACE(page_views, ',', '') 
+            ELSE 0
+        END
+    ) AS evidence_accesses,
+
+    SUM(
+        CASE 
+            WHEN page NOT LIKE '%id_neuron=%' 
+                 AND page NOT LIKE '%id1_neuron=%' 
+                 AND page NOT LIKE '%id_neuron_source=%'
+            THEN REPLACE(page_views, ',', '') 
+            ELSE 0
+        END
+    ) +
+    SUM(
+        CASE 
+            WHEN page LIKE '%id_neuron=%' 
+                 OR page LIKE '%id1_neuron=%' 
+                 OR page LIKE '%id_neuron_source=%'
+            THEN REPLACE(page_views, ',', '') 
+            ELSE 0
+        END
+    ) AS total_views
+
+FROM temp_combined_analytics
+
+WHERE 
+    page LIKE '%/property_page_%' 
+    OR page LIKE '%morphology.php%'
+    OR page LIKE '%markers.php%'
+    OR page LIKE '%ephys.php%'
+    OR page LIKE '%connectivity.php%'
+    OR page LIKE '%synaptome_modeling.php%'
+    OR page LIKE '%firing_patterns.php%'
+    OR page LIKE '%izhikevich_model.php%'
+    OR page LIKE '%synapse_probabilities.php%'
+    OR page LIKE '%phases.php%'
+    OR page LIKE '%/cognome/%'
+    OR page LIKE '%counts.php%'
+    OR page LIKE '%simulation_parameters.php%'
+
+GROUP BY 
+    CASE 
+        WHEN page LIKE '%morphology.php%' THEN 'Morphology'
+        WHEN page LIKE '%markers.php%' THEN 'Markers'
+        WHEN page LIKE '%ephys.php%' THEN 'Membrane Biophysics'
+        WHEN page LIKE '%connectivity.php%' THEN 'Connectivity: Known / Potential'
+        WHEN page LIKE '%synaptome_modeling.php%' THEN 'Synaptome Modeling'
+        WHEN page LIKE '%firing_patterns.php%' THEN 'Firing Patterns'
+        WHEN page LIKE '%izhikevich_model.php%' THEN 'Izhikevich Model'
+        WHEN page LIKE '%synapse_probabilities.php%' THEN 'Synapse Probabilities'
+        WHEN page LIKE '%phases.php%' THEN 'In Vivo'
+        WHEN page LIKE '%/cognome/%' THEN 'Cognome'
+        WHEN page LIKE '%counts.php%' THEN 'Census'
+        WHEN page LIKE '%simulation_parameters.php%' THEN 'Simulation Parameters'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology') THEN 'Morphology'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology_linking_pmid_isbn') THEN 'Morphology: PMID / ISBN'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('/synaptome/php/synaptome') THEN 'Synaptome'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('connectivity', 'connectivity_orig', 'connectivity_test') THEN 'Connectivity: Known / Potential'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'counts' THEN 'Census'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'ephys' THEN 'Membrane Biophysics'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'fp' THEN 'FP'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases' THEN 'In Vivo'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'markers' THEN 'Markers'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro' THEN 'Morphology: Axon and Dendrite Lengths / Somatic Distances'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('synpro_nm', 'synpro_nm_old2') THEN 'Connectivity: Number of Potential Synapses / Number of Contacts / Synaptic Probability'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro_pvals' THEN 'Connectivity: Parcel-Specific Tables'
+        ELSE SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1)
+    END
+ORDER BY total_views DESC";
+
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
     $page_functionality_views_query = "SET SESSION group_concat_max_len = 1000000;
     SET @sql = NULL;";
@@ -3312,7 +3376,7 @@ function get_domain_functionality_views_report($conn, $views_request = NULL, $wr
                             ) INTO @sql
                 FROM (
                         SELECT DISTINCT day_index
-                        FROM ga_analytics_pages
+                        FROM temp_combined_analytics 
                 ) months;";
     }
 
@@ -3329,7 +3393,7 @@ function get_domain_functionality_views_report($conn, $views_request = NULL, $wr
                             ) INTO @sql
                 FROM (
                         SELECT DISTINCT day_index
-                        FROM ga_analytics_pages
+                        FROM temp_combined_analytics 
                 ) years;";
     }
 
@@ -3353,7 +3417,7 @@ function get_domain_functionality_views_report($conn, $views_request = NULL, $wr
                 END AS Property, ', 
                 @sql, ',
                 SUM(REPLACE(page_views, \\'\\', \\'\\')) AS Total_Views
-                FROM ga_analytics_pages
+                FROM temp_combined_analytics 
                 WHERE page LIKE ''%/property_page_%''
                 AND (
                     LENGTH(
@@ -3410,13 +3474,13 @@ function get_domain_functionality_views_report($conn, $views_request = NULL, $wr
         EXECUTE stmt;
         DEALLOCATE PREPARE stmt;";
 }
-
 	//echo $page_functionality_views_query;
-	$columns = ['Property', 'Views'];
+	$columns = ['Property', 'Main Matrix Accesses', 'Evidence Accesses', 'Views'];
         $table_string='';
 	$file_name='functionality_property_domain_page_';
         if(isset($write_file)) {
                 if($views_request == 'views_per_month' || $views_request == 'views_per_year'){
+		$columns = ['Property', 'Views'];
                         $file_name .= $views_request;
                 }else{ $file_name .= 'views'; }
                 return format_table($conn, $page_functionality_views_query, $table_string, $file_name, $columns, $neuron_ids=NULL, $write_file, $views_request);
@@ -3443,7 +3507,6 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 				WHEN page LIKE '%neuron_page.php' THEN 'Neuron Page'
 				WHEN page LIKE '%smtools%' THEN 'SM Tools'
 
-				-- Combine all HELP pages
 				WHEN page LIKE '%Help_%' 
 				OR page LIKE '%help%' 
 				OR page LIKE '%Help_Quickstart%' 
@@ -3452,10 +3515,8 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 				OR page LIKE '%user_feedback_form_entry%' 
 				OR page LIKE '%Help_Other_Useful_Links%' THEN 'Help'
 
-				-- Combine all NEURON TYPE pages
-				WHEN page LIKE '%/php/neuron_page.php?id=%' THEN 'Neuron Type'
+				WHEN page LIKE '%/php/neuron_page.php?id=%' THEN 'Neuron Type Pages'
 
-				-- Combine all BROWSE pages
 				WHEN page LIKE '%morphology.php%' 
 				OR page LIKE '%markers.php%' 
 				OR page LIKE '%ephys.php%' 
@@ -3471,7 +3532,6 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 
 				WHEN page LIKE '%view_fp_image.php%' THEN 'View Firing Pattern Image'
 
-				-- Combine all SEARCH pages
 				WHEN page LIKE '%search%' 
 				OR page LIKE '%find_author%' 
 				OR page LIKE '%find_neuron_name%' 
@@ -3479,7 +3539,6 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 				OR page LIKE '%find_pmid%' 
 				OR page LIKE '%search_engine_custom%' THEN 'Search'
 
-				-- Combine specific categories for evidence
 				WHEN page LIKE '%property_page_synpro.php%' 
 				OR page LIKE '%property_page_synpro_nm.php%' 
 				OR page LIKE '%property_page_synpro_pvals.php%' 
@@ -3492,21 +3551,18 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 				OR page LIKE '%synaptic_mod_sum.php%'
 				OR page LIKE '%property_page_ephys.php%' THEN 'Evidence'
 
-				-- TOOLS pages
 				WHEN page LIKE '%tools.php%' OR page LIKE '%connection_probabilities%' OR page LIKE '%synapse_modeler%' THEN 'Tools'
 
-				-- Combine remaining bot and not-php pages as ALL OTHERS
 				WHEN page LIKE '%bot-traffic%' 
 				OR page LIKE '%/hipp Better than reCAPTCHA：vaptcha.cn%' 
 				OR (page = '/php/' AND day_index IS NOT NULL) THEN 'All Others'
 				ELSE 'Home'
 				END AS property_page,
 				    page_views
-					    FROM ga_analytics_pages
+					    FROM temp_combined_analytics 
 
 					    UNION ALL
 
-					    -- Define rows for each category to ensure they appear, even if they have 0 views
 					    SELECT 'Home', '0'
 					    UNION ALL SELECT 'Analytics', '0'
 					    UNION ALL SELECT 'Neuron By Pattern', '0'
@@ -3515,7 +3571,7 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 					    UNION ALL SELECT 'Neuron Page', '0'
 					    UNION ALL SELECT 'SM Tools', '0'
 					    UNION ALL SELECT 'Help', '0'
-					    UNION ALL SELECT 'Neuron Type', '0'
+					    UNION ALL SELECT 'Neuron Type Pages', '0'
 					    UNION ALL SELECT 'Browse', '0'
 					    UNION ALL SELECT 'View Firing Pattern Image', '0'
 					    UNION ALL SELECT 'Search', '0'
@@ -3525,51 +3581,6 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 					    ) AS combined
 					    GROUP BY property_page
 					    ORDER BY views DESC";
-
-/*	$page_functionality_views_query = "SELECT 
-		CASE 
-		WHEN page LIKE '%find_author.php%' THEN 'find_author'
-		WHEN page LIKE '%index.php%' THEN 'index'
-		WHEN page LIKE '%ephys.php%' THEN 'ephys'
-		WHEN page LIKE '%Help_%' THEN 'Help'
-		WHEN page LIKE '%analytics%' THEN 'analytics'
-		WHEN page LIKE '%user_feedback%' THEN 'user_feedback'
-		WHEN page LIKE '%phases%' THEN 'phases'
-		WHEN page LIKE '%bot-traffic%' THEN 'bot'
-		WHEN page = '/' THEN '/'
-		WHEN page LIKE '%neuron_by_pattern%' THEN 'neuron_by_pattern'
-		WHEN page LIKE '%synapse_probabilities%' THEN 'synapse_probabilities'
-		WHEN page LIKE '%synaptome.php%' THEN 'synaptome'
-		WHEN page LIKE '%synaptome_modeling.php%' THEN 'synaptome_modeling'
-		WHEN page LIKE '%synaptome_model%' THEN 'synaptome_model'
-		WHEN page LIKE '%/hipp Better than reCAPTCHA：vaptcha.cn%' THEN 'CAPTCHA'
-		WHEN page LIKE '%search_engine%' THEN 'search_engine'
-		WHEN page LIKE '%find_neuron_name.php%' THEN 'find_neuron_name'
-		WHEN page LIKE '%find_neuron_term.php%' THEN 'find_neuron_term'
-		WHEN page LIKE '%neuron_page%' THEN 'neuron_page'
-		WHEN page LIKE '%search.php%' THEN 'search'
-		WHEN page LIKE '%smtools%' THEN 'smtools'
-		WHEN page LIKE '%synaptic_mod_sum.php%' THEN 'synaptic_mod_sum'
-		WHEN page LIKE '%firing_patterns.php%' THEN 'firing_patterns'
-		WHEN page LIKE '%/synaptic_probabilities/php/%' THEN 'synaptic_probabilities'
-		WHEN page LIKE '%view_fp_image.php%' THEN 'view_fp_image'
-		WHEN page LIKE '%izhikevich_model.php%' THEN 'izhikevich_model'
-		WHEN page LIKE '%markers.php%' THEN 'markers landing'
-		WHEN page LIKE '%counts.php%' THEN 'counts landing'
-		WHEN page LIKE '%connectivity.php%' THEN 'connectivity'
-		WHEN page LIKE '%morphology.php%' THEN 'morphology landing'
-		WHEN page LIKE '%simulation_parameters.php%' THEN 'simulation_parameters'
-		WHEN page LIKE '%tools.php%' THEN 'tools'
-		WHEN page = '/php/' and day_index is null THEN '/php/' 
-		WHEN page = '/php/' and day_index is not null THEN 'not php' 
-		ELSE 'Landing Page'
-		END AS property_page,
-		    SUM(REPLACE(page_views, ',', '')) AS views
-			    FROM ga_analytics_pages
-			    GROUP BY property_page
-			    ORDER BY 
-			    views DESC ";
-*/
 
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_functionality_views_query = "SET SESSION group_concat_max_len = 1000000;
@@ -3589,7 +3600,7 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 					    ) INTO @sql
 				FROM (
 						SELECT DISTINCT day_index
-						FROM ga_analytics_pages
+						FROM temp_combined_analytics 
 				     ) months;";
 		}
 
@@ -3606,7 +3617,7 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 					    ) INTO @sql
 				FROM (
 						SELECT DISTINCT day_index
-						FROM ga_analytics_pages
+						FROM temp_combined_analytics 
 				     ) years;";
 		}
 
@@ -3622,7 +3633,6 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 					WHEN page LIKE ''%neuron_page.php%'' THEN ''Neuron Page''
 					WHEN page LIKE ''%smtools%'' THEN ''SM Tools''
 
-					-- Combine all HELP pages
 					WHEN page LIKE ''%Help_%'' 
 					OR page LIKE ''%help%'' 
 					OR page LIKE ''%Help_Quickstart%'' 
@@ -3631,10 +3641,8 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 					OR page LIKE ''%user_feedback_form_entry%'' 
 					OR page LIKE ''%Help_Other_Useful_Links%'' THEN ''Help''
 
-					-- Combine all NEURON TYPE pages
-					WHEN page LIKE ''%/php/neuron_page.php?id=%'' THEN ''Neuron Type''
+					WHEN page LIKE ''%/php/neuron_page.php?id=%'' THEN ''Neuron Type Pages''
 
-					-- Combine all BROWSE pages
 					WHEN page LIKE ''%morphology.php%'' 
 					OR page LIKE ''%markers.php%'' 
 					OR page LIKE ''%ephys.php%'' 
@@ -3650,7 +3658,6 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 
 					WHEN page LIKE ''%view_fp_image.php%'' THEN ''View Firing Pattern Image''
 
-					-- Combine all SEARCH pages
 					WHEN page LIKE ''%search%'' 
 					OR page LIKE ''%find_author%'' 
 					OR page LIKE ''%find_neuron_name%'' 
@@ -3658,7 +3665,6 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 					OR page LIKE ''%find_pmid%'' 
 					OR page LIKE ''%search_engine_custom%'' THEN ''Search''
 
-					-- Combine specific categories for evidence
 					WHEN page LIKE ''%property_page_synpro.php%'' 
 					OR page LIKE ''%property_page_synpro_nm.php%'' 
 					OR page LIKE ''%property_page_synpro_pvals.php%'' 
@@ -3671,12 +3677,10 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 					OR page LIKE '%synaptic_mod_sum.php%' 
 					OR page LIKE ''%property_page_ephys.php%'' THEN ''Evidence''
 
-					-- TOOLS pages
 					WHEN page LIKE ''%tools.php%'' 
 					OR page LIKE ''%connection_probabilities%'' 
 					OR page LIKE ''%synapse_modeler%'' THEN ''Tools''
 
-					-- Combine remaining bot and not-php pages as ALL OTHERS
 					WHEN page LIKE ''%bot-traffic%'' 
 					OR page LIKE ''%/hipp Better than reCAPTCHA：vaptcha.cn%'' 
 					OR (page = ''/php/'' AND day_index IS NOT NULL) THEN ''All Others''
@@ -3685,7 +3689,7 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 					END AS Property, ', 
 					    @sql, ',
 					    SUM(CAST(REPLACE(page_views, \\'\\', \\'\\') AS SIGNED)) AS Total_Views
-						    FROM ga_analytics_pages
+						    FROM temp_combined_analytics 
 						    GROUP BY Property
 						    ORDER BY Total_Views DESC'
 						    );";
