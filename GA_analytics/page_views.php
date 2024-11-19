@@ -3250,118 +3250,84 @@ function get_domain_functionality_views_report($conn, $views_request = NULL, $wr
 $page_functionality_views_query = "SELECT 
     CASE 
         WHEN page LIKE '%morphology.php%' THEN 'Morphology'
-        WHEN page LIKE '%markers.php%' THEN 'Markers'
+        WHEN page LIKE '%markers.php%' THEN 'Molecular Markers'
         WHEN page LIKE '%ephys.php%' THEN 'Membrane Biophysics'
-        WHEN page LIKE '%connectivity.php%' THEN 'Connectivity: Known / Potential'
-        WHEN page LIKE '%synaptome_modeling.php%' THEN 'Synaptome Modeling'
+        WHEN page LIKE '%connectivity.php%' THEN 'Connectivity'
+        WHEN page LIKE '%synaptome_modeling.php%' OR page LIKE '%/synaptome/php/synaptome%' OR page LIKE '%synaptic_mod_sum.php%' THEN 'Synaptic Physiology'
         WHEN page LIKE '%firing_patterns.php%' THEN 'Firing Patterns'
-        WHEN page LIKE '%izhikevich_model.php%' THEN 'Izhikevich Model'
+        WHEN page LIKE '%Izhikevich_model.php%' THEN 'Izhikevich Models'
         WHEN page LIKE '%synapse_probabilities.php%' THEN 'Synapse Probabilities'
-        WHEN page LIKE '%phases.php%' THEN 'In Vivo'
+        WHEN page LIKE '%phases.php%' THEN 'In Vivo recordings'
         WHEN page LIKE '%/cognome/%' THEN 'Cognome'
-        WHEN page LIKE '%counts.php%' THEN 'Census'
+        WHEN page LIKE '%counts.php%' THEN 'Neuron Type Census'
         WHEN page LIKE '%simulation_parameters.php%' THEN 'Simulation Parameters'
         WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology') THEN 'Morphology'
-        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology_linking_pmid_isbn') THEN 'Morphology: PMID / ISBN'
-        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('/synaptome/php/synaptome') THEN 'Synaptome'
-        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('connectivity', 'connectivity_orig', 'connectivity_test') THEN 'Connectivity: Known / Potential'
-        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'counts' THEN 'Census'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'markers' THEN 'Molecular Markers'
         WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'ephys' THEN 'Membrane Biophysics'
-        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'fp' THEN 'FP'
-        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases' THEN 'In Vivo'
-        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'markers' THEN 'Markers'
-        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro' THEN 'Morphology: Axon and Dendrite Lengths / Somatic Distances'
-        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('synpro_nm', 'synpro_nm_old2') THEN 'Connectivity: Number of Potential Synapses / Number of Contacts / Synaptic Probability'
-        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro_pvals' THEN 'Connectivity: Parcel-Specific Tables'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('connectivity', 'connectivity_orig', 'connectivity_test') THEN 'Connectivity'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'fp' THEN 'Firing Patterns'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('synpro', 'synpro_pvals', 'synpro_nm', 'synpro_nm_old2') THEN 'Synapse Probabilities'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases' THEN 'In Vivo recordings'
+        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'counts' THEN 'Neuron Type census'
         ELSE SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1)
     END AS property_page_category,
-    
     SUM(
         CASE 
             WHEN page NOT LIKE '%id_neuron=%' 
                  AND page NOT LIKE '%id1_neuron=%' 
-                 AND page NOT LIKE '%id_neuron_source=%'
+                 AND page NOT LIKE '%id_neuron_source=%' 
+                 AND page NOT LIKE '%pre_id=%' 
             THEN REPLACE(page_views, ',', '') 
-            ELSE 0
+            ELSE 0 
         END
     ) AS main_matrix_accesses,
-    
     SUM(
         CASE 
             WHEN page LIKE '%id_neuron=%' 
                  OR page LIKE '%id1_neuron=%' 
-                 OR page LIKE '%id_neuron_source=%'
+                 OR page LIKE '%id_neuron_source=%' 
+                 OR page LIKE '%pre_id=%' 
             THEN REPLACE(page_views, ',', '') 
-            ELSE 0
+            ELSE 0 
         END
     ) AS evidence_accesses,
-
-    SUM(
-        CASE 
-            WHEN page NOT LIKE '%id_neuron=%' 
-                 AND page NOT LIKE '%id1_neuron=%' 
-                 AND page NOT LIKE '%id_neuron_source=%'
-            THEN REPLACE(page_views, ',', '') 
-            ELSE 0
-        END
-    ) +
-    SUM(
-        CASE 
-            WHEN page LIKE '%id_neuron=%' 
-                 OR page LIKE '%id1_neuron=%' 
-                 OR page LIKE '%id_neuron_source=%'
-            THEN REPLACE(page_views, ',', '') 
-            ELSE 0
-        END
-    ) AS total_views
-
+    SUM(REPLACE(page_views, ',', '')) AS total_views
 FROM temp_combined_analytics
+WHERE (
+        page LIKE '%/property_page_%' 
+        OR page LIKE '%morphology.php%' 
+        OR page LIKE '%markers.php%' 
+        OR page LIKE '%ephys.php%' 
+        OR page LIKE '%connectivity.php%' 
+        OR page LIKE '%synaptome_modeling.php%' 
+        OR page LIKE '%synaptic_mod_sum.php%' 
+        OR page LIKE '%firing_patterns.php%' 
+        OR page LIKE '%Izhikevich_model.php%' 
+        OR page LIKE '%synapse_probabilities.php%' 
+        OR page LIKE '%phases.php%' 
+        OR page LIKE '%/cognome/%' 
+        OR page LIKE '%counts.php%' 
+        OR page LIKE '%simulation_parameters.php%'
+    )
+  AND page NOT LIKE '%morphology_linking_pmid_isbn%'
+GROUP BY property_page_category 
+ORDER BY FIELD(
+    property_page_category,
+    'Morphology',
+    'Molecular Markers',
+    'Membrane Biophysics',
+    'Connectivity',
+    'Synaptic Physiology',
+    'Firing Patterns',
+    'Izhikevich Models',
+    'Synapse Probabilities',
+    'In Vivo recordings',
+    'Cognome',
+    'Neuron Type Census',
+    'Simulation Parameters'
+)";
 
-WHERE 
-    page LIKE '%/property_page_%' 
-    OR page LIKE '%morphology.php%'
-    OR page LIKE '%markers.php%'
-    OR page LIKE '%ephys.php%'
-    OR page LIKE '%connectivity.php%'
-    OR page LIKE '%synaptome_modeling.php%'
-    OR page LIKE '%firing_patterns.php%'
-    OR page LIKE '%izhikevich_model.php%'
-    OR page LIKE '%synapse_probabilities.php%'
-    OR page LIKE '%phases.php%'
-    OR page LIKE '%/cognome/%'
-    OR page LIKE '%counts.php%'
-    OR page LIKE '%simulation_parameters.php%'
-
-GROUP BY 
-    CASE 
-        WHEN page LIKE '%morphology.php%' THEN 'Morphology'
-        WHEN page LIKE '%markers.php%' THEN 'Markers'
-        WHEN page LIKE '%ephys.php%' THEN 'Membrane Biophysics'
-        WHEN page LIKE '%connectivity.php%' THEN 'Connectivity: Known / Potential'
-        WHEN page LIKE '%synaptome_modeling.php%' THEN 'Synaptome Modeling'
-        WHEN page LIKE '%firing_patterns.php%' THEN 'Firing Patterns'
-        WHEN page LIKE '%izhikevich_model.php%' THEN 'Izhikevich Model'
-        WHEN page LIKE '%synapse_probabilities.php%' THEN 'Synapse Probabilities'
-        WHEN page LIKE '%phases.php%' THEN 'In Vivo'
-        WHEN page LIKE '%/cognome/%' THEN 'Cognome'
-        WHEN page LIKE '%counts.php%' THEN 'Census'
-        WHEN page LIKE '%simulation_parameters.php%' THEN 'Simulation Parameters'
-        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology') THEN 'Morphology'
-        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology_linking_pmid_isbn') THEN 'Morphology: PMID / ISBN'
-        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('/synaptome/php/synaptome') THEN 'Synaptome'
-        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('connectivity', 'connectivity_orig', 'connectivity_test') THEN 'Connectivity: Known / Potential'
-        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'counts' THEN 'Census'
-        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'ephys' THEN 'Membrane Biophysics'
-        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'fp' THEN 'FP'
-        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases' THEN 'In Vivo'
-        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'markers' THEN 'Markers'
-        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro' THEN 'Morphology: Axon and Dendrite Lengths / Somatic Distances'
-        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('synpro_nm', 'synpro_nm_old2') THEN 'Connectivity: Number of Potential Synapses / Number of Contacts / Synaptic Probability'
-        WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro_pvals' THEN 'Connectivity: Parcel-Specific Tables'
-        ELSE SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1)
-    END
-ORDER BY total_views DESC";
-
+//echo $page_functionality_views_query;
   // Check if the request is for monthly or yearly views
     if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
         $page_functionality_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
@@ -3406,38 +3372,54 @@ $page_functionality_views_query .= "
         'SELECT 
             CASE 
                 WHEN page LIKE \"%morphology.php%\" THEN \"Morphology\"
-                WHEN page LIKE \"%markers.php%\" THEN \"Markers\"
+                WHEN page LIKE \"%markers.php%\" THEN \"Molecular Markers\"
                 WHEN page LIKE \"%ephys.php%\" THEN \"Membrane Biophysics\"
-                WHEN page LIKE \"%connectivity.php%\" THEN \"Connectivity: Known / Potential\"
-                WHEN page LIKE \"%synaptome_modeling.php%\" THEN \"Synaptome Modeling\"
+                WHEN page LIKE \"%connectivity.php%\" THEN \"Connectivity\"
+                WHEN page LIKE \"%synaptome_modeling.php%\" OR page LIKE \"%synaptic_mod_sum.php%\" OR page LIKE \"%/synaptome/php/synaptome%\" THEN \"Synaptic Physiology\"
                 WHEN page LIKE \"%firing_patterns.php%\" THEN \"Firing Patterns\"
-                WHEN page LIKE \"%izhikevich_model.php%\" THEN \"Izhikevich Model\"
+                WHEN page LIKE \"%Izhikevich_model.php%\" THEN \"Izhikevich Models\"
                 WHEN page LIKE \"%synapse_probabilities.php%\" THEN \"Synapse Probabilities\"
                 WHEN page LIKE \"%phases.php%\" THEN \"In Vivo\"
                 WHEN page LIKE \"%/cognome/%\" THEN \"Cognome\"
-                WHEN page LIKE \"%counts.php%\" THEN \"Census\"
+                WHEN page LIKE \"%counts.php%\" THEN \"Neuron Type Census\"
                 WHEN page LIKE \"%simulation_parameters.php%\" THEN \"Simulation Parameters\"
                 ELSE \"Other\"
             END AS Property, ',
             @sql, ',
             SUM(REPLACE(page_views, \"\", \"\")) AS Total_Views
         FROM temp_combined_analytics
-        WHERE 
+        WHERE (
             page LIKE \"%/property_page_%\" 
             OR page LIKE \"%morphology.php%\"
             OR page LIKE \"%markers.php%\"
             OR page LIKE \"%ephys.php%\"
             OR page LIKE \"%connectivity.php%\"
             OR page LIKE \"%synaptome_modeling.php%\"
+	    OR page LIKE \"%synaptic_mod_sum.php%\"
             OR page LIKE \"%firing_patterns.php%\"
-            OR page LIKE \"%izhikevich_model.php%\"
+            OR page LIKE \"%Izhikevich_model.php%\"
             OR page LIKE \"%synapse_probabilities.php%\"
             OR page LIKE \"%phases.php%\"
             OR page LIKE \"%/cognome/%\"
             OR page LIKE \"%counts.php%\"
-            OR page LIKE \"%simulation_parameters.php%\"
-        GROUP BY Property
-        ORDER BY Total_Views DESC'
+            OR page LIKE \"%simulation_parameters.php%\" )
+	    AND page NOT LIKE \"%morphology_linking_pmid_isbn%\"
+        GROUP BY Property  
+ORDER BY FIELD(
+    Property,
+    \"Morphology\",
+    \"Molecular Markers\",
+    \"Membrane Biophysics\",
+    \"Connectivity\",
+    \"Synaptic Physiology\",
+    \"Firing Patterns\",
+    \"Izhikevich Models\",
+    \"Synapse Probabilities\",
+    \"In Vivo recordings\",
+    \"Cognome\",
+    \"Neuron Type Census\",
+    \"Simulation Parameters\"
+)'
     );
 
     PREPARE stmt FROM @sql;
@@ -3446,7 +3428,7 @@ $page_functionality_views_query .= "
 ";
     }
 
-	//echo $page_functionality_views_query;
+//	echo $page_functionality_views_query;
 	$columns = ['Property', 'Views'];
         $table_string='';
 	$file_name='functionality_property_domain_page_';
@@ -3676,7 +3658,7 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 		DEALLOCATE PREPARE stmt;";
 	}
 
-	echo $page_functionality_views_query;
+	//echo $page_functionality_views_query;
 	$options = ['exclude' => ['not php'],];
 	$options = [];//'exclude' => ['not php'],]; //Added this line to make sure we are getting all counts can remove it later
 	$columns = ['Property', 'Views'];
