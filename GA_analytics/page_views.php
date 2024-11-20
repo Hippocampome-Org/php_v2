@@ -685,7 +685,7 @@ function camel_replace($header, $char = NULL)
 }
 
 function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file = NULL, $views_request = NULL) {
-	$count = 0;
+	$count =$neuron_page_views = $evidence_page_views = 0;
 	$array_subs = []; 
 	$csv_rows = [];
 	if (isset($write_file)) {
@@ -793,8 +793,14 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 							} else {
 								// Add to the count if the value is numeric and not zero
 								if (is_numeric($value)) {
+									if($key == 'Neuron_Page_Views'){
+										$neuron_page_views += $value;
+									}
+									if($key == 'Evidence_Page_Views'){
+										$evidence_page_views += $value;
+									}
 									if($key == 'Total_Views'){
-									$count += $value;
+										$count += $value;
 									}
 								}
 							}
@@ -805,7 +811,11 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 				}
 			} while (mysqli_next_result($conn));
 			$numHeaders = count($header); // Get the number of headers
-			$totalCountRow = array_merge(["Total Count"], array_fill(0, $numHeaders - 2, ''), [$count]);
+			if($neuron_page_views > 0 && $evidence_page_views > 0){
+				$totalCountRow = array_merge(["Total Count", " "], [$neuron_page_views, $evidence_page_views, $count]);
+			}else{
+				$totalCountRow = array_merge(["Total Count"], array_fill(0, $numHeaders - 2, ''), [$count]);
+			}
 			$csv_rows[] = $totalCountRow;
 
 			// Store information about the CSV file in `$csv_data` array
@@ -823,7 +833,7 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 
 	$header = []; // Initialize an array to store column names
 	$array_subs = []; // Initialize array to store CSV rows
-	$count = 0; // Initialize count for total views
+	$count = $neuron_page_views = $evidence_page_views = 0; // Initialize count for total views
 	$table_string1 = '';
 
 	if (mysqli_multi_query($conn, $query)) {
@@ -837,6 +847,12 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 					$table_string1 = get_table_skeleton_first($csv_headers);
 				}
 				while ($rowvalue = mysqli_fetch_assoc($result)) {
+					if(isset($rowvalue['Neuron_Page_Views'])){
+						$neuron_page_views += $rowvalue['Neuron_Page_Views'];
+					}
+					if(isset($rowvalue['Evidence_Page_Views'])){
+						$evidence_page_views += $rowvalue['Evidence_Page_Views'];
+					}
 					$count += $rowvalue['Total_Views'];
 					$value = $rowvalue['Neuron_Type_Name'];
 					if (isset($neuron_ids[$value])) {
@@ -878,7 +894,11 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 				$i++;
 			}
 			// Append total count row
-			$table_string1 .= "<tr><td colspan='" . ($rows - 1) . "'><b>Total Count</b></td><td>$count</td></tr>";
+			if($evidence_page_views > 0 && $neuron_page_views > 0){
+				$table_string1 .= "<tr><td><b>Total Count</b></td><td></td><td>$neuron_page_views</td><td>$evidence_page_views</td><td>$count</td></tr>";
+			}else{
+				$table_string1 .= "<tr><td colspan='" . ($rows - 1) . "'><b>Total Count</b></td><td>$count</td></tr>";
+			}
 			return $table_string1;
 		}
 }
@@ -2104,7 +2124,7 @@ DEALLOCATE PREPARE stmt;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;"; 
 	}
-
+echo $page_neurons_views_query;
 //Till Here on Jul 2 2024
 	$table_string='';
 	//$table_string = get_table_skeleton_first($columns);
@@ -2127,86 +2147,87 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 
 	$columns = ['Subregion', 'Neuron Type Name', 'Census','Views'];
      
-	$page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000;
+	$page_neurons_views_query = "
+   SET SESSION group_concat_max_len = 1000000;
 
--- Construct the query to count neuron page views and evidence page views separately
 SET @sql = CONCAT(
     'SELECT t.subregion AS Subregion, ',
-    't.page_statistics_name AS Neuron_Type_Name, ',
-    
-    -- Include nd.neuronID and t.id for verification
-    -- 'nd.neuronID AS Neuron_Page_ID, ',
-    -- 't.id AS Neuron_Type_ID, ',
-    
-    -- Neuron page view count
-    'SUM(CASE WHEN nd.page LIKE ''%neuron_page.php?id=%'' THEN REPLACE(nd.page_views, '','', '''') ELSE 0 END) AS Neuron_Page_Views, ',
-    
-    -- Evidence page view count
-    'SUM(CASE WHEN nd.page LIKE ''%property_page_%'' THEN REPLACE(nd.page_views, '','', '''') ELSE 0 END) AS Evidence_Page_Views, ',
-    
-    -- Total views as the sum of both
-    'SUM(REPLACE(nd.page_views, '','', '''')) AS Total_Views ',
-    
-    'FROM (',
-        'SELECT ',
-            'CASE ',
-                'WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
-                'WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) ',
-                'WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) ',
-            'END AS neuronID, ',
-            'page, ',
-            'page_views ',
-        'FROM temp_combined_analytics ', 
-        'WHERE (page LIKE ''%neuron_page.php?id=%'' OR page LIKE ''%property_page_%'') ',
-        'AND LENGTH(CASE ',
-            'WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
-            'WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) ',
-            'WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) ',
-        'END) = 4 ',
-        'AND (CASE ',
-            'WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
-            'WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) ',
-            'WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) ',
-        'END NOT IN (4168, 4181, 2232)) ',
+           't.page_statistics_name AS Neuron_Type_Name, ',
+           'SUM(CASE WHEN nd.page LIKE ''%neuron_page.php?id=%'' THEN ',
+               'CASE WHEN REPLACE(nd.page_views, '','', '''') > 0 THEN REPLACE(nd.page_views, '','', '''') ELSE nd.sessions END ',
+           'ELSE 0 END) AS Neuron_Page_Views, ',
+           'SUM(CASE WHEN nd.page LIKE ''%property_page_%'' OR nd.page LIKE ''%synaptic_mod_sum.php%'' THEN ',
+               'CASE WHEN REPLACE(nd.page_views, '','', '''') > 0 THEN REPLACE(nd.page_views, '','', '''') ELSE nd.sessions END ',
+           'ELSE 0 END) AS Evidence_Page_Views, ',
+           'SUM(CASE WHEN REPLACE(nd.page_views, '','', '''') > 0 THEN REPLACE(nd.page_views, '','', '''') ELSE nd.sessions END) AS Total_Views ',
+    'FROM ( ',
+           'SELECT ',
+                  'CASE ',
+                       'WHEN page LIKE ''%neuron_page.php?id=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id='', -1), ''&'', 1) ',
+                       'WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
+                       'WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) ',
+                       'WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) ',
+                       'WHEN page LIKE ''%pre_id=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''pre_id='', -1), ''&'', 1) ',
+                       'ELSE NULL ',
+                  'END AS neuronID, ',
+                  'page, day_index, page_views, sessions ',
+           'FROM temp_combined_analytics ',
+           'WHERE page LIKE ''%neuron_page.php?id=%'' ',
+           '   OR ( ',
+           '       (page LIKE ''%property_page_%'' OR page LIKE ''%synaptic_mod_sum.php%'') ',
+           '       AND LENGTH(CASE ',
+           '           WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
+           '           WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) ',
+           '           WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) ',
+           '           WHEN page LIKE ''%pre_id=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''pre_id='', -1), ''&'', 1) ',
+           '           ELSE NULL ',
+           '       END) = 4 ',
+           '       AND ( ',
+           '           CASE ',
+           '               WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
+           '               WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) ',
+           '               WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) ',
+           '               WHEN page LIKE ''%pre_id=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''pre_id='', -1), ''&'', 1) ',
+           '               ELSE NULL ',
+           '           END NOT IN (4168, 4181, 2232) ',
+           '       ) ',
+           '   ) ',
     ') AS nd ',
     'JOIN Type AS t ON nd.neuronID = t.id ',
     'GROUP BY t.page_statistics_name, t.subregion ',
     'ORDER BY t.position;'
 );
 
--- Execute the dynamically constructed SQL
 PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 ";
-//echo $page_neurons_views_query;
 if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
     $page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
     
     if ($views_request == "views_per_month") {
-        $page_neurons_views_query .= "SELECT
-            GROUP_CONCAT(DISTINCT
-                CONCAT(
-                    'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
-                    ' AND MONTH(day_index) = ', MONTH(day_index),
-                    ' THEN REPLACE(nd.page_views, '','', '''') ELSE 0 END) AS `',
-                    YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
-                )    
-                ORDER BY YEAR(day_index), MONTH(day_index)
-                SEPARATOR ', '
-            ) INTO @sql 
-        FROM (
-            SELECT DISTINCT day_index
-            FROM temp_combined_analytics 
-        ) months;";
-    }    
+	$page_neurons_views_query .= "SELECT 
+		GROUP_CONCAT(	
+			DISTINCT CONCAT(
+        			'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+        			' AND MONTH(day_index) = ', MONTH(day_index),
+        			' THEN CASE WHEN CAST(REPLACE(COALESCE(page_views, ''0''), '''', '''') AS UNSIGNED) > 0 ',
+       				 'THEN CAST(REPLACE(page_views, '''', '''') AS UNSIGNED) ELSE sessions END ELSE 0 END) AS `',
+        			YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
+    			)
+    			ORDER BY YEAR(day_index), MONTH(day_index)
+    			SEPARATOR ', '
+		) INTO @sql
+		FROM (SELECT DISTINCT day_index FROM temp_combined_analytics) months;";
+    	}    
     
     if ($views_request == "views_per_year") {
         $page_neurons_views_query .= "SELECT
-            GROUP_CONCAT(DISTINCT
-                CONCAT(
+            GROUP_CONCAT(
+		DISTINCT CONCAT(
                     'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
-                    ' THEN REPLACE(nd.page_views, '','', '''') ELSE 0 END) AS `',
+			    ' THEN CASE WHEN CAST(REPLACE(COALESCE(page_views, ''0''), '''', '''') AS UNSIGNED) > 0 ',
+			    'THEN CAST(REPLACE(page_views, '''', '''') AS UNSIGNED) ELSE sessions END ELSE 0 END) AS `',
                     YEAR(day_index), '`'
                 )    
                 ORDER BY YEAR(day_index)
@@ -2218,115 +2239,56 @@ if (($views_request == "views_per_month") || ($views_request == "views_per_year"
         ) years;";
     }
     
-    $page_neurons_views_query .= " SET @sql = CONCAT(
-        'SELECT t.subregion AS Subregion, t.page_statistics_name AS Neuron_Type_Name, ',
-        @sql,
-        ', SUM(REPLACE(nd.page_views, '','', '''')) AS Total_Views',
-        ' FROM (',
-            'SELECT ',
-                'CASE ',
-                    'WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
-                    'WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) ',
-                    'WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) ',
-                'END AS neuronID, ',
-                'page_views, ',
-                'day_index, ',
-                'CASE WHEN page LIKE ''%property_page_counts.php%'' THEN 1 ELSE 0 END AS is_property_page ',
-            'FROM temp_combined_analytics ', 
-            'WHERE (page LIKE ''%id_neuron=%'' OR page LIKE ''%id1_neuron=%'' OR page LIKE ''%id_neuron_source=%'') ',
-            'AND LENGTH(CASE ',
-                'WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
-                'WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) ',
-                'WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) ',
-            'END) = 4 ',
-            'AND (CASE ',
-                'WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
-                'WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) ',
-                'WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) ',
-            'END NOT IN (4168, 4181, 2232)) ',
-        ') AS nd ',
-        'JOIN Type AS t ON nd.neuronID = t.id ',
-        'GROUP BY t.subregion, t.page_statistics_name ',
-        'ORDER BY t.position'
-    );
+    $page_neurons_views_query .= "SET @sql = CONCAT(
+    'SELECT t.subregion AS Subregion, t.page_statistics_name AS Neuron_Type_Name, ',
+    @sql, ', ',
+    'SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, ''0''), '''', '''') AS UNSIGNED) > 0 ',
+    'THEN CAST(REPLACE(page_views, '''', '''') AS UNSIGNED) ELSE sessions END) AS Total_Views ',
+    'FROM (',
+    'SELECT ',
+    'CASE ',
+    'WHEN page LIKE ''%neuron_page.php?id=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id='', -1), ''&'', 1) ',
+    'WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
+    'WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) ',
+    'WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) ',
+    'WHEN page LIKE ''%pre_id=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''pre_id='', -1), ''&'', 1) ',
+    'ELSE NULL ',
+    'END AS neuronID, ',
+    'page, day_index, page_views, sessions ',
+    'FROM temp_combined_analytics ',
+    'WHERE page LIKE ''%neuron_page.php?id=%'' ',
+    ' OR ( ',
+    ' (page LIKE ''%property_page_%'' OR page LIKE ''%synaptic_mod_sum.php%'') ',
+    ' AND LENGTH(CASE ',
+    ' WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
+    ' WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) ',
+    ' WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) ',
+    ' WHEN page LIKE ''%pre_id=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''pre_id='', -1), ''&'', 1) ',
+    ' ELSE NULL ',
+    ' END) = 4 ',
+    ' AND ( ',
+    ' CASE ',
+    ' WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
+    ' WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) ',
+    ' WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) ',
+    ' WHEN page LIKE ''%pre_id=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''pre_id='', -1), ''&'', 1) ',
+    ' ELSE NULL ',
+    ' END NOT IN (4168, 4181, 2232) ',
+    ' ) ',
+    ' ) ',
+    ') AS nd ',
+    'JOIN Type AS t ON nd.neuronID = t.id ',
+    'GROUP BY t.subregion, t.page_statistics_name ',
+    'ORDER BY t.position'
+);
 
-    PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;";
-}
-
-/*
-	if (($views_request == "views_per_month")  || ($views_request == "views_per_year")) {
-		$page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
-		if ($views_request == "views_per_month") {
-			$page_neurons_views_query .= "SELECT
-				GROUP_CONCAT(DISTINCT
-						CONCAT(
-							'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
-								' AND MONTH(day_index) = ', MONTH(day_index),
-								' THEN REPLACE(nd.page_views, '','', '''') ELSE 0 END) AS `',
-							YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
-						      )
-						ORDER BY YEAR(day_index), MONTH(day_index)
-						SEPARATOR ', '
-					    ) INTO @sql
-				FROM (
-						SELECT DISTINCT day_index
-						FROM temp_combined_analytics 
-				     ) months;";
-		}
-		if($views_request == "views_per_year"){
-		$page_neurons_views_query .= " SELECT
-			GROUP_CONCAT(DISTINCT
-					CONCAT(
-						'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
-							' THEN REPLACE(nd.page_views, \",\", \"\") ELSE 0 END) AS `',
-						YEAR(day_index), '`'
-					      )
-					ORDER BY YEAR(day_index)
-					SEPARATOR ', '
-				    ) INTO @sql
-			FROM ( SELECT DISTINCT day_index FROM temp_combined_analytics ) years;";
-		}
-		$page_neurons_views_query .= " SET @sql = CONCAT(
-									'SELECT t.subregion AS Subregion, t.page_statistics_name AS Neuron_Type_Name, ',
-									@sql,
-									', SUM(REPLACE(nd.page_views, '','', '''')) AS Total_Views',
-									' FROM (
-										SELECT
-										CASE
-										WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1)
-										WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1)
-										WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1)
-										END AS neuronID,
-										page_views,
-										day_index,
-										CASE
-										WHEN page LIKE ''%property_page_counts.php%'' THEN 1
-										ELSE 0
-										END AS is_property_page
-										FROM temp_combined_analytics 
-										WHERE
-										(page LIKE ''%id_neuron=%'' OR page LIKE ''%id1_neuron=%'' OR page LIKE ''%id_neuron_source=%'') AND
-										LENGTH(
-											CASE
-											WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1)
-											WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1)
-											WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1)
-											END
-										      ) = 4 AND
-										(
-										 CASE
-										 WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1)
-										 WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1)
-										 WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1)
-										 END
-										) NOT IN (''4168'', ''4181'', ''2232'')
-										) AS nd
-										JOIN Type AS t ON nd.neuronID = t.id
-										GROUP BY t.subregion, t.page_statistics_name
-										ORDER BY t.position'); 	PREPARE stmt FROM @sql;
+PREPARE stmt FROM @sql;
 EXECUTE stmt;
-DEALLOCATE PREPARE stmt;"; 
-	} */
+DEALLOCATE PREPARE stmt;";
+
+}
+echo $page_neurons_views_query;
+//exit;
 	$table_string='';
 	//$table_string = get_table_skeleton_first($columns);
 	if(isset($write_file)) {
@@ -3722,8 +3684,7 @@ ORDER BY FIELD(property_page, 'Home', 'Browse', 'Search', 'Tools', 'Help', 'Neur
 		DEALLOCATE PREPARE stmt;";
 	}
 
-	echo $page_functionality_views_query;
-	exit;
+	//echo $page_functionality_views_query;
 	$options = ['exclude' => ['not php'],];
 	$options = [];//'exclude' => ['not php'],]; //Added this line to make sure we are getting all counts can remove it later
 	$columns = ['Property', 'Views'];
