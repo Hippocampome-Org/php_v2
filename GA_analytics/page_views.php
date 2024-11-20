@@ -2124,7 +2124,7 @@ DEALLOCATE PREPARE stmt;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;"; 
 	}
-echo $page_neurons_views_query;
+//echo $page_neurons_views_query;
 //Till Here on Jul 2 2024
 	$table_string='';
 	//$table_string = get_table_skeleton_first($columns);
@@ -2223,8 +2223,8 @@ if (($views_request == "views_per_month") || ($views_request == "views_per_year"
     
     if ($views_request == "views_per_year") {
         $page_neurons_views_query .= "SELECT
-            GROUP_CONCAT(
-		DISTINCT CONCAT(
+            GROUP_CONCAT(DISTINCT
+                CONCAT(
                     'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
 			    ' THEN CASE WHEN CAST(REPLACE(COALESCE(page_views, ''0''), '''', '''') AS UNSIGNED) > 0 ',
 			    'THEN CAST(REPLACE(page_views, '''', '''') AS UNSIGNED) ELSE sessions END ELSE 0 END) AS `',
@@ -2287,7 +2287,7 @@ EXECUTE stmt;
 DEALLOCATE PREPARE stmt;";
 
 }
-echo $page_neurons_views_query;
+// echo $page_neurons_views_query;
 //exit;
 	$table_string='';
 	//$table_string = get_table_skeleton_first($columns);
@@ -3477,7 +3477,7 @@ $page_functionality_views_query = "SELECT
 	";
     }
 
-	echo $page_functionality_views_query;
+	//echo $page_functionality_views_query;
 	$columns = ['Property', 'Views'];
         $table_string='';
 	$file_name='functionality_property_domain_page_';
