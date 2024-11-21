@@ -383,6 +383,7 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 			    } while (mysqli_next_result($conn));
 			    $totalRow = array_fill(0, count($header) - 1, '');
 			    $totalRow[] = $count;
+			    array_unshift($totalRow, "Total Count");
 			    $totalRowAssociative = array_combine($header, $totalRow);
 			    $csv_rows[] = $totalRowAssociative;
 			    $csv_data[$csv_tablename] = [
@@ -1922,7 +1923,7 @@ function get_pages_views_per_month_report($conn, $write_file=NULL){ //Passed $co
 		 SUM(
 				 CASE
 				 WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED)
-				 ELSE 1 
+				 ELSE CAST(REPLACE(sessions, ',', '') AS UNSIGNED) 
 				 END
 		    ) AS page_views 
                         from temp_combined_analytics 
