@@ -1805,17 +1805,35 @@ function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL)
 
 	//$page_views_query = "SELECT gap.page, SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS views FROM
 	//	ga_analytics_pages gap WHERE gap.day_index IS NOT NULL GROUP BY gap.page order by views desc";
-	$page_views_query = " SELECT gap.page, SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS views FROM 
-				temp_combined_analytics gap WHERE gap.day_index IS NOT NULL GROUP BY gap.page order by views desc";
-	$page_views_query = " SELECT gap.page, 
-		SUM(
-				CASE                    
-				WHEN CAST(REPLACE(COALESCE(gap.page_views, '0'), ',', '') AS UNSIGNED) > 0 THEN CAST(REPLACE(gap.page_views, ',', '') AS UNSIGNED)
-				ELSE 1 
-				END
-		   ) AS views FROM 
-		temp_combined_analytics gap WHERE gap.day_index IS NOT NULL GROUP BY gap.page order by views desc";
-
+	//$page_views_query = " SELECT gap.page, SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS views FROM 
+				//temp_combined_analytics gap WHERE gap.day_index IS NOT NULL GROUP BY gap.page order by views desc";
+	$page_views_query = "SELECT 
+    subquery.page, 
+    SUM(subquery.Views) AS Total_Views
+FROM (
+    SELECT 
+        gap.page, 
+        gap.day_index, 
+        SUM(
+            CASE 
+                WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 
+                THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED) 
+                ELSE CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED) 
+            END
+        ) AS Views
+    FROM 
+        temp_combined_analytics gap
+    WHERE 
+        gap.day_index IS NOT NULL
+    GROUP BY 
+        gap.page, gap.day_index
+) AS subquery
+GROUP BY 
+    subquery.page
+ORDER BY 
+    Total_Views DESC";
+//echo $page_views_query;
+exit;
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
 
