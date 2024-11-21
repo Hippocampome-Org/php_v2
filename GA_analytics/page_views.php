@@ -1832,8 +1832,6 @@ GROUP BY
     subquery.page
 ORDER BY 
     Total_Views DESC";
-//echo $page_views_query;
-exit;
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
 
@@ -1845,7 +1843,7 @@ exit;
 							'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
 								' AND MONTH(day_index) = ', MONTH(day_index),
 								' THEN CASE WHEN CAST(REPLACE(COALESCE(page_views, \\'0\\'), \\'\\', \\'\\') AS UNSIGNED) > 0 ',
-								'THEN CAST(REPLACE(page_views, \\'\\', \\'\\') AS UNSIGNED) ELSE 1 END ELSE 0 END) AS `',
+								'THEN CAST(REPLACE(page_views, \\'\\', \\'\\') AS UNSIGNED) ELSE  CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END ELSE 0 END) AS `',
 							YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
 						      )
 						ORDER BY YEAR(day_index), MONTH(day_index)
@@ -1865,7 +1863,7 @@ exit;
 						CONCAT(
 							'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
 								' THEN CASE WHEN CAST(REPLACE(COALESCE(page_views, \\'0\\'), \\'\\', \\'\\') AS UNSIGNED) > 0 ',
-								'THEN CAST(REPLACE(page_views, \\'\\', \\'\\') AS UNSIGNED) ELSE 1 END ELSE 0 END) AS `',
+								'THEN CAST(REPLACE(page_views, \\'\\', \\'\\') AS UNSIGNED) ELSE CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END ELSE 0 END) AS `',
 							YEAR(day_index), '`'
 						      )
 						ORDER BY YEAR(day_index)
@@ -1883,7 +1881,7 @@ exit;
 					'SELECT page as Page, ',
 					@sql,
 					', SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, \\'0\\'), \\'\\', \\'\\') AS UNSIGNED) > 0 ',
-						'THEN CAST(REPLACE(page_views, \\'\\', \\'\\') AS UNSIGNED) ELSE 1 END) AS Total_Views ',
+						'THEN CAST(REPLACE(page_views, \\'\\', \\'\\') AS UNSIGNED) ELSE  CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END) AS Total_Views ',
 					'FROM temp_combined_analytics ',
 					'WHERE day_index IS NOT NULL ',
 					'GROUP BY page ',
