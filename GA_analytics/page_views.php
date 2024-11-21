@@ -383,7 +383,10 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 			    } while (mysqli_next_result($conn));
 			    $totalRow = array_fill(0, count($header) - 1, '');
 			    $totalRow[] = $count;
-			    array_unshift($totalRow, "Total Count");
+			    $key = array_search("", $totalRow, true);
+			    if ($key !== false) {
+				    $totalRow[$key] = "Total Count";
+			    }
 			    $totalRowAssociative = array_combine($header, $totalRow);
 			    $csv_rows[] = $totalRowAssociative;
 			    $csv_data[$csv_tablename] = [
@@ -3408,7 +3411,7 @@ $page_functionality_views_query = "SELECT
 					CONCAT(
 						'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
 							' AND MONTH(day_index) = ', MONTH(day_index),
-							 ' THEN CASE WHEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE 1 END ELSE 0 END) AS `',
+							 ' THEN CASE WHEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END ELSE 0 END) AS `',
 						YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
 					      )
 					ORDER BY YEAR(day_index), MONTH(day_index)
@@ -3425,7 +3428,7 @@ $page_functionality_views_query = "SELECT
 			GROUP_CONCAT(DISTINCT
 					CONCAT(
 						'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
-						 ' THEN CASE WHEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE 1 END ELSE 0 END) AS `',
+						 ' THEN CASE WHEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END ELSE 0 END) AS `',
 						YEAR(day_index), '`'
 					      )
 					ORDER BY YEAR(day_index)
@@ -3457,7 +3460,8 @@ $page_functionality_views_query = "SELECT
 				ELSE \"Other\"
 				END AS Property, ',
 				@sql, ', 
-				SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, \'0\'), \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE 1 END) AS Total_Views 
+				SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, \'0\'), \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE 
+CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END) AS Total_Views 
 				FROM temp_combined_analytics
 				WHERE (
 					page LIKE \"%/property_page_%\" 
@@ -3499,7 +3503,7 @@ $page_functionality_views_query = "SELECT
 	";
     }
 
-	//echo $page_functionality_views_query;
+//	echo $page_functionality_views_query;
 	$columns = ['Property', 'Views'];
         $table_string='';
 	$file_name='functionality_property_domain_page_';
