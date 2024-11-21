@@ -3501,17 +3501,18 @@ $page_functionality_views_query = "SELECT
 }
 
 function get_page_functionality_views_report($conn, $views_request=NULL, $write_file=NULL){
-
-	$page_functionality_views_query ="        SELECT 
-    property_page,
+//Second Functionality Table function
+	$page_functionality_views_query ="
+SELECT 
+    property_page, 
     SUM(
-        CASE                    
-            WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED)
-            ELSE 1 
+        CASE 
+            WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 
+            THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED) 
+            ELSE CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED) 
         END
-    ) AS views
-FROM 
-(
+    ) AS total_views 
+FROM (
     SELECT 
         CASE 
             WHEN page LIKE '%Help_%' 
@@ -3521,13 +3522,13 @@ FROM
                  OR page LIKE '%Help_Known_Bug_List%' 
                  OR page LIKE '%user_feedback_form_entry%' 
                  OR page LIKE '%Help_Other_Useful_Links%' THEN 'Help'
-            WHEN page LIKE '%/php/neuron_page.php?id=%' THEN 'Neuron Type Pages'
+            WHEN page LIKE '%/neuron_page.php?id=%' THEN 'Neuron Type Pages'
             WHEN page LIKE '%morphology.php%' 
                  OR page LIKE '%markers.php%' 
                  OR page LIKE '%ephys.php%' 
                  OR page LIKE '%connectivity.php%' 
                  OR page LIKE '%synaptome_modeling.php%' 
-                 OR page LIKE '%firing_patterns.php%'
+                 OR page LIKE '%firing_patterns.php%' 
                  OR page LIKE '%Izhikevich_model.php%' 
                  OR page LIKE '%synapse_probabilities.php%' 
                  OR page LIKE '%phases.php%' 
@@ -3549,20 +3550,33 @@ FROM
                  OR page LIKE '%/hipp Better than reCAPTCHA：vaptcha.cn%' 
                  OR (page = '/php/' AND day_index IS NOT NULL) THEN 'All Others'
             ELSE 'Home'
-        END AS property_page,
-        page_views
-    FROM temp_combined_analytics
-    UNION ALL SELECT 'Home', '0'
-    UNION ALL SELECT 'Help', '0'
-    UNION ALL SELECT 'Neuron Type Pages', '0'
-    UNION ALL SELECT 'Browse', '0'
-    UNION ALL SELECT 'Search', '0'
-    UNION ALL SELECT 'Evidence', '0'
-    UNION ALL SELECT 'Tools', '0'
-    UNION ALL SELECT 'All Others', '0'
-) AS combined
-GROUP BY property_page
-ORDER BY FIELD(property_page, 'Home', 'Browse', 'Search', 'Tools', 'Help', 'Neuron Type Pages', 'Evidence', 'All Others')";
+        END AS property_page, 
+        page_views, 
+        sessions, 
+        day_index 
+    FROM 
+        temp_combined_analytics 
+    UNION ALL 
+    SELECT 'Home', '0', '0', NULL 
+    UNION ALL 
+    SELECT 'Help', '0', '0', NULL 
+    UNION ALL 
+    SELECT 'Neuron Type Pages', '0', '0', NULL 
+    UNION ALL 
+    SELECT 'Browse', '0', '0', NULL 
+    UNION ALL 
+    SELECT 'Search', '0', '0', NULL 
+    UNION ALL 
+    SELECT 'Evidence', '0', '0', NULL 
+    UNION ALL 
+    SELECT 'Tools', '0', '0', NULL 
+    UNION ALL 
+    SELECT 'All Others', '0', '0', NULL 
+) AS combined 
+GROUP BY 
+    property_page 
+ORDER BY 
+    FIELD(property_page, 'Home', 'Browse', 'Search', 'Tools', 'Help', 'Neuron Type Pages', 'Evidence', 'All Others')";
 
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_functionality_views_query = "SET SESSION group_concat_max_len = 1000000;
