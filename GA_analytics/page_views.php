@@ -3295,14 +3295,14 @@ function get_fp_property_views_report($conn, $views_request=NULL, $write_file=NU
 function get_domain_functionality_views_report($conn, $views_request = NULL, $write_file = NULL){
 $page_functionality_views_query = "SELECT 
 	CASE 
-	WHEN page LIKE '%morphology.php%' THEN 'Morphology'
-	WHEN page LIKE '%markers.php%' THEN 'Molecular Markers'
-	WHEN page LIKE '%ephys.php%' THEN 'Membrane Biophysics'
-	WHEN page LIKE '%connectivity.php%' THEN 'Connectivity'
-	WHEN page LIKE '%synaptome_modeling.php%' 
+	WHEN page LIKE '%/morphology.php%' THEN 'Morphology'
+	WHEN page LIKE '%/markers.php%' THEN 'Molecular Markers'
+	WHEN page LIKE '%/ephys.php%' THEN 'Membrane Biophysics'
+	WHEN page LIKE '%/connectivity.php%' OR page LIKE '%/connectivity_orig.php%' OR page LIKE '%/connectivity_test.php%'  THEN 'Connectivity'
+	WHEN page LIKE '%/synaptome_modeling.php%' 
 	OR page LIKE '%/synaptome/php/synaptome%' 
-	OR page LIKE '%synaptic_mod_sum.php%' THEN 'Synaptic Physiology'
-	WHEN page LIKE '%firing_patterns.php%' THEN 'Firing Patterns'
+	OR page LIKE '%/synaptic_mod_sum.php%' THEN 'Synaptic Physiology'
+	WHEN page LIKE '%/firing_patterns.php%' THEN 'Firing Patterns'
 	WHEN page LIKE '%Izhikevich_model.php%' THEN 'Izhikevich Models'
 	WHEN page LIKE '%synapse_probabilities.php%' THEN 'Synapse Probabilities'
 	WHEN page LIKE '%phases.php%' THEN 'In Vivo recordings'
@@ -3319,7 +3319,6 @@ $page_functionality_views_query = "SELECT
 	WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'counts' THEN 'Neuron Type Census'
 	ELSE SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1)
 	END AS property_page_category,
-
 	    SUM(
 			    CASE 
 			    WHEN page NOT LIKE '%id_neuron=%' 
@@ -3329,7 +3328,7 @@ $page_functionality_views_query = "SELECT
 			    CASE 
 			    WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 THEN 
 			    CAST(REPLACE(page_views, ',', '') AS UNSIGNED)
-			    ELSE 1
+			    ELSE CAST(REPLACE(sessions, ',', '') AS UNSIGNED)
 			    END
 			    ELSE 0
 			    END
@@ -3344,7 +3343,7 @@ $page_functionality_views_query = "SELECT
 			    CASE 
 			    WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 THEN 
 			    CAST(REPLACE(page_views, ',', '') AS UNSIGNED)
-			    ELSE 1
+			    ELSE CAST(REPLACE(sessions, ',', '') AS UNSIGNED)
 			    END
 			    ELSE 0
 			    END
@@ -3354,7 +3353,7 @@ $page_functionality_views_query = "SELECT
 			    CASE 
 			    WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 THEN 
 			    CAST(REPLACE(page_views, ',', '') AS UNSIGNED)
-			    ELSE 1
+			    ELSE CAST(REPLACE(sessions, ',', '') AS UNSIGNED)
 			    END
 	       ) AS total_views
 
@@ -3365,7 +3364,13 @@ $page_functionality_views_query = "SELECT
 		     OR page LIKE '%morphology.php%' 
 		     OR page LIKE '%markers.php%' 
 		     OR page LIKE '%ephys.php%' 
+		     OR page LIKE '%synpro_nm.php%' 
+		     OR page LIKE '%synpro.php%' 
+		     OR page LIKE '%synpro_nm_old2.php%' 
+		     OR page LIKE '%synpro_pvals.php%' 
 		     OR page LIKE '%connectivity.php%' 
+		     OR page LIKE '%connectivity_test.php%' 
+		     OR page LIKE '%connectivity_orig.php%' 
 		     OR page LIKE '%synaptome_modeling.php%' 
 		     OR page LIKE '%synaptic_mod_sum.php%' 
 		     OR page LIKE '%firing_patterns.php%' 
@@ -3524,6 +3529,145 @@ SELECT
     property_page, 
     SUM(
         CASE 
+            WHEN CAST(REPLACE(COALESCE(total_page_views, '0'), ',', '') AS UNSIGNED) > 0 
+            THEN CAST(REPLACE(total_page_views, ',', '') AS UNSIGNED) 
+            ELSE CAST(REPLACE(COALESCE(total_sessions, '0'), ',', '') AS UNSIGNED) 
+        END
+    ) AS total_views 
+FROM (
+    SELECT 
+        CASE  
+            WHEN page LIKE '%search%' OR page LIKE '%find_author%' OR page LIKE '%find_neuron_name%' OR page LIKE '%find_neuron_term%' 
+                OR page LIKE '%find_pmid%' OR page LIKE '%search_engine_custom%' THEN 'Search'
+            WHEN page LIKE '%tools.php%' OR page LIKE '%connection_probabilities%' 
+                OR page LIKE '%synapse_modeler%' THEN 'Tools' 
+            WHEN page LIKE '%bot-traffic%' OR page LIKE '%/hipp Better than reCAPTCHA：vaptcha.cn%' OR page LIKE '/' 
+                OR (page = '/php/' AND day_index IS NOT NULL) THEN 'All Others'
+            WHEN page LIKE '%/neuron_page.php?id=%' THEN 'Neuron Type Pages' 
+            WHEN page LIKE '%Help_%' OR page LIKE '%help%' OR page LIKE '%Help_Quickstart%' OR page LIKE '%Help_FAQ%' 
+                OR page LIKE '%Help_Known_Bug_List%' OR page LIKE '%user_feedback_form_entry%' OR page LIKE '%Help_Other_Useful_Links%' 
+                THEN 'Help' 
+            WHEN page LIKE '%/morphology.php%' OR page LIKE '%/markers.php%' OR page LIKE '%/ephys.php%' OR page LIKE '%/connectivity.php%'  
+            	OR page LIKE '%/connectivity_orig.php%' OR page LIKE '%/connectivity_test.php%'
+                OR page LIKE '%/synaptome_modeling.php%' OR page LIKE '%/firing_patterns.php%' OR page LIKE '%/Izhikevich_model.php' 
+                OR page LIKE '%/synapse_probabilities.php%' OR page LIKE '%/phases.php%' OR page LIKE '%/cognome/%'
+                 OR page LIKE '%/synaptic_mod_sum.php'  OR page LIKE '%/synaptome.php'
+                 OR page LIKE '%/counts.php' OR page LIKE '%/property_page_%.php' 
+                OR page LIKE '%/simulation_parameters.php' OR page LIKE '%/synaptome/php/synaptome.php%' THEN 'Browse' 
+            WHEN page LIKE '%/property_page_%.php?%' OR page LIKE '%/synaptome/php/synaptome.php%' 
+            OR page LIKE '%/synaptic_mod_sum.php?%' THEN 'Evidence'
+           
+            ELSE 'Home' 
+        END AS property_page,
+        page,
+        day_index,
+        SUM(CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED)) AS total_page_views,
+        SUM(CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED)) AS total_sessions
+    FROM 
+        temp_combined_analytics
+    GROUP BY 
+        property_page, page, day_index 
+    HAVING property_page IS NOT NULL 
+) AS combined 
+GROUP BY 
+    property_page 
+ORDER BY FIELD(property_page, 'Home', 'Browse', 'Search', 'Tools', 'Help', 'Neuron Type Pages', 'Evidence', 'All Others')";
+/*
+   SELECT 
+    property_page, 
+    SUM(
+        CASE 
+            WHEN CAST(REPLACE(COALESCE(total_page_views, '0'), ',', '') AS UNSIGNED) > 0 
+            THEN CAST(REPLACE(total_page_views, ',', '') AS UNSIGNED) 
+            ELSE CAST(REPLACE(COALESCE(total_sessions, '0'), ',', '') AS UNSIGNED) 
+        END
+    ) AS total_views 
+FROM (
+    SELECT 
+        CASE  
+            WHEN page LIKE '%search%' OR page LIKE '%find_author%' OR page LIKE '%find_neuron_name%' OR page LIKE '%find_neuron_term%' 
+                OR page LIKE '%find_pmid%' OR page LIKE '%search_engine_custom%' THEN 'Search'
+            WHEN page LIKE '%tools.php%' OR page LIKE '%connection_probabilities%' 
+                OR page LIKE '%synapse_modeler%' THEN 'Tools' 
+            WHEN page LIKE '%bot-traffic%' OR page LIKE '%/hipp Better than reCAPTCHA：vaptcha.cn%' 
+                OR (page = '/php/' AND day_index IS NOT NULL) THEN 'All Others'
+            WHEN page LIKE '%/neuron_page.php?id=%' THEN 'Neuron Type Pages' 
+            WHEN page LIKE '%Help_%' OR page LIKE '%help%' OR page LIKE '%Help_Quickstart%' OR page LIKE '%Help_FAQ%' 
+                OR page LIKE '%Help_Known_Bug_List%' OR page LIKE '%user_feedback_form_entry%' OR page LIKE '%Help_Other_Useful_Links%' 
+                THEN 'Help' 
+            WHEN page LIKE '%morphology.php' OR page LIKE '%markers.php' OR page LIKE '%ephys.php' OR page LIKE '%connectivity.php'  
+            	OR page LIKE '%connectivity_orig.php' OR page LIKE '%connectivity_test.php'
+                OR page LIKE '%synaptome_modeling.php' OR page LIKE '%firing_patterns.php' OR page LIKE '%Izhikevich_model.php' 
+                OR page LIKE '%synapse_probabilities.php' OR page LIKE '%phases.php' OR page LIKE '%/cognome/%' OR page LIKE '%counts.php' 
+                OR page LIKE '%simulation_parameters.php' OR page LIKE '%/synaptome/php/synaptome.php' THEN 'Browse' 
+            WHEN page LIKE '%/property_page_%.php?%' OR page LIKE '%/synaptome/php/synaptome.php%' 
+            OR page LIKE '%/synaptic_mod_sum.php?%' THEN 'Evidence'
+           
+            ELSE 'Home' 
+        END AS property_page,
+        page,
+        day_index,
+        SUM(CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED)) AS total_page_views,
+        SUM(CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED)) AS total_sessions
+    FROM 
+        temp_combined_analytics
+    GROUP BY 
+        property_page, page, day_index -- Ensure grouping aligns with distinct page and date combinations
+    HAVING property_page IS NOT NULL -- Exclude any unintended null classifications
+) AS combined 
+GROUP BY 
+    property_page 
+ORDER BY FIELD(property_page, 'Home', 'Browse', 'Search', 'Tools', 'Help', 'Neuron Type Pages', 'Evidence', 'All Others')";
+*/
+/*
+SELECT 
+    property_page, 
+    SUM(
+        CASE 
+            WHEN CAST(REPLACE(COALESCE(total_page_views, '0'), ',', '') AS UNSIGNED) > 0 
+            THEN CAST(REPLACE(total_page_views, ',', '') AS UNSIGNED) 
+            ELSE CAST(REPLACE(COALESCE(total_sessions, '0'), ',', '') AS UNSIGNED) 
+        END
+    ) AS total_views 
+FROM (
+    SELECT 
+        CASE  
+	        WHEN page LIKE '%search%' OR page LIKE '%find_author%' OR page LIKE '%find_neuron_name%' OR page LIKE '%find_neuron_term%' 
+					OR page LIKE '%find_pmid%' OR page LIKE '%search_engine_custom%' THEN 'Search'
+			WHEN page LIKE '%tools.php%' OR page LIKE '%connection_probabilities%' 
+					OR page LIKE '%synapse_modeler%' THEN 'Tools' 
+			WHEN page LIKE '%bot-traffic%' OR page LIKE '%/hipp Better than reCAPTCHA：vaptcha.cn%' 
+					OR (page = '/php/' AND day_index IS NOT NULL) THEN 'All Others'
+	        WHEN page LIKE '%/neuron_page.php?id=%' THEN 'Neuron Type Pages' 
+	        WHEN page LIKE '%Help_%' OR page LIKE '%help%' OR page LIKE '%Help_Quickstart%' OR page LIKE '%Help_FAQ%' 
+		OR page LIKE '%Help_Known_Bug_List%' OR page LIKE '%user_feedback_form_entry%' OR page LIKE '%Help_Other_Useful_Links%' 
+	THEN 'Help' 
+			WHEN page LIKE '%/morphology.php%' OR page LIKE '%/markers.php%' OR page LIKE '%/ephys.php%' OR page LIKE '%/connectivity%' 
+		OR page LIKE '%/synaptome_modeling.php%' OR page LIKE '%/firing_patterns.php%' OR page LIKE '%/Izhikevich_model.php%' 
+		OR page LIKE '%/synapse_probabilities.php%' OR page LIKE '%/phases.php%' OR page LIKE '%/cognome/%' OR page LIKE '%/counts.php%' 
+		OR page LIKE '%/simulation_parameters.php%' OR page LIKE '%/synaptome/php/synaptome%'  THEN 'Browse' 
+            WHEN page LIKE '%/property_page_%.php?%' 
+            OR page LIKE '%/synaptic_mod_sum.php?%' THEN 'Evidence' 
+        ELSE 'Home' 
+        END AS property_page,
+        page,
+        day_index,
+        SUM(CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED)) AS total_page_views,
+        SUM(CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED)) AS total_sessions
+    FROM 
+        temp_combined_analytics
+    GROUP BY 
+        property_page, page, day_index
+) AS combined 
+GROUP BY 
+    property_page 
+ORDER BY FIELD(property_page, 'Home', 'Browse', 'Search', 'Tools', 'Help', 'Neuron Type Pages', 'Evidence', 'All Others')";
+*/
+/*
+SELECT 
+    property_page, 
+    SUM(
+        CASE 
             WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 
             THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED) 
             ELSE CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED) 
@@ -3594,7 +3738,8 @@ GROUP BY
     property_page 
 ORDER BY 
     FIELD(property_page, 'Home', 'Browse', 'Search', 'Tools', 'Help', 'Neuron Type Pages', 'Evidence', 'All Others')";
-
+*/
+//echo $page_functionality_views_query;
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_functionality_views_query = "SET SESSION group_concat_max_len = 1000000;
 		SET @sql = NULL;";
@@ -3605,7 +3750,7 @@ ORDER BY
 						CONCAT(
 							'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
 								' AND MONTH(day_index) = ', MONTH(day_index),
-								  ' THEN CASE WHEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE 1 END ELSE 0 END) AS `',
+								  ' THEN CASE WHEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END ELSE 0 END) AS `',
 							YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
 						      )
 						ORDER BY YEAR(day_index), MONTH(day_index)
@@ -3622,7 +3767,7 @@ ORDER BY
 				GROUP_CONCAT(DISTINCT
 						CONCAT(
 							'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
-								' THEN CASE WHEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE 1 END ELSE 0 END) AS `',
+								' THEN CASE WHEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED)  END ELSE 0 END) AS `',
 							YEAR(day_index), '`'
 						      )
 						ORDER BY YEAR(day_index)
@@ -3693,7 +3838,7 @@ ORDER BY
 					ELSE ''Home''
 					END AS Property, ', 
 					    @sql, ', 
-					    SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, \'0\'), \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE 1 END) AS Total_Views 
+					    SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, \'0\'), \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END) AS Total_Views 
 						    FROM temp_combined_analytics 
 						    GROUP BY Property
 						    ORDER BY FIELD ( 
