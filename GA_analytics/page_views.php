@@ -125,16 +125,17 @@ function get_neuron_ids($conn){
 	return $neuron_ids;	
 }
 
+/*
 function drop_or_create_aggregate_table($conn) {
     // Step 1: Drop the table if it exists
-    $dropQuery = "DROP TABLE IF EXISTS temp_combined_analytics;";
+    $dropQuery = "DROP TABLE IF EXISTS GA_combined_analytics;";
     if ($conn->query($dropQuery) === FALSE) {
         die("Error dropping the table: " . $conn->error);
     }
 
     // Step 2: Create the table
     $createQuery = "
-        CREATE TABLE temp_combined_analytics AS
+        CREATE TABLE GA_combined_analytics AS
         SELECT 
             CASE 
                 WHEN gap.page IS NOT NULL AND gap.page NOT LIKE '%not set%' THEN gap.page
@@ -184,12 +185,11 @@ function drop_or_create_aggregate_table($conn) {
     ";
 
     if ($conn->query($createQuery) === TRUE) {
-        echo "Table 'temp_combined_analytics' created successfully with 'page' column.\n";
+        echo "Table 'GA_combined_analytics' created successfully with 'page' column.\n";
     } else {
         die("Error creating the table: " . $conn->error);
     }
-}
-
+} */
 
 function get_link($text, $id, $path, $str=NULL){
 	if($str == 'pmid'){	$path .= $id."/";	}
@@ -793,7 +793,7 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 								$rowvalue[$key] = isset($color_segments[$value]) ? $color_segments[$value] : 'Unknown';
 							}
 							if ($value == 0) {
-								$rowvalue[$key] = ''; // Replace 0 with an empty string
+								//$rowvalue[$key] = ''; // Replace 0 with an empty string
 							} else {
 								// Add to the count if the value is numeric and not zero
 								if (is_numeric($value)) {
@@ -888,7 +888,7 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 					$colorBgClass = ($j % 2 == 0) ? 'white-bg' : 'blue-bg';
 					foreach ($colors as $color) {
 						if($color <=0 ){
-							$color='';
+							//$color='';
 						}
 						$table_string1 .= "<td class='$colorBgClass'>$color</td>";
 					}
@@ -1810,7 +1810,7 @@ function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL)
 	//$page_views_query = "SELECT gap.page, SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS views FROM
 	//	ga_analytics_pages gap WHERE gap.day_index IS NOT NULL GROUP BY gap.page order by views desc";
 	//$page_views_query = " SELECT gap.page, SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS views FROM 
-				//temp_combined_analytics gap WHERE gap.day_index IS NOT NULL GROUP BY gap.page order by views desc";
+				//GA_combined_analytics gap WHERE gap.day_index IS NOT NULL GROUP BY gap.page order by views desc";
 	$page_views_query = "SELECT 
     subquery.page, 
     SUM(subquery.Views) AS Total_Views
@@ -1826,7 +1826,7 @@ FROM (
             END
         ) AS Views
     FROM 
-        temp_combined_analytics gap
+        GA_combined_analytics gap 
     WHERE 
         gap.day_index IS NOT NULL
     GROUP BY 
@@ -1855,7 +1855,7 @@ ORDER BY
 					    ) INTO @sql
 				FROM (
 						SELECT DISTINCT day_index
-						FROM temp_combined_analytics
+						FROM GA_combined_analytics
 				     ) months;
 			";
 		}
@@ -1875,7 +1875,7 @@ ORDER BY
 					    ) INTO @sql
 				FROM (
 						SELECT DISTINCT day_index
-						FROM temp_combined_analytics
+						FROM GA_combined_analytics
 				     ) years;
 			";
 		}
@@ -1886,7 +1886,7 @@ ORDER BY
 					@sql,
 					', SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, \\'0\\'), \\'\\', \\'\\') AS UNSIGNED) > 0 ',
 						'THEN CAST(REPLACE(page_views, \\'\\', \\'\\') AS UNSIGNED) ELSE  CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END) AS Total_Views ',
-					'FROM temp_combined_analytics ',
+					'FROM GA_combined_analytics ',
 					'WHERE day_index IS NOT NULL ',
 					'GROUP BY page ',
 					'ORDER BY Total_Views DESC'
@@ -1919,7 +1919,7 @@ function get_pages_views_per_month_report($conn, $write_file=NULL){ //Passed $co
 	/*
 	$page_views_per_month_query = "select concat(DATE_FORMAT(day_index,'%b'), '-', YEAR(day_index)) as dm,
 		sum(replace(page_views,',','')) as page_views
-			from temp_combined_analytics where page_views > 0 
+			from GA_combined_analytics where page_views > 0 
 			GROUP BY YEAR(day_index), MONTH(day_index)"; */
 
 	 $page_views_per_month_query = "select concat(DATE_FORMAT(day_index,'%b'), '-', YEAR(day_index)) as dm,
@@ -1929,7 +1929,7 @@ function get_pages_views_per_month_report($conn, $write_file=NULL){ //Passed $co
 				 ELSE CAST(REPLACE(sessions, ',', '') AS UNSIGNED) 
 				 END
 		    ) AS page_views 
-                        from temp_combined_analytics 
+                        from GA_combined_analytics 
                         GROUP BY YEAR(day_index), MONTH(day_index)";
 	//echo $page_views_per_month_query;
 	$columns = ['Month-Year', 'Views'];
@@ -1989,7 +1989,7 @@ FROM (
             WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('/synaptome/php/synaptome', 'synaptome') THEN 'Synaptome'
             ELSE CONCAT( UPPER(SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1)) )
         END AS property_page_category
-    FROM temp_combined_analytics 
+    FROM GA_combined_analytics 
     WHERE (page LIKE '%property_page_counts.php%' OR page LIKE '%id_neuron=%' OR page LIKE '%id1_neuron=%' OR page LIKE '%id_neuron_source=%')
         AND LENGTH(
             CASE 
@@ -2038,7 +2038,7 @@ SET @sql = CONCAT(
                 ELSE CONCAT(UPPER(SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1)))
             END AS property_page_category, 
             page_views 
-        FROM temp_combined_analytics 
+        FROM GA_combined_analytics 
         WHERE (page LIKE ''%property_page_counts.php%'' OR page LIKE ''%id_neuron=%'' OR page LIKE ''%id1_neuron=%'' OR page LIKE ''%id_neuron_source=%'')
             AND LENGTH(
                 CASE 
@@ -2081,7 +2081,7 @@ DEALLOCATE PREPARE stmt;
 					    ) INTO @sql
 				FROM (
 						SELECT DISTINCT day_index
-						FROM temp_combined_analytics 
+						FROM GA_combined_analytics 
 				     ) months;";
 		}
 		if($views_request == "views_per_year"){
@@ -2097,7 +2097,7 @@ DEALLOCATE PREPARE stmt;
 				    ) INTO @sql
 			FROM (
 					SELECT DISTINCT day_index
-					FROM temp_combined_analytics 
+					FROM GA_combined_analytics 
 			     ) years;";
 
 		}
@@ -2120,7 +2120,7 @@ DEALLOCATE PREPARE stmt;
 										WHEN page LIKE ''%property_page_counts.php%'' THEN 1
 										ELSE 0
 										END AS is_property_page
-										FROM temp_combined_analytics 
+										FROM GA_combined_analytics 
 										WHERE
 										(page LIKE ''%id_neuron=%'' OR page LIKE ''%id1_neuron=%'' OR page LIKE ''%id_neuron_source=%'') AND
 										LENGTH(
@@ -2168,61 +2168,71 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 	$columns = ['Subregion', 'Neuron Type Name', 'Census','Views'];
      
 	$page_neurons_views_query = "
-   SET SESSION group_concat_max_len = 1000000;
+		SET SESSION group_concat_max_len = 1000000;
 
-SET @sql = CONCAT(
-    'SELECT t.subregion AS Subregion, ',
-           't.page_statistics_name AS Neuron_Type_Name, ',
-           'SUM(CASE WHEN nd.page LIKE ''%neuron_page.php?id=%'' THEN ',
-               'CASE WHEN REPLACE(nd.page_views, '','', '''') > 0 THEN REPLACE(nd.page_views, '','', '''') ELSE nd.sessions END ',
-           'ELSE 0 END) AS Neuron_Page_Views, ',
-           'SUM(CASE WHEN nd.page LIKE ''%property_page_%'' OR nd.page LIKE ''%synaptic_mod_sum.php%'' THEN ',
-               'CASE WHEN REPLACE(nd.page_views, '','', '''') > 0 THEN REPLACE(nd.page_views, '','', '''') ELSE nd.sessions END ',
-           'ELSE 0 END) AS Evidence_Page_Views, ',
-           'SUM(CASE WHEN REPLACE(nd.page_views, '','', '''') > 0 THEN REPLACE(nd.page_views, '','', '''') ELSE nd.sessions END) AS Total_Views ',
-    'FROM ( ',
-           'SELECT ',
-                  'CASE ',
-                       'WHEN page LIKE ''%neuron_page.php?id=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id='', -1), ''&'', 1) ',
-                       'WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
-                       'WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) ',
-                       'WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) ',
-                       'WHEN page LIKE ''%pre_id=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''pre_id='', -1), ''&'', 1) ',
-                       'ELSE NULL ',
-                  'END AS neuronID, ',
-                  'page, day_index, page_views, sessions ',
-           'FROM temp_combined_analytics ',
-           'WHERE page LIKE ''%neuron_page.php?id=%'' ',
-           '   OR ( ',
-           '       (page LIKE ''%property_page_%'' OR page LIKE ''%synaptic_mod_sum.php%'') ',
-           '       AND LENGTH(CASE ',
-           '           WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
-           '           WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) ',
-           '           WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) ',
-           '           WHEN page LIKE ''%pre_id=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''pre_id='', -1), ''&'', 1) ',
-           '           ELSE NULL ',
-           '       END) = 4 ',
-           '       AND ( ',
-           '           CASE ',
-           '               WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
-           '               WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) ',
-           '               WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) ',
-           '               WHEN page LIKE ''%pre_id=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''pre_id='', -1), ''&'', 1) ',
-           '               ELSE NULL ',
-           '           END NOT IN (4168, 4181, 2232) ',
-           '       ) ',
-           '   ) ',
-    ') AS nd ',
-    'JOIN Type AS t ON nd.neuronID = t.id ',
-    'GROUP BY t.page_statistics_name, t.subregion ',
-    'ORDER BY t.position;'
-);
+		SET @sql = CONCAT(
+			'SELECT Subregion, Neuron_Type_Name, ',
+			'IFNULL(Neuron_Page_Views, 0) AS Neuron_Page_Views, ',
+			'IFNULL(Evidence_Page_Views, 0) AS Evidence_Page_Views, ',
+			'IFNULL(Total_Views, 0) AS Total_Views ',
+			'FROM ( ',
+				'SELECT ',
+				't.subregion AS Subregion, ',
+				't.page_statistics_name AS Neuron_Type_Name, ',
+				'SUM(CASE WHEN nd.page LIKE ''%neuron_page.php?id=%'' THEN ',
+					'CASE WHEN REPLACE(nd.page_views, '','', '''') > 0 THEN REPLACE(nd.page_views, '','', '''') ELSE nd.sessions END ',
+					'ELSE 0 END) AS Neuron_Page_Views, ',
+				'SUM(CASE WHEN nd.page LIKE ''%property_page_%'' OR nd.page LIKE ''%synaptic_mod_sum.php%'' THEN ',
+					'CASE WHEN REPLACE(nd.page_views, '','', '''') > 0 THEN REPLACE(nd.page_views, '','', '''') ELSE nd.sessions END ',
+					'ELSE 0 END) AS Evidence_Page_Views, ',
+				'SUM(CASE WHEN REPLACE(nd.page_views, '','', '''') > 0 THEN REPLACE(nd.page_views, '','', '''') ELSE nd.sessions END) AS Total_Views ',
+				'FROM ( ',
+					'SELECT ',
+					'CASE ',
+					'WHEN page LIKE ''%neuron_page.php?id=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id='', -1), ''&'', 1) ',
+					'WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
+					'WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) ',
+					'WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) ',
+					'WHEN page LIKE ''%pre_id=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''pre_id='', -1), ''&'', 1) ',
+					'ELSE NULL ',
+					'END AS neuronID, ',
+					'page, day_index, page_views, sessions ',
+					'FROM GA_combined_analytics ',
+					'WHERE page LIKE ''%neuron_page.php?id=%'' OR ',
+					'page LIKE ''%property_page_%'' OR ',
+					'page LIKE ''%synaptic_mod_sum.php%'' ',
+					') AS nd ',
+				'RIGHT JOIN Type AS t ON nd.neuronID = t.id AND t.id NOT IN (4168, 4181, 2232,1061, 2058, 4058, 4130, 4135, 4160, 4193, 6114, 6122, 6129) ',
+				'GROUP BY t.page_statistics_name, t.subregion ',
+				'UNION ALL ',
+				'SELECT ',
+				'''N/A'' AS Subregion, ',
+				'''None of the above'' AS Neuron_Type_Name, ',
+				'SUM(CASE WHEN REPLACE(page_views, '','', '''') > 0 THEN REPLACE(page_views, '','', '''') ELSE sessions END) AS Neuron_Page_Views, ',
+				'0 AS Evidence_Page_Views, ',
+				'SUM(CASE WHEN REPLACE(page_views, '','', '''') > 0 THEN REPLACE(page_views, '','', '''') ELSE sessions END) AS Total_Views ',
+				'FROM ( ',
+						'SELECT DISTINCT ',
+						'CASE ',
+						'WHEN page LIKE ''%neuron_page.php?id=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id='', -1), ''&'', 1) ',
+						'ELSE ''Malformed ID'' ',
+						'END AS neuronID, ',
+						'page, page_views, sessions ',
+						'FROM GA_combined_analytics ',
+						'WHERE page LIKE ''%neuron_page.php?id=%'' AND ',
+						'(SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id='', -1), ''&'', 1) NOT REGEXP ''^[0-9]+$'' ',
+							'OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id='', -1), ''&'', 1)) > 10) ',
+						') AS nd ',
+				') AS full_results ',
+				'ORDER BY (Subregion = ''N/A'') ASC, Subregion, Neuron_Type_Name;'
+					);
 
-PREPARE stmt FROM @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
+	PREPARE stmt FROM @sql;
+	EXECUTE stmt;
+	DEALLOCATE PREPARE stmt;
 ";
 //echo $page_neurons_views_query;
+
 if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
     $page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
     
@@ -2239,7 +2249,7 @@ if (($views_request == "views_per_month") || ($views_request == "views_per_year"
     			ORDER BY YEAR(day_index), MONTH(day_index)
     			SEPARATOR ', '
 		) INTO @sql
-		FROM (SELECT DISTINCT day_index FROM temp_combined_analytics) months;";
+		FROM (SELECT DISTINCT day_index FROM GA_combined_analytics) months;";
     	}    
     
     if ($views_request == "views_per_year") {
@@ -2256,7 +2266,7 @@ if (($views_request == "views_per_month") || ($views_request == "views_per_year"
             ) INTO @sql 
         FROM (
             SELECT DISTINCT day_index
-            FROM temp_combined_analytics 
+            FROM GA_combined_analytics 
         ) years;";
     }
     
@@ -2276,7 +2286,7 @@ if (($views_request == "views_per_month") || ($views_request == "views_per_year"
     'ELSE NULL ',
     'END AS neuronID, ',
     'page, day_index, page_views, sessions ',
-    'FROM temp_combined_analytics ',
+    'FROM GA_combined_analytics ',
     'WHERE page LIKE ''%neuron_page.php?id=%'' ',
     ' OR ( ',
     ' (page LIKE ''%property_page_%'' OR page LIKE ''%synaptic_mod_sum.php%'') ',
@@ -2350,7 +2360,7 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_
 							IF(INSTR(page, 'val_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1), '') AS color,
 							IF(INSTR(page, 'sp_page=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'sp_page=', -1), '&', 1), '') AS sp_page
 							FROM 
-							temp_combined_analytics 
+							GA_combined_analytics 
 							WHERE 
 							page LIKE '%/property_page_%'
 							AND (
@@ -2391,7 +2401,7 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_
 					ORDER BY YEAR(day_index) /* For 'views_per_month' also add 'MONTH(day_index)' here */
 					SEPARATOR ', '
 				    ) INTO @sql
-			FROM temp_combined_analytics 
+			FROM GA_combined_analytics 
 			WHERE
 			page LIKE '%/property_page_%'
 			AND (
@@ -2443,7 +2453,7 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_
 						'        CASE WHEN INSTR(page, ''color='') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''color='', -1), ''&'', 1) ELSE NULL END AS color,',
 						'        CASE WHEN INSTR(page, ''sp_page='') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''sp_page='', -1), ''&'', 1) ELSE NULL END AS sp_page,',
 						'        day_index',
-						'    FROM temp_combined_analytics', 
+						'    FROM GA_combined_analytics', 
 						'    WHERE page LIKE ''%/property_page_%''',
 						'    AND (SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''morphology'' ',
 							'        OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''synpro'')',
@@ -2495,7 +2505,7 @@ function get_pmid_isbn_property_views_report($conn, $neuron_ids, $write_file=NUL
                                 IF(INSTR(page, 'val_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '_', -1),'')  AS layer, 
                                 SUBSTRING_INDEX(SUBSTRING_INDEX(page, '?id_neuron=', -1), '&', 1) AS neuronID,
                                 IF(INSTR(page, 'color=') > 0,SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1),'') as color, page_views
-                                FROM temp_combined_analytics 
+                                FROM GA_combined_analytics 
                                 WHERE
                                 page LIKE '%property_page_morphology_linking_pmid_isbn.php?id_neuron=%'
                                 AND LENGTH(substring_index(substring_index(page, 'id_neuron=', -1), '&', 1)) = 4
@@ -2543,7 +2553,7 @@ function get_markers_property_views_report($conn, $neuron_ids, $views_request=NU
 					ELSE ''
 					END AS color,
 					page_views
-					FROM temp_combined_analytics 
+					FROM GA_combined_analytics 
 					WHERE page LIKE '%/property_page_%'
 					AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'markers'
 					AND (
@@ -2583,7 +2593,7 @@ function get_markers_property_views_report($conn, $neuron_ids, $views_request=NU
 					ORDER BY YEAR(day_index) /* For 'views_per_month' also add 'MONTH(day_index)' here */
 					SEPARATOR ', '
 				    ) INTO @sql                 
-			FROM temp_combined_analytics 
+			FROM GA_combined_analytics 
 			WHERE   
 			page LIKE '%/property_page_%'
 			AND (   
@@ -2642,7 +2652,7 @@ function get_markers_property_views_report($conn, $neuron_ids, $views_request=NU
 						END AS color,
 						page_views,
 						day_index
-						FROM temp_combined_analytics 
+						FROM GA_combined_analytics 
 						WHERE page LIKE \'%/property_page_%\'
 						AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'/property_page_\', -1), \'.\', 1) = \'markers\'
 						AND (   
@@ -2710,7 +2720,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 		$pageType = $page_string == 'phases' ? 'phases' : 'counts';
 		$page_counts_views_query = "SELECT t.subregion, t.page_statistics_name AS neuron_name, SUM(REPLACE(page_views, ',', '')) AS views 
 				FROM (SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) AS neuronID, page_views 
-					FROM temp_combined_analytics WHERE page LIKE '%property_page_{$pageType}.php?id_neuron=%' 
+					FROM GA_combined_analytics WHERE page LIKE '%property_page_{$pageType}.php?id_neuron=%' 
 					AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4 
 					AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)) 
 					AS derived JOIN Type AS t ON t.id = derived.neuronID
@@ -2733,7 +2743,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 										 IF( INSTR(page, 'id1_neuron=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1),
 										 IF( INSTR(page, 'id_neuron_source=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1), ''))) AS neuronID,
 										 IF(INSTR(page, 'val_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '') AS evidence 
-							FROM temp_combined_analytics WHERE page LIKE '%/property_page_%' AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases'
+							FROM GA_combined_analytics WHERE page LIKE '%/property_page_%' AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases'
 							AND (
 								LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4 OR 
 								LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) = 4 OR 
@@ -2766,7 +2776,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 						ORDER BY YEAR(day_index) /* For 'views_per_month' also add 'MONTH(day_index)' here */
 						SEPARATOR ', '
 					    ) INTO @sql
-				FROM temp_combined_analytics 
+				FROM GA_combined_analytics 
 				WHERE
 				page LIKE '%/property_page_%'
 				AND (
@@ -2833,7 +2843,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 											'           ))) AS neuronID, ',
 								'        IF(INSTR(page, \'val_property=\') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'val_property=\', -1), \'&\', 1), \'\') AS evidence, ',
 								'        day_index ',
-								'    FROM temp_combined_analytics ',
+								'    FROM GA_combined_analytics ',
 								'    WHERE page LIKE \'%/property_page_%\' ',
 								'      AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'/property_page_\', -1), \'.\', 1) = \'phases\' ',
 								'      AND (LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id_neuron=\', -1), \'&\', 1)) = 4 ',
@@ -2883,7 +2893,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 							    IF(INSTR(page, 'nm_page=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'nm_page=', -1), '&', 1), '') AS nm_page, 
 							    SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) AS parcel_specific
 							    FROM 
-							    temp_combined_analytics 
+							    GA_combined_analytics 
 							    WHERE 
 							    page LIKE '%/property_page_%' AND 
 							    (
@@ -2922,7 +2932,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
                                                                 IF(INSTR(page, 'ep=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'ep=', -1), '&', 1), '') AS evidence, 
                                                                 page_views
                                                                 FROM
-                                                                temp_combined_analytics 
+                                                                GA_combined_analytics 
                                                                 WHERE
                                                                 page LIKE '%property_page_ephys.php?id_ephys=%'
                                                                 AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4                          
@@ -2960,7 +2970,7 @@ FROM (
             ELSE sessions 
         END AS page_views
     FROM
-        temp_combined_analytics
+        GA_combined_analytics
     WHERE
         page LIKE '%/property_page_ephys.php?%'
         AND INSTR(page, 'id_neuron=') > 0  -- Ensure id_neuron exists in the URL
@@ -2990,7 +3000,7 @@ ORDER BY
                                                 ORDER BY YEAR(day_index) 
                                                 SEPARATOR ', '
                                             ) INTO @sql
-                                FROM temp_combined_analytics 
+                                FROM GA_combined_analytics 
                                 WHERE
                                 page LIKE '%/property_page_%'
                                 AND (
@@ -3040,7 +3050,7 @@ ORDER BY
                                                                                         '           ))) AS neuronID, ',
 							    '        IF(INSTR(page, \'ep=\') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'ep=\', -1), \'&\', 1), \'\') AS evidence, ',
                                                                 '        day_index ',
-                                                                '    FROM temp_combined_analytics ',
+                                                                '    FROM GA_combined_analytics ',
                                                              '    WHERE page LIKE \'%property_page_ephys.php?id_ephys=%\' ',
                                                                 '      AND (LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id_neuron=\', -1), \'&\', 1)) = 4 ',
                                                                         '           OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id1_neuron=\', -1), \'&\', 1)) = 4 ',
@@ -3076,7 +3086,7 @@ ORDER BY
 
 		 $page_counts_views_query = "SELECT derived.page, SUM(REPLACE(page_views, ',', '')) AS views
                                                 FROM (SELECT page, page_views, SUBSTRING_INDEX(SUBSTRING_INDEX(page, '?id_neuron=', -1), '&', 1) AS neuronID
-                                                        FROM temp_combined_analytics 
+                                                        FROM GA_combined_analytics 
                                                         WHERE  page LIKE '%$pageType?id_neuron=%'
                                                 AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4
                                                 AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
@@ -3085,7 +3095,7 @@ ORDER BY
 
                                                 SELECT page, page_views,
                                                        SUBSTRING_INDEX(SUBSTRING_INDEX(page, '?id1_neuron=', -1), '&', 1) AS neuronID
-                                                               FROM temp_combined_analytics 
+                                                               FROM GA_combined_analytics 
                                                                WHERE page LIKE '%$pageType?id1_neuron=%'
                                                                AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) = 4
                                                                AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
@@ -3094,7 +3104,7 @@ ORDER BY
 
                                                 SELECT page, page_views,
                                                        SUBSTRING_INDEX(SUBSTRING_INDEX(page, '?id_neuron_source=', -1), '&', 1) AS neuronID
-                                                               FROM temp_combined_analytics 
+                                                               FROM GA_combined_analytics 
                                                                WHERE page LIKE '%$pageType?id_neuron_source=%'
                                                                AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) = 4
                                                                AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN (4168, 4181, 2232)
@@ -3203,7 +3213,7 @@ function get_fp_property_views_report($conn, $views_request=NULL, $write_file=NU
 			];
 
 	$page_fp_property_views_query = "SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'meter=', -1), '&', 1) AS Firing_Pattern,
-		SUM(REPLACE(page_views, ',', '')) AS Total_Views FROM temp_combined_analytics 
+		SUM(REPLACE(page_views, ',', '')) AS Total_Views FROM GA_combined_analytics 
 			WHERE page LIKE '%/property_page_%'
 			AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'fp'
 			AND LENGTH(
@@ -3236,7 +3246,7 @@ function get_fp_property_views_report($conn, $views_request=NULL, $write_file=NU
 							  ORDER BY YEAR(day_index), MONTH(day_index) SEPARATOR ', ' ) INTO @sql ";
 		}
 		$page_fp_property_views_query .= "
-				FROM temp_combined_analytics 
+				FROM GA_combined_analytics 
 				WHERE page LIKE '%/property_page_%'
 				AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'fp'
 				AND LENGTH(
@@ -3256,7 +3266,7 @@ function get_fp_property_views_report($conn, $views_request=NULL, $write_file=NU
 						'SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''meter='', -1), ''&'', 1) AS Firing_Pattern, ',
 						@sql, ', ', 
 						'SUM(REPLACE(page_views, \",\", \"\")) AS Total_Views ',
-						'FROM temp_combined_analytics ', 
+						'FROM GA_combined_analytics ', 
 						'WHERE page LIKE ''%/property_page_%'' ',
 						'AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''fp'' ',
 						'AND LENGTH(CASE ',
@@ -3361,7 +3371,7 @@ $page_functionality_views_query = "SELECT
 			    END
 	       ) AS total_views
 
-		    FROM temp_combined_analytics
+		    FROM GA_combined_analytics
 		    WHERE 
 		    (
 		     page LIKE '%/property_page_%' 
@@ -3420,7 +3430,7 @@ $page_functionality_views_query = "SELECT
 				    ) INTO @sql
 			FROM (
 					SELECT DISTINCT day_index
-					FROM temp_combined_analytics 
+					FROM GA_combined_analytics 
 			     ) months;";
 	}
 
@@ -3437,7 +3447,7 @@ $page_functionality_views_query = "SELECT
 				    ) INTO @sql
 			FROM (
 					SELECT DISTINCT day_index
-					FROM temp_combined_analytics 
+					FROM GA_combined_analytics 
 			     ) years;";
 	}
 
@@ -3463,7 +3473,7 @@ $page_functionality_views_query = "SELECT
 				@sql, ', 
 				SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, \'0\'), \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE 
 CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END) AS Total_Views 
-				FROM temp_combined_analytics
+				FROM GA_combined_analytics
 				WHERE (
 					page LIKE \"%/property_page_%\" 
 					OR page LIKE \"%morphology.php%\"
@@ -3569,7 +3579,7 @@ FROM (
         SUM(CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED)) AS total_page_views,
         SUM(CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED)) AS total_sessions
     FROM 
-        temp_combined_analytics
+        GA_combined_analytics
     GROUP BY 
         property_page, page, day_index 
     HAVING property_page IS NOT NULL 
@@ -3615,7 +3625,7 @@ FROM (
         SUM(CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED)) AS total_page_views,
         SUM(CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED)) AS total_sessions
     FROM 
-        temp_combined_analytics
+        GA_combined_analytics
     GROUP BY 
         property_page, page, day_index -- Ensure grouping aligns with distinct page and date combinations
     HAVING property_page IS NOT NULL -- Exclude any unintended null classifications
@@ -3660,7 +3670,7 @@ FROM (
         SUM(CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED)) AS total_page_views,
         SUM(CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED)) AS total_sessions
     FROM 
-        temp_combined_analytics
+        GA_combined_analytics
     GROUP BY 
         property_page, page, day_index
 ) AS combined 
@@ -3721,7 +3731,7 @@ FROM (
         sessions, 
         day_index 
     FROM 
-        temp_combined_analytics 
+        GA_combined_analytics 
     UNION ALL 
     SELECT 'Home', '0', '0', NULL 
     UNION ALL 
@@ -3763,7 +3773,7 @@ ORDER BY
 					    ) INTO @sql
 				FROM (
 						SELECT DISTINCT day_index
-						FROM temp_combined_analytics 
+						FROM GA_combined_analytics 
 				     ) months;";
 		}
 
@@ -3780,7 +3790,7 @@ ORDER BY
 					    ) INTO @sql
 				FROM (
 						SELECT DISTINCT day_index
-						FROM temp_combined_analytics 
+						FROM GA_combined_analytics 
 				     ) years;";
 		}
 
@@ -3844,7 +3854,7 @@ ORDER BY
 					END AS Property, ', 
 					    @sql, ', 
 					    SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, \'0\'), \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END) AS Total_Views 
-						    FROM temp_combined_analytics 
+						    FROM GA_combined_analytics 
 						    GROUP BY Property
 						    ORDER BY FIELD ( 
 							Property,
