@@ -2285,6 +2285,87 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 	$columns = ['Subregion', 'Neuron Type Name', 'Census','Views'];
      
 	$page_neurons_views_query = "
+SET SESSION group_concat_max_len = 1000000;
+
+SET @sql = CONCAT(
+  'SELECT Subregion, Neuron_Type_Name, ',
+  'IFNULL(Neuron_Page_Views, 0) AS Neuron_Page_Views, ',
+  'IFNULL(Evidence_Page_Views, 0) AS Evidence_Page_Views, ',
+  'IFNULL(Total_Views, 0) AS Total_Views ',
+  'FROM ( ',
+  'SELECT ',
+  't.subregion AS Subregion, ',
+  't.page_statistics_name AS Neuron_Type_Name, ',
+  -- Neuron_Page_Views: Only consider neuron_page.php?id=
+  'SUM(CASE WHEN nd.page LIKE ''%neuron_page.php?id=%'' THEN ',
+  'CASE WHEN REPLACE(nd.page_views, '','', '''') > 0 THEN REPLACE(nd.page_views, '','', '''') ELSE REPLACE(nd.sessions, '','', '''') END ',
+  'ELSE 0 END) AS Neuron_Page_Views, ',
+  -- Evidence_Page_Views: Incorporate evidence logic
+  'SUM(CASE ',
+  'WHEN nd.page REGEXP ''id_neuron=[0-9]+'' THEN ',
+  'CASE WHEN REPLACE(nd.page_views, '','', '''') > 0 THEN REPLACE(nd.page_views, '','', '''') ELSE REPLACE(nd.sessions, '','', '''') END ',
+  'WHEN nd.page REGEXP ''id1_neuron=[0-9]+'' THEN ',
+  'CASE WHEN REPLACE(nd.page_views, '','', '''') > 0 THEN REPLACE(nd.page_views, '','', '''') ELSE REPLACE(nd.sessions, '','', '''') END ',
+  'WHEN nd.page REGEXP ''id_neuron_source=[0-9]+'' THEN ',
+  'CASE WHEN REPLACE(nd.page_views, '','', '''') > 0 THEN REPLACE(nd.page_views, '','', '''') ELSE REPLACE(nd.sessions, '','', '''') END ',
+  'WHEN nd.page REGEXP ''pre_id=[0-9]+'' THEN ',
+  'CASE WHEN REPLACE(nd.page_views, '','', '''') > 0 THEN REPLACE(nd.page_views, '','', '''') ELSE REPLACE(nd.sessions, '','', '''') END ',
+  'WHEN (nd.page LIKE ''%/property_page_%.php%'' OR nd.page LIKE ''%synaptic_mod_sum.php%'') ',
+  'AND nd.page REGEXP ''[?&]id=[0-9]+'' THEN ',
+  'CASE WHEN REPLACE(nd.page_views, '','', '''') > 0 THEN REPLACE(nd.page_views, '','', '''') ELSE REPLACE(nd.sessions, '','', '''') END ',
+  'ELSE 0 END) AS Evidence_Page_Views, ',
+  -- Total_Views: Consider all pages
+  'SUM(CASE WHEN REPLACE(nd.page_views, '','', '''') > 0 THEN REPLACE(nd.page_views, '','', '''') ELSE REPLACE(nd.sessions, '','', '''') END) AS Total_Views ',
+  'FROM ( ',
+  'SELECT ',
+  'CASE ',
+  'WHEN page LIKE ''%neuron_page.php?id=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id='', -1), ''&='', 1) ',
+  'WHEN page REGEXP ''id_neuron=[0-9]+'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&='', 1) ',
+  'WHEN page REGEXP ''id1_neuron=[0-9]+'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&='', 1) ',
+  'WHEN page REGEXP ''id_neuron_source=[0-9]+'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&='', 1) ',
+  'WHEN page REGEXP ''pre_id=[0-9]+'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''pre_id='', -1), ''&='', 1) ',
+  'WHEN (page LIKE ''%/property_page_%.php%'' OR page LIKE ''%synaptic_mod_sum.php%'') AND page REGEXP ''[?&]id=[0-9]+'' THEN ''Evidence'' ',
+  'ELSE NULL ',
+  'END AS neuronID, ',
+  'page, day_index, page_views, sessions ',
+  'FROM GA_combined_analytics ',
+  'WHERE page LIKE ''%neuron_page.php?id=%'' OR ',
+  'page REGEXP ''id_neuron=[0-9]+'' OR ',
+  'page REGEXP ''id1_neuron=[0-9]+'' OR ',
+  'page REGEXP ''id_neuron_source=[0-9]+'' OR ',
+  'page REGEXP ''pre_id=[0-9]+'' OR ',
+  '(page LIKE ''%property_page_%'' AND page REGEXP ''[?&]id=[0-9]+'' ) OR ',
+  'page LIKE ''%synaptic_mod_sum.php%'' ',
+  ') AS nd ',
+  'RIGHT JOIN Type AS t ON nd.neuronID = t.id ',
+  'GROUP BY t.page_statistics_name, t.subregion ',
+  'UNION ALL ',
+  'SELECT ',
+  '''N/A'' AS Subregion, ',
+  '''None of the above'' AS Neuron_Type_Name, ',
+  'SUM(CASE WHEN REPLACE(page_views, '','', '''') > 0 THEN REPLACE(page_views, '','', '''') ELSE REPLACE(sessions, '','', '''') END) AS Neuron_Page_Views, ',
+  '0 AS Evidence_Page_Views, ',
+  'SUM(CASE WHEN REPLACE(page_views, '','', '''') > 0 THEN REPLACE(page_views, '','', '''') ELSE REPLACE(sessions, '','', '''') END) AS Total_Views ',
+  'FROM ( ',
+  'SELECT DISTINCT ',
+  'CASE ',
+  'WHEN page LIKE ''%neuron_page.php?id=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id='', -1), ''&='', 1) ',
+  'ELSE ''Malformed ID'' ',
+  'END AS neuronID, ',
+  'page, page_views, sessions ',
+  'FROM GA_combined_analytics ',
+  'WHERE page LIKE ''%neuron_page.php?id=%'' AND ',
+  '(SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id='', -1), ''&='', 1) NOT REGEXP ''^[0-9]+$'' ',
+  'OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id='', -1), ''&='', 1)) > 10) ',
+  ') AS nd ',
+  ') AS full_results ',
+  'ORDER BY (Subregion = ''N/A'') ASC, Subregion, Neuron_Type_Name;'
+);
+
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;";
+/*
 		SET SESSION group_concat_max_len = 1000000;
 
 		SET @sql = CONCAT(
@@ -2297,12 +2378,17 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 				't.subregion AS Subregion, ',
 				't.page_statistics_name AS Neuron_Type_Name, ',
 				'SUM(CASE WHEN nd.page LIKE ''%neuron_page.php?id=%'' THEN ',
-					'CASE WHEN REPLACE(nd.page_views, '','', '''') > 0 THEN REPLACE(nd.page_views, '','', '''') ELSE nd.sessions END ',
+					'CASE WHEN REPLACE(nd.page_views, '','', '''') > 0 THEN REPLACE(nd.page_views, '','', '''') ELSE 
+						REPLACE(nd.sessions, '','', '''') END ',
 					'ELSE 0 END) AS Neuron_Page_Views, ',
-				'SUM(CASE WHEN nd.page LIKE ''%property_page_%'' OR nd.page LIKE ''%synaptic_mod_sum.php%'' THEN ',
-					'CASE WHEN REPLACE(nd.page_views, '','', '''') > 0 THEN REPLACE(nd.page_views, '','', '''') ELSE nd.sessions END ',
+				'SUM(CASE WHEN (nd.page LIKE ''%/property_page_%.php%'' OR nd.page LIKE ''%synaptic_mod_sum.php%'' )
+						 AND (nd.page LIKE ''%?%'' )
+						THEN ',
+					'CASE WHEN REPLACE(nd.page_views, '','', '''') > 0 THEN REPLACE(nd.page_views, '','', '''') ELSE 
+						REPLACE(nd.sessions, '','', '''') END ',
 					'ELSE 0 END) AS Evidence_Page_Views, ',
-				'SUM(CASE WHEN REPLACE(nd.page_views, '','', '''') > 0 THEN REPLACE(nd.page_views, '','', '''') ELSE nd.sessions END) AS Total_Views ',
+				'SUM(CASE WHEN REPLACE(nd.page_views, '','', '''') > 0 THEN REPLACE(nd.page_views, '','', '''') ELSE 
+					REPLACE(nd.sessions, '','', '''') END) AS Total_Views ',
 				'FROM ( ',
 					'SELECT ',
 					'CASE ',
@@ -2319,15 +2405,17 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 					'page LIKE ''%property_page_%'' OR ',
 					'page LIKE ''%synaptic_mod_sum.php%'' ',
 					') AS nd ',
-				'RIGHT JOIN Type AS t ON nd.neuronID = t.id AND t.id NOT IN (4168, 4181, 2232,1061, 2058, 4058, 4130, 4135, 4160, 4193, 6114, 6122, 6129) ',
+				'RIGHT JOIN Type AS t ON nd.neuronID = t.id  ',
 				'GROUP BY t.page_statistics_name, t.subregion ',
 				'UNION ALL ',
 				'SELECT ',
 				'''N/A'' AS Subregion, ',
 				'''None of the above'' AS Neuron_Type_Name, ',
-				'SUM(CASE WHEN REPLACE(page_views, '','', '''') > 0 THEN REPLACE(page_views, '','', '''') ELSE sessions END) AS Neuron_Page_Views, ',
+				'SUM(CASE WHEN REPLACE(page_views, '','', '''') > 0 THEN REPLACE(page_views, '','', '''') ELSE 
+						REPLACE(sessions, '','', '''')  END) AS Neuron_Page_Views, ',
 				'0 AS Evidence_Page_Views, ',
-				'SUM(CASE WHEN REPLACE(page_views, '','', '''') > 0 THEN REPLACE(page_views, '','', '''') ELSE sessions END) AS Total_Views ',
+				'SUM(CASE WHEN REPLACE(page_views, '','', '''') > 0 THEN REPLACE(page_views, '','', '''') ELSE 
+						REPLACE(sessions, '','', '''') END) AS Total_Views ',
 				'FROM ( ',
 						'SELECT DISTINCT ',
 						'CASE ',
@@ -2347,9 +2435,10 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 	PREPARE stmt FROM @sql;
 	EXECUTE stmt;
 	DEALLOCATE PREPARE stmt;
-";
+";*/
 
-//echo $page_neurons_views_query;
+				//-- 'RIGHT JOIN Type AS t ON nd.neuronID = t.id AND t.id NOT IN (4181, 2232,1061, 4058, 4130, 4135, 4160, 4193, 6114, 6122, 6129) ',
+echo $page_neurons_views_query;
 
 if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
     $page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
@@ -3661,8 +3750,6 @@ CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END) AS Total_Views
 function get_page_functionality_views_report($conn, $views_request=NULL, $write_file=NULL){
 //Second Functionality Table function
 	$page_functionality_views_query ="
-
-
 SELECT 
     property_page,
     SUM(
@@ -3675,15 +3762,11 @@ SELECT
 FROM (
     SELECT
         CASE
-            -- Evidence: Pages with query parameters (.php?)
-            WHEN page LIKE '%/property_page_%?%' 
-              OR page LIKE '%/property_page_synpro_nm.php?id1_neuron=%' 
-              OR page LIKE '%/property_page_synpro_nm.php?%' THEN 'Evidence'
+            WHEN (page LIKE '%/property_page_%.php%' OR page LIKE '%synaptic_mod_sum.php%' ) AND page LIKE '%?%'
+		 THEN 'Evidence'
 
-            -- Browse: Simple property pages without query parameters
             WHEN page LIKE '%/property_page_%.php%' AND page NOT LIKE '%?%' THEN 'Browse'
 
-            -- Additional Browse conditions
             WHEN page LIKE '%/morphology.php%' 
               OR page LIKE '%/markers.php%' 
               OR page LIKE '%/ephys.php%' 
@@ -3708,7 +3791,6 @@ FROM (
               OR page LIKE '%/simulation_parameters.php%' 
               OR page LIKE '%/synaptome/php/synaptome.php%' THEN 'Browse'
 
-            -- Search
             WHEN page LIKE '%search%' 
               OR page LIKE '%find_author%' 
               OR page LIKE '%find_neuron_name%' 
@@ -3716,21 +3798,16 @@ FROM (
               OR page LIKE '%find_pmid%' 
               OR page LIKE '%search_engine_custom%' THEN 'Search'
 
-            -- Tools
             WHEN page LIKE '%tools.php%' 
               OR page LIKE '%connection_probabilities%' 
               OR page LIKE '%synapse_modeler%' THEN 'Tools'
 
-            -- All Others
             WHEN page LIKE '%bot-traffic%' 
               OR page LIKE '%/hipp Better than reCAPTCHA：vaptcha.cn%' 
               OR page LIKE '/' 
               OR (page = '/php/' AND day_index IS NOT NULL) THEN 'All Others'
-
-            -- Neuron Type Pages
             WHEN page LIKE '%/neuron_page.php?id=%' THEN 'Neuron Type Pages'
 
-            -- Help
             WHEN page LIKE '%Help_%' 
               OR page LIKE '%help%' 
               OR page LIKE '%Help_Quickstart%' 
@@ -3739,7 +3816,6 @@ FROM (
               OR page LIKE '%user_feedback_form_entry%' 
               OR page LIKE '%Help_Other_Useful_Links%' THEN 'Help'
 
-            -- Default: Home
             ELSE 'Home'
         END AS property_page,
         page,
