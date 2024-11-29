@@ -3622,6 +3622,106 @@ $page_functionality_views_query = "SELECT
 				    'Simulation Parameters',
 				    'Morphology Linking Pmid Isbn'
 				  )";
+	$page_functionality_views_query = "SELECT CASE
+       WHEN page REGEXP 'property_page_fp|fp\\.php' THEN 'Firing Patterns'
+        WHEN page REGEXP 'property_page_markers|markers\\.php' THEN 'Molecular Markers'
+        WHEN page REGEXP 'property_page_morphology|property_page_morphology_linking_pmid_isbn|morphology\\.php' THEN 'Morphology'
+        WHEN page REGEXP 'property_page_phases|phases\\.php' THEN 'In Vivo Recordings'
+        WHEN page REGEXP 'property_page_synpro|property_page_synpro_nm|property_page_synpro_pvals|property_page_synpro_nm_old2|synapse_probabilites\\.php' THEN 'Synapse Probabilities'
+        WHEN page REGEXP 'property_page_connectivity|property_page_connectivity_orig|property_page_connectivity_test|connectivity\\.php' THEN 'Connectivity'
+        WHEN page REGEXP 'property_page_ephys|ephys\\.php' THEN 'Membrane Biophysics'
+        WHEN page REGEXP 'synaptic_mod_sum|params_summary|synaptome|synaptome_modeling\\.php' THEN 'Synaptic Physiology'
+        WHEN page REGEXP 'property_page_counts|counts\\.php' THEN 'Neuron Type Census'
+        WHEN page REGEXP 'Izhikevich_model' THEN 'Izhikevich Models'
+        WHEN page REGEXP '/cognome/' THEN 'Cognome'
+        WHEN page REGEXP 'simulation_parameters' THEN 'Simulation Parameters'
+        ELSE 'Other'
+    END AS property_page_category,
+    
+     SUM(
+        CASE 
+            WHEN page REGEXP 
+                'property_page_fp|fp\\.php|
+property_page_markers|markers\\.php|
+property_page_morphology|morphology\\.php|property_page_morphology_linking_pmid_isbn|
+property_page_phases|phases\\.php|
+property_page_synpro|property_page_synpro_nm|property_page_synpro_nm_old2|property_page_synpro_pvals|synapse_probabilites\\.php|
+connectivity\\.php|property_page_connectivity|property_page_connectivity_orig|property_page_connectivity_test|
+property_page_ephys|ephys\\.php|
+synaptic_mod_sum|params_summary|synaptome|synaptome_modeling\\.php|
+property_page_counts|counts\\.php|
+Izhikevich_model|/cognome/|simulation_parameters' 
+                AND page NOT REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+' THEN 
+                CASE 
+                    WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '') 
+                    ELSE REPLACE(sessions, ',', '') 
+                END
+            ELSE 0
+        END
+    ) AS Main_Matrix_Accesses,
+    
+    SUM(
+        CASE 
+            WHEN page REGEXP 'id_neuron=[0-9]+' OR 
+                 page REGEXP 'id1_neuron=[0-9]+' OR 
+                 page REGEXP 'id_neuron_source=[0-9]+' OR 
+                 page REGEXP 'pre_id=[0-9]+' THEN 
+                CASE 
+                    WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '') 
+                    ELSE REPLACE(sessions, ',', '') 
+                END
+            ELSE 0
+        END
+    ) AS Evidence_Accesses,
+    
+    SUM(
+        CASE 
+            WHEN page REGEXP 
+            'property_page_fp|fp\\.php|
+property_page_markers|markers\\.php|
+property_page_morphology|morphology\\.php|property_page_morphology_linking_pmid_isbn|
+property_page_phases|phases\\.php|
+property_page_synpro|property_page_synpro_nm|property_page_synpro_nm_old2|property_page_synpro_pvals|synapse_probabilites\\.php|
+connectivity\\.php|property_page_connectivity|property_page_connectivity_orig|property_page_connectivity_test|
+property_page_ephys|ephys\\.php|
+synaptic_mod_sum|params_summary|synaptome|synaptome_modeling\\.php|
+property_page_counts|counts\\.php|
+Izhikevich_model|/cognome/|simulation_parameters' 
+                THEN 
+                CASE 
+                    WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '') 
+                    ELSE REPLACE(sessions, ',', '') 
+                END
+            WHEN page REGEXP 'id_neuron=[0-9]+' OR 
+                 page REGEXP 'id1_neuron=[0-9]+' OR 
+                 page REGEXP 'id_neuron_source=[0-9]+' OR 
+                 page REGEXP 'pre_id=[0-9]+' THEN 
+                CASE 
+                    WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '') 
+                    ELSE REPLACE(sessions, ',', '') 
+                END
+            ELSE 0
+        END
+    ) AS Total_Views
+FROM GA_combined_analytics
+WHERE 
+    page REGEXP 
+    'property_page_fp|fp\\.php|
+property_page_markers|markers\\.php|
+property_page_morphology|morphology\\.php|property_page_morphology_linking_pmid_isbn|
+property_page_phases|phases\\.php|
+property_page_synpro|property_page_synpro_nm|property_page_synpro_nm_old2|property_page_synpro_pvals|synapse_probabilites\\.php|
+connectivity\\.php|property_page_connectivity|property_page_connectivity_orig|property_page_connectivity_test|
+property_page_ephys|ephys\\.php|
+synaptic_mod_sum|params_summary|synaptome|synaptome_modeling\\.php|
+property_page_counts|counts\\.php|
+Izhikevich_model|/cognome/|simulation_parameters' 
+    OR page REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+'
+GROUP BY property_page_category  
+ORDER BY FIELD( property_page_category, 'Morphology', 'Molecular Markers', 'Membrane Biophysics', 'Connectivity', 'Synaptic Physiology', 
+'Firing Patterns', 'Izhikevich Models', 'Synapse Probabilities', 'In Vivo recordings', 'Cognome', 'Neuron Type Census', 
+'Simulation Parameters', 'Other' )";
+
 	echo $page_functionality_views_query;
   	// Check if the request is for monthly or yearly views
     if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
