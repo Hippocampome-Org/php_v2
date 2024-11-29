@@ -3751,6 +3751,121 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 //Second Functionality Table function
 	$page_functionality_views_query ="
 SELECT 
+    property_page_category,
+    SUM(subquery.Views) AS Total_Views
+FROM (  
+    SELECT 
+        CASE 
+            -- Neuron Type Pages: Handle explicitly
+            WHEN page LIKE '%/neuron_page.php?id=%' THEN 'Neuron Type Pages'
+
+            -- Evidence: Pages with parameters (exclude Neuron Type Pages)
+            WHEN (page LIKE '%/property_page_%.php%' OR page LIKE '%synaptic_mod_sum.php%') 
+                 AND page LIKE '%?%' 
+                 AND (
+                     page REGEXP 'id_neuron=[0-9]+'
+                     OR page REGEXP 'id1_neuron=[0-9]+'
+                     OR page REGEXP 'id_neuron_source=[0-9]+'
+                     OR page REGEXP 'pre_id=[0-9]+'
+                 ) 
+            THEN 'Evidence'
+
+            -- Browse: Restrict to specific conditions
+            WHEN (
+                gap.day_index IS NOT NULL
+                AND page NOT LIKE '%id_neuron=%'
+                AND page NOT LIKE '%id1_neuron=%'
+                AND page NOT LIKE '%id_neuron_source=%'
+                AND page NOT LIKE '%pre_id=%'
+                AND page NOT LIKE '%?%'
+                AND (
+                    page LIKE '%/property_page_%.php%' 
+                    OR page LIKE '%/morphology.php%'
+                    OR page LIKE '%/markers.php%'
+                    OR page LIKE '%/ephys.php%'
+                    OR page LIKE '%/connectivity.php%'
+                    OR page LIKE '%/connectivity_test.php%'
+                    OR page LIKE '%/connectivity_orig.php%'
+                    OR page LIKE '%/synaptome_modeling.php%'
+                    OR page LIKE '%/firing_patterns.php%'
+                    OR page LIKE '%/Izhikevich_model.php%'
+                    OR page LIKE '%/synapse_probabilities.php%'
+                    OR page LIKE '%/phases.php%'
+                    OR page LIKE '%/cognome/%'
+                    OR page LIKE '%/synaptic_mod_sum.php%'
+                    OR page LIKE '%/synaptome.php%'
+                    OR page LIKE '%/property_page_counts.php%'
+                    OR page LIKE '%/property_page_morphology.php%'
+                    OR page LIKE '%/property_page_ephys.php%'
+                    OR page LIKE '%/property_page_markers.php%'
+                    OR page LIKE '%/property_page_connectivity.php%'
+                    OR page LIKE '%/property_page_fp.php%'
+                    OR page LIKE '%/property_page_phases.php%'
+                    OR page LIKE '%/simulation_parameters.php%'
+                    OR page LIKE '%/synaptome/php/synaptome.php%'
+                )
+            ) THEN 'Browse'
+
+            -- Search: Search-related pages
+            WHEN page LIKE '%search%' 
+                 OR page LIKE '%find_author%' 
+                 OR page LIKE '%find_neuron_name%' 
+                 OR page LIKE '%find_neuron_term%' 
+                 OR page LIKE '%find_pmid%' 
+                 OR page LIKE '%search_engine_custom%' 
+            THEN 'Search'
+
+            -- Tools: Tool-related pages
+            WHEN page LIKE '%tools.php%' 
+                 OR page LIKE '%connection_probabilities%' 
+                 OR page LIKE '%synapse_modeler%' 
+            THEN 'Tools'
+
+            -- Help: Help-related pages
+            WHEN page LIKE '%Help_%' 
+                 OR page LIKE '%help%' 
+                 OR page LIKE '%Help_Quickstart%' 
+                 OR page LIKE '%Help_FAQ%' 
+                 OR page LIKE '%Help_Known_Bug_List%' 
+                 OR page LIKE '%user_feedback_form_entry%' 
+                 OR page LIKE '%Help_Other_Useful_Links%' 
+            THEN 'Help'
+
+            -- All Others: Miscellaneous or bot-related pages
+            WHEN page LIKE '%bot-traffic%' 
+                 OR page LIKE '%/hipp Better than reCAPTCHA：vaptcha.cn%' 
+                 OR page LIKE '/' 
+                 OR (page = '/php/' AND day_index IS NOT NULL) 
+            THEN 'All Others'
+
+            -- Default to Home for unclassified pages
+            ELSE 'Home' 
+        END AS property_page_category,
+        page, 
+        SUM(
+            CASE 
+                WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 
+                THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED)
+                ELSE CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED)
+            END
+        ) AS Views
+    FROM        
+        GA_combined_analytics gap 
+    WHERE       
+        gap.day_index IS NOT NULL
+    GROUP BY    
+        page, property_page_category
+) AS subquery   
+GROUP BY            
+    property_page_category
+ORDER BY
+    FIELD(
+        property_page_category, 
+        'Home', 'Browse', 'Search', 'Tools', 'Help', 'Neuron Type Pages', 'Evidence', 'All Others'
+    );
+";
+/*
+SELECT 
     property_page,
     SUM(
         CASE
@@ -3830,7 +3945,7 @@ FROM (
 ) AS combined
 GROUP BY property_page
 ORDER BY FIELD(property_page, 'Home', 'Browse', 'Search', 'Tools', 'Help', 'Neuron Type Pages', 'Evidence', 'All Others');";
-
+*/
 echo $page_functionality_views_query;
 /*
    SELECT 
