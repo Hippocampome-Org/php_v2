@@ -858,6 +858,9 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 						$evidence_page_views += $rowvalue['Evidence_Page_Views'];
 					}
 					$count += $rowvalue['Total_Views'];
+				
+					//$count += isset($rowvalue['Total_Views']) ? intval($rowvalue['Total_Views']) : 0;
+
 					$value = $rowvalue['Neuron_Type_Name'];
 					if (isset($neuron_ids[$value])) {
 						if (!isset($write_file)) {
@@ -1968,116 +1971,109 @@ function get_neurons_views_report($conn, $neuron_ids=NULL, $views_request=NULL, 
 	$columns = ['Subregion', 'Neuron Type Name', 'Census','Views'];
      
 	$page_neurons_views_query = "
-		SET SESSION group_concat_max_len = 1000000;
-
-	SET @sql = NULL;
-	SELECT GROUP_CONCAT(DISTINCT 
-			CONCAT(
-				'SUM(CASE WHEN nd.property_page_category = ''',
-					property_page_category,
-					''' THEN REPLACE(nd.page_views, '','', '''') ELSE 0 END) AS `',
-				property_page_category,
-				'`'
-			      )
-			) INTO @sql
-		FROM (
-				SELECT DISTINCT 
-				CASE 
-				WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology') THEN 'Morphology: ADL / SD'
-				WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology_linking_pmid_isbn') THEN 'Morphology: PMID / ISBN'
-				WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('markers') THEN 'Molecular Markers'
-				WHEN page LIKE '%property_page_counts.php%' THEN 'Census'
-				WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('connectivity', 'connectivity_orig', 'connectivity_test') THEN 'Connectivity: Known / Potential'
-				WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'ephys' THEN 'Membrane Biophysics'
-				WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'fp' THEN 'FP'
-				WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases' THEN 'In Vivo'
-				WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('synpro_nm', 'synpro_nm_old2') THEN 'Connectivity: NoPS / NoC / PS'
-				WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro_pvals' THEN 'Connectivity: Parcel-Specific Tables'
-				WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('/synaptome/php/synaptome', 'synaptome') THEN 'Synaptome'
-				ELSE CONCAT(UPPER(SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1)))
-				END AS property_page_category
-				FROM GA_combined_analytics
-				WHERE 
-				(page LIKE '%property_page_counts.php%' 
-				 OR page LIKE '%id_neuron=%' 
-				 OR page LIKE '%id1_neuron=%' 
-				 OR page LIKE '%id_neuron_source=%')
-				AND LENGTH(
-						CASE 
-						WHEN page LIKE '%id_neuron=%' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
-						WHEN page LIKE '%id1_neuron=%' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)
-						WHEN page LIKE '%id_neuron_source=%' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)
-						END
-					  ) = 4
-				AND (
-						CASE 
-						WHEN page LIKE '%id_neuron=%' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
-						WHEN page LIKE '%id1_neuron=%' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)
-						WHEN page LIKE '%id_neuron_source=%' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)
-						END NOT IN (4168, 4181, 2232)
-				    )
-				) AS categories;
-
-	-- Dynamically construct the final query
-		SET @sql = CONCAT(
-				'SELECT t.subregion AS Subregion, t.page_statistics_name AS Neuron_Type_Name, ',
-				@sql,
-				', SUM(REPLACE(nd.page_views, '','', '''')) AS Total_Views 
-				FROM (
-					SELECT 
-					CASE 
-					WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1)
-					WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1)
-					WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1)
-					END AS neuronID,
-					CASE WHEN page LIKE ''%property_page_counts.php%'' THEN 1 ELSE 0 END AS is_property_page,
-					CASE 
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) IN (''morphology'') THEN ''Morphology: ADL / SD''
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) IN (''morphology_linking_pmid_isbn'') THEN ''Morphology: PMID / ISBN''
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) IN (''markers'') THEN ''Molecular Markers''
-					WHEN page LIKE ''%property_page_counts.php%'' THEN ''Census''
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) IN (''connectivity'', ''connectivity_orig'', ''connectivity_test'') THEN ''Connectivity: Known / Potential''
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''ephys'' THEN ''Membrane Biophysics''
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''fp'' THEN ''FP''
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''phases'' THEN ''In Vivo''
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) IN (''synpro_nm'', ''synpro_nm_old2'') THEN ''Connectivity: NoPS / NoC / PS''
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''synpro_pvals'' THEN ''Connectivity: Parcel-Specific Tables''
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) IN (''/synaptome/php/synaptome'', ''synaptome'') THEN ''Synaptome''
-					ELSE CONCAT(UPPER(SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1)))
-					END AS property_page_category,
-					    page_views
-						    FROM GA_combined_analytics
-						    WHERE 
-						    (page LIKE ''%property_page_counts.php%'' 
-						     OR page LIKE ''%id_neuron=%'' 
-						     OR page LIKE ''%id1_neuron=%'' 
-						     OR page LIKE ''%id_neuron_source=%'')
-						    AND LENGTH(
-								    CASE 
-								    WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1)
-								    WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1)
-								    WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1)
-								    END
-							      ) = 4
-						    AND (
-								    CASE 
-								    WHEN page LIKE ''%id_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1)
-								    WHEN page LIKE ''%id1_neuron=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1)
-								    WHEN page LIKE ''%id_neuron_source=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1)
-								    END NOT IN (4168, 4181, 2232, 1061, 2058, 4058, 4130, 4135, 4160, 4193, 6114, 6122, 6129)
-							)
-						    ) AS nd
-						    RIGHT JOIN Type AS t 
-						    ON nd.neuronID = t.id 
-						    GROUP BY t.page_statistics_name, t.subregion 
-						    ORDER BY t.position'
-						    );
-
-	-- Prepare, execute, and deallocate the statement
-		PREPARE stmt FROM @sql;
-	EXECUTE stmt;
-	DEALLOCATE PREPARE stmt;
-	";
+SELECT 
+    COALESCE(Subregion, 'N/A') AS Subregion,
+    COALESCE(Neuron_Type_Name, 'None of the Above') AS Neuron_Type_Name,
+    IFNULL(Morphology_ADL_SD, 0) AS `Morphology: ADL / SD`,
+    IFNULL(Morphology_PMID_ISBN, 0) AS `Morphology: PMID / ISBN`,
+    IFNULL(Molecular_Markers, 0) AS `Molecular Markers`,
+    IFNULL(Census, 0) AS `Census`,
+    IFNULL(Connectivity_Known_Potential, 0) AS `Connectivity: Known / Potential`,
+    IFNULL(Membrane_Biophysics, 0) AS `Membrane Biophysics`,
+    IFNULL(FP, 0) AS `FP`,
+    IFNULL(In_Vivo, 0) AS `In Vivo`,
+    IFNULL(Connectivity_NoPS_NoC_PS, 0) AS `Connectivity: NoPS / NoC / PS`,
+    IFNULL(Connectivity_Parcel_Specific_Tables, 0) AS `Connectivity: Parcel-Specific Tables`,
+    IFNULL(Synaptome, 0) AS `Synaptome`,
+    IFNULL(Total_Views - (
+        IFNULL(Morphology_ADL_SD, 0) +
+        IFNULL(Morphology_PMID_ISBN, 0) +
+        IFNULL(Molecular_Markers, 0) +
+        IFNULL(Census, 0) +
+        IFNULL(Connectivity_Known_Potential, 0) +
+        IFNULL(Membrane_Biophysics, 0) +
+        IFNULL(FP, 0) +
+        IFNULL(In_Vivo, 0) +
+        IFNULL(Connectivity_NoPS_NoC_PS, 0) +
+        IFNULL(Connectivity_Parcel_Specific_Tables, 0) +
+        IFNULL(Synaptome, 0)
+    ), 0) AS `Other`,
+    IFNULL(Total_Views, 0) AS `Total_Views`
+FROM (
+    SELECT 
+        COALESCE(t.subregion, 'N/A') AS Subregion,
+        COALESCE(t.page_statistics_name, 'None of the Above') AS Neuron_Type_Name,
+        SUM(CASE WHEN nd.property_page_category = 'Morphology: ADL / SD' THEN REPLACE(nd.page_views, ',', '') ELSE 0 END) AS Morphology_ADL_SD,
+        SUM(CASE WHEN nd.property_page_category = 'Morphology: PMID / ISBN' THEN REPLACE(nd.page_views, ',', '') ELSE 0 END) AS Morphology_PMID_ISBN,
+        SUM(CASE WHEN nd.property_page_category = 'Molecular Markers' THEN REPLACE(nd.page_views, ',', '') ELSE 0 END) AS Molecular_Markers,
+        SUM(CASE WHEN nd.property_page_category = 'Census' THEN REPLACE(nd.page_views, ',', '') ELSE 0 END) AS Census,
+        SUM(CASE WHEN nd.property_page_category = 'Connectivity: Known / Potential' THEN REPLACE(nd.page_views, ',', '') ELSE 0 END) AS Connectivity_Known_Potential,
+        SUM(CASE WHEN nd.property_page_category = 'Membrane Biophysics' THEN REPLACE(nd.page_views, ',', '') ELSE 0 END) AS Membrane_Biophysics,
+        SUM(CASE WHEN nd.property_page_category = 'FP' THEN REPLACE(nd.page_views, ',', '') ELSE 0 END) AS FP,
+        SUM(CASE WHEN nd.property_page_category = 'In Vivo' THEN REPLACE(nd.page_views, ',', '') ELSE 0 END) AS In_Vivo,
+        SUM(CASE WHEN nd.property_page_category = 'Connectivity: NoPS / NoC / PS' THEN REPLACE(nd.page_views, ',', '') ELSE 0 END) AS Connectivity_NoPS_NoC_PS,
+        SUM(CASE WHEN nd.property_page_category = 'Connectivity: Parcel-Specific Tables' THEN REPLACE(nd.page_views, ',', '') ELSE 0 END) AS Connectivity_Parcel_Specific_Tables,
+        SUM(CASE WHEN nd.property_page_category = 'Synaptome' THEN REPLACE(nd.page_views, ',', '') ELSE 0 END) AS Synaptome,
+        SUM(CASE WHEN REPLACE(nd.page_views, ',', '') > 0 THEN REPLACE(nd.page_views, ',', '') ELSE REPLACE(nd.sessions, ',', '') END) AS Total_Views
+    FROM Type t
+    LEFT JOIN (
+        SELECT 
+            CASE 
+                WHEN page LIKE '%neuron_page.php?id=%' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id=', -1), '&', 1)
+                WHEN page REGEXP 'id_neuron=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
+                WHEN page REGEXP 'id1_neuron=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)
+                WHEN page REGEXP 'id_neuron_source=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)
+                WHEN page REGEXP 'pre_id=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'pre_id=', -1), '&', 1)
+                ELSE NULL
+            END AS neuronID,
+            CASE
+                WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology') THEN 'Morphology: ADL / SD'
+                WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology_linking_pmid_isbn') THEN 'Morphology: PMID / ISBN'
+                WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('markers') THEN 'Molecular Markers'
+                WHEN page LIKE '%property_page_counts.php%' THEN 'Census'
+                WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('connectivity', 'connectivity_orig', 'connectivity_test') THEN 'Connectivity: Known / Potential'
+                WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'ephys' THEN 'Membrane Biophysics'
+                WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'fp' THEN 'FP'
+                WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases' THEN 'In Vivo'
+                WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('synpro_nm', 'synpro_nm_old2') THEN 'Connectivity: NoPS / NoC / PS'
+                WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro_pvals' THEN 'Connectivity: Parcel-Specific Tables'
+                WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('/synaptome/php/synaptome', 'synaptome') THEN 'Synaptome'
+                ELSE 'Other'
+            END AS property_page_category,
+            page,
+            day_index,
+            page_views,
+            sessions
+        FROM GA_combined_analytics
+        WHERE page LIKE '%neuron_page.php?id=%'
+        OR page REGEXP 'id_neuron=[0-9]+'
+        OR page REGEXP 'id1_neuron=[0-9]+'
+        OR page REGEXP 'id_neuron_source=[0-9]+'
+        OR page REGEXP 'pre_id=[0-9]+'
+    ) AS nd
+    ON nd.neuronID = t.id
+    GROUP BY t.page_statistics_name, t.subregion
+    UNION ALL
+    SELECT 
+        'N/A' AS Subregion,
+        'None of the Above' AS Neuron_Type_Name,
+        0 AS Morphology_ADL_SD,
+        0 AS Morphology_PMID_ISBN,
+        0 AS Molecular_Markers,
+        0 AS Census,
+        0 AS Connectivity_Known_Potential,
+        0 AS Membrane_Biophysics,
+        0 AS FP,
+        0 AS In_Vivo,
+        0 AS Connectivity_NoPS_NoC_PS,
+        0 AS Connectivity_Parcel_Specific_Tables,
+        0 AS Synaptome,
+        0 AS Total_Views
+) AS full_results
+GROUP BY Subregion, Neuron_Type_Name
+ORDER BY (Subregion = 'N/A') ASC, Subregion, Neuron_Type_Name;
+";
+//echo $page_neurons_views_query;
 /*
 
    SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;
@@ -2398,7 +2394,7 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 						ORDER BY (Subregion = 'N/A') ASC, Subregion, Neuron_Type_Name;";
 
 	//-- 'RIGHT JOIN Type AS t ON nd.neuronID = t.id AND t.id NOT IN (4181, 2232,1061, 4058, 4130, 4135, 4160, 4193, 6114, 6122, 6129) ',
-	//echo $page_neurons_views_query;
+//	echo $page_neurons_views_query;
 
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
