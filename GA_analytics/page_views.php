@@ -3462,107 +3462,99 @@ function get_domain_functionality_views_report($conn, $views_request = NULL, $wr
 					    'Simulation Parameters', 'Other'
 				 );
 	";
-	//	echo $page_functionality_views_query;
 	// Check if the request is for monthly or yearly views
-    if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
-        $page_functionality_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
-	if ($views_request == "views_per_month") {
-		$page_functionality_views_query .= "SELECT
-			GROUP_CONCAT(DISTINCT
-					CONCAT(
-						'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
-							' AND MONTH(day_index) = ', MONTH(day_index),
-							 ' THEN CASE WHEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END ELSE 0 END) AS `',
-						YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
-					      )
-					ORDER BY YEAR(day_index), MONTH(day_index)
-					SEPARATOR ', '
-				    ) INTO @sql
-			FROM (
-					SELECT DISTINCT day_index
-					FROM GA_combined_analytics 
-			     ) months;";
+	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
+		$page_functionality_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
+		if ($views_request == "views_per_month") {
+			$page_functionality_views_query .= "SELECT 
+				GROUP_CONCAT(
+						DISTINCT CONCAT(
+							'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+								' AND MONTH(day_index) = ', MONTH(day_index),
+								' AND (
+									page REGEXP \"^.*\\/(property_page_.*\\.php|morphology\\.php|markers\\.php|ephys\\.php|connectivity(_test|_orig)?\\.php|synaptome_modeling\\.php|firing_patterns\\.php|Izhikevich_model\\.php|synapse_probabilities\\.php|phases\\.php|cognome\\/.*|synaptome\\.php|property_page_counts\\.php|property_page_morphology\\.php|property_page_ephys\\.php|property_page_markers\\.php|property_page_connectivity\\.php|property_page_fp\\.php|property_page_phases\\.php|simulation_parameters\\.php|synaptome/php/synaptome\\.php)$\" 
+									OR page REGEXP \"id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+\"
+								      )
+								THEN CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') 
+								ELSE REPLACE(sessions, \'\', \'\') END ELSE 0 END) AS `',
+							YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
+							)
+						ORDER BY YEAR(day_index), MONTH(day_index) SEPARATOR ', '
+					    ) 
+				INTO @sql 
+				FROM (SELECT DISTINCT day_index FROM GA_combined_analytics) months;";
+		}
+
+		if ($views_request == "views_per_year") {
+			$page_functionality_views_query .= "SELECT 
+				GROUP_CONCAT(
+						DISTINCT CONCAT(
+							'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+								' AND (
+									page REGEXP \"^.*\\/(property_page_.*\\.php|morphology\\.php|markers\\.php|ephys\\.php|connectivity(_test|_orig)?\\.php|synaptome_modeling\\.php|firing_patterns\\.php|Izhikevich_model\\.php|synapse_probabilities\\.php|phases\\.php|cognome\\/.*|synaptome\\.php|property_page_counts\\.php|property_page_morphology\\.php|property_page_ephys\\.php|property_page_markers\\.php|property_page_connectivity\\.php|property_page_fp\\.php|property_page_phases\\.php|simulation_parameters\\.php|synaptome/php/synaptome\\.php)$\" 
+									OR page REGEXP \"id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+\"
+								      )
+								THEN CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') 
+								ELSE REPLACE(sessions, \'\', \'\') END ELSE 0 END) AS `',
+							YEAR(day_index), '`'
+							)
+						ORDER BY YEAR(day_index) SEPARATOR ', '
+					    ) 
+				INTO @sql 
+				FROM (SELECT DISTINCT day_index FROM GA_combined_analytics) years;";
+		}
+
+		// Combine the dynamically generated SQL into the main query
+		$page_functionality_views_query .= "
+			SET @sql = CONCAT(
+					'SELECT 
+					CASE 
+					WHEN page REGEXP \"property_page_fp|fp\\.php\" THEN \"Firing Patterns\"
+					WHEN page REGEXP \"property_page_markers|markers\\.php\" THEN \"Molecular Markers\"
+					WHEN page REGEXP \"property_page_morphology|property_page_morphology_linking_pmid_isbn|morphology\\.php|morphology(_linking)?(_pmid|_isbn)?\" THEN \"Morphology\"
+					WHEN page REGEXP \"property_page_phases|phases\\.php\" THEN \"In Vivo Recordings\"
+					WHEN page REGEXP \"property_page_synpro|property_page_synpro_nm|property_page_synpro_pvals|property_page_synpro_nm_old2|synapse_probabilites\\.php\" THEN \"Synapse Probabilities\"
+					WHEN page REGEXP \"property_page_connectivity|property_page_connectivity_orig|property_page_connectivity_test|connectivity\\.php\" THEN \"Connectivity\"
+					WHEN page REGEXP \"property_page_ephys|ephys\\.php\" THEN \"Membrane Biophysics\"
+					WHEN page REGEXP \"synaptic_mod_sum|params_summary|synaptome|synaptome_modeling\\.php\" THEN \"Synaptic Physiology\"
+					WHEN page REGEXP \"property_page_counts|counts\\.php\" THEN \"Neuron Type Census\"
+					WHEN page REGEXP \"Izhikevich_model\" THEN \"Izhikevich Models\"
+					WHEN page REGEXP \"/cognome/\" THEN \"Cognome\"
+					WHEN page REGEXP \"simulation_parameters\" THEN \"Simulation Parameters\"
+					ELSE \"Other\"
+					END AS property_page_category, ',
+					@sql,
+					',
+					SUM(
+						CASE 
+						WHEN (
+							page REGEXP \"^.*\\/(property_page_.*\\.php|morphology\\.php|markers\\.php|ephys\\.php|connectivity(_test|_orig)?\\.php|synaptome_modeling\\.php|firing_patterns\\.php|Izhikevich_model\\.php|synapse_probabilities\\.php|phases\\.php|cognome\\/.*|synaptome\\.php|property_page_counts\\.php|property_page_morphology\\.php|property_page_ephys\\.php|property_page_markers\\.php|property_page_connectivity\\.php|property_page_fp\\.php|property_page_phases\\.php|simulation_parameters\\.php|synaptome/php/synaptome\\.php)$\"
+							OR page REGEXP \"id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+\"
+						     )
+						THEN CASE 
+						WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') 
+						ELSE REPLACE(sessions, \'\', \'\') 
+						END 
+						ELSE 0 
+						END
+					   ) AS Total_Views
+						FROM GA_combined_analytics
+						GROUP BY property_page_category
+						ORDER BY FIELD(
+								property_page_category, 
+								\"Morphology\", \"Molecular Markers\", \"Membrane Biophysics\", 
+								\"Connectivity\", \"Synaptic Physiology\", \"Firing Patterns\", 
+								\"Izhikevich Models\", \"Synapse Probabilities\", 
+								\"In Vivo Recordings\", \"Cognome\", \"Neuron Type Census\", 
+								\"Simulation Parameters\", \"Other\"
+							      )'
+						); 
+
+		PREPARE stmt FROM @sql;
+		EXECUTE stmt;
+		DEALLOCATE PREPARE stmt;
+		";
 	}
-
-	if ($views_request == "views_per_year") {
-		$page_functionality_views_query .= "SELECT
-			GROUP_CONCAT(DISTINCT
-					CONCAT(
-						'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
-						 ' THEN CASE WHEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END ELSE 0 END) AS `',
-						YEAR(day_index), '`'
-					      )
-					ORDER BY YEAR(day_index)
-					SEPARATOR ', '
-				    ) INTO @sql
-			FROM (
-					SELECT DISTINCT day_index
-					FROM GA_combined_analytics 
-			     ) years;";
-	}
-
-	// Combine the dynamically generated SQL into the main query
-	$page_functionality_views_query .= "
-		SET @sql = CONCAT(
-				'SELECT 
-				CASE 
-				WHEN page LIKE \"%morphology.php%\" THEN \"Morphology\"
-				WHEN page LIKE \"%markers.php%\" THEN \"Molecular Markers\"
-				WHEN page LIKE \"%ephys.php%\" THEN \"Membrane Biophysics\"
-				WHEN page LIKE \"%connectivity.php%\" THEN \"Connectivity\"
-				WHEN page LIKE \"%synaptome_modeling.php%\" OR page LIKE \"%synaptic_mod_sum.php%\" OR page LIKE \"%/synaptome/php/synaptome%\" THEN \"Synaptic Physiology\"
-				WHEN page LIKE \"%firing_patterns.php%\" THEN \"Firing Patterns\"
-				WHEN page LIKE \"%Izhikevich_model.php%\" THEN \"Izhikevich Models\"
-				WHEN page LIKE \"%synapse_probabilities.php%\" THEN \"Synapse Probabilities\"
-				WHEN page LIKE \"%phases.php%\" THEN \"In Vivo\"
-				WHEN page LIKE \"%/cognome/%\" THEN \"Cognome\"
-				WHEN page LIKE \"%counts.php%\" THEN \"Neuron Type Census\"
-				WHEN page LIKE \"%simulation_parameters.php%\" THEN \"Simulation Parameters\"
-				ELSE \"Other\"
-				END AS Property, ',
-				@sql, ', 
-				SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, \'0\'), \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE 
-CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END) AS Total_Views 
-				FROM GA_combined_analytics
-				WHERE (
-					page LIKE \"%/property_page_%\" 
-					OR page LIKE \"%morphology.php%\"
-					OR page LIKE \"%markers.php%\"
-					OR page LIKE \"%ephys.php%\"
-					OR page LIKE \"%connectivity.php%\"
-					OR page LIKE \"%synaptome_modeling.php%\"
-					OR page LIKE \"%synaptic_mod_sum.php%\"
-					OR page LIKE \"%firing_patterns.php%\"
-					OR page LIKE \"%Izhikevich_model.php%\"
-					OR page LIKE \"%synapse_probabilities.php%\"
-					OR page LIKE \"%phases.php%\"
-					OR page LIKE \"%/cognome/%\"
-					OR page LIKE \"%counts.php%\"
-					OR page LIKE \"%simulation_parameters.php%\" )
-				AND page NOT LIKE \"%morphology_linking_pmid_isbn%\"
-				GROUP BY Property  
-				ORDER BY FIELD(
-						Property,
-						\"Morphology\",
-						\"Molecular Markers\",
-						\"Membrane Biophysics\",
-						\"Connectivity\",
-						\"Synaptic Physiology\",
-						\"Firing Patterns\",
-						\"Izhikevich Models\",
-						\"Synapse Probabilities\",
-						\"In Vivo recordings\",
-						\"Cognome\",
-						\"Neuron Type Census\",
-						\"Simulation Parameters\"
-					      )'
-				);
-
-	PREPARE stmt FROM @sql;
-	EXECUTE stmt;
-	DEALLOCATE PREPARE stmt;
-	";
-    }
 
 //	echo $page_functionality_views_query;
 	$columns = ['Property', 'Views'];
