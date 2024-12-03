@@ -3309,82 +3309,79 @@ function get_fp_property_views_report($conn, $views_request=NULL, $write_file=NU
 		'TSTUT.ASP.' => 'Transient Stuttering followed by Adapting Spiking'
 			];
 
-	$page_fp_property_views_query = "SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'meter=', -1), '&', 1) AS Firing_Pattern,
-		SUM(REPLACE(page_views, ',', '')) AS Total_Views FROM GA_combined_analytics 
-			WHERE page LIKE '%/property_page_%'
-			AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'fp'
-			AND LENGTH(
-					CASE
-					WHEN LOCATE('%', SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) > 0 THEN
-					SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '%', 1)
-					ELSE
-					SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
-					END
-				  ) = 4
-			AND
-			CASE
-			WHEN LOCATE('%', SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) > 0 THEN
-			SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '%', 1)
-			ELSE
-			SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
-			END NOT IN (4168, 4181, 2232)
-			GROUP BY SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'meter=', -1), '&', 1)
-			ORDER BY Total_Views DESC";
+	$page_fp_property_views_query = "SELECT 
+		SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'meter=', -1), '&', 1) AS Firing_Pattern, 
+		SUM(
+				CASE 
+				WHEN REPLACE(page_views, ',', '') > 0 
+				THEN REPLACE(page_views, ',', '') 
+				ELSE REPLACE(sessions, ',', '') 
+				END
+		   ) AS Total_Views 
+			FROM GA_combined_analytics 
+			WHERE 
+			page REGEXP 'property_page_fp\\.php' 
+			AND page REGEXP 'id_neuron=[0-9]+'
+			GROUP BY 
+			SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'meter=', -1), '&', 1) 
+			ORDER BY 
+			Total_Views DESC;
+	";
 
 	if ($views_request == "views_per_year" || $views_request == "views_per_month") {
 		$page_fp_property_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
-		if ($views_request == "views_per_year") {
-			$page_fp_property_views_query .= " SELECT GROUP_CONCAT( DISTINCT CONCAT('IFNULL(SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index), ' 
-							   THEN REPLACE(page_views, \",\", \"\") ELSE 0 END), 0) AS `', YEAR(day_index), '`'  ) ORDER BY YEAR(day_index) SEPARATOR ', ') INTO @sql ";
-		}
 		if ($views_request == "views_per_month") {
-			$page_fp_property_views_query .= "SELECT GROUP_CONCAT( DISTINCT CONCAT( 'IFNULL(SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index), ' AND MONTH(day_index) = ', MONTH(day_index), ' 
-							  THEN REPLACE(page_views, \",\", \"\") ELSE 0 END), 0) AS `', YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'  ) 
-							  ORDER BY YEAR(day_index), MONTH(day_index) SEPARATOR ', ' ) INTO @sql ";
+			$page_fp_property_views_query .= " 
+				SELECT GROUP_CONCAT( DISTINCT CONCAT( 'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index), ' AND MONTH(day_index) = ', 
+								MONTH(day_index), 
+								' THEN CASE WHEN REPLACE(page_views, \'\', \'\') > 0 ',
+								' THEN REPLACE(page_views, \'\', \'\') ',
+								' ELSE REPLACE(sessions, \'\', \'\') END ELSE 0 END) AS `', 
+							YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`' ) 
+						ORDER BY YEAR(day_index), MONTH(day_index) SEPARATOR ', ' ) INTO @sql FROM GA_combined_analytics 
+				WHERE page REGEXP 'property_page_fp\.php' AND page REGEXP 'id_neuron=[0-9]+'; ";
+		}
+		if ($views_request == "views_per_year") {
+			$page_fp_property_views_query .= "
+				SELECT 
+				GROUP_CONCAT(
+						DISTINCT CONCAT(
+							'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+								' THEN CASE WHEN REPLACE(page_views, \'\', \'\') > 0 ',
+								' THEN REPLACE(page_views, \'\', \'\') ',
+								' ELSE REPLACE(sessions, \'\', \'\') END ELSE 0 END) AS `', 
+							YEAR(day_index), '`'
+							)
+						ORDER BY YEAR(day_index) 
+						SEPARATOR ', '
+					    ) 
+				INTO @sql
+				FROM GA_combined_analytics
+				WHERE 
+				page REGEXP 'property_page_fp\\.php' 
+				AND page REGEXP 'id_neuron=[0-9]+'; ";
 		}
 		$page_fp_property_views_query .= "
-				FROM GA_combined_analytics 
-				WHERE page LIKE '%/property_page_%'
-				AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'fp'
-				AND LENGTH(
-					CASE
-						WHEN LOCATE('%', SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '%', 1)
-					ELSE
-						SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
-					END ) = 4
-				AND
-				CASE
-					WHEN LOCATE('%', SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '%', 1)
-				ELSE
-					SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
-				END NOT IN (4168, 4181, 2232);
-				SET @sql = CONCAT(
-						'SELECT ',
-						'SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''meter='', -1), ''&'', 1) AS Firing_Pattern, ',
-						@sql, ', ', 
-						'SUM(REPLACE(page_views, \",\", \"\")) AS Total_Views ',
-						'FROM GA_combined_analytics ', 
-						'WHERE page LIKE ''%/property_page_%'' ',
-						'AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''fp'' ',
-						'AND LENGTH(CASE ',
-							'    WHEN LOCATE(''%'', SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1)) > 0 THEN ',
-							'        SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''%'', 1) ',
-							'    ELSE ',
-							'        SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
-							'END) = 4 ',
-						'AND CASE ',
-						'    WHEN LOCATE(''%'', SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1)) > 0 THEN ',
-						'        SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''%'', 1) ',
-						'    ELSE ',
-						'        SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
-						'END NOT IN (4168, 4181, 2232) ',
-						'GROUP BY Firing_Pattern ',
-						'ORDER BY Total_Views DESC'
-							);
-			";
+			SET @sql = CONCAT(
+					'SELECT ',
+					'SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''meter='', -1), ''&'', 1) AS Firing_Pattern, ',
+					@sql, ', ', 
+					' SUM(
+						CASE 
+						WHEN REPLACE(page_views, \",\",\"\") > 0 
+						THEN REPLACE(page_views, \",\", \"\") 
+						ELSE REPLACE(sessions, \",\", \"\") 
+						END
+					     ) AS Total_Views ', 
+					'FROM GA_combined_analytics ', 
+					' WHERE page REGEXP ''property_page_fp\.php'' AND page REGEXP ''id_neuron=[0-9]+'' ',
+					'GROUP BY Firing_Pattern ',
+					'ORDER BY Total_Views DESC'
+					);
+		";
 		$page_fp_property_views_query .= " PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt; ";
 	}
-
+	//echo $page_fp_property_views_query;
 	$columns = ['Firing Pattern', 'Views'];
 	$options = ['format' => $fp_format,];
 	if(isset($write_file)) {
