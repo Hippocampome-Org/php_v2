@@ -3081,78 +3081,93 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 				ORDER BY 
 				t.position;";
 
-		//echo $page_counts_view_query;
 		if ($views_request == "views_per_month" || $views_request == "views_per_year") {
-                        $page_counts_views_query= "SET SESSION group_concat_max_len = 1000000;
-                        SET @sql = NULL;";
-                        $base_query = "
-                                SELECT
-                                GROUP_CONCAT(
-                                                DISTINCT
-                                                CONCAT(
-                                                        'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
-							THEN CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') 
-ELSE REPLACE(sessions, \'\', \'\') END ELSE 0 END) AS `',
-                                                        @time_unit, '`'
-                                                      )
-                                                ORDER BY YEAR(day_index) 
-                                                SEPARATOR ', '
-                                            ) INTO @sql
-                                FROM GA_combined_analytics 
-                                WHERE
-				page REGEXP 'property_page_ephys\.php'
- AND page REGEXP 'id_neuron=[0-9]+'
-                                    ;";
 
-                        // Determine the specific time unit and formatting based on the request
-                        if ($views_request == "views_per_month") {
-                                $time_unit = "CONCAT(YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3))";
-                                $ordering = "ORDER BY YEAR(day_index), MONTH(day_index)";
-                        } elseif ($views_request == "views_per_year") {
-                                $time_unit = "YEAR(day_index)";
-                                $ordering = "ORDER BY YEAR(day_index)";
-                        }
+			$page_counts_views_query = "
+				SET SESSION group_concat_max_len = 1000000;
 
-                        // Construct the final query
-                        $page_counts_views_query .= str_replace(
-                                        ['@time_unit', '@ordering'],
-                                        [$time_unit, $ordering],
-                                        $base_query
-                                        );
+			SET @sql = NULL;";
 
-                        // Build the main query
-                        $page_counts_views_query .= "
-                                SET @sql = CONCAT(
-                                                'SELECT ',
-                                                't.subregion AS Subregion, ',
-                                                't.page_statistics_name AS Neuron_Type_Name, ',
-                                                 'derived.evidence AS Biophysics_Evidence, ',
-                                                @sql,  
-                                                        ', SUM(REPLACE(derived.page_views, \',\', \'\')) AS Total_Views ',
-                                                'FROM (',
-                                                                '    SELECT page_views, ',
-                                                                '        IF(INSTR(page, \'id_neuron=\') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id_neuron=\', -1), \'&\', 1), ',
-                                                                        '           IF(INSTR(page, \'id1_neuron=\') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id1_neuron=\', -1), \'&\', 1), ',
-                                                                                '           IF(INSTR(page, \'id_neuron_source=\') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id_neuron_source=\', -1), \'&\', 1), \'\' ',
-                                                                                        '           ))) AS neuronID, ',
-							    '        IF(INSTR(page, \'ep=\') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'ep=\', -1), \'&\', 1), \'\') AS evidence, ',
-                                                                '        day_index ',
-                                                                '    FROM GA_combined_analytics ',
-								' WHERE page REGEXP \'property_page_ephys\.php\' ', 
-								' AND page REGEXP \'id_neuron=[0-9]+\' ',
-                                                                ') AS derived ',
-                                                'LEFT JOIN Type AS t ON t.id = derived.neuronID ',
-                                                'WHERE derived.neuronID NOT IN (\'4168\', \'4181\', \'2232\') ',
-                                                'GROUP BY t.subregion, t.page_statistics_name, evidence ',
-                                                'ORDER BY t.position'
-                                                ); ";
-                        $page_counts_views_query .= "PREPARE stmt FROM @sql;
-                                                        EXECUTE stmt;
-                                                        DEALLOCATE PREPARE stmt;";
+			if ($views_request == "views_per_month") {
+				$page_counts_views_query .= "
+					SELECT 
+					GROUP_CONCAT(
+							DISTINCT CONCAT(
+								'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+									' AND MONTH(day_index) = ', MONTH(day_index),
+									' THEN REPLACE(page_views, \'\', \'\') ELSE 0 END) AS `',
+								YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
+								)
+							ORDER BY YEAR(day_index), MONTH(day_index) SEPARATOR ', '
+						    ) 
+					INTO @sql 
+					FROM GA_combined_analytics
+					WHERE 
+					page REGEXP 'property_page_ephys\\.php'
+					AND page REGEXP 'id_neuron=[0-9]+';
+				";
+			} elseif ($views_request == "views_per_year") {
+				$page_counts_views_query .= "
+					SELECT 
+					GROUP_CONCAT(
+							DISTINCT CONCAT(
+								'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+									' THEN REPLACE(page_views, \'\', \'\') ELSE 0 END) AS `',
+								YEAR(day_index), '`'
+								)
+							ORDER BY YEAR(day_index), MONTH(day_index) SEPARATOR ', '
+						    ) 
+					INTO @sql 
+					FROM GA_combined_analytics
+					WHERE 
+					page REGEXP 'property_page_ephys\\.php'
+					AND page REGEXP 'id_neuron=[0-9]+';
+				";
+			}
+
+			$page_counts_views_query .= "
+				SET @sql = CONCAT(
+						'SELECT ',
+						't.subregion AS Subregion, ',
+						't.page_statistics_name AS Neuron_Name, ',
+						'derived.evidence AS Evidence, ',
+						@sql, ', ',
+						'SUM(REPLACE(derived.page_views, \'\', \'\')) AS Total_Views ',
+						'FROM (',
+							'   SELECT ',
+							'       CASE ',
+							'           WHEN INSTR(page, ''id_neuron='') > 0 ',
+							'               THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
+							'           ELSE NULL ',
+							'       END AS neuronID, ',
+							'       CASE ',
+							'           WHEN INSTR(page, ''ep='') > 0 ',
+							'               THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''ep='', -1), ''&'', 1) ',
+							'           ELSE ''No Evidence'' ',
+							'       END AS evidence, ',
+							'       CASE ',
+							'           WHEN REPLACE(page_views, \'\', \'\') > 0 ',
+							'               THEN REPLACE(page_views, \'\', \'\') ',
+							'           ELSE REPLACE(sessions, \'\', \'\') ',
+							'       END AS page_views, ',
+							'       day_index ',
+							'   FROM GA_combined_analytics ',
+							'   WHERE page REGEXP ''property_page_ephys\\.php'' ',
+							'     AND page REGEXP ''id_neuron=[0-9]+'' ',
+							') AS derived ',
+							'JOIN Type AS t ON t.id = derived.neuronID ',
+							'GROUP BY t.subregion, t.page_statistics_name, derived.evidence ',
+							'ORDER BY t.position'
+								);
+
+
+			PREPARE stmt FROM @sql;
+			EXECUTE stmt;
+			DEALLOCATE PREPARE stmt;";
 
                 }
 
-                echo  $page_counts_views_query;
+  //              echo  $page_counts_views_query;
         }
 
 	// Check for 'synpro' or 'synpro_nm' page types
