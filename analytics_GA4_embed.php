@@ -142,12 +142,12 @@ tr:nth-child(even){
 			</div>
 			<div id="links" style="padding: 15px; 10px;">
  	    		<ul>
-				<li><a href="#neuron">Neuron Type Evidence Page Views</a></li>
-				<li><a href="#neuron_types">Neuron Type Page Views</a></li>
-				<li><a href="#property_functionality">Functionality Property Domain Page Views</a></li>
                                 <li><a href="#page_functionality">Functionality Domain Page Views</a></li>
-				<li><a href="#pageviews">Views per Page </a></li>
+				<li><a href="#browse_functionality">Browse Menu Page Views</a></li>
+				<li><a href="#neuron_types">Neuron Type Page Views</a></li>
+				<li><a href="#neuron_type_evidence">Neuron Type Evidence Page Views</a></li>
 				<li><a href="#pageview_monthly">Monthly Page Views</a></li>
+				<li><a href="#pageviews">Views per Page </a></li>
 				<li><a href="#download_reports">Download Views Reports</a></li>
 				<li><a href="GA_detailed_views.php">Detailed Access Views</a></li>
 
@@ -160,19 +160,36 @@ tr:nth-child(even){
 <div style="clear:both"></div>
 <!-- Main initial page ends here -->
 <font class="font3">
-<!-- When Neuron Type Views is clicked-->
+<!-- When Functionality Domain Page Views is clicked-->
 </br></br>
-<div id="neuron" style="padding:100px 100px; align:center;">
+<div id="page_functionality" style="padding:100px 100px; align:center;">
 	<p><div style="text-align: left;">
-		<span style="display: inline-block; vertical-align: middle;">Neuron Type Evidence Page Views <a href="#top">Back to top</a></span>
-		<span style="display: inline-block; padding-left:10px; vertical-align: middle;">
-			<form method="POST" style="display: inline;"><input type="hidden" name="download_csv" value="get_neurons_views_report"><button type="submit">Download CSV</button></form>
-			<form method="POST" style="display: inline;"><input type="hidden" name="views_per_month" value="get_neurons_views_report"><button type="submit">Download Views Per Month CSV</button></form>
-			<form method="POST" style="display: inline;"><input type="hidden" name="views_per_year" value="get_neurons_views_report"><button type="submit">Download Views Per Year CSV</button></form>
-		</span>
-	</div></p>
-	<div id="neuron-inside" style="width: 1150px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
-		<?php get_neurons_views_report($conn, $neuron_ids); //Passing $conn on Dec 3 2023 ?>
+                <span style="display: inline-block; vertical-align: middle;">Functionality Domain Page Views <a href="#top">Back to top</a></span>
+                <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
+                        <form method="POST" style="display: inline;"><input type="hidden" name="download_csv" value="get_page_functionality_views_report"><button type="submit">Download CSV</button></form>
+                        <form method="POST" style="display: inline;"><input type="hidden" name="views_per_month" value="get_page_functionality_views_report"><button type="submit">Download Views Per Month CSV</button></form>
+                        <form method="POST" style="display: inline;"><input type="hidden" name="views_per_year" value="get_page_functionality_views_report"><button type="submit">Download Views Per Year CSV</button></form>
+                </span>
+        </div></p>
+	<div id="subregion-inside" style="width: 1150px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+		<?php get_page_functionality_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
+	</div>
+</div>
+<!-- Till here -->
+
+<!-- When Functionality Property Domain Page Views is clicked-->
+</br></br>
+<div id="browse_functionality" style="padding:100px 100px; align:center;">
+	<p><div style="text-align: left;">
+                <span style="display: inline-block; vertical-align: middle;">Functionality Property Domain Page Views <a href="#top">Back to top</a></span>
+                <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
+			<form method="POST" style="display: inline;"><input type="hidden" name="download_csv" value="get_domain_functionality_views_report"><button type="submit">Download CSV</button></form>
+                        <form method="POST" style="display: inline;"><input type="hidden" name="views_per_month" value="get_domain_functionality_views_report"><button type="submit">Download Views Per Month CSV</button></form>
+                        <form method="POST" style="display: inline;"><input type="hidden" name="views_per_year" value="get_domain_functionality_views_report"><button type="submit">Download Views Per Year CSV</button></form>
+                </span>
+        </div></p>
+	<div id="subregion-inside" style="width: 1150px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+		<?php get_domain_functionality_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
 	</div>
 </div>
 <!-- Till here -->
@@ -194,53 +211,19 @@ tr:nth-child(even){
 </div>                                              
 <!-- Till here -->   
 
-<!-- When Functionality Property Domain Page Views is clicked-->
+<!-- When Neuron Type Views is clicked-->
 </br></br>
-<div id="property_functionality" style="padding:100px 100px; align:center;">
+<div id="neuron_type_evidence" style="padding:100px 100px; align:center;">
 	<p><div style="text-align: left;">
-                <span style="display: inline-block; vertical-align: middle;">Functionality Property Domain Page Views <a href="#top">Back to top</a></span>
-                <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
-			<form method="POST" style="display: inline;"><input type="hidden" name="download_csv" value="get_domain_functionality_views_report"><button type="submit">Download CSV</button></form>
-                        <form method="POST" style="display: inline;"><input type="hidden" name="views_per_month" value="get_domain_functionality_views_report"><button type="submit">Download Views Per Month CSV</button></form>
-                        <form method="POST" style="display: inline;"><input type="hidden" name="views_per_year" value="get_domain_functionality_views_report"><button type="submit">Download Views Per Year CSV</button></form>
-                </span>
-        </div></p>
-	<div id="subregion-inside" style="width: 1150px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
-		<?php get_domain_functionality_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
-	</div>
-</div>
-<!-- Till here -->
-
-<!-- When Functionality Domain Page Views is clicked-->
-</br></br>
-<div id="page_functionality" style="padding:100px 100px; align:center;">
-	<p><div style="text-align: left;">
-                <span style="display: inline-block; vertical-align: middle;">Functionality Domain Page Views <a href="#top">Back to top</a></span>
-                <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
-                        <form method="POST" style="display: inline;"><input type="hidden" name="download_csv" value="get_page_functionality_views_report"><button type="submit">Download CSV</button></form>
-                        <form method="POST" style="display: inline;"><input type="hidden" name="views_per_month" value="get_page_functionality_views_report"><button type="submit">Download Views Per Month CSV</button></form>
-                        <form method="POST" style="display: inline;"><input type="hidden" name="views_per_year" value="get_page_functionality_views_report"><button type="submit">Download Views Per Year CSV</button></form>
-                </span>
-        </div></p>
-	<div id="subregion-inside" style="width: 1150px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
-		<?php get_page_functionality_views_report($conn); //Passing $conn on Dec 3 2023 ?> 
-	</div>
-</div>
-<!-- Till here -->
-
-<!-- When Views per Page is clicked-->
-</br></br>
-<div id="pageviews" style="padding:100px 100px; align:center;">
-	<p><div style="text-align: left;">
-                <span style="display: inline-block; vertical-align: middle;">Views Per Page <a href="#top">Back to top</a></span>
-		 <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
-                        <form method="POST" style="display: inline;"><input type="hidden" name="download_csv" value="get_views_per_page_report"><button type="submit">Download CSV</button></form>
-                        <form method="POST" style="display: inline;"><input type="hidden" name="views_per_month" value="get_views_per_page_report"><button type="submit">Download Views Per Month CSV</button></form>
-                        <form method="POST" style="display: inline;"><input type="hidden" name="views_per_year" value="get_views_per_page_report"><button type="submit">Download Views Per Year CSV</button></form>
-                </span>
-        </div></p>
-	<div id="pageview-inside" style="width: 1150px; height: 600px; overflow-x: scroll;overflow-y: scroll; position: relative; outline: none;">
-		<?php get_views_per_page_report($conn); //Passing $conn on Dec 3 2023 ?>	
+		<span style="display: inline-block; vertical-align: middle;">Neuron Type Evidence Page Views <a href="#top">Back to top</a></span>
+		<span style="display: inline-block; padding-left:10px; vertical-align: middle;">
+			<form method="POST" style="display: inline;"><input type="hidden" name="download_csv" value="get_neurons_views_report"><button type="submit">Download CSV</button></form>
+			<form method="POST" style="display: inline;"><input type="hidden" name="views_per_month" value="get_neurons_views_report"><button type="submit">Download Views Per Month CSV</button></form>
+			<form method="POST" style="display: inline;"><input type="hidden" name="views_per_year" value="get_neurons_views_report"><button type="submit">Download Views Per Year CSV</button></form>
+		</span>
+	</div></p>
+	<div id="neuron-inside" style="width: 1150px; height: 600px; overflow-x: auto;overflow-y: scroll; position: relative; outline: none;">
+		<?php get_neurons_views_report($conn, $neuron_ids); //Passing $conn on Dec 3 2023 ?>
 	</div>
 </div>
 <!-- Till here -->
@@ -258,6 +241,23 @@ tr:nth-child(even){
 		<?php get_pages_views_per_month_report($conn); //Passing $conn on Dec 3 2023 ?>	
 	</div>
 </div>
+
+<!-- When Views per Page is clicked-->
+</br></br>
+<div id="pageviews" style="padding:100px 100px; align:center;">
+	<p><div style="text-align: left;">
+                <span style="display: inline-block; vertical-align: middle;">Views Per Page <a href="#top">Back to top</a></span>
+		 <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
+                        <form method="POST" style="display: inline;"><input type="hidden" name="download_csv" value="get_views_per_page_report"><button type="submit">Download CSV</button></form>
+                        <form method="POST" style="display: inline;"><input type="hidden" name="views_per_month" value="get_views_per_page_report"><button type="submit">Download Views Per Month CSV</button></form>
+                        <form method="POST" style="display: inline;"><input type="hidden" name="views_per_year" value="get_views_per_page_report"><button type="submit">Download Views Per Year CSV</button></form>
+                </span>
+        </div></p>
+	<div id="pageview-inside" style="width: 1150px; height: 600px; overflow-x: scroll;overflow-y: scroll; position: relative; outline: none;">
+		<?php get_views_per_page_report($conn); //Passing $conn on Dec 3 2023 ?>	
+	</div>
+</div>
+<!-- Till here -->
 
 <!-- To Download all the data -->
 </br></br>
