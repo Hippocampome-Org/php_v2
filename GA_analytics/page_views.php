@@ -2395,7 +2395,6 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 				GROUP_CONCAT(
 						DISTINCT CONCAT(
 							'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
-								' AND MONTH(day_index) = ', MONTH(day_index),
 								' THEN CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END ELSE 0 END) AS `',
 							YEAR(day_index), '`'
 							)
@@ -2406,68 +2405,72 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 		}
 
 		$page_neurons_views_query .= "SET @sql = CONCAT(
-				'SELECT 
-				COALESCE(Subregion, ''N/A'') AS Subregion,
-				Neuron_Type_Name,
-				', @sql, ',
-				SUM(CASE 
-					WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') 
-					ELSE REPLACE(sessions, \'\', \'\') 
-					END) AS Total_Views
-				FROM (
-					SELECT 
-					COALESCE(t.subregion, ''N/A'') AS Subregion,
-					COALESCE(t.page_statistics_name, ''None of the above'') AS Neuron_Type_Name,
-					ga.day_index,
-					ga.page_views,
-					ga.sessions
-					FROM (
-						SELECT 
-						CASE 
-						WHEN page LIKE ''%neuron_page.php?id=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id='', -1), ''&'', 1)
-						WHEN page REGEXP ''id_neuron=[0-9]+'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1)
-						WHEN page REGEXP ''id1_neuron=[0-9]+'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1)
-						WHEN page REGEXP ''id_neuron_source=[0-9]+'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1)
-						WHEN page REGEXP ''pre_id=[0-9]+'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''pre_id='', -1), ''&'', 1)
-						ELSE NULL 
-						END AS neuronID,
-						page,
-						day_index,
-						page_views,
-						sessions
-						FROM GA_combined_analytics
-						WHERE page LIKE ''%neuron_page.php?id=%'' 
-						OR page REGEXP ''id_neuron=[0-9]+'' 
-						OR page REGEXP ''id1_neuron=[0-9]+'' 
-						OR page REGEXP ''id_neuron_source=[0-9]+'' 
-						OR page REGEXP ''pre_id=[0-9]+''
-					     ) AS ga
-					     LEFT JOIN Type t ON ga.neuronID = t.id
-					     UNION ALL
-					     SELECT 
-					     ''N/A'' AS Subregion,
-				''None of the above'' AS Neuron_Type_Name,
-				day_index,
-				page_views,
-				sessions
-					FROM (
-							SELECT 
-							page,
-							day_index,
-							page_views,
-							sessions
-							FROM GA_combined_analytics
-							WHERE page LIKE ''%neuron_page.php?id=%'' 
-							AND NOT EXISTS (
-								SELECT 1 
-								FROM Type t 
-								WHERE SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id='', -1), ''&'', 1) = t.id
-								)
-					     ) AS unmatched_data
-					) AS full_results
-					GROUP BY Subregion, Neuron_Type_Name
-					ORDER BY (Subregion = ''N/A'') ASC, Subregion, Neuron_Type_Name'
-					);
+				 'SELECT 
+        COALESCE(Subregion, ''N/A'') AS Subregion,
+        Neuron_Type_Name,
+        ', @sql, ',
+        SUM(CASE 
+            WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') 
+            ELSE REPLACE(sessions, \'\', \'\') 
+        END) AS Total_Views
+    FROM (
+        -- Data joined with Type table
+        SELECT 
+            COALESCE(t.subregion, ''N/A'') AS Subregion,
+            COALESCE(t.page_statistics_name, ''None of the Above'') AS Neuron_Type_Name,
+            ga.day_index,
+            ga.page_views,
+            ga.sessions
+        FROM (
+            SELECT 
+                CASE 
+                    WHEN page LIKE ''%neuron_page.php?id=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id='', -1), ''&'', 1)
+                    WHEN page REGEXP ''id_neuron=[0-9]+'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1)
+                    WHEN page REGEXP ''id1_neuron=[0-9]+'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1)
+                    WHEN page REGEXP ''id_neuron_source=[0-9]+'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1)
+                    WHEN page REGEXP ''pre_id=[0-9]+'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''pre_id='', -1), ''&'', 1)
+                    ELSE NULL 
+                END AS neuronID,
+                page,
+                day_index,
+                page_views,
+                sessions
+            FROM GA_combined_analytics
+            WHERE page LIKE ''%neuron_page.php?id=%'' 
+                OR page REGEXP ''id_neuron=[0-9]+'' 
+                OR page REGEXP ''id1_neuron=[0-9]+'' 
+                OR page REGEXP ''id_neuron_source=[0-9]+'' 
+                OR page REGEXP ''pre_id=[0-9]+''
+        ) AS ga
+        LEFT JOIN Type t ON ga.neuronID = t.id
+
+        UNION ALL
+
+        -- Data not matching the Type table (None of the Above)
+        SELECT 
+            ''N/A'' AS Subregion,
+            ''None of the Above'' AS Neuron_Type_Name,
+            unmatched_data.day_index,
+            unmatched_data.page_views,
+            unmatched_data.sessions
+        FROM (
+            SELECT 
+                page,
+                day_index,
+                page_views,
+                sessions
+            FROM GA_combined_analytics
+            WHERE page LIKE ''%neuron_page.php?id=%'' 
+                AND NOT EXISTS (
+                    SELECT 1 
+                    FROM Type t 
+                    WHERE SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id='', -1), ''&'', 1) = t.id
+                )
+        ) AS unmatched_data
+    ) AS full_results
+    GROUP BY Subregion, Neuron_Type_Name
+    ORDER BY (Subregion = ''N/A'') ASC, Subregion, Neuron_Type_Name'
+);
 
 		PREPARE stmt FROM @sql;
 		EXECUTE stmt;
