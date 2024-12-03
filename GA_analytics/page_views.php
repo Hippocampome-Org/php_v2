@@ -2022,7 +2022,7 @@ function get_neurons_views_report($conn, $neuron_ids=NULL, $views_request=NULL, 
 			GROUP BY Subregion, Neuron_Type_Name
 
 			ORDER BY (Subregion = 'N/A') ASC, Subregion, Neuron_Type_Name;";
-	echo $page_neurons_views_query;
+	//echo $page_neurons_views_query;
 	if (($views_request == "views_per_month")  || ($views_request == "views_per_year")) {
 		$page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
 
@@ -2368,7 +2368,7 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 						ORDER BY (Subregion = 'N/A') ASC, Subregion, Neuron_Type_Name;";
 */
 	//-- 'RIGHT JOIN Type AS t ON nd.neuronID = t.id AND t.id NOT IN (4181, 2232,1061, 4058, 4130, 4135, 4160, 4193, 6114, 6122, 6129) ',
-	echo $page_neurons_views_query;
+	//echo $page_neurons_views_query;
 
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
@@ -2541,7 +2541,7 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_
 				GROUP BY 
 				t.page_statistics_name, t.subregion, color_sp, derived.evidence ORDER BY t.position";
 
-        echo $page_property_views_query;
+        //echo $page_property_views_query;
 	if ($views_request == "views_per_month" || $views_request == "views_per_year") {
 		$page_property_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
 		// Build dynamic SQL to create column names
@@ -3722,7 +3722,7 @@ property_page_fp\.php|property_page_phases\.php|synaptic_mod_sum\.php)\?.*(id_ne
 		DEALLOCATE PREPARE stmt;";
 	}
 
-	echo $page_functionality_views_query;
+	// echo $page_functionality_views_query;
 	$options = ['exclude' => ['not php'],];
 	$options = [];//'exclude' => ['not php'],]; //Added this line to make sure we are getting all counts can remove it later
 	$columns = ['Property', 'Views'];
