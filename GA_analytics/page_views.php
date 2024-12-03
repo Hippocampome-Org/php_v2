@@ -2022,7 +2022,7 @@ function get_neurons_views_report($conn, $neuron_ids=NULL, $views_request=NULL, 
 			GROUP BY Subregion, Neuron_Type_Name
 
 			ORDER BY (Subregion = 'N/A') ASC, Subregion, Neuron_Type_Name;";
-	//echo $page_neurons_views_query;
+	echo $page_neurons_views_query;
 	if (($views_request == "views_per_month")  || ($views_request == "views_per_year")) {
 		$page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
 
@@ -2368,7 +2368,7 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 						ORDER BY (Subregion = 'N/A') ASC, Subregion, Neuron_Type_Name;";
 */
 	//-- 'RIGHT JOIN Type AS t ON nd.neuronID = t.id AND t.id NOT IN (4181, 2232,1061, 4058, 4130, 4135, 4160, 4193, 6114, 6122, 6129) ',
-	//echo $page_neurons_views_query;
+	echo $page_neurons_views_query;
 
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
@@ -3048,67 +3048,40 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
         if ($page_string == 'biophysics') {
                 $pageType = $page_string = 'biophysics';
                 $columns = ['Subregion', 'Neuron Type Name', 'Vrest (mV)', 'Rin (MW)', 'tm (ms)', 'Vthresh(mV)','Fast AHP (mV)','APampl (mV)','APwidth (ms)','Max F.R. (Hz)','Slow AHP (mV)','Sag Ratio','Unknown','Total'];	
-                $page_counts_views_query = "SELECT t.subregion, t.page_statistics_name AS neuron_name, derived.evidence as evidence,
-                                                SUM(REPLACE(page_views, ',', '')) AS views
-                                                FROM (
-                                                                SELECT
-                                                                SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) AS neuronID,                    
-                                                                IF(INSTR(page, 'ep=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'ep=', -1), '&', 1), '') AS evidence, 
-                                                                page_views
-                                                                FROM
-                                                                GA_combined_analytics 
-                                                                WHERE
-                                                                page LIKE '%property_page_ephys.php?id_ephys=%'
-                                                                AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4                          
-                                                                AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
-                                                     ) AS derived
-                                                JOIN Type AS t ON t.id = derived.neuronID
-						WHERE   derived.neuronID NOT IN ('4168', '4181', '2232')
-                                                GROUP BY t.subregion, t.page_statistics_name, evidence
-                                                ORDER BY t.position"; 
-		//Changed on Nov 20 2024
-		$page_counts_view_query = "                                                SELECT 
-    t.subregion, 
-    t.page_statistics_name AS neuron_name, 
-    derived.evidence AS evidence,
-    SUM(REPLACE(derived.page_views, ',', '')) AS views
-FROM (
-    SELECT
-        -- Extract neuronID regardless of its position
-        CASE 
-            WHEN INSTR(page, 'id_neuron=') > 0 
-            THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) 
-            ELSE NULL 
-        END AS neuronID,
-        
-        -- Extract evidence regardless of its position
-        CASE 
-            WHEN INSTR(page, 'ep=') > 0 
-            THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'ep=', -1), '&', 1) 
-            ELSE '' 
-        END AS evidence,
-        
-        -- Use page_views if > 0, otherwise sessions
-        CASE 
-            WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '') 
-            ELSE sessions 
-        END AS page_views
-    FROM
-        GA_combined_analytics
-    WHERE
-        page LIKE '%/property_page_ephys.php?%'
-        AND INSTR(page, 'id_neuron=') > 0  -- Ensure id_neuron exists in the URL
-        AND LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4
-        AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
-) AS derived
-JOIN 
-    Type AS t ON t.id = derived.neuronID
-WHERE 
-    derived.neuronID NOT IN ('4168', '4181', '2232')
-GROUP BY 
-    t.subregion, t.page_statistics_name, derived.evidence
-ORDER BY 
-    t.position";
+		//Changed on Dec 2 2024
+		$page_counts_views_query = " SELECT t.subregion, t.page_statistics_name AS neuron_name, derived.evidence AS evidence, SUM(REPLACE(derived.page_views, ',', '')) AS views
+			FROM (
+					SELECT 
+					CASE 
+					WHEN INSTR(page, 'id_neuron=') > 0 
+					THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) 
+					ELSE NULL 
+					END AS neuronID,
+					CASE 
+					WHEN INSTR(page, 'ep=') > 0 
+					THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'ep=', -1), '&', 1) 
+					ELSE '' 
+					END AS evidence,
+					CASE 
+					WHEN REPLACE(page_views, ',', '') > 0 
+					THEN REPLACE(page_views, ',', '') 
+					ELSE sessions 
+					END AS page_views
+					FROM GA_combined_analytics
+					WHERE 
+					page REGEXP 'property_page_ephys\\.php' 
+					AND page REGEXP 'id_neuron=[0-9]+'
+					) AS derived
+					JOIN Type AS t 
+					ON t.id = derived.neuronID
+					GROUP BY 
+					t.subregion, 
+			t.page_statistics_name, 
+			derived.evidence
+				ORDER BY 
+				t.position;";
+
+		//echo $page_counts_view_query;
 		if ($views_request == "views_per_month" || $views_request == "views_per_year") {
                         $page_counts_views_query= "SET SESSION group_concat_max_len = 1000000;
                         SET @sql = NULL;";
@@ -3118,7 +3091,8 @@ ORDER BY
                                                 DISTINCT
                                                 CONCAT(
                                                         'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
-                                                                ' THEN REPLACE(page_views, \",\", \"\") ELSE 0 END) AS `',
+							THEN CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') 
+ELSE REPLACE(sessions, \'\', \'\') END ELSE 0 END) AS `',
                                                         @time_unit, '`'
                                                       )
                                                 ORDER BY YEAR(day_index) 
@@ -3126,20 +3100,9 @@ ORDER BY
                                             ) INTO @sql
                                 FROM GA_combined_analytics 
                                 WHERE
-                                page LIKE '%/property_page_%'
-                                AND (
-                                                SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases'
-                                    )
-                                AND (
-                                                LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4
-                                                OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) = 4
-                                                OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) = 4
-                                    )
-                                AND (
-                                                SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
-                                                OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
-                                                OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
-                                    );";
+				page REGEXP 'property_page_ephys\.php'
+ AND page REGEXP 'id_neuron=[0-9]+'
+                                    ;";
 
                         // Determine the specific time unit and formatting based on the request
                         if ($views_request == "views_per_month") {
@@ -3175,13 +3138,8 @@ ORDER BY
 							    '        IF(INSTR(page, \'ep=\') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'ep=\', -1), \'&\', 1), \'\') AS evidence, ',
                                                                 '        day_index ',
                                                                 '    FROM GA_combined_analytics ',
-                                                             '    WHERE page LIKE \'%property_page_ephys.php?id_ephys=%\' ',
-                                                                '      AND (LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id_neuron=\', -1), \'&\', 1)) = 4 ',
-                                                                        '           OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id1_neuron=\', -1), \'&\', 1)) = 4 ',
-                                                                        '           OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id_neuron_source=\', -1), \'&\', 1)) = 4) ',
-                                                                '      AND (SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id_neuron=\', -1), \'&\', 1) NOT IN (\'4168\', \'4181\', \'2232\') ',
-                                                                        '           OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id1_neuron=\', -1), \'&\', 1) NOT IN (\'4168\', \'4181\', \'2232\') ',
-                                                                        '           OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id_neuron_source=\', -1), \'&\', 1) NOT IN (\'4168\', \'4181\', \'2232\')) ',
+								' WHERE page REGEXP \'property_page_ephys\.php\' ', 
+								' AND page REGEXP \'id_neuron=[0-9]+\' ',
                                                                 ') AS derived ',
                                                 'LEFT JOIN Type AS t ON t.id = derived.neuronID ',
                                                 'WHERE derived.neuronID NOT IN (\'4168\', \'4181\', \'2232\') ',
@@ -3194,7 +3152,7 @@ ORDER BY
 
                 }
 
-                //echo  $page_counts_views_query;
+                echo  $page_counts_views_query;
         }
 
 	// Check for 'synpro' or 'synpro_nm' page types
