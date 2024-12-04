@@ -13,6 +13,7 @@ require_once('/Applications/XAMPP/vendor/autoload.php');
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 global $csv_data;
+define('CALCULATED_VIEWS', get_calculated_views_dynamically($conn));
 
 function download_excel_file($conn, $neuron_ids, $param) {
     ini_set('memory_limit', '512M'); // Adjust as necessary
@@ -122,6 +123,34 @@ function get_neuron_ids($conn){
 		$neuron_ids[$row[0]]=$row[1];
 	}
 	return $neuron_ids;	
+}
+
+function get_calculated_views_dynamically($conn) {
+    $delta_value = 0;
+    $setQuery = "
+        SET @total_views = (
+            SELECT SUM(
+                CASE
+                    WHEN REPLACE(page_views, ',', '') > 0
+                    THEN REPLACE(page_views, ',', '')
+                    ELSE REPLACE(sessions, ',', '')
+                END
+            )
+            FROM GA_combined_analytics
+        );
+    ";
+    if (!mysqli_query($conn, $setQuery)) {
+        return $value;
+    }
+    $selectQuery = "SELECT @total_views AS total_views;";
+    $result = mysqli_query($conn, $selectQuery);
+    if ($result && $row = mysqli_fetch_assoc($result)) {
+        $total_views = $row['total_views'];
+        if ($total_views > 0) {
+            $delta_value = 86523 / $total_views; 
+        }
+    }
+    return $delta_value; 
 }
 
 /*
@@ -655,9 +684,9 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 							if($key == 'Neuronal_Attribute'){
 								$color_segments = ['red' => 'Axon Locations', 'blue' => 'Dendrite Locations', 'somata' => 'Soma Locations', 'violet' => 'Axon-Dendrite Locations', 
 										   'redSoma' => 'Axon-Somata Locations', 'blueSoma' => 'Dendrite-Somata Locations', 'violetSoma' => 'Axon-Dendrite-Somata Locations', 											 'reddal' => 'Axon Lengths', 'bluedal' => 'Dendrite Lengths', 'redsd' => 'Somatic Distances of Axons', 
-									'bluesd' => 'Somatic Distances of Dendrites', 'violetSomadal' => 'Unknown', 'violetSomasd' => 'Unknown', '' => 'Unknown'];
+									'bluesd' => 'Somatic Distances of Dendrites', 'violetSomadal' => 'None Of the Above', 'violetSomasd' => 'None of the Above', '' => 'None of the Above'];
 
-								$rowvalue[$key] = isset($color_segments[$value]) ? $color_segments[$value] : 'Unknown';
+								$rowvalue[$key] = isset($color_segments[$value]) ? $color_segments[$value] : 'None of the Above';
 							}
 							if($key == 'Firing_Pattern'){
 								$fp_format = [
@@ -687,7 +716,7 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 									'D.TSTUT.' => 'Delayed Persistent Stuttering',
 									'TSTUT.ASP.' => 'Transient Stuttering followed by Adapting Spiking'
 										];
-								$rowvalue[$key] = isset($fp_format[$value]) ? $fp_format[$value] : 'Unknown';
+								$rowvalue[$key] = isset($fp_format[$value]) ? $fp_format[$value] : 'None of the Above';
 							}
 							if($key == 'Marker_Evidence'){
 								        $neuronal_segments = ["CB"=>"CB", "CR"=>"CR", "PV"=>"PV", "5HT-3"=>"5HT-3", "CB1"=>"CB1", "Gaba-a-alpha"=>"GABAa_alfa", "mGluR1a"=>"mGluR1a", "Mus2R"=>"Mus2R", "NPY"=>"NPY", "nNOS"=>"nNOS", "AChE"=>"AChE", "AMIGO2"=>"AMIGO2", "Astn2"=>"Astn2", "Caln"=>"Caln", "CaMKII_alpha"=>"CaMKII_alpha", "ChAT"=>"ChAT", "Chrna2"=>"Chrna2", "CRF"=>"CRF", "Ctip2"=>"Ctip2",
@@ -703,14 +732,14 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
                                 "vGAT"=>"vGAT", "vGlut1"=>"vGluT1", "vGluT2"=>"vGluT2", "VILIP"=>"VILIP", "Wfs1"=>"Wfs1", "Y1"=>"Y1", "Y2"=>"Y2", "DCX"=>"DCX", "NeuN"=>"NeuN", "NeuroD"=>"NeuroD",
                                 "GAT-1"=>"GAT-1", "Sub P Rec"=>"Sub P Rec", "vGluT3"=>"vGluT3", "CCK"=>"CCK", "ENK"=>"ENK", "NG"=>"NG", "SOM"=>"SOM", "VIP"=>"VIP", "CoupTF II"=>"CoupTF_2", "RLN"=>"RLN",
                                 "CGRP"=>"CGRP", "GluA2/3"=>"GluA2/3", "GluA1"=>"GluA1", "AR-beta1"=>"AR-beta1", "AR-beta2"=>"AR-beta2", "BDNF"=>"BDNF", "Bok"=>"Bok", "CaM"=>"CaM", "GABAa\alpha 2"=>"GABAa_alpha2",
-                                "GABAa\\alpha 2"=>"GABAa_alpha2", "GABAa\\\\alpha 2"=>"GABAa_alpha2", "GABAa\alpha 3"=>"GABAa_alpha3","GABAa%5Calpha%204"=>"GABAa_alpha4", "GABAa\alpha 4"=>"GABAa_alpha4", "GABAa\alpha 5"=>"GABAa_alpha5", "GABAa\alpha 6"=>"GABAa_alpha6", "CRH"=>"CRH", "NK1R"=>"NK1R",""=>"Unknown"];
-									$rowvalue[$key] = isset($neuronal_segments[$value]) ? $neuronal_segments[$value] : 'Unknown';
+                                "GABAa\\alpha 2"=>"GABAa_alpha2", "GABAa\\\\alpha 2"=>"GABAa_alpha2", "GABAa\alpha 3"=>"GABAa_alpha3","GABAa%5Calpha%204"=>"GABAa_alpha4", "GABAa\alpha 4"=>"GABAa_alpha4", "GABAa\alpha 5"=>"GABAa_alpha5", "GABAa\alpha 6"=>"GABAa_alpha6", "CRH"=>"CRH", "NK1R"=>"NK1R",""=>"Other"];
+									$rowvalue[$key] = isset($neuronal_segments[$value]) ? $neuronal_segments[$value] : 'Other';
 						}
 						if($key == "Biophysics_Evidence") {
 							$neuronal_segments = ['Vrest'=>'Vrest (mV)', 'Rin'=>'Rin (MW)', 'tm'=>'tm (ms)', 'Vthresh'=>'Vthresh(mV)','fast_AHP'=>'Fast AHP (mV)', 
 									      'AP_ampl'=>'APampl (mV)','AP_width'=>'APwidth (ms)', 'max_fr'=>'Max F.R. (Hz)','slow_AHP'=>'Slow AHP (mV)',
-										'sag_ratio'=>'Sag Ratio',''=>'Unknown'];
-							$rowvalue[$key] = isset($neuronal_segments[$value]) ? $neuronal_segments[$value] : 'Unknown';
+										'sag_ratio'=>'Sag Ratio',''=>'Other'];
+							$rowvalue[$key] = isset($neuronal_segments[$value]) ? $neuronal_segments[$value] : 'Other';
 						}
 						if($key == "Expression"){
 									$color_segments = [
@@ -734,7 +763,7 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 										'negative-positive_inference-negative_inference'=>'Positive-Negative Inference',
 										'weak_positive'=>'Positive Inference',
 										'negative_inference'=>'Negative Inference'];
-								$rowvalue[$key] = isset($color_segments[$value]) ? $color_segments[$value] : 'Unknown';
+								$rowvalue[$key] = isset($color_segments[$value]) ? $color_segments[$value] : 'Other';
 							}
 							if ($value == 0) {
 								//$rowvalue[$key] = ''; // Replace 0 with an empty string
@@ -915,7 +944,7 @@ function format_table_connectivity($conn, $query, $table_string, $csv_tablename,
                 $views = intval($rowvalue['views']);
 		$parcel_specific = $rowvalue['parcel_specific'];
 		$nm_page = $rowvalue['nm_page'];
-		$connectivity_cols = ['Potential Connectivity Evidence', 'Number of Potential Synapses Parcel-Specific Table', 'Number of Potential Synapses Evidence', 'Number of Contacts Parcel-Specific Table', 'Number of Contacts Evidence','Synaptic Probability Parcel-Specific Table', 'Synaptic Probability Evidence', 'Unknown'];
+		$connectivity_cols = ['Potential Connectivity Evidence', 'Number of Potential Synapses Parcel-Specific Table', 'Number of Potential Synapses Evidence', 'Number of Contacts Parcel-Specific Table', 'Number of Contacts Evidence','Synaptic Probability Parcel-Specific Table', 'Synaptic Probability Evidence', 'Other'];
 
                 // Initialize arrays if necessary
                 if (!isset($array_subs[$source_subregion])) {
@@ -944,7 +973,7 @@ function format_table_connectivity($conn, $query, $table_string, $csv_tablename,
 						$evidence = 'Number of Contacts Parcel-Specific Table';
 						break;
 					default:
-						$evidence = 'Unknown';
+						$evidence = 'Other';
 				}
 				break;
 
@@ -963,7 +992,7 @@ function format_table_connectivity($conn, $query, $table_string, $csv_tablename,
 						$evidence = 'Number of Contacts Evidence';
 						break;
 					default:
-						$evidence = 'Unknown';
+						$evidence = 'Other';
 				}
 				break;
 		}
@@ -1075,18 +1104,18 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 
     $color_segments = ['red' => 'Axon Locations', 'blue' => 'Dendrite Locations', 'somata' => 'Soma Locations', 'violet' => 'Axon-Dendrite Locations', 'redSoma' => 'Axon-Somata Locations', 
 			'blueSoma' => 'Dendrite-Somata Locations', 'violetSoma' => 'Axon-Dendrite-Somata Locations', 'reddal' => 'Axon Lengths', 'bluedal' => 'Dendrite Lengths', 
-			'redsd' => 'Somatic Distances of Axons', 'bluesd' => 'Somatic Distances of Dendrites', 'violetSomadal' => 'Unknown', 'violetSomasd' => 'Unknown', '' => 'Unknown'];
+			'redsd' => 'Somatic Distances of Axons', 'bluesd' => 'Somatic Distances of Dendrites', 'violetSomadal' => 'None of the Above', 'violetSomasd' => 'None of the Above', '' => 'None of the Above'];
 
     $color_cols = ['Axon Locations', 'Dendrite Locations', 'Soma Locations', 'Axon-Dendrite Locations', 'Axon-Somata Locations', 'Dendrite-Somata Locations', 'Axon-Dendrite-Somata Locations', 
-		   'Axon Lengths', 'Dendrite Lengths', 'Somatic Distances of Axons', 'Somatic Distances of Dendrites', 'Unknown'];
+		   'Axon Lengths', 'Dendrite Lengths', 'Somatic Distances of Axons', 'Somatic Distances of Dendrites', 'None of the Above'];
 
     $cols = ['DG:SMo', 'DG:SMi', 'DG:SG', 'DG:H', 'CA3:SLM', 'CA3:SR', 'CA3:SL', 'CA3:SP', 'CA3:SO', 'CA2:SLM', 'CA2:SR', 'CA2:SP', 'CA2:SO', 'CA1:SLM', 'CA1:SR', 'CA1:SP', 'CA1:SO', 'Sub:SM', 
-		'Sub:SP', 'Sub:PL', 'EC:I', 'EC:II', 'EC:III', 'EC:IV', 'EC:V', 'EC:VI', 'Unknown'];
+		'Sub:SP', 'Sub:PL', 'EC:I', 'EC:II', 'EC:III', 'EC:IV', 'EC:V', 'EC:VI', 'Other'];
 
     $neuronal_segments = ['DG_SMo' => 'DG:SMo', 'DG_SMi' => 'DG:SMi', 'DG_SG' => 'DG:SG', 'DG_H' => 'DG:H', 'CA3_SLM' => 'CA3:SLM', 'CA3_SR' => 'CA3:SR', 'CA3_SL' => 'CA3:SL', 'CA3_SP' => 'CA3:SP', 
 			  'CA3_SO' => 'CA3:SO', 'CA2_SLM' => 'CA2:SLM', 'CA2_SR' => 'CA2:SR', 'CA2_SP' => 'CA2:SP', 'CA2_SO' => 'CA2:SO', 'CA1_SLM' => 'CA1:SLM', 'CA1_SR' => 'CA1:SR', 'CA1_SP' => 'CA1:SP', 
 			  'CA1_SO' => 'CA1:SO', 'SUB_SM' => 'Sub:SM', 'SUB_SP' => 'Sub:SP', 'SUB_PL' => 'Sub:PL', 'EC_I' => 'EC:I', 'EC_II' => 'EC:II', 'EC_III' => 'EC:III', 'EC_IV' => 'EC:IV', 'EC_V' => 'EC:V', 
-			  'EC_VI' => 'EC:VI', '' => 'Unknown'];
+			  'EC_VI' => 'EC:VI', '' => 'Other'];
 
     if (!$rs || ($rs->num_rows < 1)) {
 	    $table_string1 .= "<tr><td> No Data is available </td></tr>";
@@ -1109,12 +1138,12 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 
         $subregion = $rowvalue['subregion'];
         $neuron_name = $rowvalue['neuron_name'];
-        $color_sp = isset($color_segments[$rowvalue['color_sp']]) ? $color_segments[$rowvalue['color_sp']] : 'Unknown';
-        $evidence = isset($neuronal_segments[$rowvalue['evidence']]) ? $neuronal_segments[$rowvalue['evidence']] : 'Unknown';
+        $color_sp = isset($color_segments[$rowvalue['color_sp']]) ? $color_segments[$rowvalue['color_sp']] : 'None of the Above';
+        $evidence = isset($neuronal_segments[$rowvalue['evidence']]) ? $neuronal_segments[$rowvalue['evidence']] : 'None of the Above';
 
         if ($evidence == 'GABAa_alpha2' && empty($rowvalue['color_sp'])) {
             $rowvalue['color_sp'] = 'positive';
-            $color_sp = $color_segments[$rowvalue['color_sp']] ?? 'Unknown';
+            $color_sp = $color_segments[$rowvalue['color_sp']] ?? 'None of the Above';
         }
 
         $views = intval($rowvalue['views']);
@@ -1271,7 +1300,7 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 				"GABAa\\\\alpha 2"=>"GABAa_alpha2",
 				"GABAa\alpha 3"=>"GABAa_alpha3","GABAa%5Calpha%204"=>"GABAa_alpha4",
 				 "GABAa\alpha 4"=>"GABAa_alpha4", "GABAa\alpha 5"=>"GABAa_alpha5", "GABAa\alpha 6"=>"GABAa_alpha6", "CRH"=>"CRH", "NK1R"=>"NK1R",
-				""=>"Unknown"];
+				""=>"Other"];
 
 	$color_segments = [ 
 		'negative-negative_inference'=>'Negative Inference',
@@ -1303,7 +1332,7 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 		"GAT-1", "GAT-3", "GluA1", "GluA2", "GluA2/3", "GluA3", "GluA4", "GlyT2", "Gpc3", "Grp", "Htr2c", "Id_2", "Kv3_1", "Loc432748", "Man1a", "Math-2", "mGluR1", "mGluR2", 
 			"mGluR2/3", "mGluR3", "mGluR4", "mGluR5", "mGluR5a", "mGluR7a", "mGluR8a", "MOR", 
 			"Mus1R", "Mus3R", "Mus4R", "Ndst4", "NECAB1", "Neuropilin2", "NKB", "Nov", "Nr3c2", "Nr4a1", "p-CREB", "PCP4", "PPE", "PPTA", "Prox1", "Prss12", "Prss23", "PSA-NCAM", "SATB1", 
-			"SATB2", "SCIP", "SPO", "SubP", "Tc1568100", "TH", "vAChT", "vGAT", "vGluT1", "vGluT2", "VILIP", "Wfs1", "Y1", "Y2", "DCX", "NeuN", "NeuroD", "CRH", "NK1R", "Unknown"];
+			"SATB2", "SCIP", "SPO", "SubP", "Tc1568100", "TH", "vAChT", "vGAT", "vGluT1", "vGluT2", "VILIP", "Wfs1", "Y1", "Y2", "DCX", "NeuN", "NeuroD", "CRH", "NK1R", "Other"];
 
 	if(!$rs || ($rs->num_rows < 1)){
                 $table_string1 .= "<tr><td> No Data is available </td></tr>";
@@ -1501,9 +1530,9 @@ function format_table_biophysics($conn, $query, $table_string, $csv_tablename, $
         $table_string1 = '';
 	$rows = count($csv_headers);
 	$neuronal_segments = ['Vrest'=>'Vrest (mV)', 'Rin'=>'Rin (MW)', 'tm'=>'tm (ms)', 'Vthresh'=>'Vthresh(mV)','fast_AHP'=>'Fast AHP (mV)',
-		'AP_ampl'=>'APampl (mV)','AP_width'=>'APwidth (ms)', 'max_fr'=>'Max F.R. (Hz)','slow_AHP'=>'Slow AHP (mV)','sag_ratio'=>'Sag Ratio',''=>'Unknown'];
+		'AP_ampl'=>'APampl (mV)','AP_width'=>'APwidth (ms)', 'max_fr'=>'Max F.R. (Hz)','slow_AHP'=>'Slow AHP (mV)','sag_ratio'=>'Sag Ratio',''=>'Other'];
 
-	$cols = ['Vrest (mV)', 'Rin (MW)', 'tm (ms)', 'Vthresh(mV)','Fast AHP (mV)','APampl (mV)','APwidth (ms)','Max F.R. (Hz)','Slow AHP (mV)','Sag Ratio','Unknown'];
+	$cols = ['Vrest (mV)', 'Rin (MW)', 'tm (ms)', 'Vthresh(mV)','Fast AHP (mV)','APampl (mV)','APwidth (ms)','Max F.R. (Hz)','Slow AHP (mV)','Sag Ratio','Other'];
 
 	if(!$rs || ($rs->num_rows < 1)){
                 $table_string1 .= "<tr><td> No Data is available </td></tr>";
@@ -1619,10 +1648,10 @@ function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_
 		'theta'=>'Theta (deg)', 'swr_ratio'=>'SWR Ratio','firingRate'=>'In Vivo Firing Rate (Hz)', 'gamma' => 'Gamma (deg)', 'DS_ratio' => 'DS Ratio', 
 		'Vrest' => 'Vrest (mV)', 'epsilon'=>'Epsilon','firingRateNonBaseline'=>'Non-Baseline Firing Rate (Hz)', 'APthresh'=>'APthresh (mV)', 'tau'=>'Tau (ms)', 
 		'run_stop_ratio'=>'Run/Stop Ratio', 'ripple'=>'Ripple (deg)', 'fahp'=>'fAHP (mV)','APpeal'=>'APpeak-trough (ms)',
-		'all_other'=>'Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau, AP threshold, fAHP, or APpeak trough.',''=>'Unknown'];
+		'all_other'=>'Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau, AP threshold, fAHP, or APpeak trough.',''=>'Other'];
 	$cols = [ 'Theta (deg)', 'SWR Ratio','In Vivo Firing Rate (Hz)', 'DS Ratio', 'Ripple (deg)','Gamma (deg)', 'Run/Stop Ratio','Epsilon',
 		'Non-Baseline Firing Rate (Hz)', 'Vrest (mV)', 'Tau (ms)',
-		'APthresh (mV)','fAHP (mV)','APpeak-trough (ms)','Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau, AP threshold, fAHP, or APpeak trough.','Unknown'];
+		'APthresh (mV)','fAHP (mV)','APpeak-trough (ms)','Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau, AP threshold, fAHP, or APpeak trough.','Other'];
 
 	if(!$rs || ($rs->num_rows < 1)){
                 $table_string1 .= "<tr><td> No Data is available </td></tr>";
@@ -2355,85 +2384,40 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 }
 
 function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_request=NULL, $write_file=NULL){
-	$page_property_views_query = "SELECT t.subregion, t.page_statistics_name AS neuron_name, derived.evidence AS evidence, 
-		CONCAT(derived.color, TRIM(derived.sp_page)) AS 'color_sp', SUM(REPLACE(derived.page_views, ',', '')) AS views
-		FROM (
-				SELECT page_views, 
-				IF(
-					INSTR(page, 'id_neuron=') > 0, 
-					SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1),
-					IF(
-						INSTR(page, 'id1_neuron=') > 0, 
-						SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1),
-						IF(
-							INSTR(page, 'id_neuron_source=') > 0, 
+	$page_property_views_query = "SELECT t.subregion, t.page_statistics_name AS neuron_name, derived.evidence AS evidence, CONCAT(derived.color, TRIM(derived.sp_page)) AS color_sp, 
+		SUM( CASE WHEN REPLACE(derived.page_views, ',', '') > 0 THEN REPLACE(derived.page_views, ',', '') ELSE REPLACE(derived.sessions, ',', '') END ) AS views FROM (
+				SELECT IF(INSTR(page, 'id_neuron=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1), IF(INSTR(page, 'id1_neuron=') > 0, 
+						SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1), 
+						IF(INSTR(page, 'id_neuron_source=') > 0, 
 							SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1), 
-							''
-						  )
-					  )
-				  ) AS neuronID,
+							''))) AS neuronID,
 				IF(INSTR(page, 'val_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '') AS evidence,
-				IF(INSTR(page, 'val_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1), '') AS color,
-				IF(INSTR(page, 'sp_page=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'sp_page=', -1), '&', 1), '') AS sp_page
-				FROM 
-				GA_combined_analytics 
+				IF(INSTR(page, 'color=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1), '') AS color,
+				IF(INSTR(page, 'sp_page=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'sp_page=', -1), '&', 1), '') AS sp_page,
+				page_views, sessions
+				FROM GA_combined_analytics 
 				WHERE 
-				page LIKE '%/property_page_%'
+				page LIKE '%/property_page_%' 
+				AND (SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'morphology' ) 
 				AND (
-						SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'morphology'
-						OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro'
-				    )
-				AND (
-						LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4 OR
-						LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) = 4 OR
-						LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) = 4
-				    )
-				AND (
-						SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232) OR
-						SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232) OR
-						SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN (4168, 4181, 2232)
-				    )
-				) AS derived 
-				LEFT JOIN Type AS t ON t.id = derived.neuronID
-				WHERE   derived.neuronID NOT IN ('4168', '4181', '2232') 
-				GROUP BY 
-				t.page_statistics_name, t.subregion, color_sp, derived.evidence ORDER BY t.position";
+					INSTR(page, 'id_neuron=') > 0 OR INSTR(page, 'id1_neuron=') > 0 OR INSTR(page, 'id_neuron_source=') > 0
+				    ) ) AS derived
+		LEFT JOIN Type AS t ON t.id = derived.neuronID 
+		GROUP BY t.page_statistics_name, t.subregion, color_sp, derived.evidence ORDER BY t.position;";
 
-        //echo $page_property_views_query;
+	//echo $page_property_views_query;
 	if ($views_request == "views_per_month" || $views_request == "views_per_year") {
 		$page_property_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
-		// Build dynamic SQL to create column names
-		$base_query = "
-			SELECT
-			GROUP_CONCAT(
-					DISTINCT
-					CONCAT(
+		$base_query = "SELECT GROUP_CONCAT(DISTINCT CONCAT(
 						'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index), 
-							/* Dynamic part depending on the view request */
-							' THEN REPLACE(page_views, \",\", \"\") ELSE 0 END) AS `', 
-						/* Dynamic part depending on the view request */
+							' THEN CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') 
+							ELSE REPLACE(sessions, \'\', \'\') END ELSE 0 END) AS `',
 						@time_unit, '`'
-					      )
-					ORDER BY YEAR(day_index) /* For 'views_per_month' also add 'MONTH(day_index)' here */
-					SEPARATOR ', '
+					      ) ORDER BY YEAR(day_index) SEPARATOR ', '
 				    ) INTO @sql
-			FROM GA_combined_analytics 
-			WHERE
+			FROM GA_combined_analytics WHERE
 			page LIKE '%/property_page_%'
-			AND (
-					SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'morphology'
-					OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro'
-			    )
-			AND (
-					LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4
-					OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) = 4
-					OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) = 4
-			    )
-			AND (
-					SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
-					OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
-					OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
-			    );";
+			AND (SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'morphology');";
 
 		// Determine the specific time unit and formatting based on the request
 		if ($views_request == "views_per_month") {
@@ -2454,44 +2438,57 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_
 		// Build the main query
 		$page_property_views_query .= "
 			SET @sql = CONCAT(
-					'SELECT t.subregion AS Subregion, t.page_statistics_name AS Neuron_Type_Name, ',
-					'REPLACE(derived.evidence, \'_\', \':\') AS Evidence, ',
-					'CONCAT(derived.color, TRIM(derived.sp_page)) AS Neuronal_Attribute, ',
-					@sql,  
-					', SUM(REPLACE(derived.page_views, '','', '''')) AS Total_Views',
-					' FROM (',
-						'    SELECT page_views,',
-						'        CASE WHEN INSTR(page, ''id_neuron='') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
-						'             WHEN INSTR(page, ''id1_neuron='') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) ',
-						'             WHEN INSTR(page, ''id_neuron_source='') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) ',
-						'             ELSE NULL END AS neuronID,',
-						'        CASE WHEN INSTR(page, ''val_property='') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''val_property='', -1), ''&'', 1) ELSE NULL END AS evidence,',
-						'        CASE WHEN INSTR(page, ''color='') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''color='', -1), ''&'', 1) ELSE NULL END AS color,',
-						'        CASE WHEN INSTR(page, ''sp_page='') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''sp_page='', -1), ''&'', 1) ELSE NULL END AS sp_page,',
-						'        day_index',
-						'    FROM GA_combined_analytics', 
-						'    WHERE page LIKE ''%/property_page_%''',
-						'    AND (SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''morphology'' ',
-							'        OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''synpro'')',
-							'    AND (LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1)) = 4 ',
-								'         OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1)) = 4 ',
-								'         OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1)) = 4)',
-							'    AND (SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) NOT IN (''4168'', ''4181'', ''2232'') ',
-								'         OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) NOT IN (''4168'', ''4181'', ''2232'') ',
-								'         OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) NOT IN (''4168'', ''4181'', ''2232''))',
-							') AS derived',
-						' LEFT JOIN Type AS t ON t.id = derived.neuronID',
-						' WHERE derived.neuronID NOT IN (''4168'', ''4181'', ''2232'')',
-								' GROUP BY t.subregion, t.page_statistics_name, Neuronal_Attribute, derived.evidence',
-								' ORDER BY t.position'
-								); ";
+					'SELECT ',
+					't.subregion AS Subregion, ',
+					't.page_statistics_name AS Neuron_Name, ',
+					'derived.evidence AS Evidence, ',
+					'CONCAT(derived.color, TRIM(derived.sp_page)) AS Color_SP, ',
+					@sql, ', ',
+					'SUM(CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END) AS Total_Views ',
+					'FROM (',
+						'   SELECT ',
+						'       IF(INSTR(page, ''id_neuron='') > 0, ',
+							'           SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1), ',
+							'           IF(INSTR(page, ''id1_neuron='') > 0, ',
+								'               SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1), ',
+								'               IF(INSTR(page, ''id_neuron_source='') > 0, ',
+									'                   SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1), ',
+									'                   '''' ',
+									'               ) ',
+								'           ) ',
+							'       ) AS neuronID, ',
+						'       IF(INSTR(page, ''val_property='') > 0, ',
+							'           SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''val_property='', -1), ''&'', 1), ',
+							'           '''' ',
+							'       ) AS evidence, ',
+						'       IF(INSTR(page, ''color='') > 0, ',
+							'           SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''color='', -1), ''&'', 1), ',
+							'           '''' ',
+							'       ) AS color, ',
+						'       IF(INSTR(page, ''sp_page='') > 0, ',
+							'           SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''sp_page='', -1), ''&'', 1), ',
+							'           '''' ',
+							'       ) AS sp_page, ',
+						'       page_views, ',
+						'       sessions, ',
+						'       day_index ',
+						'   FROM GA_combined_analytics ',
+						'   WHERE ',
+						'       page LIKE ''%/property_page_%'' ',
+						'       AND (',
+								'           SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''morphology'' ',
+								'       ) ',
+						') AS derived ',
+						'LEFT JOIN Type AS t ON t.id = derived.neuronID ',
+						'GROUP BY t.subregion, t.page_statistics_name, derived.evidence, Color_SP ',
+						'ORDER BY t.position'
+							);";
 		$page_property_views_query .= "PREPARE stmt FROM @sql;
 		EXECUTE stmt;
 		DEALLOCATE PREPARE stmt;";
-
 	}
 
-        $columns = ['Subregion', 'Neuron Type Name', 'Neuronal Attribute', 'DG:SMo', 'DG:SMi','DG:SG','DG:H','CA3:SLM','CA3:SR','CA3:SL','CA3:SP','CA3:SO','CA2:SLM','CA2:SR','CA2:SP','CA2:SO','CA1:SLM','CA1:SR','CA1:SP','CA1:SO','Sub:SM','Sub:SP','Sub:PL','EC:I','EC:II','EC:III','EC:IV','EC:V','EC:VI','Unknown','Total'];
+        $columns = ['Subregion', 'Neuron Type Name', 'Neuronal Attribute', 'DG:SMo', 'DG:SMi','DG:SG','DG:H','CA3:SLM','CA3:SR','CA3:SL','CA3:SP','CA3:SO','CA2:SLM','CA2:SR','CA2:SP','CA2:SO','CA1:SLM','CA1:SR','CA1:SP','CA1:SO','Sub:SM','Sub:SP','Sub:PL','EC:I','EC:II','EC:III','EC:IV','EC:V','EC:VI','Other','Total'];
         $table_string='';
         if(isset($write_file)) {
 		$file_name = "morphology_axonal_and_dendritic_lengths_somatic_distances_evidence_page_";
@@ -2670,7 +2667,7 @@ function get_markers_property_views_report($conn, $neuron_ids, $views_request=NU
 			"GABAa_gamma1", "GABAa_gamma2", "GABA-B1", "GAT-1", "GAT-3", "GluA1", "GluA2", "GluA2/3", "GluA3", "GluA4", "GlyT2", "Gpc3", "Grp", "Htr2c", "Id_2", "Kv3_1", "Loc432748", "Man1a", 
 			"Math-2", "mGluR1", "mGluR2", "mGluR2/3", "mGluR3", "mGluR4", "mGluR5", "mGluR5a", "mGluR7a", "mGluR8a", "MOR", "Mus1R", "Mus3R", "Mus4R", "Ndst4", "NECAB1", "Neuropilin2", "NKB", "Nov",
 			"Nr3c2", "Nr4a1", "p-CREB", "PCP4", "PPE", "PPTA", "Prox1", "Prss12", "Prss23", "PSA-NCAM", "SATB1", "SATB2", "SCIP", "SPO", "SubP", "Tc1568100", "TH", "vAChT", "vGAT", "vGluT1", 
-			"vGluT2", "VILIP", "Wfs1", "Y1", "Y2", "DCX", "NeuN", "NeuroD", "CRH", "NK1R", "Unknown", "Total"];
+			"vGluT2", "VILIP", "Wfs1", "Y1", "Y2", "DCX", "NeuN", "NeuroD", "CRH", "NK1R", "Other", "Total"];
         $table_string='';
 	 if(isset($write_file)) {
                 $file_name = "markers_evidence_page_";
@@ -2717,7 +2714,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 		
 		$columns = ['Subregion', 'Neuron Type Name', 'Theta (deg)', 'SWR Ratio','In Vivo Firing Rate (Hz)', 'DS Ratio', 'Ripple (deg)','Gamma (deg)', 'Run/Stop Ratio',
 				'Epsilon','Non-Baseline Firing Rate (Hz)', 
-				'Vrest (mV)', 'Tau (ms)','APthresh (mV)','fAHP (mV)','APpeak-trough (ms)','Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau, AP threshold, fAHP, or APpeak trough.', 'Unknown', 'Total'];
+				'Vrest (mV)', 'Tau (ms)','APthresh (mV)','fAHP (mV)','APpeak-trough (ms)','Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau, AP threshold, fAHP, or APpeak trough.', 'Other', 'Total'];
 		$pageType = $page_string == 'phases' ? 'phases' : 'counts';
 		$page_counts_views_query = "SELECT derived.page, t.subregion, t.page_statistics_name AS neuron_name, derived.evidence AS evidence, SUM(REPLACE(derived.page_views, ',', '')) AS views 
 						FROM (
@@ -2813,7 +2810,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 						'    WHEN derived.evidence = \'fahp\' THEN \'fAHP (mV)\' ',
 						'    WHEN derived.evidence = \'APpeal\' THEN \'APpeak-trough (ms)\' ',
 						'    WHEN derived.evidence = \'all_other\' THEN \'Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau, AP threshold, fAHP, or APpeak trough.\' ',
-						'    ELSE \'Unknown\' ',
+						'    ELSE \'Other\' ',
 						'END AS Evidence_Description, ',
 						@sql, 
 							', SUM(REPLACE(derived.page_views, \',\', \'\')) AS Total_Views ',
@@ -2851,7 +2848,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 	// Check for 'connectivity' page types
         if ($page_string == 'connectivity') {
                      
-                $columns = ['Presynaptic Subregion', 'Presynaptic Neuron Type Name', 'Postsynaptic Subregion', 'Postsynaptic Neuron Type Name', 'Potential Connectivity Evidence', 'Number of Potential Synapses Parcel-Specific Table', 'Number of Potential Synapses Evidence', 'Number of Contacts Parcel-Specific Table', 'Number of Contacts Evidence', 'Synaptic Probability Parcel-Specific Table', 'Synaptic Probability Evidence', 'Unknown', 'Total'];
+                $columns = ['Presynaptic Subregion', 'Presynaptic Neuron Type Name', 'Postsynaptic Subregion', 'Postsynaptic Neuron Type Name', 'Potential Connectivity Evidence', 'Number of Potential Synapses Parcel-Specific Table', 'Number of Potential Synapses Evidence', 'Number of Contacts Parcel-Specific Table', 'Number of Contacts Evidence', 'Synaptic Probability Parcel-Specific Table', 'Synaptic Probability Evidence', 'Other', 'Total'];
                 $pageType = $page_string = 'connectivity';
 		$page_counts_views_query = "SELECT derived.page, t_source.subregion AS source_subregion, t_source.page_statistics_name AS source_neuron_name, derived.source_evidence, 
 						   derived.source_color, t_target.subregion AS target_subregion, t_target.page_statistics_name AS target_neuron_name, derived.target_evidence, derived.target_color, 
@@ -2905,7 +2902,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 	// Check for 'biophysics' page types
         if ($page_string == 'biophysics') {
                 $pageType = $page_string = 'biophysics';
-                $columns = ['Subregion', 'Neuron Type Name', 'Vrest (mV)', 'Rin (MW)', 'tm (ms)', 'Vthresh(mV)','Fast AHP (mV)','APampl (mV)','APwidth (ms)','Max F.R. (Hz)','Slow AHP (mV)','Sag Ratio','Unknown','Total'];	
+                $columns = ['Subregion', 'Neuron Type Name', 'Vrest (mV)', 'Rin (MW)', 'tm (ms)', 'Vthresh(mV)','Fast AHP (mV)','APampl (mV)','APwidth (ms)','Max F.R. (Hz)','Slow AHP (mV)','Sag Ratio','Other','Total'];	
 		//Changed on Dec 2 2024
 		$page_counts_views_query = " SELECT t.subregion, t.page_statistics_name AS neuron_name, derived.evidence AS evidence, SUM(REPLACE(derived.page_views, ',', '')) AS views
 			FROM (
