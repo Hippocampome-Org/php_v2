@@ -403,6 +403,15 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
     $table_string .= "<table id='$table_id'>"; // Set table ID here
     $table_string .= "<thead><tr>";
     
+    if ($rs){
+	    $header=[];
+	    if (empty($header)) {
+		    $header = array_keys(mysqli_fetch_array($rs, MYSQLI_ASSOC));
+		    $rows = count($header);
+		    $csv_headers = camel_replace($header);
+		    mysqli_data_seek($rs, 0);
+	    }
+    }
     foreach ($csv_headers as $header) {
         $table_string .= "<th>" . htmlspecialchars($header) . "</th>";
     }
@@ -429,9 +438,6 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
     // Process the main query results
     $i = 0;
     if($csv_tablename == 'functionality_property_domain_page_views'){
-	$matrix_views_count = 0;
-	$evidences_count = 0 ;
-	
 	if ($rs){
 		$header=[];
 		if (empty($header)) {
@@ -443,7 +449,7 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 		$table_string= get_table_skeleton_first($csv_headers);
 	}
     }
-	$column_totals =[];
+    $column_totals =[];
     while ($row = mysqli_fetch_row($rs)) {
 	    $bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
 	    $table_string1 .= "<tr class='$bgColor'>";
@@ -1834,35 +1840,33 @@ function get_page_views($conn){ //Passed on Dec 3 2023
 
 function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL){ //Passed $conn on Dec 3 2023
 
-	//$page_views_query = "SELECT gap.page, SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS views FROM
-	//	ga_analytics_pages gap WHERE gap.day_index IS NOT NULL GROUP BY gap.page order by views desc";
-	//$page_views_query = " SELECT gap.page, SUM(CAST(REPLACE(gap.page_views, ',', '') AS SIGNED)) AS views FROM 
-				//GA_combined_analytics gap WHERE gap.day_index IS NOT NULL GROUP BY gap.page order by views desc";
 	$page_views_query = "SELECT 
-    subquery.page, 
-    SUM(subquery.Views) AS Total_Views
-FROM (
-    SELECT 
-        gap.page, 
-        gap.day_index, 
-        SUM(
-            CASE 
-                WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 
-                THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED) 
-                ELSE CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED) 
-            END
-        ) AS Views
-    FROM 
-        GA_combined_analytics gap 
-    WHERE 
-        gap.day_index IS NOT NULL
-    GROUP BY 
-        gap.page, gap.day_index
-) AS subquery
-GROUP BY 
-    subquery.page
-ORDER BY 
-    Total_Views DESC";
+		subquery.page as Page, 
+		SUM(subquery.Post_2017_Views) AS Post_2017_Views,
+		SUM(subquery.Estimated_Views_Pre_2017) AS Estimated_Views_Pre_2017,
+		SUM(subquery.Total_Views) AS Total_Views
+			FROM (
+					SELECT 
+					gap.page, 
+					gap.day_index, 
+					SUM(
+						CASE WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED) 
+						ELSE CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED) END
+					   ) AS Post_2017_Views,
+					-- SUM(Views) AS Views,   
+					ROUND(".DELTA_VIEWS." * SUM(Post_2017_Views)) AS Estimated_Pre_2017_Views,
+					SUM(Views) + ROUND(".DELTA_VIEWS." * SUM(Post_2017Views)) AS Total_Views
+					FROM 
+					GA_combined_analytics gap 
+					WHERE 
+					gap.day_index IS NOT NULL
+					GROUP BY 
+					gap.page, gap.day_index
+			     ) AS subquery
+			GROUP BY 
+			subquery.page
+			ORDER BY 
+			Total_Views DESC";
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
 
@@ -1936,6 +1940,7 @@ ORDER BY
 		return format_table($conn, $page_views_query, $table_string, $file_name, $columns, $neuron_ids=NULL, $write_file, $views_request);
 	}
 	else{
+		$columns =[];
 		$table_string .= format_table($conn, $page_views_query, $table_string, $file_name, $columns);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
@@ -3323,7 +3328,7 @@ function get_domain_functionality_views_report($conn, $views_request = NULL, $wr
 		WHEN page REGEXP '/cognome/' THEN 'Cognome'
 		WHEN page REGEXP 'simulation_parameters' THEN 'Simulation Parameters'
 		ELSE 'Other'
-		END AS property_page_category,
+		END AS Property_Page_Category,
 		    SUM(
 				    CASE 
 				    WHEN day_index IS NOT NULL 
@@ -3368,7 +3373,7 @@ function get_domain_functionality_views_report($conn, $views_request = NULL, $wr
 					    END 
 					    ELSE 0 
 					    END
-			       ) AS Post_2017,
+			       ) AS Post_2017_Views,
 ROUND( ".DELTA_VIEWS." *  SUM(
                                     CASE
                                     WHEN day_index IS NOT NULL
@@ -3391,7 +3396,7 @@ ROUND( ".DELTA_VIEWS." *  SUM(
                                             END
                                             ELSE 0
                                             END
-                               ))  AS estimated_pre2017, 
+                               ))  AS Estimated_Pre_2017_Views, 
 
 (
  SUM(
@@ -3447,7 +3452,7 @@ Total_Views
 			    FROM 
 			    GA_combined_analytics
 			    GROUP BY 
-			    property_page_category
+			    Property_Page_Category
 			    ORDER BY 
 			    FIELD(
 					    property_page_category, 
@@ -3579,52 +3584,51 @@ Total_Views
 function get_page_functionality_views_report($conn, $views_request=NULL, $write_file=NULL){
 	//Second Functionality Table function
 	$page_functionality_views_query ="
-
-WITH PageCategories AS (
-    SELECT
-        CASE 
-            WHEN page LIKE '%/neuron_page.php?id=%' THEN 'Neuron Type Pages'
-            WHEN page REGEXP '^.*\\/(property_page_.*\\.php|property_page_counts\\.php|property_page_morphology\\.php|property_page_ephys\\.php|property_page_markers\\.php|property_page_connectivity\\.php|property_page_fp\\.php|property_page_phases\\.php|synaptic_mod_sum\\.php)\\?.*(id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+)' THEN 'Evidence'
-            WHEN page REGEXP '^.*\\/(property_page_.*\\.php|morphology\\.php|markers\\.php|ephys\\.php|connectivity(_test|_orig)?\\.php|synaptome_modeling\\.php|firing_patterns\\.php|Izhikevich_model\\.php|synapse_probabilities\\.php|phases\\.php|cognome\\/.*|synaptome\\.php|property_page_counts\\.php|property_page_morphology\\.php|property_page_ephys\\.php|property_page_markers\\.php|property_page_connectivity\\.php|property_page_fp\\.php|property_page_phases\\.php|simulation_parameters\\.php|synaptome/php/synaptome\\.php)$' 
-                AND page NOT REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+' THEN 'Browse'
-            WHEN page REGEXP '(search|find_author|find_neuron_name|find_neuron_term|find_pmid|search_engine_custom)' THEN 'Search'
-            WHEN page REGEXP '(tools\\.php|connection_probabilities|synapse_modeler)' THEN 'Tools'
-            WHEN page REGEXP '(Help_Quickstart|Help_FAQ|Help_Known_Bug_List|Help_Other_Useful_Links|Help_|help|user_feedback_form_entry)' THEN 'Help'
-            WHEN page REGEXP '(bot-traffic|/hipp Better than reCAPTCHA：vaptcha\\.cn|^/$|^/php/$)' AND (page != '/php/' OR day_index IS NOT NULL) THEN 'All Others'
-            ELSE 'Home'
-        END AS Property_Page_Category,
-        page,
-        day_index,
-        CASE 
-            WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED)
-            ELSE CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED)
-        END AS Views
-    FROM GA_combined_analytics
-    WHERE day_index IS NOT NULL
-),
-AggregatedData AS (
-    SELECT
-        Property_Page_Category,
-        page,
-        SUM(Views) AS Views,
-        ROUND(0.41518949681853 * SUM(Views)) AS Estimated_Views_Pre2017,
-        SUM(Views) + ROUND(0.41518949681853 * SUM(Views)) AS Total_Views
-    FROM PageCategories
-    GROUP BY page, Property_Page_Category
-)
-SELECT
-    Property_Page_Category,
-    SUM(Views) AS Post_2017,
-    SUM(Estimated_Views_Pre2017) AS Estimated_Views_Pre_2017,
-    SUM(Total_Views) AS Total_Views
-FROM AggregatedData
-GROUP BY Property_Page_Category
-ORDER BY FIELD(Property_Page_Category, 'Home', 'Browse', 'Search', 'Tools', 'Help', 'Neuron Type Pages', 'Evidence', 'All Others');
-";
+		WITH PageCategories AS (
+				SELECT
+				CASE 
+				WHEN page LIKE '%/neuron_page.php?id=%' THEN 'Neuron Type Pages'
+				WHEN page REGEXP '^.*\\/(property_page_.*\\.php|property_page_counts\\.php|property_page_morphology\\.php|property_page_ephys\\.php|property_page_markers\\.php|property_page_connectivity\\.php|property_page_fp\\.php|property_page_phases\\.php|synaptic_mod_sum\\.php)\\?.*(id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+)' THEN 'Evidence'
+				WHEN page REGEXP '^.*\\/(property_page_.*\\.php|morphology\\.php|markers\\.php|ephys\\.php|connectivity(_test|_orig)?\\.php|synaptome_modeling\\.php|firing_patterns\\.php|Izhikevich_model\\.php|synapse_probabilities\\.php|phases\\.php|cognome\\/.*|synaptome\\.php|property_page_counts\\.php|property_page_morphology\\.php|property_page_ephys\\.php|property_page_markers\\.php|property_page_connectivity\\.php|property_page_fp\\.php|property_page_phases\\.php|simulation_parameters\\.php|synaptome/php/synaptome\\.php)$' 
+				AND page NOT REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+' THEN 'Browse'
+				WHEN page REGEXP '(search|find_author|find_neuron_name|find_neuron_term|find_pmid|search_engine_custom)' THEN 'Search'
+				WHEN page REGEXP '(tools\\.php|connection_probabilities|synapse_modeler)' THEN 'Tools'
+				WHEN page REGEXP '(Help_Quickstart|Help_FAQ|Help_Known_Bug_List|Help_Other_Useful_Links|Help_|help|user_feedback_form_entry)' THEN 'Help'
+				WHEN page REGEXP '(bot-traffic|/hipp Better than reCAPTCHA：vaptcha\\.cn|^/$|^/php/$)' AND (page != '/php/' OR day_index IS NOT NULL) THEN 'All Others'
+				ELSE 'Home'
+				END AS Property_Page_Category,
+				page,
+				day_index,
+				CASE 
+				WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED)
+				ELSE CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED)
+				END AS Views
+				FROM GA_combined_analytics
+				WHERE day_index IS NOT NULL
+				),
+				AggregatedData AS (
+						SELECT
+						Property_Page_Category,
+						page,
+						SUM(Views) AS Views,
+						ROUND(".DELTA_VIEWS." * SUM(Views)) AS Estimated_Pre_2017_Views,
+						SUM(Views) + ROUND(".DELTA_VIEWS." * SUM(Views)) AS Total_Views
+						FROM PageCategories
+						GROUP BY page, Property_Page_Category
+						)
+					SELECT
+					Property_Page_Category,
+				SUM(Views) AS Post_2017_Views,
+				SUM(Estimated_Pre_2017_Views) AS Estimated_Pre_2017_Views,
+				SUM(Total_Views) AS Total_Views
+					FROM AggregatedData
+					GROUP BY Property_Page_Category
+					ORDER BY FIELD(Property_Page_Category, 'Home', 'Browse', 'Search', 'Tools', 'Help', 'Neuron Type Pages', 'Evidence', 'All Others');
+	";
 /*		SELECT 
 		Property_Page_Category, 
-		SUM(subquery.Views) AS Post_2017,
-		SUM(subquery.Estimated_Views_Pre2017) AS Estimated_Views_Pre_2017,
+		SUM(subquery.Views) AS Post_2017_Views,
+		SUM(subquery.Estimated_Pre_2017_Views) AS Estimated_Pre_2017_Views,
 		SUM(Total_Views) AS Total_Views 
 			FROM (
 					SELECT 
@@ -3667,7 +3671,7 @@ ORDER BY FIELD(Property_Page_Category, 'Home', 'Browse', 'Search', 'Tools', 'Hel
 					CASE WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED)
 					ELSE CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED) END
 				   ) 
-		     )  AS Estimated_Views_Pre2017,
+		     )  AS Estimated_Pre_2017_Views,
 		(
 		 SUM(
 			 CASE WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED)
