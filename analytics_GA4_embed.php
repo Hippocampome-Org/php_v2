@@ -181,7 +181,7 @@ tr:nth-child(even){
 </br></br>
 <div id="browse_functionality" style="padding:100px 100px; align:center;">
 	<p><div style="text-align: left;">
-                <span style="display: inline-block; vertical-align: middle;">Functionality Property Domain Page Views <a href="#top">Back to top</a></span>
+                <span style="display: inline-block; vertical-align: middle;">Browse Menu Page Views <a href="#top">Back to top</a></span>
                 <span style="display: inline-block; padding-left:10px; vertical-align: middle;">
 			<form method="POST" style="display: inline;"><input type="hidden" name="download_csv" value="get_domain_functionality_views_report"><button type="submit">Download CSV</button></form>
                         <form method="POST" style="display: inline;"><input type="hidden" name="views_per_month" value="get_domain_functionality_views_report"><button type="submit">Download Views Per Month CSV</button></form>
