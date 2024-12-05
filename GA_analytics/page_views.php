@@ -1264,8 +1264,6 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 	    $array_subs[$subregion][$neuron_name][$color_sp]['Total_Views'] += $total_views;
     }
 
-    $totals = []; // Initialize the totals array
-
     // Loop through $array_subs to initialize missing view counts and accumulate totals
     foreach ($array_subs as $subregion => &$neuron_names) {
 	    foreach ($neuron_names as $neuron_name => &$colors) {
@@ -1335,14 +1333,12 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 		    $keyCounts2 = count($values) + 1; // Adjusted count
 		    $subtyperowspan = $keyCounts2;
 		    $typerowspan = $keyCounts * $keyCounts2;
-
 		    if (!$typeCellAdded) {
 			    if ($j%2==0) {
 				    $table_string2 .= "<tr><td class='lightgreen-bg' rowspan='".$typerowspan."'>".$type."</td>";
 			    } else {
 				    $table_string2 .= "<tr><td class='green-bg' rowspan='".$typerowspan."'>".$type."</td>";
 			    }
-			    // Set the flag to true once the type cell is added
 			    $typeCellAdded = true;
 		    }
 		    if($i%2==0){
@@ -1388,7 +1384,6 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 }
 
 function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file = NULL, $array_subs = NULL){
-
 	$count = 0;
 	$csv_rows=[];
     	$numHeaders = count($csv_headers);
@@ -1454,7 +1449,8 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 		return $table_string1;
         }
 	if(!$array_subs){ $array_subs = [];}
-
+	$color_segments = array_change_key_case($color_segments, CASE_LOWER);
+	//$neuronal_segments = array_change_key_case($neuronal_segments, CASE_LOWER);
 	while ($rowvalue = mysqli_fetch_array($rs, MYSQLI_ASSOC)) {
     		// Modify neuron name if necessary
 		if (isset($neuron_ids[$rowvalue['neuron_name']])) {
@@ -1466,8 +1462,9 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 		// Extract relevant values
 		$subregion = $rowvalue['subregion'];
 		$neuron_name = $rowvalue['neuron_name'];
-		if(!isset($color_segments[$rowvalue['color']])){ var_dump($rowvalue); }
-		$color = $color_segments[$rowvalue['color']];
+		//if(!isset($color_segments[$rowvalue['color']])){ var_dump($rowvalue); }
+		$color = isset($color_segments[strtolower($rowvalue['color'])]) ? $color_segments[strtolower($rowvalue['color'])] : 'None of the Above';
+		//$color = $color_segments[$rowvalue['color']];
 		$decodedKey = urldecode($rowvalue['evidence']);
 		// Check if the key exists in the array
 		if (array_key_exists($decodedKey, $neuronal_segments)) {
@@ -1482,9 +1479,6 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 				$color =$color_segments[$rowvalue['color']];
 			}
 		}
-		 $views = intval($rowvalue['views']);
-
-		 // Initialize arrays if necessary
 		 if (!isset($array_subs[$subregion])) {
 			 $array_subs[$subregion] = [];
 		 }
@@ -1501,66 +1495,89 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 			 $array_subs[$subregion][$neuron_name][$color][$evidence] = 0;
 		 }
 
-		 // Initialize 'total' if it does not exist
-		 if (!isset($array_subs[$subregion][$neuron_name][$color]['total'])) {
-			 $array_subs[$subregion][$neuron_name][$color]['total'] = 0;
+		 if (!isset($array_subs[$subregion][$neuron_name][$color]['Post_2017_Views'])) {
+			 $array_subs[$subregion][$neuron_name][$color]['Post_2017_Views'] = 0;
 		 }
 
+		 if (!isset($array_subs[$subregion][$neuron_name][$color]['Estimated_Pre_2017_Views'])) {
+			 $array_subs[$subregion][$neuron_name][$color]['Estimated_Pre_2017_Views'] = 0;
+		 }
+
+		 if (!isset($array_subs[$subregion][$neuron_name][$color]['Total_Views'])) {
+			 $array_subs[$subregion][$neuron_name][$color]['Total_Views'] = 0;
+		 }
+
+		 $views = isset($rowvalue['Post_2017_Views']) && is_numeric($rowvalue['Post_2017_Views']) ? intval($rowvalue['Post_2017_Views']) : 0;
+		 $estimated_views = isset($rowvalue['Estimated_Pre_2017_Views']) && is_numeric($rowvalue['Estimated_Pre_2017_Views']) ? intval($rowvalue['Estimated_Pre_2017_Views']) : 0;
+		 $total_views = isset($rowvalue['Total_Views']) && is_numeric($rowvalue['Total_Views']) ? intval($rowvalue['Total_Views']) : 0;
 		 // Increment values
 		 $array_subs[$subregion][$neuron_name][$color][$evidence] += intval($views);
-		 $array_subs[$subregion][$neuron_name][$color]['total'] += intval($views);
-
+		 $array_subs[$subregion][$neuron_name][$color]['Post_2017_Views'] += intval($views);
+		 $array_subs[$subregion][$neuron_name][$color]['Estimated_Pre_2017_Views'] += intval($estimated_views);
+		 $array_subs[$subregion][$neuron_name][$color]['Total_Views'] += intval($total_views);
 	}
-	foreach($array_subs as $subregion => $neuron_names){
-		foreach($neuron_names as $neuron_name=>$colors){
-			foreach($colors as $color=>$colorVals){
-				if (!isset($array_subs[$subregion][$neuron_name][$color]['total'])) {
-					$array_subs[$subregion][$neuron_name][$color]['total']=0;
+
+	// Loop through $array_subs to initialize missing view counts and accumulate totals
+	foreach ($array_subs as $subregion => &$neuron_names) {
+		foreach ($neuron_names as $neuron_name => &$colors) {
+			foreach ($colors as $color => &$colorVals) {
+				// Initialize missing view counts to 0 for the specific columns
+				if (!isset($array_subs[$subregion][$neuron_name][$color]['Post_2017_Views'])) {
+					$colorVals['Post_2017_Views'] = 0;
+				}
+				if (!isset($array_subs[$subregion][$neuron_name][$color]['Estimated_Pre_2017_Views'])) {
+					$colorVals['Estimated_Pre_2017_Views'] = 0;
+				}
+				if (!isset($array_subs[$subregion][$neuron_name][$color]['Total_Views'])) {
+					$colorVals['Total_Views'] = 0;
 				}
 			}
 		}
 	}
-        if(isset($write_file)){
-		$total_count = 0;
-                // Iterate over the types
-                foreach ($array_subs as $type => $subtypes) {
-                        $keyCounts = count($subtypes);
-                        $typeCellAdded = false;
+	unset($neuron_names, $colors, $colorVals); // Unset references to avoid unintended modifications
+	$column_totals = [];
+	if (isset($write_file)) {
+            $csv_rows = [];
 
-                        foreach ($subtypes as $subtype => $values) {
-                                // Write type to the CSV file only once
-                                $typeData = [$type];
+            // Iterate over array_subs to create CSV rows and accumulate totals
+            foreach ($array_subs as $type => $subtypes) {
+                    foreach ($subtypes as $subtype => $values) {
+                            $typeData = [$type]; // First value in the row
 
-                                foreach ($values as $category => $properties) {
-                                        // Construct the row data starting with type, subtype, and category
-                                        $rowData = array_merge($typeData, [$subtype, $category]);
+                            foreach ($values as $category => $properties) {
+                                    $rowData = array_merge($typeData, [$subtype, $category]); // Create row with type, subtype, and category
 
-                                        foreach ($properties as $property => $value) {
-                                                if($property == "") continue;
-                                                $showVal = ($value >= 1) ? $value : '';
+                                    foreach ($properties as $property => $value) {
+                                            if ($property == "") continue; // Skip empty properties
 
-                                                if ($property == 'total') {
-                                                        // Include the total in the current row
-                                                        $rowData[] = $showVal;
-                                                        $total_count += $value;
-                                                        // Write the row to the CSV file
-                                                        $csv_rows[] = $rowData;
-                                                } else {
-                                                        $rowData[] = $showVal;
-                                                }
-                                        }
-                                }
-                        }
-                }
+                                            // Show value if >= 1, otherwise set it to zero 
+                                            $showVal = is_numeric($value) ? $value : 0; 
 
-		$csv_rows[] = $totalCountRow; 
-		$csv_data[$csv_tablename]=['filename'=>toCamelCase($csv_tablename),'headers'=>$csv_headers,'rows'=>$csv_rows];
-                return $csv_data[$csv_tablename];
-	}
-	//var_dump($array_subs);//exit;
-	$i = $j = $k = $total_count = 0;
+                                            if (is_numeric($value)) {
+                                                    if (!isset($column_totals[$property])) {
+                                                            $column_totals[$property] = 0; 
+                                                    }    
+                                                    $column_totals[$property] += $value;
+                                            }                
+                                            $rowData[] = $showVal;
+                                    }    
+                                    // Add rowData to CSV rows 
+                                    $csv_rows[] = $rowData;
+                            }    
+                    }    
+            }    
+            $csv_rows[] = generateTotalRow($csv_headers, true, $column_totals);
+            // Create final CSV data structure
+            $csv_data[$csv_tablename] = [
+                    'filename' => toCamelCase($csv_tablename),
+                    'headers' => $csv_headers,
+                    'rows' => $csv_rows
+            ];   
+            return $csv_data[$csv_tablename];
+	} 
+	$i = $j = $k = $total_count = 0; 
 	$table_string2 = '';
-
+	$column_totals=[];
 	foreach ($array_subs as $type => $subtypes) {
 		$keyCounts = count($subtypes);
 		$typeCellAdded = false;
@@ -1598,20 +1615,20 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 				foreach ($properties as $property => $value) {
 					// Check if the property is "total"
 					if($property == ""){continue;}
-					$showval='';
-					if($value >= 1){$showval = $value;}
+					$showval=$value;
 
 					if($k%2==0){
 						$table_string2 .= "<td class='white-bg'>".$showval."</td>";
 					}else{
 						$table_string2 .= "<td class='blue-bg'>".$showval."</td>";
 					}
-					if ($property == 'total') {
-						// Close the row if the property is "total"
-						$table_string2 .= "</tr>";
-						$total_count += $value;
-						$k++;
-					}
+					if (is_numeric($value)) {
+						if (!isset($column_totals[$property])) {
+							$column_totals[$property] = 0; 
+						}    
+						$column_totals[$property] += $value;
+					}            
+
 				}
 			}
 			$i++;
@@ -1619,8 +1636,7 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 		}
 		$j++;
 	}
-	$table_string2 .= "<tr><td colspan='" . ($numHeaders - 1) . "' class='total-row'>Total Count</td><td>$total_count</td></tr>";
-
+	$table_string2 .= generateTotalRow($csv_headers, false, $column_totals);
 	return $table_string2;
 }
 
@@ -2798,50 +2814,24 @@ FROM
 
 function get_markers_property_views_report($conn, $neuron_ids, $views_request=NULL, $write_file = NULL){
 
-	$page_property_views_query = "SELECT t.subregion,
-		t.page_statistics_name AS neuron_name,
-		derived.color AS color,
-		derived.evidence AS evidence,
-		SUM(REPLACE(page_views, ',', '')) AS views
-			FROM (
-					SELECT
-					CASE
-					WHEN INSTR(page, 'id_neuron=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
-					WHEN INSTR(page, 'id1_neuron=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)
-					WHEN INSTR(page, 'id_neuron_source=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)
-					ELSE ''
-					END AS neuronID,
-					CASE
-					WHEN INSTR(page, 'val_property=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1)
-					ELSE ''
-					END AS evidence,
-					CASE
-					WHEN INSTR(page, 'color=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1)
-					ELSE ''
-					END AS color,
-					page_views
-					FROM GA_combined_analytics 
-					WHERE page LIKE '%/property_page_%'
-					AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'markers'
-					AND (
-						LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4
-						OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) = 4
-						OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) = 4
-					    )
-					AND (
-							SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
-							OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232)
-							OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN (4168, 4181, 2232)
-					    )
-					) AS derived
-					JOIN Type AS t ON t.id = derived.neuronID
-					WHERE derived.neuronID NOT IN ('4168', '4181', '2232')
-					AND t.subregion IS NOT NULL AND t.subregion <> ''
-					AND t.page_statistics_name IS NOT NULL AND t.page_statistics_name <> ''
-					AND derived.color IS NOT NULL AND derived.color <> ''
-					AND derived.evidence IS NOT NULL AND derived.evidence <> ''
-					GROUP BY t.subregion, t.page_statistics_name, derived.evidence, derived.color
-					ORDER BY t.position";
+	$page_property_views_query = "SELECT t.subregion, t.page_statistics_name AS neuron_name, derived.color AS color, derived.evidence AS evidence, 
+SUM( CASE WHEN REPLACE(derived.page_views, ',', '') > 0 THEN REPLACE(derived.page_views, ',', '') ELSE REPLACE(derived.sessions, ',', '') END ) 
+AS Post_2017_Views, ROUND(0.41475164658173 * SUM( CASE WHEN REPLACE(derived.page_views, ',', '') > 0 THEN REPLACE(derived.page_views, ',', '') 
+ELSE REPLACE(derived.sessions, ',', '') END )) AS Estimated_Pre_2017_Views, SUM( CASE WHEN REPLACE(derived.page_views, ',', '') > 0 
+THEN REPLACE(derived.page_views, ',', '') ELSE REPLACE(derived.sessions, ',', '') END ) + ROUND(0.41475164658173 * SUM( CASE 
+	WHEN REPLACE(derived.page_views, ',', '') > 0 THEN REPLACE(derived.page_views, ',', '') ELSE REPLACE(derived.sessions, ',', '') END )) AS 
+	Total_Views 
+ FROM ( SELECT CASE WHEN INSTR(page, 'id_neuron=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) 
+WHEN INSTR(page, 'id1_neuron=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) WHEN INSTR(page, 'id_neuron_source=') > 0 
+THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) ELSE '' END AS neuronID, CASE WHEN INSTR(page, 'val_property=') > 0 
+THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1) ELSE '' END AS evidence, CASE WHEN INSTR(page, 'color=') > 0 
+THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1) ELSE '' END AS color, page_views, sessions FROM GA_combined_analytics 
+WHERE page LIKE '%/property_page_%' AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'markers' 
+AND ( INSTR(page, 'id_neuron=') > 0 OR INSTR(page, 'id1_neuron=') > 0 OR INSTR(page, 'id_neuron_source=') > 0 ) ) 
+AS derived JOIN Type AS t ON t.id = derived.neuronID WHERE 
+t.subregion IS NOT NULL AND t.subregion <> '' AND t.page_statistics_name IS NOT NULL AND t.page_statistics_name <> '' 
+AND derived.color IS NOT NULL AND derived.color <> '' AND derived.evidence IS NOT NULL AND derived.evidence <> '' 
+GROUP BY t.subregion, t.page_statistics_name, derived.evidence, derived.color ORDER BY t.position";
 	//echo $page_property_views_query;
 	if ($views_request == "views_per_month" || $views_request == "views_per_year") {
 		$page_property_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
@@ -2955,7 +2945,7 @@ function get_markers_property_views_report($conn, $neuron_ids, $views_request=NU
 			"GABAa_gamma1", "GABAa_gamma2", "GABA-B1", "GAT-1", "GAT-3", "GluA1", "GluA2", "GluA2/3", "GluA3", "GluA4", "GlyT2", "Gpc3", "Grp", "Htr2c", "Id_2", "Kv3_1", "Loc432748", "Man1a", 
 			"Math-2", "mGluR1", "mGluR2", "mGluR2/3", "mGluR3", "mGluR4", "mGluR5", "mGluR5a", "mGluR7a", "mGluR8a", "MOR", "Mus1R", "Mus3R", "Mus4R", "Ndst4", "NECAB1", "Neuropilin2", "NKB", "Nov",
 			"Nr3c2", "Nr4a1", "p-CREB", "PCP4", "PPE", "PPTA", "Prox1", "Prss12", "Prss23", "PSA-NCAM", "SATB1", "SATB2", "SCIP", "SPO", "SubP", "Tc1568100", "TH", "vAChT", "vGAT", "vGluT1", 
-			"vGluT2", "VILIP", "Wfs1", "Y1", "Y2", "DCX", "NeuN", "NeuroD", "CRH", "NK1R", "Other", "Total"];
+			"vGluT2", "VILIP", "Wfs1", "Y1", "Y2", "DCX", "NeuN", "NeuroD", "CRH", "NK1R", "Other", "Post_2017_Views","Estimated_Pre_2017_Views","Total_Views"];
         $table_string='';
 	 if(isset($write_file)) {
                 $file_name = "markers_evidence_page_";
