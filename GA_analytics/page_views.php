@@ -536,130 +536,116 @@ function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $wri
     $count = 0;
     $csv_rows = [];
     if (isset($write_file)) {
-	    if($views_request == 'views_per_month' || $views_request == 'views_per_year'){
-		    if (mysqli_multi_query($conn, $query)) {
-			    $header = []; // Initialize an array to store column names
-			    do {
-				    if ($result = mysqli_store_result($conn)) {
-					    if (empty($header)) {
-						    $header = array_keys(mysqli_fetch_array($result, MYSQLI_ASSOC));
-						    $rows = count($header);
-						    $csv_headers = camel_replace($header);
-						    mysqli_data_seek($result, 0);
-					    }
-					    while ($rowvalue = mysqli_fetch_assoc($result)) {
-						    foreach ($rowvalue as $key => $value) {
-							    if ($value == 0 && is_numeric($value)) {
-								    $rowvalue[$key] = 0; // Replace 0 with an empty string
-							    } else {
-								    // Add to the count if the value is numeric and not zero
-								    if (is_numeric($value)) {
-									    if($key == 'Total_Views'){
-										    $count += $value;
-									    }
-								    }
-							    }
-						    }
-						    if (!is_null($rowvalue['Total_Views']) && $rowvalue['Total_Views'] > 0) {
-							    $csv_rows[] = $rowvalue;
-						    }
-					    }
-					    mysqli_free_result($result);
+	    if (mysqli_multi_query($conn, $query)) {
+		    $header = []; // Initialize an array to store column names
+		    do {
+			    if ($result = mysqli_store_result($conn)) {
+				    if (empty($header)) {
+					    $header = array_keys(mysqli_fetch_array($result, MYSQLI_ASSOC));
+					    $rows = count($header);
+					    $csv_headers = camel_replace($header);
+					    mysqli_data_seek($result, 0);
 				    }
-			    } while (mysqli_next_result($conn));
-			    $spaces = $rows - 2;
-			    $totalRow = array_pad([], $spaces, '');
-			    $totalRow[] = $count;
-			    // Add "Total Count" at the beginning of the array
-			    array_unshift($totalRow, "Total Count");
+				    while ($rowvalue = mysqli_fetch_assoc($result)) {
+					    foreach ($rowvalue as $key => $value) {
+						    // Check if the value is numeric and update the column total
+						    if (is_numeric($value)) {
+							    $key = str_replace("_", " ", $key);
+							    if (!isset($column_totals[$key])) {
+								    $column_totals[$key] = 0;
+							    }
+							    $column_totals[$key] += $value;
+						    }
+					    }
+					    $csv_rows[] = $rowvalue;
+				    }
+				    mysqli_free_result($result);
+			    }
+		    } while (mysqli_next_result($conn));
+		    $csv_rows[] = generateTotalRow($csv_headers, true, $column_totals);
 
-			    $csv_rows[] = $totalRow;
-
-			    // Store information about the CSV file in `$csv_data` array
-			    $csv_data[$csv_tablename]=['filename'=>toCamelCase($csv_tablename),'headers'=>$csv_headers,'rows'=>$csv_rows];
-			    return $csv_data[$csv_tablename];
-		    } else {
-			    // Handle error if query execution fails
-			    echo "Error: " . mysqli_error($conn);
-		    }
+		    // Store information about the CSV file in `$csv_data` array
+		    $csv_data[$csv_tablename]=['filename'=>toCamelCase($csv_tablename),'headers'=>$csv_headers,'rows'=>$csv_rows];
+		    return $csv_data[$csv_tablename];
+	    } else {
+		    // Handle error if query execution fails
+		    echo "Error: " . mysqli_error($conn);
 	    }
     }
 
     $count = 0;
-echo $query;
     $rs = mysqli_query($conn, $query);
     $table_string = '';
     $rows = count($csv_headers);
     if (!$rs || mysqli_num_rows($rs) < 1) {
         return "<tr><td colspan='{$rows}'> No Data is available </td></tr>";
     }
-if($rs){
-    $header=[];
-    if (empty($header)) {
-	    $header = array_keys(mysqli_fetch_array($rs, MYSQLI_ASSOC));
-	    $rows = count($header);
-	    $csv_headers = camel_replace($header);
-	    mysqli_data_seek($rs, 0);
-	    $table_string= get_table_skeleton_first($csv_headers);
+    if($rs){
+	    $header=[];
+	    if (empty($header)) {
+		    $header = array_keys(mysqli_fetch_array($rs, MYSQLI_ASSOC));
+		    $rows = count($header);
+		    $csv_headers = camel_replace($header);
+		    mysqli_data_seek($rs, 0);
+		    $table_string= get_table_skeleton_first($csv_headers);
+	    }
     }
-}
     $i = 0;
-// Initialize an array to store column-wise totals
-$column_totals = [];
+    // Initialize an array to store column-wise totals
+    $column_totals = [];
 
-while ($row = mysqli_fetch_assoc($rs)) {
-    $csv_rows[] = $row;
+    while ($row = mysqli_fetch_assoc($rs)) {
+	    $csv_rows[] = $row;
 
-    // Check for row exclusion based on 'exclude' option
-    if (isset($options['exclude']) && in_array(current($row), $options['exclude'])) {
-        continue;
+	    // Check for row exclusion based on 'exclude' option
+	    if (isset($options['exclude']) && in_array(current($row), $options['exclude'])) {
+		    continue;
+	    }
+
+	    // Apply transformations based on 'format' option
+	    $first_column = key($row);
+	    if (isset($options['format']) && array_key_exists($row[$first_column], $options['format'])) {
+		    $row[$first_column] = $options['format'][$row[$first_column]];
+	    }
+
+	    // Coloring rows alternately
+	    $bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
+	    $table_string .= "<tr class='$bgColor'>";
+
+	    foreach ($row as $column_name => $column_value) {
+		    // Special handling for 'fp' to 'firing pattern'
+		    if ($column_value === 'fp') {
+			    $column_value = 'firing pattern';
+		    }
+
+		    // Check if the value is numeric and update the column total
+		    if (is_numeric($column_value)) {
+			    $column_name = str_replace("_", " ", $column_name);
+			    if (!isset($column_totals[$column_name])) {
+				    $column_totals[$column_name] = 0;
+			    }
+			    $column_totals[$column_name] += $column_value;
+		    }
+
+		    // Apply inline style for the second column
+		    $style = ($column_name === array_keys($row)[1]) ? 'style="width: 10%;"' : '';
+
+		    // Only add data cells if the last column value is > 0
+		    if (end($row) > 0) {
+			    $table_string .= "<td $style>" . htmlspecialchars($column_value) . "</td>";
+		    }
+	    }
+
+	    $count += end($row);
+	    $table_string .= "</tr>";
+	    $i++;
     }
-
-    // Apply transformations based on 'format' option
-    $first_column = key($row);
-    if (isset($options['format']) && array_key_exists($row[$first_column], $options['format'])) {
-        $row[$first_column] = $options['format'][$row[$first_column]];
-    }
-
-    // Coloring rows alternately
-    $bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
-    $table_string .= "<tr class='$bgColor'>";
-
-    foreach ($row as $column_name => $column_value) {
-        // Special handling for 'fp' to 'firing pattern'
-        if ($column_value === 'fp') {
-            $column_value = 'firing pattern';
-        }
-
-        // Check if the value is numeric and update the column total
-        if (is_numeric($column_value)) {
-            if (!isset($column_totals[$column_name])) {
-                $column_totals[$column_name] = 0;
-            }
-            $column_totals[$column_name] += $column_value;
-        }
-
-        // Apply inline style for the second column
-        $style = ($column_name === array_keys($row)[1]) ? 'style="width: 10%;"' : '';
-
-        // Only add data cells if the last column value is > 0
-        if (end($row) > 0) {
-            $table_string .= "<td $style>" . htmlspecialchars($column_value) . "</td>";
-        }
-    }
-
-    $count += end($row);
-    $table_string .= "</tr>";
-    $i++;
-}
-
-
     if(isset($write_file)){
 	    $csv_rows[] = generateTotalRow($csv_headers, true, $column_totals);
 	    $csv_data[$csv_tablename]=['filename'=>toCamelCase($csv_tablename),'headers'=>$csv_headers,'rows'=>$csv_rows];
 	    return $csv_data[$csv_tablename];
     } else{
-	    $csv_rows[] = generateTotalRow($csv_headers, false, $column_totals);
+	    $table_string .= generateTotalRow($csv_headers, false, $column_totals);
 	    return $table_string;
     }
 }
@@ -1216,28 +1202,30 @@ function format_table_connectivity($conn, $query, $table_string, $csv_tablename,
 		}
 	}
         $table_string1 .= $table_string2;
-var_dump($csv_headers);
-var_dump($column_totals);
         $table_string1 .= generateTotalRow($csv_headers, false, $column_totals);
         //$table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$total_count."</td></tr>";
         return $table_string1;
 }
 
 function generateTotalRow($headers, $isCsv = true, $columnTotals = [])
-{
+{   
     $numHeaders = count($headers);
     $numTotals = count($columnTotals);
-    $totalCountRow = array_merge(["Total Count"], array_fill(1, $numHeaders - count($columnTotals) - 1, ''));
+    $totalCountRow = ["Total Count"];
+    $numEmptyColumns = $numHeaders - $numTotals - 1;
+    $numEmptyColumns = max($numEmptyColumns, 0); 
+    if ($numEmptyColumns > 0) {
+        $totalCountRow = array_merge($totalCountRow, array_fill(0, $numEmptyColumns, ''));
+    }
     foreach ($headers as $header) {
         if (isset($columnTotals[$header])) {
             $totalCountRow[] = $columnTotals[$header];
         }
     }
-
     if ($isCsv) {
         return $totalCountRow;
     } else {
-        $htmlRow = "<tr><td colspan='" . ($numHeaders - $numTotals) . "' class='total-row'>Total Count</td>";
+        $htmlRow = "<tr><td colspan='" . ($numEmptyColumns + 1) . "' class='total-row'>Total Count</td>";
         foreach ($columnTotals as $total_value) {
             $htmlRow .= "<td>{$total_value}</td>";
         }
@@ -3955,45 +3943,37 @@ function get_domain_functionality_views_report($conn, $views_request = NULL, $wr
 
 function get_page_functionality_views_report($conn, $views_request=NULL, $write_file=NULL){
 	$page_functionality_views_query ="
-		WITH PageCategories AS (
-				SELECT 
-				CASE 
-				WHEN page LIKE '%/neuron_page.php?id=%' THEN 'Neuron Type Pages' 
-				WHEN page REGEXP '^.*\/(property_page_.*\.php|property_page_counts\.php|property_page_morphology\.php|property_page_ephys\.php|property_page_markers\.php|property_page_connectivity\.php|property_page_fp\.php|property_page_phases\.php|synaptic_mod_sum\.php)\?.*(id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+)' THEN 'Evidence' 
-				WHEN page REGEXP '^.*\/(property_page_.*\.php|morphology\.php|markers\.php|ephys\.php|connectivity(_test|_orig)?\.php|synaptome_modeling\.php|firing_patterns\.php|Izhikevich_model\.php|synapse_probabilities\.php|phases\.php|cognome\/.*|synaptome\.php|property_page_counts\.php|property_page_morphology\.php|property_page_ephys\.php|property_page_markers\.php|property_page_connectivity\.php|property_page_fp\.php|property_page_phases\.php|simulation_parameters\.php|synaptome/php/synaptome\.php)$' AND page NOT REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+' THEN 'Browse' 
-				WHEN page REGEXP '(search|find_author|find_neuron_name|find_neuron_term|find_pmid|search_engine_custom)' THEN 'Search' 
-				WHEN page REGEXP '(tools\.php|connection_probabilities|synapse_modeler)' THEN 'Tools' 
-				WHEN page REGEXP '(Help_Quickstart|Help_FAQ|Help_Known_Bug_List|Help_Other_Useful_Links|Help_|help|user_feedback_form_entry)' THEN 'Help' 
-				WHEN page REGEXP '(bot-traffic|/hipp Better than reCAPTCHA：vaptcha\.cn|^/$|^/php/$)' AND (page != '/php/' OR day_index IS NOT NULL) THEN 'All Others' 
-				ELSE 'Home' 
-				END AS Property_Page_Category, 
-				page, 
-				day_index, 
-				CASE 
-				WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 
-				THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED) 
-				ELSE CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED) 
-				END AS Views 
-				FROM GA_combined_analytics 
-				WHERE day_index IS NOT NULL
-				), 
-				AggregatedData AS (
-						SELECT 
-						Property_Page_Category, 
-						page, 
-						SUM(Views) AS Views
-						FROM PageCategories
-						GROUP BY page, Property_Page_Category
-						)
+		SELECT 
+		Property_Page_Category, 
+		SUM(Views) AS Post_2017_Views, 
+		ROUND(".DELTA_VIEWS." * SUM(Views)) AS Estimated_Pre_2017_Views, 
+		SUM(Views) + ROUND(".DELTA_VIEWS." * SUM(Views)) AS Total_Views
+			FROM (
 					SELECT 
-					Property_Page_Category, 
-				SUM(Views) AS Post_2017_Views,
-				ROUND(".DELTA_VIEWS." * SUM(Views)) AS Estimated_Pre_2017_Views, 
-				SUM(Views) + ROUND(".DELTA_VIEWS." * SUM(Views)) AS Total_Views 
-					FROM AggregatedData 
-					GROUP BY Property_Page_Category 
+					CASE 
+					WHEN page LIKE '%/neuron_page.php?id=%' THEN 'Neuron Type Pages'
+					WHEN page REGEXP '^.*\\/(property_page_.*\\.php|property_page_counts\\.php|property_page_morphology\\.php|property_page_ephys\\.php|property_page_markers\\.php|property_page_connectivity\\.php|property_page_fp\\.php|property_page_phases\\.php|synaptic_mod_sum\\.php)\\?.*(id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+)' THEN 'Evidence'
+					WHEN page REGEXP '^.*\\/(property_page_.*\\.php|morphology\\.php|markers\\.php|ephys\\.php|connectivity(_test|_orig)?\\.php|synaptome_modeling\\.php|firing_patterns\\.php|Izhikevich_model\\.php|synapse_probabilities\\.php|phases\\.php|cognome\\/.*|synaptome\\.php|property_page_counts\\.php|property_page_morphology\\.php|property_page_ephys\\.php|property_page_markers\\.php|property_page_connectivity\\.php|property_page_fp\\.php|property_page_phases\\.php|simulation_parameters\\.php|synaptome/php/synaptome\\.php)$' 
+					AND page NOT REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+' THEN 'Browse'
+					WHEN page REGEXP '(search|find_author|find_neuron_name|find_neuron_term|find_pmid|search_engine_custom)' THEN 'Search'
+					WHEN page REGEXP '(tools\\.php|connection_probabilities|synapse_modeler)' THEN 'Tools'
+					WHEN page REGEXP '(Help_Quickstart|Help_FAQ|Help_Known_Bug_List|Help_Other_Useful_Links|Help_|help|user_feedback_form_entry)' THEN 'Help'
+					WHEN page REGEXP '(bot-traffic|/hipp Better than reCAPTCHA：vaptcha\\.cn|^/$|^/php/$)' AND (page != '/php/' OR day_index IS NOT NULL) THEN 'All Others'
+					ELSE 'Home'
+					END AS Property_Page_Category,
+					page,
+					day_index,
+					CASE 
+					WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 
+					THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED) 
+					ELSE CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED)
+					END AS Views
+					FROM GA_combined_analytics
+					WHERE day_index IS NOT NULL
+					) AS PageCategories
+					GROUP BY Property_Page_Category
 					ORDER BY FIELD(Property_Page_Category, 'Home', 'Browse', 'Search', 'Tools', 'Help', 'Neuron Type Pages', 'Evidence', 'All Others');
-";
+	";
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_functionality_views_query = "SET SESSION group_concat_max_len = 1000000;
 		SET @sql = NULL;";
