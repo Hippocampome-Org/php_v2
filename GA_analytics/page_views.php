@@ -2470,7 +2470,174 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 
 	$columns = ['Subregion', 'Neuron Type Name', 'Census','Views'];
     
-	$page_neurons_views_query = " WITH SubregionViews AS (
+	$page_neurons_views_query = "
+SELECT 
+    COALESCE(t.subregion, 'N/A') AS Subregion, 
+    COALESCE(t.page_statistics_name, 'None of the Above') AS Neuron_Type_Name,
+    SUM(
+        CASE 
+            WHEN nd.page LIKE '%neuron_page.php?id=%' THEN 
+                CASE WHEN REPLACE(nd.page_views, ',', '') > 0 
+                    THEN REPLACE(nd.page_views, ',', '') 
+                    ELSE REPLACE(nd.sessions, ',', '') 
+                END 
+            ELSE 0 
+        END
+    ) AS Neuron_Page_Views,
+    SUM(
+        CASE 
+            WHEN nd.page REGEXP 'id_neuron=[0-9]+' OR 
+                 nd.page REGEXP 'id1_neuron=[0-9]+' OR 
+                 nd.page REGEXP 'id_neuron_source=[0-9]+' OR 
+                 nd.page REGEXP 'pre_id=[0-9]+' 
+            THEN 
+                CASE WHEN REPLACE(nd.page_views, ',', '') > 0 
+                    THEN REPLACE(nd.page_views, ',', '') 
+                    ELSE REPLACE(nd.sessions, ',', '') 
+                END
+            ELSE 0 
+        END
+    ) AS Evidence_Page_Views,
+    SUM(
+        CASE 
+            WHEN nd.page LIKE '%neuron_page.php?id=%' THEN 
+                CASE WHEN REPLACE(nd.page_views, ',', '') > 0 
+                    THEN REPLACE(nd.page_views, ',', '') 
+                    ELSE REPLACE(nd.sessions, ',', '') 
+                END 
+            ELSE 0 
+        END
+    ) + 
+    SUM(
+        CASE 
+            WHEN nd.page REGEXP 'id_neuron=[0-9]+' OR 
+                 nd.page REGEXP 'id1_neuron=[0-9]+' OR 
+                 nd.page REGEXP 'id_neuron_source=[0-9]+' OR 
+                 nd.page REGEXP 'pre_id=[0-9]+' 
+            THEN 
+                CASE WHEN REPLACE(nd.page_views, ',', '') > 0 
+                    THEN REPLACE(nd.page_views, ',', '') 
+                    ELSE REPLACE(nd.sessions, ',', '') 
+                END
+            ELSE 0 
+        END
+    ) AS Post_2017_Views,
+
+    ROUND(
+        ".DELTA_VIEWS." * (
+            SUM(
+                CASE 
+                    WHEN nd.page LIKE '%neuron_page.php?id=%' THEN 
+                        CASE WHEN REPLACE(nd.page_views, ',', '') > 0 
+                            THEN REPLACE(nd.page_views, ',', '') 
+                            ELSE REPLACE(nd.sessions, ',', '') 
+                        END 
+                    ELSE 0 
+                END
+            ) + 
+            SUM(
+                CASE 
+                    WHEN nd.page REGEXP 'id_neuron=[0-9]+' OR 
+                         nd.page REGEXP 'id1_neuron=[0-9]+' OR 
+                         nd.page REGEXP 'id_neuron_source=[0-9]+' OR 
+                         nd.page REGEXP 'pre_id=[0-9]+' 
+                    THEN 
+                        CASE WHEN REPLACE(nd.page_views, ',', '') > 0 
+                            THEN REPLACE(nd.page_views, ',', '') 
+                            ELSE REPLACE(nd.sessions, ',', '') 
+                        END
+                    ELSE 0 
+                END
+            )
+        )
+    ) AS Estimated_Pre_2017_Views,
+(
+            SUM(
+                CASE
+                    WHEN nd.page LIKE '%neuron_page.php?id=%' THEN
+                        CASE WHEN REPLACE(nd.page_views, ',', '') > 0
+                            THEN REPLACE(nd.page_views, ',', '')
+                            ELSE REPLACE(nd.sessions, ',', '')
+                        END
+                    ELSE 0
+                END
+            ) +
+            SUM(
+                CASE
+                    WHEN nd.page REGEXP 'id_neuron=[0-9]+' OR
+                         nd.page REGEXP 'id1_neuron=[0-9]+' OR
+                         nd.page REGEXP 'id_neuron_source=[0-9]+' OR
+                         nd.page REGEXP 'pre_id=[0-9]+'
+                    THEN
+                        CASE WHEN REPLACE(nd.page_views, ',', '') > 0
+                            THEN REPLACE(nd.page_views, ',', '')
+                            ELSE REPLACE(nd.sessions, ',', '')
+                        END
+                    ELSE 0
+                END
+            )
+        )
++
+ROUND(
+        ".DELTA_VIEWS." * (
+            SUM(
+                CASE
+                    WHEN nd.page LIKE '%neuron_page.php?id=%' THEN
+                        CASE WHEN REPLACE(nd.page_views, ',', '') > 0
+                            THEN REPLACE(nd.page_views, ',', '')
+                            ELSE REPLACE(nd.sessions, ',', '')
+                        END
+                    ELSE 0
+                END
+            ) +
+            SUM(
+                CASE
+                    WHEN nd.page REGEXP 'id_neuron=[0-9]+' OR
+                         nd.page REGEXP 'id1_neuron=[0-9]+' OR
+                         nd.page REGEXP 'id_neuron_source=[0-9]+' OR
+                         nd.page REGEXP 'pre_id=[0-9]+'
+                    THEN
+                        CASE WHEN REPLACE(nd.page_views, ',', '') > 0
+                            THEN REPLACE(nd.page_views, ',', '')
+                            ELSE REPLACE(nd.sessions, ',', '')
+                        END
+                    ELSE 0
+                END
+            )
+        )
+    ) as Total_Views 
+FROM Type t
+LEFT JOIN (
+    SELECT 
+        CASE 
+            WHEN page LIKE '%neuron_page.php?id=%' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id=', -1), '&', 1)
+            WHEN page REGEXP 'id_neuron=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
+            WHEN page REGEXP 'id1_neuron=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)
+            WHEN page REGEXP 'id_neuron_source=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)
+            WHEN page REGEXP 'pre_id=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'pre_id=', -1), '&', 1)
+            ELSE NULL 
+        END AS neuronID, 
+        page, 
+        day_index, 
+        page_views, 
+        sessions 
+    FROM GA_combined_analytics 
+    WHERE 
+        page LIKE '%neuron_page.php?id=%' 
+        OR page REGEXP 'id_neuron=[0-9]+' 
+        OR page REGEXP 'id1_neuron=[0-9]+' 
+        OR page REGEXP 'id_neuron_source=[0-9]+' 
+        OR page REGEXP 'pre_id=[0-9]+'
+) AS nd
+ON nd.neuronID = t.id 
+GROUP BY t.id, t.subregion, t.page_statistics_name, t.position
+ORDER BY 
+    CASE WHEN t.subregion = 'N/A' THEN 1 ELSE 0 END,  
+    t.position,
+    Subregion, 
+    Neuron_Type_Name;";
+/*
+ WITH SubregionViews AS (
 			SELECT 
 			COALESCE(t.subregion, 'N/A') AS Subregion, 
 			COALESCE(t.page_statistics_name, 'None of the above') AS Neuron_Type_Name, 
@@ -2601,7 +2768,8 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 				(Subregion = 'N/A') ASC, 
 			Subregion, 
 			Neuron_Type_Name;";
-	//echo $page_neurons_views_query;
+*/
+	echo $page_neurons_views_query;
 
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
