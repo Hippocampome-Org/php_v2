@@ -2642,7 +2642,7 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_
             ELSE REPLACE(derived.sessions, ',', '') 
         END
     ) AS Post_2017_Views,
-    ROUND(0.41475164658173 * SUM(
+    ROUND(".DELTA_VIEWS." * SUM(
         CASE 
             WHEN REPLACE(derived.page_views, ',', '') > 0 
             THEN REPLACE(derived.page_views, ',', '') 
@@ -2655,7 +2655,7 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_
             THEN REPLACE(derived.page_views, ',', '') 
             ELSE REPLACE(derived.sessions, ',', '') 
         END
-    ) + ROUND(0.41475164658173 * SUM(
+    ) + ROUND(".DELTA_VIEWS." * SUM(
         CASE 
             WHEN REPLACE(derived.page_views, ',', '') > 0 
             THEN REPLACE(derived.page_views, ',', '') 
@@ -2808,23 +2808,23 @@ FROM
 function get_markers_property_views_report($conn, $neuron_ids, $views_request=NULL, $write_file = NULL){
 
 	$page_property_views_query = "SELECT t.subregion, t.page_statistics_name AS neuron_name, derived.color AS color, derived.evidence AS evidence, 
-SUM( CASE WHEN REPLACE(derived.page_views, ',', '') > 0 THEN REPLACE(derived.page_views, ',', '') ELSE REPLACE(derived.sessions, ',', '') END ) 
-AS Post_2017_Views, ROUND(0.41475164658173 * SUM( CASE WHEN REPLACE(derived.page_views, ',', '') > 0 THEN REPLACE(derived.page_views, ',', '') 
-ELSE REPLACE(derived.sessions, ',', '') END )) AS Estimated_Pre_2017_Views, SUM( CASE WHEN REPLACE(derived.page_views, ',', '') > 0 
-THEN REPLACE(derived.page_views, ',', '') ELSE REPLACE(derived.sessions, ',', '') END ) + ROUND(0.41475164658173 * SUM( CASE 
-	WHEN REPLACE(derived.page_views, ',', '') > 0 THEN REPLACE(derived.page_views, ',', '') ELSE REPLACE(derived.sessions, ',', '') END )) AS 
-	Total_Views 
- FROM ( SELECT CASE WHEN INSTR(page, 'id_neuron=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) 
-WHEN INSTR(page, 'id1_neuron=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) WHEN INSTR(page, 'id_neuron_source=') > 0 
-THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) ELSE '' END AS neuronID, CASE WHEN INSTR(page, 'val_property=') > 0 
-THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1) ELSE '' END AS evidence, CASE WHEN INSTR(page, 'color=') > 0 
-THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1) ELSE '' END AS color, page_views, sessions FROM GA_combined_analytics 
-WHERE page LIKE '%/property_page_%' AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'markers' 
-AND ( INSTR(page, 'id_neuron=') > 0 OR INSTR(page, 'id1_neuron=') > 0 OR INSTR(page, 'id_neuron_source=') > 0 ) ) 
-AS derived JOIN Type AS t ON t.id = derived.neuronID WHERE 
-t.subregion IS NOT NULL AND t.subregion <> '' AND t.page_statistics_name IS NOT NULL AND t.page_statistics_name <> '' 
-AND derived.color IS NOT NULL AND derived.color <> '' AND derived.evidence IS NOT NULL AND derived.evidence <> '' 
-GROUP BY t.subregion, t.page_statistics_name, derived.evidence, derived.color ORDER BY t.position";
+		SUM( CASE WHEN REPLACE(derived.page_views, ',', '') > 0 THEN REPLACE(derived.page_views, ',', '') ELSE REPLACE(derived.sessions, ',', '') END ) 
+		AS Post_2017_Views, ROUND(".DELTA_VIEWS." * SUM( CASE WHEN REPLACE(derived.page_views, ',', '') > 0 THEN REPLACE(derived.page_views, ',', '') 
+					ELSE REPLACE(derived.sessions, ',', '') END )) AS Estimated_Pre_2017_Views, SUM( CASE WHEN REPLACE(derived.page_views, ',', '') > 0 
+				THEN REPLACE(derived.page_views, ',', '') ELSE REPLACE(derived.sessions, ',', '') END ) + ROUND(".DELTA_VIEWS." * SUM( CASE 
+					WHEN REPLACE(derived.page_views, ',', '') > 0 THEN REPLACE(derived.page_views, ',', '') ELSE REPLACE(derived.sessions, ',', '') END )) AS 
+				Total_Views 
+				FROM ( SELECT CASE WHEN INSTR(page, 'id_neuron=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) 
+						WHEN INSTR(page, 'id1_neuron=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) WHEN INSTR(page, 'id_neuron_source=') > 0 
+						THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) ELSE '' END AS neuronID, CASE WHEN INSTR(page, 'val_property=') > 0 
+						THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1) ELSE '' END AS evidence, CASE WHEN INSTR(page, 'color=') > 0 
+						THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1) ELSE '' END AS color, page_views, sessions FROM GA_combined_analytics 
+						WHERE page LIKE '%/property_page_%' AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'markers' 
+						AND ( INSTR(page, 'id_neuron=') > 0 OR INSTR(page, 'id1_neuron=') > 0 OR INSTR(page, 'id_neuron_source=') > 0 ) ) 
+				AS derived JOIN Type AS t ON t.id = derived.neuronID WHERE 
+				t.subregion IS NOT NULL AND t.subregion <> '' AND t.page_statistics_name IS NOT NULL AND t.page_statistics_name <> '' 
+				AND derived.color IS NOT NULL AND derived.color <> '' AND derived.evidence IS NOT NULL AND derived.evidence <> '' 
+				GROUP BY t.subregion, t.page_statistics_name, derived.evidence, derived.color ORDER BY t.position";
 	//echo $page_property_views_query;
 	if ($views_request == "views_per_month" || $views_request == "views_per_year") {
 		$page_property_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
