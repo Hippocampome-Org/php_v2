@@ -1775,45 +1775,83 @@ function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_
 		'all_other'=>'Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau, AP threshold, fAHP, or APpeak trough.',''=>'Other'];
 	$cols = [ 'Theta (deg)', 'SWR Ratio','In Vivo Firing Rate (Hz)', 'DS Ratio', 'Ripple (deg)','Gamma (deg)', 'Run/Stop Ratio','Epsilon',
 		'Non-Baseline Firing Rate (Hz)', 'Vrest (mV)', 'Tau (ms)',
-		'APthresh (mV)','fAHP (mV)','APpeak-trough (ms)','Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau, AP threshold, fAHP, or APpeak trough.','Other'];
+		'APthresh (mV)','fAHP (mV)','APpeak-trough (ms)','Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau, AP threshold, fAHP, or APpeak trough.','Other', 'Post_2017_Views', 'Estimated_Pre_2017_Views', 'Total_Views'];
 
 	if(!$rs || ($rs->num_rows < 1)){
                 $table_string1 .= "<tr><td> No Data is available </td></tr>";
 		return $table_string1;
         }
 	if(!$array_subs){ $array_subs = [];}
+	if(!$array_subs1){ $array_subs1 = [];}
+	if(!$array_subs1){ $array_subsNA = [];}
 	while ($rowvalue = mysqli_fetch_array($rs, MYSQLI_ASSOC)) {
 		// Link the neuron_name if it exists in the neuron_ids array
-		if (isset($neuron_ids[$rowvalue['neuron_name']])) {
-			$rowvalue['neuron_name'] = get_link($rowvalue['neuron_name'], $neuron_ids[$rowvalue['neuron_name']], './neuron_page.php', 'neuron');
+		if (isset($neuron_ids[$rowvalue['Neuron_Type_Name']]) && $rowvalue['Neuron_Type_Name'] != 'None of the Above' ) {
+			$rowvalue['Neuron_Type_Name'] = get_link($rowvalue['Neuron_Type_Name'], $neuron_ids[$rowvalue['Neuron_Type_Name']], './neuron_page.php', 'neuron');
 		}
-
 		// Initialize subregion and neuron name if not already set
-		if (!isset($array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']])) {
-			$array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']] = [];
-			foreach ($cols as $col) {
-				$array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$col] = 0;
+		// Check if the Neuron_Type_Name is 'None of the Above' or not and if it needs to be initialized
+		$isNoneOfTheAbove = ($rowvalue['Neuron_Type_Name'] == 'None of the Above');
+		$needsInitialization = $isNoneOfTheAbove
+			? !isset($array_subsNA['N/A']['None of the Above'])
+			: !isset($array_subs1[$rowvalue['Subregion']][$rowvalue['Neuron_Type_Name']]);
+
+		// Initialize if necessary
+		if ($needsInitialization) {
+			if ($isNoneOfTheAbove) {
+				$sub = 'N/A';
+				$neuronType = 'None of the Above';
+				$array_subsNA[$sub][$neuronType] = [];
+
+				// Set all columns to 0
+				foreach ($cols as $col) {
+					$array_subsNA[$sub][$neuronType][$col] = 0;
+				}
+			} else {
+				$sub = $rowvalue['Subregion'];
+				$neuronType = $rowvalue['Neuron_Type_Name'];
+				$array_subs1[$sub][$neuronType] = [];
+
+				// Set all columns to 0
+				foreach ($cols as $col) {
+					$array_subs1[$sub][$neuronType][$col] = 0;
+				}
 			}
 		}
-
 		// Get the segment based on evidence
 		$segment = $neuronal_segments[$rowvalue['evidence']] ?? null;
-
 		// Increment count for the segment if it exists
-		if ($segment && isset($array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$segment])) {
-			$array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$segment] += intval($rowvalue['views']);
-		}
+		$neuronTypeName = $rowvalue['Neuron_Type_Name'];
+		$subregion = $rowvalue['subregion'] ?? $rowvalue['Subregion'];
+		$views = intval($rowvalue['Post_2017_Views']);
+		$estimatedViews = intval($rowvalue['Estimated_Pre_2017_Views']);
+		$totalViews = intval($rowvalue['Total_Views']);
 
-		// Initialize and increment the total views for neuron
-		if (!isset($array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']]['total'])) {
-			$array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']]['total'] = 0;
+		if ($segment) {
+			// If Neuron_Type_Name is 'None of the Above', use $array_subsNA
+			if ($neuronTypeName == 'None of the Above' && isset($array_subsNA['N/A']['None of the Above'])) {
+
+				$sub = "N/A";
+				$neuronType = "None of the Above";
+				$array_subsNA[$sub][$neuronType][$segment] += $views;
+				$array_subsNA[$sub][$neuronType]['Post_2017_Views'] += $views;
+				$array_subsNA[$sub][$neuronType]['Estimated_Pre_2017_Views'] += $estimatedViews;
+				$array_subsNA[$sub][$neuronType]['Total_Views'] += $totalViews;
+				// If Neuron_Type_Name is not 'None of the Above', use $array_subs1
+			} else if ($neuronTypeName != 'None of the Above' && isset($array_subs1[$subregion][$neuronTypeName][$segment])) {
+				// Update the counts for a specific Neuron Type
+				$array_subs1[$subregion][$neuronTypeName][$segment] += $views;
+				$array_subs1[$subregion][$neuronTypeName]['Post_2017_Views'] += $views;
+				$array_subs1[$subregion][$neuronTypeName]['Estimated_Pre_2017_Views'] += $estimatedViews;
+				$array_subs1[$subregion][$neuronTypeName]['Total_Views'] += $totalViews;
+			}
 		}
-		$array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']]['total'] += intval($rowvalue['views']);
 	}
-
+//	var_dump($array_subsNA);
+	// Merge $array_subs1 and $array_subsNA into $array_subs
+	$array_subs = array_merge_recursive($array_subs1, $array_subsNA);
+ 	$column_totals = [];
 	if(isset($write_file)){
-		$i = $j = 0;
-		$count = 0;
 		foreach ($array_subs as $groupKey => $subgroups) {
 			foreach ($subgroups as $subgroupKey => $colors) {
 				$rowData = [];
@@ -1823,68 +1861,83 @@ function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_
 				$totalAdded = false;
 				foreach ($colors as $property => $value) {
 					if($property == "") continue;
-					$showVal = ($value >= 1) ? $value : '';
+					$showVal = 0;
+					$showVal = ($value >= 0) ? $value : 0;
 
-					if ($property == 'total') {
-						// Include the total in the current row
-						$rowData[] = $showVal;
-						$count += $value;
-						$totalAdded = true;  // Mark that total has been added
-					} else {
-						$rowData[] = $showVal;
-					}
+					$rowData[] = $showVal;
+					if (is_numeric($value)) {
+                                                if (!isset($column_totals[$property])) {
+                                                        $column_totals[$property] = 0;
+                                                }
+                                                $column_totals[$property] += $value;
+                                        }
 				}
 				// If 'total' was not added in the loop, ensure it's added now
 				if (!$totalAdded) {
-					$rowData[] = '';  // Add an empty column if 'total' wasn't in $colors
+					//$rowData[] = '';  // Add an empty column if 'total' wasn't in $colors
 				}
 				$csv_rows[] = $rowData;  // Write the row to the CSV file
-				$i++;
 			}
-			$j++;
 		}
-		$totalCountRow = array_merge(["Total Count"], array_fill(1, $numHeaders - 2, ''), [$count] );
-		$csv_rows[] = $totalCountRow;
-
+		//$totalCountRow = array_merge(["Total Count"], array_fill(1, $numHeaders - 2, ''), [$count] );
+                $csv_rows[] = generateTotalRow($csv_headers, true, $column_totals);
+		//$csv_rows[] = $totalCountRow;
 		$csv_data[$csv_tablename] = ['filename' => toCamelCase($csv_tablename), 'headers' => $csv_headers, 'rows' => $csv_rows];
 		return $csv_data[$csv_tablename];
-
 	}
-	#var_dump($array_subs);exit;
+	//var_dump($array_subs);exit;
 	$i=$j=0;
-	$table_string2='';
+ 	$column_totals=[];
+
+	// Loop through the merged $array_subs
 	foreach ($array_subs as $groupKey => $subgroups) {
-		$table_string2 .= "<tr>";
+		$table_string1 .= "<tr>";
 		$keyCounts = count(array_keys($subgroups));
 		$rowspan = $keyCounts;
-		if($j%2==0){
-			$table_string2 .= "<td class='lightgreen-bg'  rowspan='".$rowspan."'>".$groupKey."</td>";
-		}else{
-                        $table_string2 .= "<td class='green-bg'  rowspan='".$rowspan."'>".$groupKey."</td>";
+
+		// Set background color for group rows
+		if ($j % 2 == 0) {
+			$table_string1 .= "<td class='lightgreen-bg' rowspan='" . $rowspan . "'>" . $groupKey . "</td>";
+		} else {
+			$table_string1 .= "<td class='green-bg' rowspan='" . $rowspan . "'>" . $groupKey . "</td>";
 		}
+
 		foreach ($subgroups as $subgroupKey => $colors) {
-			if($i%2==0){
-				$table_string2 .= "<td class='white-bg' >".$subgroupKey."</td>";
-			}else{
-				$table_string2 .= "<td class='blue-bg' >".$subgroupKey."</td>";
+			// Set background color for subgroup rows
+			if ($i % 2 == 0) {
+				$table_string1 .= "<td class='white-bg'>" . $subgroupKey . "</td>";
+			} else {
+				$table_string1 .= "<td class='blue-bg'>" . $subgroupKey . "</td>";
 			}
-			foreach($colors as $value){
-				if($value > 0){
-				$value = $value;}else{$value='';}
-				if($i%2==0){
-					$table_string2 .= "<td class='white-bg' >".$value."</td>";
-				}else{
-					$table_string2 .= "<td class='blue-bg' >".$value."</td>";
+
+			foreach ($colors as $property => $value) {
+				// Check if the value is greater than 0, otherwise set to 0
+				$value = is_numeric($value) && $value > 0 ? $value : 0;
+
+				// Set background color for the properties
+				if ($i % 2 == 0) {
+					$table_string1 .= "<td class='white-bg'>" . $value . "</td>";
+				} else {
+					$table_string1 .= "<td class='blue-bg'>" . $value . "</td>";
+				}
+
+				// Accumulate totals if value is numeric
+				if (is_numeric($value)) {
+					if (!isset($column_totals[$property])) {
+						$column_totals[$property] = 0;
+					}
+					$column_totals[$property] += $value;
 				}
 			}
-			$table_string2 .= "</tr>";
-			$count += (int)$value;
+
+			$table_string1 .= "</tr>";
+			$count += (int) $value;
 			$i++;
 		}
 		$j++;
 	}
-	$table_string1 .= $table_string2;
-	$table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$count."</td></tr>";
+        $table_string1 .= generateTotalRow($csv_headers, false, $column_totals);
+	//$table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$count."</td></tr>";
 	return $table_string1;
 }
 
@@ -2988,30 +3041,44 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 		
 		$columns = ['Subregion', 'Neuron Type Name', 'Theta (deg)', 'SWR Ratio','In Vivo Firing Rate (Hz)', 'DS Ratio', 'Ripple (deg)','Gamma (deg)', 'Run/Stop Ratio',
 				'Epsilon','Non-Baseline Firing Rate (Hz)', 
-				'Vrest (mV)', 'Tau (ms)','APthresh (mV)','fAHP (mV)','APpeak-trough (ms)','Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau, AP threshold, fAHP, or APpeak trough.', 'Other', 'Total'];
+				'Vrest (mV)', 'Tau (ms)','APthresh (mV)','fAHP (mV)','APpeak-trough (ms)','Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau, AP threshold, fAHP, or APpeak trough.', 'Other', 'Post_2017_Views', 'Estimated_Pre_2017_Views', 'Total_Views'];
 		$pageType = $page_string == 'phases' ? 'phases' : 'counts';
-		$page_counts_views_query = "SELECT derived.page, t.subregion, t.page_statistics_name AS neuron_name, derived.evidence AS evidence, SUM(REPLACE(derived.page_views, ',', '')) AS views 
-						FROM (
-							SELECT page, page_views, IF( INSTR(page, 'id_neuron=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1), 
-										 IF( INSTR(page, 'id1_neuron=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1),
-										 IF( INSTR(page, 'id_neuron_source=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1), ''))) AS neuronID,
-										 IF(INSTR(page, 'val_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '') AS evidence 
-							FROM GA_combined_analytics WHERE page LIKE '%/property_page_%' AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases'
-							AND (
-								LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4 OR 
-								LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) = 4 OR 
-								LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) = 4
-							    )
-							AND (
-								SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232) OR
-								SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN (4168, 4181, 2232) OR
-								SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN (4168, 4181, 2232)
-							    )
-						     ) AS derived
-						LEFT JOIN Type AS t ON t.id = derived.neuronID
-						WHERE   derived.neuronID NOT IN ('4168', '4181', '2232')
-						GROUP BY derived.page, t.subregion, t.page_statistics_name, derived.evidence 
-						ORDER BY t.position";
+		$page_counts_views_query = "
+			SELECT 
+			COALESCE(t.subregion, 'N/A') AS Subregion,
+			COALESCE(t.page_statistics_name, 'None of the Above') AS Neuron_Type_Name,
+			derived.evidence AS evidence, 
+			SUM(REPLACE(derived.page_views, ',', '')) AS Post_2017_Views, 
+			ROUND(0.41475164658173 * SUM(REPLACE(derived.page_views, ',', ''))) AS Estimated_Pre_2017_Views, 
+			SUM(REPLACE(derived.page_views, ',', '')) + ROUND(0.41475164658173 * SUM(REPLACE(derived.page_views, ',', ''))) AS Total_Views 
+				FROM (
+						SELECT 
+						page, 
+						page_views, 
+						IF(INSTR(page, 'id_neuron=') > 0,
+							SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1), 
+							IF(INSTR(page, 'id1_neuron=') > 0,
+								SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1), 
+								IF(INSTR(page, 'id_neuron_source=') > 0, 
+									SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1), 
+									''))) AS neuronID, 
+						IF(INSTR(page, 'val_property=') > 0,
+							SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '') AS evidence 
+						FROM GA_combined_analytics 
+						WHERE 
+						page LIKE '%/property_page_%' 
+						AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases' 
+						AND (page REGEXP 'id_neuron=[0-9]+' OR page REGEXP 'id1_neuron=[0-9]+' OR page REGEXP 'id_neuron_source=[0-9]+') 
+				     ) AS derived 
+				LEFT JOIN Type AS t ON t.id = derived.neuronID  
+				GROUP BY derived.page, t.subregion, t.page_statistics_name, derived.evidence 
+				ORDER BY 
+				CASE 
+				WHEN t.subregion = 'N/A' THEN 2 
+				ELSE 1
+				END,
+			t.position;";
+			//echo $page_counts_views_query;
 		if ($views_request == "views_per_month" || $views_request == "views_per_year") {
 			$page_counts_views_query= "SET SESSION group_concat_max_len = 1000000;
 			SET @sql = NULL;";
