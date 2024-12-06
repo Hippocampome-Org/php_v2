@@ -962,7 +962,6 @@ function initializeConnectionNeuronArray($cols) {
 }
 
 function format_table_connectivity($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file = NULL, $array_subs = NULL){
-
 	$count = 0;
 	$csv_rows=[];
         $rs = mysqli_query($conn,$query);
@@ -976,15 +975,17 @@ function format_table_connectivity($conn, $query, $table_string, $csv_tablename,
 		return $table_string1;
         }
 	if(!$array_subs){ $array_subs = [];}
+	if(!$array_subs1){ $array_subs1 = [];}
+	if(!$array_subs1){ $array_subsNA = [];} 
 
 	while ($rowvalue = mysqli_fetch_array($rs, MYSQLI_ASSOC)) {
                 // Modify neuron name if necessary
-                if (isset($neuron_ids[$rowvalue['source_neuron_name']])) {
+		if (isset($neuron_ids[$rowvalue['source_neuron_name']]) && $rowvalue['source_neuron_name'] != 'None of the Above' ) {
                         $rowvalue['source_neuron_name'] = get_link($rowvalue['source_neuron_name'], $neuron_ids[$rowvalue['source_neuron_name']], './neuron_page.php', 'neuron');
                 }
 
                 // Modify neuron name if necessary
-                if (isset($neuron_ids[$rowvalue['target_neuron_name']])) {
+		if (isset($neuron_ids[$rowvalue['target_neuron_name']]) && $rowvalue['target_neuron_name'] != 'None of the Above' ) {
                         $rowvalue['target_neuron_name'] = get_link($rowvalue['target_neuron_name'], $neuron_ids[$rowvalue['target_neuron_name']], './neuron_page.php', 'neuron');
                 }
 
@@ -993,7 +994,9 @@ function format_table_connectivity($conn, $query, $table_string, $csv_tablename,
                 $source_neuron_name = $rowvalue['source_neuron_name'];
                 $target_subregion = $rowvalue['target_subregion'];
                 $target_neuron_name = $rowvalue['target_neuron_name'];
-                $views = intval($rowvalue['views']);
+		$views = intval($rowvalue['Post_2017_Views']);
+                $estimatedViews = intval($rowvalue['Estimated_Pre_2017_Views']);
+                $totalViews = intval($rowvalue['Total_Views']);
 		$parcel_specific = $rowvalue['parcel_specific'];
 		$nm_page = $rowvalue['nm_page'];
 		$connectivity_cols = ['Potential Connectivity Evidence', 'Number of Potential Synapses Parcel-Specific Table', 'Number of Potential Synapses Evidence', 'Number of Contacts Parcel-Specific Table', 'Number of Contacts Evidence','Synaptic Probability Parcel-Specific Table', 'Synaptic Probability Evidence', 'Other'];
@@ -1049,23 +1052,90 @@ function format_table_connectivity($conn, $query, $table_string, $csv_tablename,
 				break;
 		}
 		//echo "Source: ".$source_subregion."neuron name".$source_neuron_name."Target: ".$target_subregion." Target Neuron: ".$target_neuron_name." Evidence: ".$evidence; 
-		if(!isset($array_subs[$source_subregion][$source_neuron_name][$target_subregion][$target_neuron_name])){
-			$array_subs[$source_subregion][$source_neuron_name][$target_subregion][$target_neuron_name] = initializeConnectionNeuronArray($connectivity_cols);
+		// Determine if the source or target neuron type is 'None of the Above' and the respective subregion
+		$isSourceNoneOfTheAbove = ($rowvalue['source_neuron_name'] == 'None of the Above');
+		$isTargetNoneOfTheAbove = ($rowvalue['target_neuron_name'] == 'None of the Above');
+
+		// Determine the subregion values to use based on the condition
+		$sourceSubregion = $isSourceNoneOfTheAbove ? 'N/A' : $rowvalue['source_subregion'];
+		$sourceNeuronType = $isSourceNoneOfTheAbove ? 'None of the Above' : $rowvalue['source_neuron_name'];
+
+		$targetSubregion = $isTargetNoneOfTheAbove ? 'N/A' : $rowvalue['target_subregion'];
+		$targetNeuronType = $isTargetNoneOfTheAbove ? 'None of the Above' : $rowvalue['target_neuron_name'];
+
+		// Determine the array to be updated based on the source and target neuron types
+		if ($isSourceNoneOfTheAbove || $isTargetNoneOfTheAbove) {
+			$needsInitialization = !isset($array_subsNA[$sourceSubregion][$sourceNeuronType][$targetSubregion][$targetNeuronType]);
+
+			// Initialize if needed
+			if ($needsInitialization) {
+				$array_subsNA[$sourceSubregion][$sourceNeuronType][$targetSubregion][$targetNeuronType] = initializeConnectionNeuronArray($connectivity_cols);
+
+				// Set all columns to 0 initially
+				foreach ($connectivity_cols as $col) {
+					$array_subsNA[$sourceSubregion][$sourceNeuronType][$targetSubregion][$targetNeuronType][$col] = 0;
+				}
+			}
+
+			// Update the array with evidence and increment values
+			if (!isset($array_subsNA[$sourceSubregion][$sourceNeuronType][$targetSubregion][$targetNeuronType][$evidence])) {
+				$array_subsNA[$sourceSubregion][$sourceNeuronType][$targetSubregion][$targetNeuronType][$evidence] = 0;
+			}
+			$array_subsNA[$sourceSubregion][$sourceNeuronType][$targetSubregion][$targetNeuronType][$evidence] += intval($views);
+			$array_subsNA[$sourceSubregion][$sourceNeuronType][$targetSubregion][$targetNeuronType]['Post_2017_Views'] += intval($views);
+			$array_subsNA[$sourceSubregion][$sourceNeuronType][$targetSubregion][$targetNeuronType]['Estimated_Pre_2017_Views'] += intval($estimatedViews);
+			$array_subsNA[$sourceSubregion][$sourceNeuronType][$targetSubregion][$targetNeuronType]['Total_Views'] += intval($totalViews);
+
+		} else {
+			$needsInitialization = !isset($array_subs1[$sourceSubregion][$sourceNeuronType][$targetSubregion][$targetNeuronType]);
+
+			// Initialize if needed
+			if ($needsInitialization) {
+				$array_subs1[$sourceSubregion][$sourceNeuronType][$targetSubregion][$targetNeuronType] = initializeConnectionNeuronArray($connectivity_cols);
+
+				// Set all columns to 0 initially
+				foreach ($connectivity_cols as $col) {
+					$array_subs1[$sourceSubregion][$sourceNeuronType][$targetSubregion][$targetNeuronType][$col] = 0;
+				}
+			}
+
+			// Update the array with evidence and increment values
+			if (!isset($array_subs1[$sourceSubregion][$sourceNeuronType][$targetSubregion][$targetNeuronType][$evidence])) {
+				$array_subs1[$sourceSubregion][$sourceNeuronType][$targetSubregion][$targetNeuronType][$evidence] = 0;
+			}
+			$array_subs1[$sourceSubregion][$sourceNeuronType][$targetSubregion][$targetNeuronType][$evidence] += intval($views);
+
+			$array_subs1[$sourceSubregion][$sourceNeuronType][$targetSubregion][$targetNeuronType]['Post_2017_Views'] += intval($views);
+			$array_subs1[$sourceSubregion][$sourceNeuronType][$targetSubregion][$targetNeuronType]['Estimated_Pre_2017_Views'] += intval($estimatedViews);
+			$array_subs1[$sourceSubregion][$sourceNeuronType][$targetSubregion][$targetNeuronType]['Total_Views'] += intval($totalViews);
 		}
+		$array_subs = array_merge_recursive($array_subs1, $array_subsNA);
+
+		/*
+		   $source_subregion = $rowvalue['source_subregion'];
+		   $source_neuron_name = $rowvalue['source_neuron_name'];
+		   $target_subregion = $rowvalue['target_subregion'];
+		   $target_neuron_name = $rowvalue['target_neuron_name'];
+
+		   if(!isset($array_subs[$source_subregion][$source_neuron_name][$target_subregion][$target_neuron_name])){
+		   $array_subs[$source_subregion][$source_neuron_name][$target_subregion][$target_neuron_name] = initializeConnectionNeuronArray($connectivity_cols);
+		   }
 		// Update $array_subs with $evidence and increment values
 		if (!isset($array_subs[$source_subregion][$source_neuron_name][$target_subregion][$target_neuron_name][$evidence])) {
-			$array_subs[$source_subregion][$source_neuron_name][$target_subregion][$target_neuron_name][$evidence] = 0;
+		$array_subs[$source_subregion][$source_neuron_name][$target_subregion][$target_neuron_name][$evidence] = 0;
 		}
 		$array_subs[$source_subregion][$source_neuron_name][$target_subregion][$target_neuron_name][$evidence] += intval($views);
 
 		// Initialize and increment the 'total' counter
 		if (!isset($array_subs[$source_subregion][$source_neuron_name][$target_subregion][$target_neuron_name]['total'])) {
-			$array_subs[$source_subregion][$source_neuron_name][$target_subregion][$target_neuron_name]['total'] = 0;
+		$array_subs[$source_subregion][$source_neuron_name][$target_subregion][$target_neuron_name]['total'] = 0;
 		}
 		$array_subs[$source_subregion][$source_neuron_name][$target_subregion][$target_neuron_name]['total'] += intval($views);
+		 */
 	}
 
         // Ensure "total" column is present even if all values are 0
+        $column_totals=[];
         if(isset($write_file)){
 		$i = $j = $k = $total_count = 0;
 		$csv_rows = [];
@@ -1084,22 +1154,29 @@ function format_table_connectivity($conn, $query, $table_string, $csv_tablename,
 
 						// Add values to the row
 						foreach ($values as $property => $value) {
-							if ($value >= 1) {
+							if ($value >= 0) {
 								$row[] = $value; // Only add the value if it's >= 1
 							} else {
-								$row[] = ''; // Add an empty string for values less than 1
+								$row[] = 0; // Add an empty string for values less than 1
 							}
+							if (is_numeric($value)) {
+								if (!isset($column_totals[$property])) {
+									$column_totals[$property] = 0;
+								}
+								$column_totals[$property] += $value;
+							}       
 						}
 						$csv_rows[] = $row;
-						$total_count += isset($values['total']) ? $values['total'] : 0; // Sum up 'total' property values if available
 					}
 				}
 			}
 		}
 
 		// Optionally, write the total count at the end of the CSV
-		$totalCountRow = ["Total Count", '', '', '', '', '', '', '', '', '', '', '', $total_count];
-		$csv_rows[] = $totalCountRow;
+		//$totalCountRow = ["Total Count", '', '', '', '', '', '', '', '', '', '', '', $total_count];
+		//$csv_rows[] = $totalCountRow;
+		$csv_rows[] = generateTotalRow($csv_headers, true, $column_totals);
+
 		$csv_data[$csv_tablename]=['filename'=>toCamelCase($csv_tablename),'headers'=>$csv_headers,'rows'=>$csv_rows];
                 return $csv_data[$csv_tablename];
         }
@@ -1119,22 +1196,18 @@ function format_table_connectivity($conn, $query, $table_string, $csv_tablename,
 						$table_string2 .= "<tr><td class='blue-bg' >".$source_subregion."</td><td class='blue-bg'>".$source_neuron_name."</td><td class='bluee-bg'>".$target_subregion."</td><td class='blue-bg'>".$target_neuron_name."</td>";
 					}
 					foreach($values as $property => $value){
-						$showval='';
-						if($value >= 1){$showval = $value;}
-						if ($property == 'total') {
-							// Close the row if the property is "total"
-							if ($j % 2 == 0) {
-								$table_string2 .= "<td class='white-bg'>$showval</td></tr>";
-							}else{
-								$table_string2 .= "<td class='blue-bg'>$showval</td></tr>";
+						$showval=0;
+						if($value >= 0){$showval = $value;}
+						if (is_numeric($value)) {
+							if (!isset($column_totals[$property])) {
+								$column_totals[$property] = 0;
 							}
-							$total_count += $value;
-						} else {
-							if ($j % 2 == 0) {
-								$table_string2 .= "<td class='white-bg'>$showval</td>";
-							}else{
-								$table_string2 .= "<td class='blue-bg'>$showval</td>";
-							}
+							$column_totals[$property] += $value;
+						}
+						if ($j % 2 == 0) {
+							$table_string2 .= "<td class='white-bg'>$showval</td>";
+						}else{
+							$table_string2 .= "<td class='blue-bg'>$showval</td>";
 						}
 					}
 					$j++;
@@ -1143,7 +1216,10 @@ function format_table_connectivity($conn, $query, $table_string, $csv_tablename,
 		}
 	}
         $table_string1 .= $table_string2;
-        $table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$total_count."</td></tr>";
+var_dump($csv_headers);
+var_dump($column_totals);
+        $table_string1 .= generateTotalRow($csv_headers, false, $column_totals);
+        //$table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$total_count."</td></tr>";
         return $table_string1;
 }
 
@@ -3049,12 +3125,12 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 			COALESCE(t.page_statistics_name, 'None of the Above') AS Neuron_Type_Name,
 			derived.evidence AS evidence, 
 			SUM(REPLACE(derived.page_views, ',', '')) AS Post_2017_Views, 
-			ROUND(0.41475164658173 * SUM(REPLACE(derived.page_views, ',', ''))) AS Estimated_Pre_2017_Views, 
-			SUM(REPLACE(derived.page_views, ',', '')) + ROUND(0.41475164658173 * SUM(REPLACE(derived.page_views, ',', ''))) AS Total_Views 
+			ROUND(".DELTA_VIEWS." * SUM(REPLACE(derived.page_views, ',', ''))) AS Estimated_Pre_2017_Views, 
+			SUM(REPLACE(derived.page_views, ',', '')) + ROUND(".DELTA_VIEWS." * SUM(REPLACE(derived.page_views, ',', ''))) AS Total_Views 
 				FROM (
 						SELECT 
 						page, 
-						page_views, 
+						CASE WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '') ELSE sessions END AS page_views, 
 						IF(INSTR(page, 'id_neuron=') > 0,
 							SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1), 
 							IF(INSTR(page, 'id1_neuron=') > 0,
@@ -3078,7 +3154,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 				ELSE 1
 				END,
 			t.position;";
-			//echo $page_counts_views_query;
+			echo $page_counts_views_query;
 		if ($views_request == "views_per_month" || $views_request == "views_per_year") {
 			$page_counts_views_query= "SET SESSION group_concat_max_len = 1000000;
 			SET @sql = NULL;";
@@ -3189,55 +3265,88 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 	// Check for 'connectivity' page types
         if ($page_string == 'connectivity') {
                      
-                $columns = ['Presynaptic Subregion', 'Presynaptic Neuron Type Name', 'Postsynaptic Subregion', 'Postsynaptic Neuron Type Name', 'Potential Connectivity Evidence', 'Number of Potential Synapses Parcel-Specific Table', 'Number of Potential Synapses Evidence', 'Number of Contacts Parcel-Specific Table', 'Number of Contacts Evidence', 'Synaptic Probability Parcel-Specific Table', 'Synaptic Probability Evidence', 'Other', 'Total'];
+                $columns = ['Presynaptic Subregion', 'Presynaptic Neuron Type Name', 'Postsynaptic Subregion', 'Postsynaptic Neuron Type Name', 'Potential Connectivity Evidence', 'Number of Potential Synapses Parcel-Specific Table', 'Number of Potential Synapses Evidence', 'Number of Contacts Parcel-Specific Table', 'Number of Contacts Evidence', 'Synaptic Probability Parcel-Specific Table', 'Synaptic Probability Evidence', 'Other', 'Post_2017_Views', 'Estimated_Pre_2017_Views', 'Total Views'];
                 $pageType = $page_string = 'connectivity';
-		$page_counts_views_query = "SELECT derived.page, t_source.subregion AS source_subregion, t_source.page_statistics_name AS source_neuron_name, derived.source_evidence, 
-						   derived.source_color, t_target.subregion AS target_subregion, t_target.page_statistics_name AS target_neuron_name, derived.target_evidence, derived.target_color, 
-						   derived.connection_type, derived.known_conn_flag, derived.axonic_basket_flag, derived.page_type, derived.nm_page, SUM(REPLACE(derived.page_views, ',', '')) AS views, 
-						   derived.parcel_specific FROM 
-							   (
-							    SELECT page, page_views, 
-							    IF(INSTR(page, 'id1_neuron=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1), 
-									IF(INSTR(page, 'id_neuron_source=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1), '')) AS source_neuronID, 
-							    IF(INSTR(page, 'val1_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val1_property=', -1), '&', 1), '') AS source_evidence, 
-							    IF(INSTR(page, 'color=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1), IF(INSTR(page, 'color1=') > 0, 
-									SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color1=', -1), '&', 1), '')) AS source_color, 
-							    IF(INSTR(page, 'id2_neuron=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id2_neuron=', -1), '&', 1), 
-									IF(INSTR(page, 'id_neuron_target=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_target=', -1), '&', 1), '')) AS target_neuronID, 
-							    IF(INSTR(page, 'val2_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val2_property=', -1), '&', 1), '') AS target_evidence, 
-							    IF(INSTR(page, 'color2=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color2=', -1), '&', 1), '') AS target_color, 
-							    IF(INSTR(page, 'connection_type=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'connection_type=', -1), '&', 1), '') AS connection_type, 
-							    IF(INSTR(page, 'known_conn_flag=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'known_conn_flag=', -1), '&', 1), '') AS known_conn_flag, 
-							    IF(INSTR(page, 'axonic_basket_flag=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'axonic_basket_flag=', -1), '&', 1), '') AS axonic_basket_flag, 
-							    IF(INSTR(page, '&page=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, '&page=', -1), '&', 1), '') AS page_type, 
-							    IF(INSTR(page, 'nm_page=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'nm_page=', -1), '&', 1), '') AS nm_page, 
-							    SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) AS parcel_specific
-							    FROM 
-							    GA_combined_analytics 
-							    WHERE 
-							    page LIKE '%/property_page_%' AND 
-							    (
-							     LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, '?id_neuron=', -1), '&', 1)) = 4 OR 
-							     LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) = 4 OR 
-							     LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) = 4 OR 
-							     LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_target=', -1), '&', 1)) = 4
-							    ) AND 
-							    (
-							     SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN ('4168', '4181', '2232') AND 
-							     SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN ('4168', '4181', '2232') AND 
-							     SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN ('4168', '4181', '2232') AND 
-							     SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_target=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
-							    ) AND 
-							    SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('synpro_nm_old2', 'synpro_nm', 'synpro_pvals', 'connectivity', 'connectivity_test', 'connectivity_orig')
-							    ) AS derived 
-							    LEFT JOIN 
-							    Type AS t_source ON t_source.id = derived.source_neuronID 
-							    LEFT JOIN 
-							    Type AS t_target ON t_target.id = derived.target_neuronID
-							    GROUP BY derived.page, t_source.page_statistics_name, t_source.subregion, derived.source_color, 
-						   derived.source_evidence, t_target.page_statistics_name, t_target.subregion, derived.target_color, derived.target_evidence,derived.nm_page";
-
-                //echo $page_counts_views_query;
+		$page_counts_views_query = "
+			SELECT  COALESCE(t_source.subregion, 'N/A') AS source_subregion, COALESCE(t_source.page_statistics_name, 'None of the Above')
+			AS source_neuron_name,
+			   derived.source_evidence, 
+			   derived.source_color, 
+			   COALESCE(t_target.subregion, 'N/A') AS target_subregion, COALESCE(t_target.page_statistics_name, 'None of the Above')
+				   AS target_neuron_name,
+			   derived.target_evidence, 
+			   derived.target_color, 
+			   derived.connection_type, 
+			   derived.known_conn_flag, 
+			   derived.axonic_basket_flag, 
+			   derived.page_type, 
+			   derived.nm_page, 
+			   SUM(REPLACE(derived.page_views, ',', '')) AS Post_2017_Views, 
+			   ROUND(".DELTA_VIEWS." * SUM(REPLACE(derived.page_views, ',', ''))) AS Estimated_Pre_2017_Views, 
+			   SUM(REPLACE(derived.page_views, ',', '')) + ROUND(".DELTA_VIEWS." * SUM(REPLACE(derived.page_views, ',', ''))) AS Total_Views, 
+			   t_source.position, 
+			   derived.parcel_specific
+				   FROM (
+						   SELECT page, 
+						   CASE WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '') ELSE sessions END AS page_views,
+						   IF(INSTR(page, 'id1_neuron=') > 0, 
+							   SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1), 
+							   IF(INSTR(page, 'id_neuron_source=') > 0, 
+								   SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1), 
+								   '')) AS source_neuronID, 
+						   IF(INSTR(page, 'val1_property=') > 0, 
+							   SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val1_property=', -1), '&', 1), 
+							   '') AS source_evidence, 
+						   IF(INSTR(page, 'color=') > 0, 
+							   SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1), 
+							   IF(INSTR(page, 'color1=') > 0, 
+								   SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color1=', -1), '&', 1), 
+								   '')) AS source_color, 
+						   IF(INSTR(page, 'id2_neuron=') > 0, 
+							   SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id2_neuron=', -1), '&', 1), 
+							   IF(INSTR(page, 'id_neuron_target=') > 0, 
+								   SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_target=', -1), '&', 1), 
+								   '')) AS target_neuronID, 
+						   IF(INSTR(page, 'val2_property=') > 0, 
+								   SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val2_property=', -1), '&', 1), 
+								   '') AS target_evidence, 
+						   IF(INSTR(page, 'color2=') > 0, 
+								   SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color2=', -1), '&', 1), 
+								   '') AS target_color, 
+						   IF(INSTR(page, 'connection_type=') > 0, 
+								   SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'connection_type=', -1), '&', 1), 
+								   '') AS connection_type, 
+						   IF(INSTR(page, 'known_conn_flag=') > 0, 
+								   SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'known_conn_flag=', -1), '&', 1), 
+								   '') AS known_conn_flag, 
+						   IF(INSTR(page, 'axonic_basket_flag=') > 0, 
+								   SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'axonic_basket_flag=', -1), '&', 1), 
+								   '') AS axonic_basket_flag, 
+						   IF(INSTR(page, '&page=') > 0, 
+								   SUBSTRING_INDEX(SUBSTRING_INDEX(page, '&page=', -1), '&', 1), 
+								   '') AS page_type, 
+						   IF(INSTR(page, 'nm_page=') > 0, 
+								   SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'nm_page=', -1), '&', 1), 
+								   '') AS nm_page, 
+						   SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) AS parcel_specific   
+							   FROM GA_combined_analytics 
+							   WHERE page LIKE '%/property_page_%' 
+							   AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('synpro_nm_old2', 'synpro_nm', 'synpro_pvals', 'connectivity', 'connectivity_test', 'connectivity_orig') 
+							   AND (page REGEXP 'id_neuron=[0-9]+' OR page REGEXP 'id1_neuron=[0-9]+' OR page REGEXP 'id_neuron_source=[0-9]+')
+							   ) AS derived 
+							   LEFT JOIN Type AS t_source ON t_source.id = derived.source_neuronID 
+							   LEFT JOIN Type AS t_target ON t_target.id = derived.target_neuronID 
+							   GROUP BY derived.page, t_source.page_statistics_name, 
+						   t_source.subregion, derived.source_color, derived.source_evidence, 
+						   t_target.page_statistics_name, t_target.subregion, derived.target_color, 
+						   derived.target_evidence, derived.nm_page 
+							   ORDER BY 
+							   CASE WHEN t_source.subregion = 'N/A' OR t_target.subregion = 'N/A' THEN 1 ELSE 0 END,  -- Ensure 'N/A' is at the end
+							   t_source.position, 
+						   t_source.page_statistics_name, 
+						   t_target.page_statistics_name;
+		";
+		//echo $page_counts_views_query;
         }
 
 	// Check for 'biophysics' page types
