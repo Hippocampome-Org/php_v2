@@ -655,18 +655,11 @@ while ($row = mysqli_fetch_assoc($rs)) {
 
 
     if(isset($write_file)){
-	    $totalRow = ["Total Count",$count]; 
-	    $csv_rows[] = $totalRow;
+	    $csv_rows[] = generateTotalRow($csv_headers, true, $column_totals);
 	    $csv_data[$csv_tablename]=['filename'=>toCamelCase($csv_tablename),'headers'=>$csv_headers,'rows'=>$csv_rows];
 	    return $csv_data[$csv_tablename];
     } else{
-	    //$table_string .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$count."</td></tr>";	
-	    $table_string .= "<tr><td><b>Total Count</b></td>";
-	    // Output column totals (optional)
-	    foreach ($column_totals as $column_name => $total) {
-		    $table_string .= "<td>$total</td>";
-	    }
-		$table_string .= "</tr>";	
+	    $csv_rows[] = generateTotalRow($csv_headers, false, $column_totals);
 	    return $table_string;
     }
 }
@@ -3442,25 +3435,17 @@ function get_fp_property_views_report($conn, $views_request=NULL, $write_file=NU
 		'TSTUT.ASP.' => 'Transient Stuttering followed by Adapting Spiking'
 			];
 
-	$page_fp_property_views_query = "SELECT 
-		SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'meter=', -1), '&', 1) AS Firing_Pattern, 
-		SUM(
-				CASE 
-				WHEN REPLACE(page_views, ',', '') > 0 
-				THEN REPLACE(page_views, ',', '') 
-				ELSE REPLACE(sessions, ',', '') 
-				END
-		   ) AS Total_Views 
-			FROM GA_combined_analytics 
-			WHERE 
-			page REGEXP 'property_page_fp\\.php' 
-			AND page REGEXP 'id_neuron=[0-9]+'
-			GROUP BY 
-			SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'meter=', -1), '&', 1) 
-			ORDER BY 
-			Total_Views DESC;
-	";
-
+	$page_fp_property_views_query = "SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'meter=', -1), '&', 1) AS Firing_Pattern, 
+		SUM( CASE WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '') ELSE REPLACE(sessions, ',', '') END ) AS Post_2017_Views,
+		ROUND(".DELTA_VIEWS." * SUM( CASE WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '')  
+					ELSE REPLACE(sessions, ',', '') END )) AS Estimated_Pre_2017_Views, 
+		SUM( CASE WHEN REPLACE(page_views, ',', '') > 0 
+				THEN REPLACE(page_views, ',', '') ELSE REPLACE(sessions, ',', '') END ) + ROUND(".DELTA_VIEWS." * SUM( CASE 
+					WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '') ELSE REPLACE(sessions, ',', '') END )) AS 
+				Total_Views 
+				FROM GA_combined_analytics WHERE page REGEXP 'property_page_fp\.php' AND page REGEXP 'id_neuron=[0-9]+' 
+				GROUP BY SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'meter=', -1), '&', 1) ORDER BY Total_Views DESC;";
+	//echo $page_fp_property_views_query;
 	if ($views_request == "views_per_year" || $views_request == "views_per_month") {
 		$page_fp_property_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
 		if ($views_request == "views_per_month") {
@@ -3525,7 +3510,7 @@ function get_fp_property_views_report($conn, $views_request=NULL, $write_file=NU
 		}else{$file_name .= "views"; }
 		return format_table_neurons($conn, $page_fp_property_views_query, '', $file_name, $columns, $write_file, $views_request);
 	}else{
-		$table_string = get_table_skeleton_first($columns);
+		$table_string = ''; // get_table_skeleton_first($columns);
 		$table_string .= format_table_combined($conn, $page_fp_property_views_query, 'firing_pattern_page_views', $columns, $write_file=NULL, $options);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
