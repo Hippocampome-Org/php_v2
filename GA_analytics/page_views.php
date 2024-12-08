@@ -439,24 +439,13 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 
     // Process the main query results
     $i = 0;
-    if($csv_tablename == 'functionality_property_domain_page_views'){
-	if ($rs){
-		$header=[];
-		if (empty($header)) {
-			$header = array_keys(mysqli_fetch_array($rs, MYSQLI_ASSOC));
-			$rows = count($header);
-			$csv_headers = camel_replace($header);
-			mysqli_data_seek($rs, 0);
-		}
-		$table_string= get_table_skeleton_first($csv_headers);
-	}
-    }
+
     $column_totals = [];
     // Prepend the "pre-Aug 22, 2019" row with the integer value
     if ($csv_tablename == 'monthly_page_views') {
 	    $bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
 	    $table_string1 .= "<tr class='$bgColor'>";
-	    $table_string1 .= "<td>pre-Aug 22, 2019</td><td>86523</td></tr>";
+	    $table_string1 .= "<td>pre-Aug 22, 2019</td><td>".number_format(86523)."</td></tr>";
 
 	    $csv_rows[] = ['pre-Aug 22, 2019', 86523];
 	    if (!isset($column_totals[$header])) {
@@ -467,21 +456,24 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
     }
     // Reset the result set pointer to the first row
     mysqli_data_seek($rs, 0);
-    while ($row = mysqli_fetch_row($rs)) {
+    while ($row = mysqli_fetch_assoc($rs)) {                    
 	    $bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
 	    $table_string1 .= "<tr class='$bgColor'>";
 	    $csv_rows[] = $row;
-	    foreach ($row as $column_index => $column_value) {
+	    foreach ($row as $column_name => $column_value) {
 		    if (isset($neuron_ids[$column_value])) {
 			    $column_value = $neuron_ids[$column_value];
 		    }
-		    $table_string1 .= "<td>" . htmlspecialchars($column_value) . "</td>";
 		    if (is_numeric($column_value)) {
-			    $header = $csv_headers[$column_index]; // Match column index to header
-			    if (!isset($column_totals[$header])) {
-				    $column_totals[$header] = 0;
-			    }
-			    $column_totals[$header] += $column_value;
+		    	$table_string1 .= "<td>" . number_format(htmlspecialchars($column_value)) . "</td>";
+			$column_name = str_replace("_", " ", $column_name);
+			if (!isset($column_totals[$column_name])) {
+				$column_totals[$column_name] = 0;
+			}
+			$column_totals[$column_name] += $column_value;
+		    }
+		    else{
+		    	$table_string1 .= "<td>" . htmlspecialchars($column_value) . "</td>";
 		    }
 	    }
 	    $table_string1 .= "</tr>";
@@ -489,24 +481,24 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
     }
     // Process the additional query results if provided
     if (isset($query2)) {
-	    while ($row = mysqli_fetch_row($rs2)) {
-		    $csv_rows[] = $row;
+	    while ($row = mysqli_fetch_assoc($rs2)) {
 		    $bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
 		    $table_string1 .= "<tr class='$bgColor'>";
-
+		    $csv_rows[] = $row;
 		    foreach ($row as $column_name => $column_value) {
 			    if (isset($neuron_ids[$column_value])) {
 				    $column_value= $neuron_ids[$column_value];
 			    }
-			    if (end($row) > 0) {
-				    $table_string1 .= "<td>" . htmlspecialchars($column_value) . "</td>";
-			    }
-			    // Check if the value is numeric and update the column total
 			    if (is_numeric($column_value)) {
+		    		$table_string1 .= "<td>" . number_format(htmlspecialchars($column_value)) . "</td>";
+				    $column_name = str_replace("_", " ", $column_name);
 				    if (!isset($column_totals[$column_name])) {
 					    $column_totals[$column_name] = 0;
 				    }
 				    $column_totals[$column_name] += $column_value;
+			    }
+			    else{
+				    $table_string1 .= "<td>" . htmlspecialchars($column_value) . "</td>";
 			    }
 		    }
 		    $table_string1 .= "</tr>";
@@ -515,24 +507,12 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
     }
 
     if (isset($write_file)) {
-	if($csv_tablename == 'functionality_property_domain_page_views'){
-        	$totalRow = ["Total Count", $matrix_views_count, $evidences_count, $count];
-	}else{
-		foreach ($column_totals as $column_name => $total) {
-			$count += $total;
-		}
-        	$totalRow = ["Total Count",  $count];
-	}
-        $csv_rows[] = $totalRow;
+	$csv_rows[] = generateTotalRow($csv_headers, true, $column_totals);
 	$csv_data[$csv_tablename] = ['filename' => toCamelCase($csv_tablename), 'headers' => $csv_headers, 'rows' => $csv_rows];
         return $csv_data[$csv_tablename];
     } else {
-	    $table_string1 .= "<tr><td><b>Total Count</b></td>";
-	    foreach ($column_totals as $column_name => $total) {
-		    $table_string1 .= "<td>$total</td>";
-	    }
-	    $table_string .= "</tr>";	
 	    $table_string .= $table_string1;
+	    $table_string .= generateTotalRow($csv_headers, false, $column_totals);
 	    $table_string .= "</tbody></table></body></html>";
 	    return $table_string;
     }
@@ -619,26 +599,22 @@ function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $wri
 	    $table_string .= "<tr class='$bgColor'>";
 
 	    foreach ($row as $column_name => $column_value) {
-		    // Special handling for 'fp' to 'firing pattern'
 		    if ($column_value === 'fp') {
 			    $column_value = 'firing pattern';
 		    }
-
-		    // Check if the value is numeric and update the column total
 		    if (is_numeric($column_value)) {
 			    $column_name = str_replace("_", " ", $column_name);
 			    if (!isset($column_totals[$column_name])) {
 				    $column_totals[$column_name] = 0;
 			    }
 			    $column_totals[$column_name] += $column_value;
+			    $table_string .= "<td $style>" . number_format(htmlspecialchars($column_value)) . "</td>";
 		    }
-
-		    // Apply inline style for the second column
-		    $style = ($column_name === array_keys($row)[1]) ? 'style="width: 10%;"' : '';
-
-		    // Only add data cells if the last column value is > 0
-		    if (end($row) > 0) {
-			    $table_string .= "<td $style>" . htmlspecialchars($column_value) . "</td>";
+		    else{
+			    $style = ($column_name === array_keys($row)[1]) ? 'style="width: 10%;"' : '';
+			    if (end($row) > 0) {
+				    $table_string .= "<td $style>" . htmlspecialchars($column_value) . "</td>";
+			    }
 		    }
 	    }
 
@@ -704,6 +680,7 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 	$count =$neuron_page_views = $evidence_page_views = 0;
 	$array_subs = []; 
 	$csv_rows = [];
+	$column_totals = [];
 	if (isset($write_file)) {
 		if (mysqli_multi_query($conn, $query)) {
 			$header = []; // Initialize an array to store column names
@@ -805,20 +782,14 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 								$rowvalue[$key] = isset($color_segments[$value]) ? $color_segments[$value] : 'Other';
 							}
 							if ($value == 0) {
-								//$rowvalue[$key] = ''; // Replace 0 with an empty string
-							} else {
-								// Add to the count if the value is numeric and not zero
-								if (is_numeric($value)) {
-									if($key == 'Neuron_Page_Views'){
-										$neuron_page_views += $value;
-									}
-									if($key == 'Evidence_Page_Views'){
-										$evidence_page_views += $value;
-									}
-									if($key == 'Total_Views'){
-										$count += $value;
-									}
+								$rowvalue[$key] = 0; // Replace 0 with an empty string
+							} 
+							if (is_numeric($value)) {
+								$key = str_replace("_", " ", $key);
+								if (!isset($column_totals[$key])){
+									$column_totals[$key] = 0;
 								}
+								$column_totals[$key] += $value;
 							}
 						}
 						$csv_rows[] = $rowvalue;
@@ -826,14 +797,8 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 					mysqli_free_result($result);
 				}
 			} while (mysqli_next_result($conn));
-			$numHeaders = count($header); // Get the number of headers
-			if($neuron_page_views > 0 && $evidence_page_views > 0){
-				$totalCountRow = array_merge(["Total Count", " "], [$neuron_page_views, $evidence_page_views, $count]);
-			}else{
-				$totalCountRow = array_merge(["Total Count"], array_fill(0, $numHeaders - 2, ''), [$count]);
-			}
-			$csv_rows[] = $totalCountRow;
-
+			$csv_rows[] = generateTotalRow($csv_headers, true, $column_totals);
+			
 			// Store information about the CSV file in `$csv_data` array
 			$csv_data[$csv_tablename]=['filename'=>toCamelCase($csv_tablename),'headers'=>$csv_headers,'rows'=>$csv_rows];
 			return $csv_data[$csv_tablename];
@@ -901,28 +866,16 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 				$colorBgClass = ($j % 2 == 0) ? 'white-bg' : 'blue-bg';
 				foreach ($colors as $color) {
 					if($color <=0 ){
-						//$color='';
+						$color=0;
 					}
-					$table_string1 .= "<td class='$colorBgClass'>$color</td>";
+					$table_string1 .= "<td class='$colorBgClass'>".number_format($color)."</td>";
 				}
 				$j++;
 				$table_string1 .= "</tr>";
 			}
 			$i++;
 		}
-		$total_columns = count($csv_headers);
-		$numeric_columns_count = count(array_filter($column_totals, 'is_numeric'));
-		$non_numeric_columns_count = $total_columns - $numeric_columns_count;
-		$table_string1 .= "<tr>";
-		if ($non_numeric_columns_count > 0) {
-			$table_string1 .= "<td colspan='$non_numeric_columns_count'><b>Total Count</b></td>";
-		}
-		foreach ($column_totals as $total) {
-			if (is_numeric($total)) {
-				$table_string1 .= "<td>$total</td>";
-			}
-		}
-		$table_string1 .= "</tr>";
+		$table_string1 .= generateTotalRow($csv_headers, false, $column_totals);
 		return $table_string1;
 	}
 }
@@ -1220,12 +1173,12 @@ function generateTotalRow($headers, $isCsv = true, $columnTotals = [])
     $totalCountRow = ["Total Count"];
     $numEmptyColumns = $numHeaders - $numTotals - 1;
     $numEmptyColumns = max($numEmptyColumns, 0); 
-    if ($numEmptyColumns > 0) {
+    if ($numEmptyColumns >= 0) {
         $totalCountRow = array_merge($totalCountRow, array_fill(0, $numEmptyColumns, ''));
     }
     foreach ($headers as $header) {
         if (isset($columnTotals[$header])) {
-            $totalCountRow[] = $columnTotals[$header];
+		$totalCountRow[] = $columnTotals[$header];
         }
     }
     if ($isCsv) {
@@ -1233,7 +1186,7 @@ function generateTotalRow($headers, $isCsv = true, $columnTotals = [])
     } else {
         $htmlRow = "<tr><td colspan='" . ($numEmptyColumns + 1) . "' class='total-row'>Total Count</td>";
         foreach ($columnTotals as $total_value) {
-            $htmlRow .= "<td>{$total_value}</td>";
+            $htmlRow .= "<td>". number_format($total_value) ."</td>";
         }
         $htmlRow .= "</tr>";
         return $htmlRow;
@@ -2157,7 +2110,7 @@ function get_pages_views_per_month_report($conn, $write_file=NULL){
 		    ) AS Page_Views 
                         from GA_combined_analytics 
                         GROUP BY YEAR(day_index), MONTH(day_index)";
-	echo $page_views_per_month_query;
+	//echo $page_views_per_month_query;
 	$columns = ['Month-Year', 'Views'];
 	$table_string='';
 	if(isset($write_file)) {
@@ -2192,61 +2145,61 @@ function get_table_skeleton_end(){
 function get_neurons_views_report($conn, $neuron_ids=NULL, $views_request=NULL, $write_file=NULL){ //Passed on Dec 3 2023
 	$columns = ['Subregion', 'Neuron Type Name', 'Census','Views'];
 	$page_neurons_views_query = "
-SELECT 
-    COALESCE(t.subregion, 'N/A') AS Subregion, 
-    COALESCE(t.page_statistics_name, 'None of the Above') AS Neuron_Type_Name,
-    IFNULL(SUM(CASE WHEN nd.property_page_category = 'Morphology: ADL / SD' THEN nd.page_views ELSE 0 END), 0) AS `Morphology: ADL / SD`,
-    IFNULL(SUM(CASE WHEN nd.property_page_category = 'Molecular Markers' THEN nd.page_views ELSE 0 END), 0) AS `Molecular Markers`,
-    IFNULL(SUM(CASE WHEN nd.property_page_category = 'Membrane Biophysics' THEN nd.page_views ELSE 0 END), 0) AS `Membrane Biophysics`,
-    IFNULL(SUM(CASE WHEN nd.property_page_category = 'Connectivity: Known / Potential' THEN nd.page_views ELSE 0 END), 0) AS `Connectivity: Known / Potential`,
-    IFNULL(SUM(CASE WHEN nd.property_page_category = 'Synaptome' THEN nd.page_views ELSE 0 END), 0) AS `Synaptic Physiology`,
-    IFNULL(SUM(CASE WHEN nd.property_page_category = 'FP' THEN nd.page_views ELSE 0 END), 0) AS `Firing Patterns`,
-    IFNULL(SUM(CASE WHEN nd.property_page_category = 'Census' THEN nd.page_views ELSE 0 END), 0) AS `Neuron Type Census`,
-    IFNULL(SUM(CASE WHEN nd.property_page_category = 'In Vivo' THEN nd.page_views ELSE 0 END), 0) AS `In Vivo Recordings`,
-    IFNULL(SUM(CASE WHEN nd.property_page_category = 'Connectivity: NoPS / NoC / PS' THEN nd.page_views ELSE 0 END), 0) AS `Connectivity: NoPS / NoC / PS`,
-    IFNULL(SUM(CASE WHEN nd.property_page_category = 'Connectivity: Parcel-Specific Tables' THEN nd.page_views ELSE 0 END), 0) AS `Connectivity: Parcel-Specific Tables`,
-    IFNULL(SUM(CASE WHEN nd.property_page_category = 'Morphology: PMID / ISBN' THEN nd.page_views ELSE 0 END), 0) AS `Other`,
-    IFNULL(SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END), 0) AS `Total_Views`,
-    ROUND(".DELTA_VIEWS." * IFNULL(SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END), 0)) AS `Estimated_Pre_2017_Views`,
-    IFNULL(SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END), 0) +
-    ROUND(".DELTA_VIEWS." * IFNULL(SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END), 0)) AS `Updated_Total_Views`
-FROM 
-    Type t
-LEFT JOIN (
-    SELECT 
-        CASE 
-            WHEN page REGEXP 'id_neuron=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
-            WHEN page REGEXP 'id1_neuron=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)
-            WHEN page REGEXP 'id_neuron_source=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)
-            WHEN page REGEXP 'pre_id=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'pre_id=', -1), '&', 1)
-            ELSE NULL 
-        END AS neuronID,
-        CASE 
-            WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology') THEN 'Morphology: ADL / SD'
-            WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('markers') THEN 'Molecular Markers'
-            WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'ephys' THEN 'Membrane Biophysics'
-            WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('connectivity', 'connectivity_orig', 'connectivity_test') THEN 'Connectivity: Known / Potential'
-            WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('/synaptome/php/synaptome', 'synaptome') THEN 'Synaptic Physiology'
-            WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'fp' THEN 'Firing Patterns'
-            WHEN page LIKE '%property_page_counts.php%' THEN 'Neuron Type Census'
-            WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases' THEN 'In Vivo Recordings'
-            WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('synpro_nm', 'synpro_nm_old2') THEN 'Connectivity: NoPS / NoC / PS'
-            WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro_pvals' THEN 'Connectivity: Parcel-Specific Tables'
-            WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology_linking_pmid_isbn') THEN 'Other'
-            ELSE 'Other' 
-        END AS property_page_category,
-        IFNULL(REPLACE(page_views, ',', ''), 0) AS page_views,
-        IFNULL(REPLACE(sessions, ',', ''), 0) AS sessions
-    FROM GA_combined_analytics
-    WHERE 
-        page REGEXP 'id_neuron=[0-9]+' 
-        OR page REGEXP 'id1_neuron=[0-9]+' 
-        OR page REGEXP 'id_neuron_source=[0-9]+' 
-        OR page REGEXP 'pre_id=[0-9]+'
-) AS nd ON nd.neuronID = t.id
-GROUP BY t.subregion, t.page_statistics_name
-ORDER BY (Subregion = 'N/A') ASC, Subregion, Neuron_Type_Name;
-";
+		SELECT 
+		COALESCE(t.subregion, 'N/A') AS Subregion, 
+		COALESCE(t.page_statistics_name, 'None of the Above') AS Neuron_Type_Name,
+		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Morphology: ADL / SD' THEN nd.page_views ELSE 0 END), 0) AS `Morphology: ADL / SD`,
+		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Molecular Markers' THEN nd.page_views ELSE 0 END), 0) AS `Molecular Markers`,
+		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Membrane Biophysics' THEN nd.page_views ELSE 0 END), 0) AS `Membrane Biophysics`,
+		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Connectivity: Known / Potential' THEN nd.page_views ELSE 0 END), 0) AS `Connectivity: Known / Potential`,
+		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Synaptome' THEN nd.page_views ELSE 0 END), 0) AS `Synaptic Physiology`,
+		IFNULL(SUM(CASE WHEN nd.property_page_category = 'FP' THEN nd.page_views ELSE 0 END), 0) AS `Firing Patterns`,
+		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Census' THEN nd.page_views ELSE 0 END), 0) AS `Neuron Type Census`,
+		IFNULL(SUM(CASE WHEN nd.property_page_category = 'In Vivo' THEN nd.page_views ELSE 0 END), 0) AS `In Vivo Recordings`,
+		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Connectivity: NoPS / NoC / PS' THEN nd.page_views ELSE 0 END), 0) AS `Connectivity: NoPS / NoC / PS`,
+		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Connectivity: Parcel-Specific Tables' THEN nd.page_views ELSE 0 END), 0) AS `Connectivity: Parcel-Specific Tables`,
+		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Morphology: PMID / ISBN' THEN nd.page_views ELSE 0 END), 0) AS `Other`,
+		IFNULL(SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END), 0) AS `Post_2017_Views`,
+		ROUND(".DELTA_VIEWS." * IFNULL(SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END), 0)) AS `Estimated_Pre_2017_Views`,
+		IFNULL(SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END), 0) +
+			ROUND(".DELTA_VIEWS." * IFNULL(SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END), 0)) AS `Total_Views`
+			FROM 
+			Type t
+			LEFT JOIN (
+					SELECT 
+					CASE 
+					WHEN page REGEXP 'id_neuron=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
+					WHEN page REGEXP 'id1_neuron=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)
+					WHEN page REGEXP 'id_neuron_source=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)
+					WHEN page REGEXP 'pre_id=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'pre_id=', -1), '&', 1)
+					ELSE NULL 
+					END AS neuronID,
+					CASE 
+					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology') THEN 'Morphology: ADL / SD'
+					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('markers') THEN 'Molecular Markers'
+					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'ephys' THEN 'Membrane Biophysics'
+					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('connectivity', 'connectivity_orig', 'connectivity_test') THEN 'Connectivity: Known / Potential'
+					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('/synaptome/php/synaptome', 'synaptome') THEN 'Synaptic Physiology'
+					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'fp' THEN 'Firing Patterns'
+					WHEN page LIKE '%property_page_counts.php%' THEN 'Neuron Type Census'
+					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases' THEN 'In Vivo Recordings'
+					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('synpro_nm', 'synpro_nm_old2') THEN 'Connectivity: NoPS / NoC / PS'
+					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro_pvals' THEN 'Connectivity: Parcel-Specific Tables'
+					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology_linking_pmid_isbn') THEN 'Other'
+					ELSE 'Other' 
+					END AS property_page_category,
+		IFNULL(REPLACE(page_views, ',', ''), 0) AS page_views,
+		IFNULL(REPLACE(sessions, ',', ''), 0) AS sessions
+			FROM GA_combined_analytics
+			WHERE 
+			page REGEXP 'id_neuron=[0-9]+' 
+			OR page REGEXP 'id1_neuron=[0-9]+' 
+			OR page REGEXP 'id_neuron_source=[0-9]+' 
+			OR page REGEXP 'pre_id=[0-9]+'
+			) AS nd ON nd.neuronID = t.id
+			GROUP BY t.subregion, t.page_statistics_name
+			ORDER BY (Subregion = 'N/A') ASC, Subregion, Neuron_Type_Name;
+	";
 /*
 SELECT 
 		COALESCE(t.subregion, 'N/A') AS Subregion,
@@ -2354,7 +2307,7 @@ SELECT
 
 			ORDER BY (Subregion = 'N/A') ASC, Subregion, Neuron_Type_Name;";
 */
-	echo $page_neurons_views_query;
+	//echo $page_neurons_views_query;
 	if (($views_request == "views_per_month")  || ($views_request == "views_per_year")) {
 		$page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
 
@@ -2755,7 +2708,7 @@ ORDER BY
 			Subregion, 
 			Neuron_Type_Name;";
 */
-	echo $page_neurons_views_query;
+	//echo $page_neurons_views_query;
 
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
@@ -3071,7 +3024,7 @@ FROM
 			return format_table_morphology($conn, $page_property_views_query, $table_string, $file_name, $columns, $neuron_ids, $write_file);
 		}
         }else{
-			echo $page_property_views_query;
+			//echo $page_property_views_query;
 		$table_string .= get_table_skeleton_first($columns);
 		$table_string .= format_table_morphology($conn, $page_property_views_query, $table_string, 'morphology_property', $columns, $neuron_ids);
 		$table_string .= get_table_skeleton_end();
@@ -3296,7 +3249,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 				ELSE 1
 				END,
 			t.position;";
-			echo $page_counts_views_query;
+			//echo $page_counts_views_query;
 		if ($views_request == "views_per_month" || $views_request == "views_per_year") {
 			$page_counts_views_query= "SET SESSION group_concat_max_len = 1000000;
 			SET @sql = NULL;";
@@ -3507,7 +3460,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 				derived JOIN Type AS t ON t.id = derived.neuronID 
 				GROUP BY t.subregion, t.page_statistics_name, derived.evidence ORDER BY t.position;
 		";
-		echo $page_counts_views_query;
+		//echo $page_counts_views_query;
 		if ($views_request == "views_per_month" || $views_request == "views_per_year") {
 
 			$page_counts_views_query = "
@@ -3977,7 +3930,6 @@ function get_domain_functionality_views_report($conn, $views_request = NULL, $wr
 							   'Simulation Parameters', 'Other'
 						);
 	";
-	echo $page_functionality_views_query;
 	// Check if the request is for monthly or yearly views
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_functionality_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
@@ -4073,22 +4025,19 @@ function get_domain_functionality_views_report($conn, $views_request = NULL, $wr
 	}
 
 //	echo $page_functionality_views_query;
-	$columns = ['Property', 'Views'];
+	$columns = ['Property Page Category', 'Main Matrix Accesses', 'Evidence Accesses', 'Post 2017 Views', 'Estimated Pre 2017 Views', 'Total Views'];
         $table_string='';
 	$file_name='functionality_property_domain_page_';
         if(isset($write_file)) {
                 if($views_request == 'views_per_month' || $views_request == 'views_per_year'){
-		$columns = ['Property', 'Views'];
                         $file_name .= $views_request;
                 	return format_table($conn, $page_functionality_views_query, $table_string, $file_name, $columns, $neuron_ids=NULL, $write_file, $views_request);
                 }else{ $file_name .= 'views';
-			$columns = ['Property', 'Main Matrix Accesses', 'Evidence Accesses', 'Views'];
                 	return format_table($conn, $page_functionality_views_query, $table_string, $file_name, $columns, $neuron_ids=NULL, $write_file, $views_request);
  		}
 		//return format_table($conn, $page_functionality_views_query, $table_string, 'functionality_property_domain_page_views', $columns, $neuron_ids=NULL, $write_file);
 	}else{
 		$file_name .= 'views';
-		$columns = ['Property', 'Main Matrix Accesses', 'Evidence Accesses', 'Views'];
 		$table_string = format_table($conn, $page_functionality_views_query, $table_string, $file_name, $columns);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
