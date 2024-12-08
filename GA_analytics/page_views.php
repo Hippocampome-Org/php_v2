@@ -451,30 +451,42 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 		$table_string= get_table_skeleton_first($csv_headers);
 	}
     }
-    $column_totals =[];
+    $column_totals = [];
+    // Prepend the "pre-Aug 22, 2019" row with the integer value
+    if ($csv_tablename == 'monthly_page_views') {
+	    $bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
+	    $table_string1 .= "<tr class='$bgColor'>";
+	    $table_string1 .= "<td>pre-Aug 22, 2019</td><td>86523</td></tr>";
+
+	    $csv_rows[] = ['pre-Aug 22, 2019', 86523];
+	    if (!isset($column_totals[$header])) {
+		    $column_totals[$header] = 0;
+	    }
+	    $column_totals[$header] += 86523;
+	    $i++;
+    }
+    // Reset the result set pointer to the first row
+    mysqli_data_seek($rs, 0);
     while ($row = mysqli_fetch_row($rs)) {
 	    $bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
 	    $table_string1 .= "<tr class='$bgColor'>";
 	    $csv_rows[] = $row;
-	    foreach ($row as $column_name => $column_value) {
+	    foreach ($row as $column_index => $column_value) {
 		    if (isset($neuron_ids[$column_value])) {
-			    $column_value= $neuron_ids[$column_value];
+			    $column_value = $neuron_ids[$column_value];
 		    }
-		    if (end($row) > 0) {
-			    $table_string1 .= "<td>" . htmlspecialchars($column_value) . "</td>";
-		    }
-		    // Check if the value is numeric and update the column total
+		    $table_string1 .= "<td>" . htmlspecialchars($column_value) . "</td>";
 		    if (is_numeric($column_value)) {
-			    if (!isset($column_totals[$column_name])) {
-				    $column_totals[$column_name] = 0;
+			    $header = $csv_headers[$column_index]; // Match column index to header
+			    if (!isset($column_totals[$header])) {
+				    $column_totals[$header] = 0;
 			    }
-			    $column_totals[$column_name] += $column_value;
+			    $column_totals[$header] += $column_value;
 		    }
 	    }
 	    $table_string1 .= "</tr>";
 	    $i++;
     }
-
     // Process the additional query results if provided
     if (isset($query2)) {
 	    while ($row = mysqli_fetch_row($rs2)) {
@@ -506,12 +518,12 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 	if($csv_tablename == 'functionality_property_domain_page_views'){
         	$totalRow = ["Total Count", $matrix_views_count, $evidences_count, $count];
 	}else{
-        	$totalRow = ["Total Count", $count];
+		foreach ($column_totals as $column_name => $total) {
+			$count += $total;
+		}
+        	$totalRow = ["Total Count",  $count];
 	}
         $csv_rows[] = $totalRow;
-	if($csv_tablename == 'monthly_page_views'){
-		$csv_rows[] = ["pre-Aug 22, 2019",86523];
-	}
 	$csv_data[$csv_tablename] = ['filename' => toCamelCase($csv_tablename), 'headers' => $csv_headers, 'rows' => $csv_rows];
         return $csv_data[$csv_tablename];
     } else {
@@ -520,12 +532,6 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 		    $table_string1 .= "<td>$total</td>";
 	    }
 	    $table_string .= "</tr>";	
-	    if($csv_tablename == 'monthly_page_views'){
-		    $i++;
-		    $bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
-		    $table_string1 .= "<tr class='$bgColor'>";
-		    $table_string1 .= "<td>pre-Aug 22, 2019</td><td>86523</td></tr>";
-	    }
 	    $table_string .= $table_string1;
 	    $table_string .= "</tbody></table></body></html>";
 	    return $table_string;
@@ -2142,7 +2148,6 @@ function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL)
 }
 
 function get_pages_views_per_month_report($conn, $write_file=NULL){ 
-/*
 	 $page_views_per_month_query = "select concat(DATE_FORMAT(day_index,'%b'), '-', YEAR(day_index)) as 'Month-Year',
 		 SUM(
 				 CASE
@@ -2152,26 +2157,7 @@ function get_pages_views_per_month_report($conn, $write_file=NULL){
 		    ) AS Page_Views 
                         from GA_combined_analytics 
                         GROUP BY YEAR(day_index), MONTH(day_index)";
-*/
-	 $page_views_per_month_query = "select concat(DATE_FORMAT(day_index,'%b'), '-', YEAR(day_index)) as 'Month-Year',
-		 SUM(
-				 CASE WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED)
-				 ELSE CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED) END
-		    ) AS Post_2017_Views,
-		 ROUND(".DELTA_VIEWS." *  SUM(
-                                 CASE WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED)
-                                 ELSE CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED) END
-                    )) AS Estimated_Pre_2017_Views,
-		 ( SUM(
-                                 CASE WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED)
-                                 ELSE CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED) END
-                    ) + ROUND(".DELTA_VIEWS." *  SUM(
-                                 CASE WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED)
-                                 ELSE CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED) END
-                    ))) AS Total_Views
-			 from GA_combined_analytics 
-			 GROUP BY YEAR(day_index), MONTH(day_index)";
-	 echo $page_views_per_month_query;
+	echo $page_views_per_month_query;
 	$columns = ['Month-Year', 'Views'];
 	$table_string='';
 	if(isset($write_file)) {
