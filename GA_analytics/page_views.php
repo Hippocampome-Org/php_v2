@@ -23,12 +23,12 @@ function download_excel_file($conn, $neuron_ids, $param) {
 
     if ($param == "analytics") {
 	    $views_requests = [
-		    'get_neurons_views_report' => null,
-		    'get_neuron_types_views_report' => null, 
-		    'get_domain_functionality_views_report' => null,
 		    'get_page_functionality_views_report' => null,
-		    'get_views_per_page_report' => null,
-		    'get_pages_views_per_month_report' => null
+		    'get_domain_functionality_views_report' => null,
+		    'get_neuron_types_views_report' => null, 
+		    'get_neurons_views_report' => null,
+		    'get_pages_views_per_month_report' => null,
+		    'get_views_per_page_report' => null
 	    ];
 	    $reports_filename = $param . "_reports.xlsx";
     }
@@ -245,16 +245,16 @@ function download_csvfile($functionName, $conn, $views_request = NULL, $neuron_i
 	return $functionName($conn, $neuron_ids, $param);
     }
     $allowedFunctions = [
-        'get_neurons_views_report',
+        'get_page_functionality_views_report',
+        'get_domain_functionality_views_report',
 	'get_neuron_types_views_report',
+        'get_neurons_views_report',
         'get_markers_property_views_report',
         'get_morphology_property_views_report',
         'get_counts_views_report',
         'get_fp_property_views_report',
-        'get_domain_functionality_views_report',
-        'get_page_functionality_views_report',
-        'get_views_per_page_report',
-        'get_pages_views_per_month_report'
+        'get_pages_views_per_month_report',
+        'get_views_per_page_report'
     ];
 
     $neuron_ids_func = [
