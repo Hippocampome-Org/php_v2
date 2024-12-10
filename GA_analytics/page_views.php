@@ -1709,28 +1709,43 @@ function format_table_biophysics($conn, $query, $table_string, $csv_tablename, $
 	$column_totals = [];
 	if (isset($write_file)) {
 		$csv_rows = [];
-		// Iterate over array_subs to create CSV rows and accumulate totals
+		$column_totals = [];
+		$all_headers = ['Group', 'Subgroup']; // Start with 'Group' and 'Subgroup'
 		foreach ($array_subs as $groupKey => $subgroups) {
-			foreach ($subgroups as $subgroupKey=> $colors) {
-				$rowData = [];
-				$rowData[] = $groupKey; // Add group key only in the first subgroup entry
-				$rowData[] = $subgroupKey; // Add subgroup key
-				$typeData = [$groupKey]; // First value in the row
+			foreach ($subgroups as $subgroupKey => $colors) {
 				foreach ($colors as $property => $value) {
-					if ($property == "") continue; // Skip empty properties
-					$showVal = is_numeric($value) ? $value : 0;
-					if (is_numeric($value)) {
-						if (!isset($column_totals[$property])) {
-							$column_totals[$property] = 0;
-						}
-						$column_totals[$property] += $value;
+					if (!in_array($property, $all_headers, true) && $property !== "") {
+						$all_headers[] = $property;
 					}
-					$rowData[] = $showVal;
-					// Add rowData to CSV rows
-					$csv_rows[] = $rowData;
 				}
 			}
 		}
+		$csv_rows[] = $all_headers;
+		foreach ($array_subs as $groupKey => $subgroups) {
+			foreach ($subgroups as $subgroupKey => $colors) {
+				$rowData = array_fill(0, count($all_headers), 0); // Initialize the row with zeros
+				$rowData[0] = $groupKey; // Set the 'Group' column
+				$rowData[1] = $subgroupKey; // Set the 'Subgroup' column
+
+				foreach ($colors as $property => $value) {
+					$headerIndex = array_search($property, $all_headers, true);
+					if ($headerIndex !== false) {
+						$rowData[$headerIndex] = $value > 0 ? $value : 0; // Ensure non-negative values
+						if (is_numeric($value)) {
+							// Accumulate totals for numeric columns
+							if (!isset($column_totals[$property])) {
+								$column_totals[$property] = 0;
+							}
+							$column_totals[$property] += $value;
+						}
+					}
+				}
+
+				// Add the current row to the CSV rows
+				$csv_rows[] = $rowData;
+			}
+		}
+		$csv_headers = $all_headers;
 		$csv_rows[] = generateTotalRow($csv_headers, true, $column_totals);
 		// Create final CSV data structure
 		$csv_data[$csv_tablename] = [
