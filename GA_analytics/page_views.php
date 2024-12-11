@@ -457,6 +457,19 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
     // Reset the result set pointer to the first row
     mysqli_data_seek($rs, 0);
     while ($row = mysqli_fetch_assoc($rs)) {                    
+	    $row = update_estimated_totals($row);
+	    /*if( ($row['Post_2017_Views'] > $row['Estimated_Pre_2017_Views']) ||
+			                              ($row['Estimated_Pre_2017_Views'] == 0 && $row['Post_2017_Views'] > 1)) {
+		    $row['Estimated_Pre_2017_Views'] = ROUND(DELTA_VIEWS * $row['Post_2017_Views']);
+		    $row['Total_Views'] = $row['Post_2017_Views'] + $row['Estimated_Pre_2017_Views'];
+	    }
+
+	    if( ($row['Post_2017_Views'] > $row['Estimated_Pre_2017_Views']) ||
+			                              ($row['Estimated_Pre_2017_Views'] == 0 && $row['Post_2017_Views'] == 1)) {
+			echo "****KVKVK1V";
+		    $row['Estimated_Pre_2017_Views'] = ROUND(DELTA_VIEWS * $row['Post_2017_Views'], 1);
+		    $row['Total_Views'] = $row['Post_2017_Views'] + $row['Estimated_Pre_2017_Views'];
+	    }*/
 	    $bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
 	    $table_string1 .= "<tr class='$bgColor'>";
 	    $csv_rows[] = $row;
@@ -1666,6 +1679,53 @@ function alternateKeyClass($index) {
     return $index % 2 == 0 ? 'green-key' : 'light-green-key';
 }
 
+/*function update_estimated_totals($array_subs){
+        foreach ($array_subs as $groupKey => $subgroups) {
+                foreach ($subgroups as $subgroupKey => $colors) {
+                        if( ($colors['Post_2017_Views'] > $colors['Estimated_Pre_2017_Views']) || 
+                                       ($colors['Estimated_Pre_2017_Views'] == 0 && $colors['Post_2017_Views'] > 1)) {
+                               $array_subs[$groupKey][$subgroupKey]['Estimated_Pre_2017_Views'] = ROUND(DELTA_VIEWS * $colors['Post_2017_Views']);
+                               $array_subs[$groupKey][$subgroupKey]['Total_Views'] = $colors['Post_2017_Views'] +  $array_subs[$groupKey][$subgroupKey]['Estimated_Pre_2017_Views'] ;
+                       }
+                }
+        }
+       return $array_subs;
+}
+*/
+
+function update_estimated_totals($data) {
+    $isSingleRow = isset($data['Post_2017_Views']); // Check if it's a single row
+    if ($isSingleRow) {
+        $data = [$data];
+	foreach ($data as $key => $row) {
+		if (!isset($row['Estimated_Pre_2017_Views'])) {
+			$row['Estimated_Pre_2017_Views'] = 0;
+		}
+		if (($row['Post_2017_Views'] > $row['Estimated_Pre_2017_Views']) ||
+				($row['Estimated_Pre_2017_Views'] == 0 && $row['Post_2017_Views'] > 1)) {
+			$row['Estimated_Pre_2017_Views'] = round(DELTA_VIEWS * $row['Post_2017_Views']);
+			$row['Total_Views'] = $row['Post_2017_Views'] + $row['Estimated_Pre_2017_Views'];
+		}
+		$data[$key] = $row; // Update the processed row in the array
+	}
+	return $isSingleRow ? $data[0] : $data;
+    }
+    else{
+	    $array_subs = $data;
+	    foreach ($array_subs as $groupKey => $subgroups) {
+		    foreach ($subgroups as $subgroupKey => $colors) {
+			    if( ($colors['Post_2017_Views'] > $colors['Estimated_Pre_2017_Views']) || 
+					    ($colors['Estimated_Pre_2017_Views'] == 0 && $colors['Post_2017_Views'] > 1)) {
+				    $array_subs[$groupKey][$subgroupKey]['Estimated_Pre_2017_Views'] = ROUND(DELTA_VIEWS * $colors['Post_2017_Views']);
+				    $array_subs[$groupKey][$subgroupKey]['Total_Views'] = $colors['Post_2017_Views'] +  $array_subs[$groupKey][$subgroupKey]['Estimated_Pre_2017_Views'] ;
+			    }
+		    }
+	    }
+	    return $array_subs;
+
+    }
+}
+
 function format_table_biophysics($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file = NULL, $array_subs = NULL){
 	$count = 0;
 	$csv_rows=[];
@@ -1706,6 +1766,7 @@ function format_table_biophysics($conn, $query, $table_string, $csv_tablename, $
 			}
 		}
 	}
+	$array_subs = update_estimated_totals($array_subs);
 	$column_totals = [];
 	if (isset($write_file)) {
 		$csv_rows = [];
