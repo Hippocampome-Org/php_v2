@@ -826,10 +826,11 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 	}
 
 	$header = []; // Initialize an array to store column names
-	$array_subs = []; // Initialize array to store CSV rows
+	if(!$array_subs){ $array_subs = [];}
+        if(!$array_subs1){ $array_subs1 = [];}
+        if(!$array_subsNA){ $array_subsNA = [];}
 	$count = $neuron_page_views = $evidence_page_views = 0; // Initialize count for total views
 	$table_string1 = '';
-
 	$column_totals=[];
 	if (mysqli_multi_query($conn, $query)) {
 		do {
@@ -843,7 +844,7 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 				}
 				while ($rowvalue = mysqli_fetch_assoc($result)) {
 					$value = $rowvalue['Neuron_Type_Name'];
-					if (isset($neuron_ids[$value])) {
+					if (isset($neuron_ids[$value])){ 
 						if (!isset($write_file)) {
 							$rowvalue['Neuron_Type_Name'] = get_link($value, $neuron_ids[$value], './neuron_page.php', 'neuron');
 						}
@@ -857,17 +858,18 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 						}
 						array_push($array_subs[$rowvalue['Subregion']][$rowvalue['Neuron_Type_Name']], $value);
 						// Check if the value is numeric and update the column total
-						if (is_numeric($value)) {
+						/*if (is_numeric($value)) {
 							if (!isset($column_totals[$col])){
 								$column_totals[$col] = 0;
 							}
 							$column_totals[$col] += $value;
-						}
+						}*/
 					}
 				}
 				mysqli_free_result($result);
 			}
 		} while (mysqli_next_result($conn));
+		$array_subs = update_estimated_totals($array_subs);
 		$i=0;
 		$j=0;
 		foreach ($array_subs as $groupKey => $subgroups) {
@@ -877,9 +879,15 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 				$subgroupBgClass = ($j % 2 == 0) ? 'white-bg' : 'blue-bg';
 				$table_string1 .= "<td class='$subgroupBgClass' rowspan=''>$subgroupKey</td>";
 				$colorBgClass = ($j % 2 == 0) ? 'white-bg' : 'blue-bg';
-				foreach ($colors as $color) {
+				foreach ($colors as $col => $color) {
 					if($color <=0 ){
 						$color=0;
+					}
+					if (is_numeric($color)) {
+						if (!isset($column_totals[$col])){
+							$column_totals[$col] = 0;
+						}
+						$column_totals[$col] += $color;
 					}
 					$table_string1 .= "<td class='$colorBgClass'>".number_format($color)."</td>";
 				}
@@ -1858,6 +1866,34 @@ function format_table_biophysics($conn, $query, $table_string, $csv_tablename, $
 	return $table_string1;
 }
 
+
+function initializeNeuronData(array &$arraySubsNA, array &$arraySubs1, array $rowValue, array $columns) {
+    $isNoneOfTheAbove = ($rowValue['Neuron_Type_Name'] == 'None of the Above');
+    $needsInitialization = $isNoneOfTheAbove
+        ? !isset($arraySubsNA['N/A']['None of the Above'])
+        : !isset($arraySubs1[$rowValue['Subregion']][$rowValue['Neuron_Type_Name']]);
+
+    if ($needsInitialization) {
+        $subregion = $isNoneOfTheAbove ? 'N/A' : $rowValue['Subregion'];
+        $neuronType = $isNoneOfTheAbove ? 'None of the Above' : $rowValue['Neuron_Type_Name'];
+
+        $targetArray = $isNoneOfTheAbove ? $arraySubsNA : $arraySubs1;
+        $targetArray[$subregion][$neuronType] = [];
+
+        // Initialize all columns to 0
+        foreach ($columns as $column) {
+            $targetArray[$subregion][$neuronType][$column] = 0;
+        }
+
+        // Ensure the reference is assigned back
+        if ($isNoneOfTheAbove) {
+            $arraySubsNA = $targetArray;
+        } else {
+            $arraySubs1 = $targetArray;
+        }
+    }
+}
+
 function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file = NULL, $array_subs = NULL){
 	
 	$count = 0;
@@ -1882,7 +1918,7 @@ function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_
         }
 	if(!$array_subs){ $array_subs = [];}
 	if(!$array_subs1){ $array_subs1 = [];}
-	if(!$array_subs1){ $array_subsNA = [];}
+	if(!$array_subsNA){ $array_subsNA = [];}
 	while ($rowvalue = mysqli_fetch_array($rs, MYSQLI_ASSOC)) {
 		// Link the neuron_name if it exists in the neuron_ids array
 		if (isset($neuron_ids[$rowvalue['Neuron_Type_Name']]) && $rowvalue['Neuron_Type_Name'] != 'None of the Above' ) {
@@ -1890,7 +1926,8 @@ function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_
 		}
 		// Initialize subregion and neuron name if not already set
 		// Check if the Neuron_Type_Name is 'None of the Above' or not and if it needs to be initialized
-		$isNoneOfTheAbove = ($rowvalue['Neuron_Type_Name'] == 'None of the Above');
+		initializeNeuronData($array_subsNA, $array_subs1, $rowvalue, $cols);
+/*		$isNoneOfTheAbove = ($rowvalue['Neuron_Type_Name'] == 'None of the Above');
 		$needsInitialization = $isNoneOfTheAbove
 			? !isset($array_subsNA['N/A']['None of the Above'])
 			: !isset($array_subs1[$rowvalue['Subregion']][$rowvalue['Neuron_Type_Name']]);
@@ -1917,6 +1954,7 @@ function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_
 				}
 			}
 		}
+*/
 		// Get the segment based on evidence
 		$segment = $neuronal_segments[$rowvalue['evidence']] ?? null;
 		// Increment count for the segment if it exists
@@ -2220,169 +2258,122 @@ function get_table_skeleton_end(){
 
 function get_neurons_views_report($conn, $neuron_ids=NULL, $views_request=NULL, $write_file=NULL){ //Passed on Dec 3 2023
 	$columns = ['Subregion', 'Neuron Type Name', 'Census','Views'];
-	$page_neurons_views_query = "
-		SELECT 
-		COALESCE(t.subregion, 'N/A') AS Subregion, 
-		COALESCE(t.page_statistics_name, 'None of the Above') AS Neuron_Type_Name,
-		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Morphology: ADL / SD' THEN nd.page_views ELSE 0 END), 0) AS `Morphology: ADL / SD`,
-		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Molecular Markers' THEN nd.page_views ELSE 0 END), 0) AS `Molecular Markers`,
-		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Membrane Biophysics' THEN nd.page_views ELSE 0 END), 0) AS `Membrane Biophysics`,
-		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Connectivity: Known / Potential' THEN nd.page_views ELSE 0 END), 0) AS `Connectivity: Known / Potential`,
-		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Synaptome' THEN nd.page_views ELSE 0 END), 0) AS `Synaptic Physiology`,
-		IFNULL(SUM(CASE WHEN nd.property_page_category = 'FP' THEN nd.page_views ELSE 0 END), 0) AS `Firing Patterns`,
-		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Census' THEN nd.page_views ELSE 0 END), 0) AS `Neuron Type Census`,
-		IFNULL(SUM(CASE WHEN nd.property_page_category = 'In Vivo' THEN nd.page_views ELSE 0 END), 0) AS `In Vivo Recordings`,
-		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Connectivity: NoPS / NoC / PS' THEN nd.page_views ELSE 0 END), 0) AS `Connectivity: NoPS / NoC / PS`,
-		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Connectivity: Parcel-Specific Tables' THEN nd.page_views ELSE 0 END), 0) AS `Connectivity: Parcel-Specific Tables`,
-		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Morphology: PMID / ISBN' THEN nd.page_views ELSE 0 END), 0) AS `Other`,
-		IFNULL(SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END), 0) AS `Post_2017_Views`,
-		ROUND(".DELTA_VIEWS." * IFNULL(SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END), 0)) AS `Estimated_Pre_2017_Views`,
-		IFNULL(SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END), 0) +
-			ROUND(".DELTA_VIEWS." * IFNULL(SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END), 0)) AS `Total_Views`
-			FROM 
-			Type t
-			LEFT JOIN (
+	$page_neurons_views_query = "SELECT 
+		COALESCE(Subregion, 'N/A') AS Subregion, 
+		Neuron_Type_Name, 
+		IFNULL(Neuron_Page_Views, 0) AS Neuron_Page_Views, 
+		IFNULL(Evidence_Page_Views, 0) AS Evidence_Page_Views, 
+		IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0) AS Post_2017_Views, 
+		ROUND(".DELTA_VIEWS." * (IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0)), 0) AS Estimated_Pre_2017_Views, 
+		IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0) 
+			+ ROUND(".DELTA_VIEWS." * (IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0)), 0) AS Total_Views 
+			FROM (
 					SELECT 
-					CASE 
-					WHEN page REGEXP 'id_neuron=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
-					WHEN page REGEXP 'id1_neuron=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)
-					WHEN page REGEXP 'id_neuron_source=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)
-					WHEN page REGEXP 'pre_id=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'pre_id=', -1), '&', 1)
-					ELSE NULL 
-					END AS neuronID,
-					CASE 
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology') THEN 'Morphology: ADL / SD'
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('markers') THEN 'Molecular Markers'
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'ephys' THEN 'Membrane Biophysics'
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('connectivity', 'connectivity_orig', 'connectivity_test') THEN 'Connectivity: Known / Potential'
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('/synaptome/php/synaptome', 'synaptome') THEN 'Synaptic Physiology'
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'fp' THEN 'Firing Patterns'
-					WHEN page LIKE '%property_page_counts.php%' THEN 'Neuron Type Census'
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases' THEN 'In Vivo Recordings'
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('synpro_nm', 'synpro_nm_old2') THEN 'Connectivity: NoPS / NoC / PS'
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro_pvals' THEN 'Connectivity: Parcel-Specific Tables'
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology_linking_pmid_isbn') THEN 'Other'
-					ELSE 'Other' 
-					END AS property_page_category,
-		IFNULL(REPLACE(page_views, ',', ''), 0) AS page_views,
-		IFNULL(REPLACE(sessions, ',', ''), 0) AS sessions
-			FROM GA_combined_analytics
-			WHERE 
-			page REGEXP 'id_neuron=[0-9]+' 
-			OR page REGEXP 'id1_neuron=[0-9]+' 
-			OR page REGEXP 'id_neuron_source=[0-9]+' 
-			OR page REGEXP 'pre_id=[0-9]+'
-			) AS nd ON nd.neuronID = t.id
-			GROUP BY t.subregion, t.page_statistics_name
-			ORDER BY (Subregion = 'N/A') ASC, Subregion, Neuron_Type_Name;
-	";
-/*
-SELECT 
-		COALESCE(t.subregion, 'N/A') AS Subregion,
-		COALESCE(t.page_statistics_name, 'None of the Above') AS Neuron_Type_Name,
-		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Morphology: ADL / SD' THEN nd.page_views ELSE 0 END), 0) AS `Morphology: ADL / SD`,
-		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Molecular Markers' THEN nd.page_views ELSE 0 END), 0) AS `Molecular Markers`,
-		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Membrane Biophysics' THEN nd.page_views ELSE 0 END), 0) AS `Membrane Biophysics`,
-		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Connectivity: Known / Potential' THEN nd.page_views ELSE 0 END), 0) AS `Connectivity: Known / Potential`,
-		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Synaptome' THEN nd.page_views ELSE 0 END), 0) AS `Synaptic Physiology`,
-		IFNULL(SUM(CASE WHEN nd.property_page_category = 'FP' THEN nd.page_views ELSE 0 END), 0) AS `Firing Patterns`,
-		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Census' THEN nd.page_views ELSE 0 END), 0) AS `Neuron Type Census`,
-		IFNULL(SUM(CASE WHEN nd.property_page_category = 'In Vivo' THEN nd.page_views ELSE 0 END), 0) AS `In Vivo Recordings`,
-		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Connectivity: NoPS / NoC / PS' THEN nd.page_views ELSE 0 END), 0) AS `Connectivity: NoPS / NoC / PS`,
-		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Connectivity: Parcel-Specific Tables' THEN nd.page_views ELSE 0 END), 0) AS `Connectivity: Parcel-Specific Tables`,
-		IFNULL(SUM(CASE WHEN nd.property_page_category = 'Morphology: PMID / ISBN' THEN nd.page_views ELSE 0 END), 0) AS `Other`,
-		IFNULL(SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END), 0) -
-			(
-			 IFNULL(SUM(CASE WHEN nd.property_page_category = 'Morphology: ADL / SD' THEN nd.page_views ELSE 0 END), 0) +
-			 IFNULL(SUM(CASE WHEN nd.property_page_category = 'Molecular Markers' THEN nd.page_views ELSE 0 END), 0) +
-			 IFNULL(SUM(CASE WHEN nd.property_page_category = 'Membrane Biophysics' THEN nd.page_views ELSE 0 END), 0) +
-			 IFNULL(SUM(CASE WHEN nd.property_page_category = 'Connectivity: Known / Potential' THEN nd.page_views ELSE 0 END), 0) +
-			 IFNULL(SUM(CASE WHEN nd.property_page_category = 'Neuron Type Census' THEN nd.page_views ELSE 0 END), 0) +
-			 IFNULL(SUM(CASE WHEN nd.property_page_category = 'In Vivo Recordings' THEN nd.page_views ELSE 0 END), 0) +
-			 IFNULL(SUM(CASE WHEN nd.property_page_category = 'Synaptic Physiology' THEN nd.page_views ELSE 0 END), 0) +
-			 IFNULL(SUM(CASE WHEN nd.property_page_category = 'Firing Patterns' THEN nd.page_views ELSE 0 END), 0) +
-			 IFNULL(SUM(CASE WHEN nd.property_page_category = 'Connectivity: NoPS / NoC / PS' THEN nd.page_views ELSE 0 END), 0) +
-			 IFNULL(SUM(CASE WHEN nd.property_page_category = 'Connectivity: Parcel-Specific Tables' THEN nd.page_views ELSE 0 END), 0) 
-			) AS `Other`,
-		IFNULL(SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END), 0) AS `Total_Views`
-			FROM Type t
-			LEFT JOIN (
-					SELECT 
-					CASE 
-					WHEN page REGEXP 'id_neuron=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
-					WHEN page REGEXP 'id1_neuron=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)
-					WHEN page REGEXP 'id_neuron_source=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)
-					WHEN page REGEXP 'pre_id=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'pre_id=', -1), '&', 1)
-					ELSE NULL 
-					END AS neuronID,
-					CASE 
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology') THEN 'Morphology: ADL / SD'
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('markers') THEN 'Molecular Markers'
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'ephys' THEN 'Membrane Biophysics'
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('connectivity', 'connectivity_orig', 'connectivity_test') THEN 'Connectivity: Known / Potential'
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('/synaptome/php/synaptome', 'synaptome') THEN 'Synaptic Physiology'
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'fp' THEN 'Firing Patterns'
-					WHEN page LIKE '%property_page_counts.php%' THEN 'Neuron Type Census'
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases' THEN 'In Vivo Recordings'
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('synpro_nm', 'synpro_nm_old2') THEN 'Connectivity: NoPS / NoC / PS'
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro_pvals' THEN 'Connectivity: Parcel-Specific Tables'
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('morphology_linking_pmid_isbn') THEN 'Other'
-					ELSE 'Other'
-					END AS property_page_category,
-		IFNULL(REPLACE(page_views, ',', ''), 0) AS page_views,
-		IFNULL(REPLACE(sessions, ',', ''), 0) AS sessions
-			FROM GA_combined_analytics
-			WHERE 
-			page REGEXP 'id_neuron=[0-9]+'
-			OR page REGEXP 'id1_neuron=[0-9]+'
-			OR page REGEXP 'id_neuron_source=[0-9]+'
-			OR page REGEXP 'pre_id=[0-9]+'
-			) AS nd ON nd.neuronID = t.id
-			GROUP BY t.subregion, t.page_statistics_name
+					COALESCE(t.subregion, 'N/A') AS Subregion, 
+					COALESCE(t.page_statistics_name, 'None of the Above') AS Neuron_Type_Name, 
+					SUM(
+						CASE 
+						WHEN nd.page LIKE '%neuron_page.php?id=%' 
+						THEN CASE 
+						WHEN REPLACE(nd.page_views, ',', '') > 0 
+						THEN REPLACE(nd.page_views, ',', '') 
+						ELSE REPLACE(nd.sessions, ',', '') 
+						END 
+						ELSE 0 
+						END
+					   ) AS Neuron_Page_Views, 
+					SUM(
+						CASE 
+						WHEN nd.page REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+'
+						THEN CASE 
+						WHEN REPLACE(nd.page_views, ',', '') > 0 
+						THEN REPLACE(nd.page_views, ',', '') 
+						ELSE REPLACE(nd.sessions, ',', '') 
+						END 
+						ELSE 0 
+						END
+					   ) AS Evidence_Page_Views, 
+					t.position
+						FROM 
+						(SELECT 
+						 CASE 
+						 WHEN page LIKE '%neuron_page.php?id=%' 
+						 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id=', -1), '&', 1)
+						 WHEN page REGEXP 'id_neuron=[0-9]+' 
+						 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
+						 WHEN page REGEXP 'id1_neuron=[0-9]+' 
+						 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)
+						 WHEN page REGEXP 'id_neuron_source=[0-9]+' 
+						 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)
+						 WHEN page REGEXP 'pre_id=[0-9]+' 
+						 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'pre_id=', -1), '&', 1)
+						 ELSE NULL 
+						 END AS neuronID, 
+						 page, 
+						 day_index, 
+						 page_views, 
+						 sessions
+						 FROM 
+						 GA_combined_analytics 
+						 WHERE 
+						 page LIKE '%neuron_page.php?id=%' 
+						 OR page REGEXP 'id_neuron=[0-9]+' 
+						 OR page REGEXP 'id1_neuron=[0-9]+' 
+						 OR page REGEXP 'id_neuron_source=[0-9]+' 
+						 OR page REGEXP 'pre_id=[0-9]+'
+						 ) AS nd
+						 LEFT JOIN Type t 
+						 ON nd.neuronID = t.id
+						 GROUP BY t.subregion, t.page_statistics_name, t.position
 
-			UNION ALL
+						 UNION ALL
 
-			SELECT 
-			'N/A' AS Subregion,
-		'None of the Above' AS Neuron_Type_Name,
-		0 AS `Morphology: ADL / SD`,
-		0 AS `Molecular Markers`,
-		0 AS `Membrane Biophysics`,
-		0 AS `Connectivity: Known / Potential`,
-		0 AS `Synaptic Physiology`,
-		0 AS `Firing Patterns`,
-		0 AS `Neuron Type Census`,
-		0 AS `In Vivo Recordings`,
-		0 AS `Connectivity: NoPS / NoC / PS`,
-		0 AS `Connectivity: Parcel-Specific Tables`,
-		0 AS `Other`,
-		SUM(CASE 
-				WHEN page REGEXP 'id_neuron=[0-9]+' OR page REGEXP 'id1_neuron=[0-9]+' OR page REGEXP 'id_neuron_source=[0-9]+' OR page REGEXP 'pre_id=[0-9]+' 
-				THEN CASE WHEN REPLACE(page_views, ',', '') > 0 THEN page_views ELSE sessions END 
-				ELSE 0 
-				END) AS `Other`,
-		SUM(CASE 
-				WHEN page REGEXP 'id_neuron=[0-9]+' OR page REGEXP 'id1_neuron=[0-9]+' OR page REGEXP 'id_neuron_source=[0-9]+' OR page REGEXP 'pre_id=[0-9]+' 
-				THEN CASE WHEN REPLACE(page_views, ',', '') > 0 THEN page_views ELSE sessions END 
-				ELSE 0 
-				END) AS `Total_Views`
-			FROM GA_combined_analytics
-			WHERE NOT EXISTS (
-					SELECT 1 
-					FROM Type t
-					WHERE 
-					CASE 
-					WHEN page REGEXP 'id_neuron=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
-					WHEN page REGEXP 'id1_neuron=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)
-					WHEN page REGEXP 'id_neuron_source=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)
-					WHEN page REGEXP 'pre_id=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'pre_id=', -1), '&', 1)
-					ELSE NULL 
-					END = t.id
-					)
-			GROUP BY Subregion, Neuron_Type_Name
-
-			ORDER BY (Subregion = 'N/A') ASC, Subregion, Neuron_Type_Name;";
-*/
+						 SELECT 
+						 'N/A' AS Subregion, 
+					'None of the Above' AS Neuron_Type_Name, 
+					SUM(
+							CASE 
+							WHEN page LIKE '%neuron_page.php?id=%' 
+							THEN CASE 
+							WHEN REPLACE(page_views, ',', '') > 0 
+							THEN REPLACE(page_views, ',', '') 
+							ELSE REPLACE(sessions, ',', '') 
+							END 
+							ELSE 0 
+							END
+					   ) AS Neuron_Page_Views, 
+					SUM(
+							CASE 
+							WHEN page REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+'
+							THEN CASE 
+							WHEN REPLACE(page_views, ',', '') > 0 
+							THEN REPLACE(page_views, ',', '') 
+							ELSE REPLACE(sessions, ',', '') 
+							END 
+							ELSE 0 
+							END
+					   ) AS Evidence_Page_Views, 
+					NULL AS position
+						FROM 
+						(SELECT 
+						 page, 
+						 page_views, 
+						 sessions 
+						 FROM 
+						 GA_combined_analytics 
+						 WHERE 
+						 page LIKE '%neuron_page.php?id=%' 
+						 AND (
+							 SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id=', -1), '&', 1) NOT IN (SELECT id FROM Type)
+							 OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (SELECT id FROM Type)
+							 OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN (SELECT id FROM Type)
+							 OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN (SELECT id FROM Type)
+							 OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'pre_id=', -1), '&', 1) NOT IN (SELECT id FROM Type)
+						     )
+						) AS unmatched_data
+						) AS full_results
+						GROUP BY Subregion, Neuron_Type_Name, position
+						ORDER BY position ASC, Subregion, Neuron_Type_Name;";
 	//echo $page_neurons_views_query;
 	if (($views_request == "views_per_month")  || ($views_request == "views_per_year")) {
 		$page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
@@ -2482,307 +2473,287 @@ SELECT
 }
 
 function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=NULL, $write_file=NULL){ //Passed on Nov 12 2024
-
 	$columns = ['Subregion', 'Neuron Type Name', 'Census','Views'];
-    
-	$page_neurons_views_query = "
-SELECT 
-    COALESCE(t.subregion, 'N/A') AS Subregion, 
-    COALESCE(t.page_statistics_name, 'None of the Above') AS Neuron_Type_Name,
-    SUM(
-        CASE 
-            WHEN nd.page LIKE '%neuron_page.php?id=%' THEN 
-                CASE WHEN REPLACE(nd.page_views, ',', '') > 0 
-                    THEN REPLACE(nd.page_views, ',', '') 
-                    ELSE REPLACE(nd.sessions, ',', '') 
-                END 
-            ELSE 0 
-        END
-    ) AS Neuron_Page_Views,
-    SUM(
-        CASE 
-            WHEN nd.page REGEXP 'id_neuron=[0-9]+' OR 
-                 nd.page REGEXP 'id1_neuron=[0-9]+' OR 
-                 nd.page REGEXP 'id_neuron_source=[0-9]+' OR 
-                 nd.page REGEXP 'pre_id=[0-9]+' 
-            THEN 
-                CASE WHEN REPLACE(nd.page_views, ',', '') > 0 
-                    THEN REPLACE(nd.page_views, ',', '') 
-                    ELSE REPLACE(nd.sessions, ',', '') 
-                END
-            ELSE 0 
-        END
-    ) AS Evidence_Page_Views,
-    SUM(
-        CASE 
-            WHEN nd.page LIKE '%neuron_page.php?id=%' THEN 
-                CASE WHEN REPLACE(nd.page_views, ',', '') > 0 
-                    THEN REPLACE(nd.page_views, ',', '') 
-                    ELSE REPLACE(nd.sessions, ',', '') 
-                END 
-            ELSE 0 
-        END
-    ) + 
-    SUM(
-        CASE 
-            WHEN nd.page REGEXP 'id_neuron=[0-9]+' OR 
-                 nd.page REGEXP 'id1_neuron=[0-9]+' OR 
-                 nd.page REGEXP 'id_neuron_source=[0-9]+' OR 
-                 nd.page REGEXP 'pre_id=[0-9]+' 
-            THEN 
-                CASE WHEN REPLACE(nd.page_views, ',', '') > 0 
-                    THEN REPLACE(nd.page_views, ',', '') 
-                    ELSE REPLACE(nd.sessions, ',', '') 
-                END
-            ELSE 0 
-        END
-    ) AS Post_2017_Views,
+	$page_neurons_views_query = " SELECT 
+		COALESCE(Subregion, 'N/A') AS Subregion, 
+		Neuron_Type_Name, 
+		IFNULL(Neuron_Page_Views, 0) AS Neuron_Page_Views, 
+		IFNULL(Evidence_Page_Views, 0) AS Evidence_Page_Views, 
+		IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0) AS Post_2017_Views, 
+		ROUND(". DELTA_VIEWS ." * (IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0))) AS Estimated_Pre_2017_Views, 
+		IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0) + ROUND(".DELTA_VIEWS." * (IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0))) AS Total_Views
+			FROM (
+					SELECT 
+					COALESCE(t.subregion, 'N/A') AS Subregion, 
+					COALESCE(t.page_statistics_name, 'None of the Above') AS Neuron_Type_Name, 
+					SUM(
+						CASE 
+						WHEN nd.page LIKE '%neuron_page.php?id=%' 
+						THEN CASE 
+						WHEN REPLACE(nd.page_views, ',', '') > 0 
+						THEN REPLACE(nd.page_views, ',', '') 
+						ELSE REPLACE(nd.sessions, ',', '') 
+						END 
+						ELSE 0 
+						END
+					   ) AS Neuron_Page_Views, 
+					SUM(
+						CASE 
+						WHEN nd.page REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+'
+						THEN CASE 
+						WHEN REPLACE(nd.page_views, ',', '') > 0 
+						THEN REPLACE(nd.page_views, ',', '') 
+						ELSE REPLACE(nd.sessions, ',', '') 
+						END 
+						ELSE 0 
+						END
+					   ) AS Evidence_Page_Views
+						FROM 
+						(SELECT 
+						 CASE 
+						 WHEN page LIKE '%neuron_page.php?id=%' 
+						 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id=', -1), '&', 1)
+						 WHEN page REGEXP 'id_neuron=[0-9]+' 
+						 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
+						 WHEN page REGEXP 'id1_neuron=[0-9]+' 
+						 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)
+						 WHEN page REGEXP 'id_neuron_source=[0-9]+' 
+						 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)
+						 WHEN page REGEXP 'pre_id=[0-9]+' 
+						 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'pre_id=', -1), '&', 1)
+						 ELSE NULL 
+						 END AS neuronID, 
+						 page, 
+						 day_index, 
+						 page_views, 
+						 sessions
+						 FROM 
+						 GA_combined_analytics 
+						 WHERE 
+						 page LIKE '%neuron_page.php?id=%' 
+						 OR page REGEXP 'id_neuron=[0-9]+' 
+						 OR page REGEXP 'id1_neuron=[0-9]+' 
+						 OR page REGEXP 'id_neuron_source=[0-9]+' 
+						 OR page REGEXP 'pre_id=[0-9]+'
+						 ) AS nd
+						 LEFT JOIN Type t 
+						 ON nd.neuronID = t.id
+						 GROUP BY t.subregion, t.page_statistics_name
 
-    ROUND(
-        ".DELTA_VIEWS." * (
-            SUM(
-                CASE 
-                    WHEN nd.page LIKE '%neuron_page.php?id=%' THEN 
-                        CASE WHEN REPLACE(nd.page_views, ',', '') > 0 
-                            THEN REPLACE(nd.page_views, ',', '') 
-                            ELSE REPLACE(nd.sessions, ',', '') 
-                        END 
-                    ELSE 0 
-                END
-            ) + 
-            SUM(
-                CASE 
-                    WHEN nd.page REGEXP 'id_neuron=[0-9]+' OR 
-                         nd.page REGEXP 'id1_neuron=[0-9]+' OR 
-                         nd.page REGEXP 'id_neuron_source=[0-9]+' OR 
-                         nd.page REGEXP 'pre_id=[0-9]+' 
-                    THEN 
-                        CASE WHEN REPLACE(nd.page_views, ',', '') > 0 
-                            THEN REPLACE(nd.page_views, ',', '') 
-                            ELSE REPLACE(nd.sessions, ',', '') 
-                        END
-                    ELSE 0 
-                END
-            )
-        )
-    ) AS Estimated_Pre_2017_Views,
-(
-            SUM(
-                CASE
-                    WHEN nd.page LIKE '%neuron_page.php?id=%' THEN
-                        CASE WHEN REPLACE(nd.page_views, ',', '') > 0
-                            THEN REPLACE(nd.page_views, ',', '')
-                            ELSE REPLACE(nd.sessions, ',', '')
-                        END
-                    ELSE 0
-                END
-            ) +
-            SUM(
-                CASE
-                    WHEN nd.page REGEXP 'id_neuron=[0-9]+' OR
-                         nd.page REGEXP 'id1_neuron=[0-9]+' OR
-                         nd.page REGEXP 'id_neuron_source=[0-9]+' OR
-                         nd.page REGEXP 'pre_id=[0-9]+'
-                    THEN
-                        CASE WHEN REPLACE(nd.page_views, ',', '') > 0
-                            THEN REPLACE(nd.page_views, ',', '')
-                            ELSE REPLACE(nd.sessions, ',', '')
-                        END
-                    ELSE 0
-                END
-            )
-        )
-+
-ROUND(
-        ".DELTA_VIEWS." * (
-            SUM(
-                CASE
-                    WHEN nd.page LIKE '%neuron_page.php?id=%' THEN
-                        CASE WHEN REPLACE(nd.page_views, ',', '') > 0
-                            THEN REPLACE(nd.page_views, ',', '')
-                            ELSE REPLACE(nd.sessions, ',', '')
-                        END
-                    ELSE 0
-                END
-            ) +
-            SUM(
-                CASE
-                    WHEN nd.page REGEXP 'id_neuron=[0-9]+' OR
-                         nd.page REGEXP 'id1_neuron=[0-9]+' OR
-                         nd.page REGEXP 'id_neuron_source=[0-9]+' OR
-                         nd.page REGEXP 'pre_id=[0-9]+'
-                    THEN
-                        CASE WHEN REPLACE(nd.page_views, ',', '') > 0
-                            THEN REPLACE(nd.page_views, ',', '')
-                            ELSE REPLACE(nd.sessions, ',', '')
-                        END
-                    ELSE 0
-                END
-            )
-        )
-    ) as Total_Views 
-FROM Type t
-LEFT JOIN (
-    SELECT 
-        CASE 
-            WHEN page LIKE '%neuron_page.php?id=%' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id=', -1), '&', 1)
-            WHEN page REGEXP 'id_neuron=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
-            WHEN page REGEXP 'id1_neuron=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)
-            WHEN page REGEXP 'id_neuron_source=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)
-            WHEN page REGEXP 'pre_id=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'pre_id=', -1), '&', 1)
-            ELSE NULL 
-        END AS neuronID, 
-        page, 
-        day_index, 
-        page_views, 
-        sessions 
-    FROM GA_combined_analytics 
-    WHERE 
-        page LIKE '%neuron_page.php?id=%' 
-        OR page REGEXP 'id_neuron=[0-9]+' 
-        OR page REGEXP 'id1_neuron=[0-9]+' 
-        OR page REGEXP 'id_neuron_source=[0-9]+' 
-        OR page REGEXP 'pre_id=[0-9]+'
-) AS nd
-ON nd.neuronID = t.id 
-GROUP BY t.id, t.subregion, t.page_statistics_name, t.position
-ORDER BY 
-    CASE WHEN t.subregion = 'N/A' THEN 1 ELSE 0 END,  
-    t.position,
-    Subregion, 
-    Neuron_Type_Name;";
+						 UNION ALL
+
+						 SELECT 
+						 'N/A' AS Subregion, 
+					'None of the Above' AS Neuron_Type_Name, 
+					SUM(
+							CASE 
+							WHEN page LIKE '%neuron_page.php?id=%' 
+							THEN CASE 
+							WHEN REPLACE(page_views, ',', '') > 0 
+							THEN REPLACE(page_views, ',', '') 
+							ELSE REPLACE(sessions, ',', '') 
+							END 
+							ELSE 0 
+							END
+					   ) AS Neuron_Page_Views, 
+					SUM(
+							CASE 
+							WHEN page REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+'
+							THEN CASE 
+							WHEN REPLACE(page_views, ',', '') > 0 
+							THEN REPLACE(page_views, ',', '') 
+							ELSE REPLACE(sessions, ',', '') 
+							END 
+							ELSE 0 
+							END
+					   ) AS Evidence_Page_Views
+						FROM 
+						(SELECT 
+						 page, 
+						 page_views, 
+						 sessions 
+						 FROM 
+						 GA_combined_analytics 
+						 WHERE 
+						 page LIKE '%neuron_page.php?id=%' 
+						 AND (
+							 SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id=', -1), '&', 1) NOT IN (SELECT id FROM Type)
+							 OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (SELECT id FROM Type)
+							 OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN (SELECT id FROM Type)
+							 OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN (SELECT id FROM Type)
+							 OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'pre_id=', -1), '&', 1) NOT IN (SELECT id FROM Type)
+						     )
+						) AS unmatched_data
+						) AS full_results
+						GROUP BY Subregion, Neuron_Type_Name
+						ORDER BY (Subregion = 'N/A') ASC, Subregion, Neuron_Type_Name;
+	";
 /*
- WITH SubregionViews AS (
-			SELECT 
-			COALESCE(t.subregion, 'N/A') AS Subregion, 
-			COALESCE(t.page_statistics_name, 'None of the above') AS Neuron_Type_Name, 
-			SUM(CASE 
-				WHEN nd.page LIKE '%neuron_page.php?id=%' THEN 
+		SELECT 
+		COALESCE(t.subregion, 'N/A') AS Subregion, 
+		COALESCE(t.page_statistics_name, 'None of the Above') AS Neuron_Type_Name,
+		SUM(
 				CASE 
-				WHEN REPLACE(nd.page_views, ',', '') > 0 
+				WHEN nd.page LIKE '%neuron_page.php?id=%' THEN 
+				CASE WHEN REPLACE(nd.page_views, ',', '') > 0 
 				THEN REPLACE(nd.page_views, ',', '') 
 				ELSE REPLACE(nd.sessions, ',', '') 
 				END 
 				ELSE 0 
-				END) AS Neuron_Page_Views,
-			SUM(CASE 
-				WHEN nd.page REGEXP 'id_neuron=[0-9]+' THEN 
-				CASE 
-				WHEN REPLACE(nd.page_views, ',', '') > 0 
-				THEN REPLACE(nd.page_views, ',', '') 
-				ELSE REPLACE(nd.sessions, ',', '') 
 				END
-				WHEN nd.page REGEXP 'id1_neuron=[0-9]+' THEN 
+		   ) AS Neuron_Page_Views,
+		SUM(
 				CASE 
-				WHEN REPLACE(nd.page_views, ',', '') > 0 
-				THEN REPLACE(nd.page_views, ',', '') 
-				ELSE REPLACE(nd.sessions, ',', '') 
-				END
-				WHEN nd.page REGEXP 'id_neuron_source=[0-9]+' THEN 
-				CASE 
-				WHEN REPLACE(nd.page_views, ',', '') > 0 
-				THEN REPLACE(nd.page_views, ',', '') 
-				ELSE REPLACE(nd.sessions, ',', '') 
-				END
-				WHEN nd.page REGEXP 'pre_id=[0-9]+' THEN 
-				CASE 
-				WHEN REPLACE(nd.page_views, ',', '') > 0 
+				WHEN nd.page REGEXP 'id_neuron=[0-9]+' OR 
+				nd.page REGEXP 'id1_neuron=[0-9]+' OR 
+				nd.page REGEXP 'id_neuron_source=[0-9]+' OR 
+				nd.page REGEXP 'pre_id=[0-9]+' 
+				THEN 
+				CASE WHEN REPLACE(nd.page_views, ',', '') > 0 
 				THEN REPLACE(nd.page_views, ',', '') 
 				ELSE REPLACE(nd.sessions, ',', '') 
 				END
 				ELSE 0 
-				END) AS Evidence_Page_Views
-				FROM 
-				(SELECT 
-				 CASE 
-				 WHEN page LIKE '%neuron_page.php?id=%' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id=', -1), '&', 1)
-				 WHEN page REGEXP 'id_neuron=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
-				 WHEN page REGEXP 'id1_neuron=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)
-				 WHEN page REGEXP 'id_neuron_source=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)
-				 WHEN page REGEXP 'pre_id=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'pre_id=', -1), '&', 1)
-				 ELSE NULL 
-				 END AS neuronID, 
-				 page, 
-				 day_index, 
-				 page_views, 
-				 sessions 
-				 FROM GA_combined_analytics 
-				 WHERE 
-				 page LIKE '%neuron_page.php?id=%' 
-				 OR page REGEXP 'id_neuron=[0-9]+' 
-				 OR page REGEXP 'id1_neuron=[0-9]+' 
-				 OR page REGEXP 'id_neuron_source=[0-9]+' 
-				 OR page REGEXP 'pre_id=[0-9]+'
-				) AS nd
-				LEFT JOIN Type t 
-				ON nd.neuronID = t.id 
-				GROUP BY t.id, t.subregion, t.page_statistics_name
-				UNION ALL
-				SELECT 
-				'N/A' AS Subregion, 
-			'None of the above' AS Neuron_Type_Name, 
-			SUM(CASE 
-					WHEN page LIKE '%neuron_page.php?id=%' THEN 
+				END
+		   ) AS Evidence_Page_Views,
+		SUM(
+				CASE 
+				WHEN nd.page LIKE '%neuron_page.php?id=%' THEN 
+				CASE WHEN REPLACE(nd.page_views, ',', '') > 0 
+				THEN REPLACE(nd.page_views, ',', '') 
+				ELSE REPLACE(nd.sessions, ',', '') 
+				END 
+				ELSE 0 
+				END
+		   ) + 
+			SUM(
 					CASE 
-					WHEN REPLACE(page_views, ',', '') > 0 
-					THEN REPLACE(page_views, ',', '') 
-					ELSE REPLACE(sessions, ',', '') 
-					END 
-					ELSE 0 
-					END) AS Neuron_Page_Views,
-			SUM(CASE 
-					WHEN page REGEXP 'id_neuron=[0-9]+' 
-					OR page REGEXP 'id1_neuron=[0-9]+' 
-					OR page REGEXP 'id_neuron_source=[0-9]+' 
-					OR page REGEXP 'pre_id=[0-9]+' 
+					WHEN nd.page REGEXP 'id_neuron=[0-9]+' OR 
+					nd.page REGEXP 'id1_neuron=[0-9]+' OR 
+					nd.page REGEXP 'id_neuron_source=[0-9]+' OR 
+					nd.page REGEXP 'pre_id=[0-9]+' 
 					THEN 
-					CASE 
-					WHEN REPLACE(page_views, ',', '') > 0 
-					THEN REPLACE(page_views, ',', '') 
-					ELSE REPLACE(sessions, ',', '') 
+					CASE WHEN REPLACE(nd.page_views, ',', '') > 0 
+					THEN REPLACE(nd.page_views, ',', '') 
+					ELSE REPLACE(nd.sessions, ',', '') 
 					END
 					ELSE 0 
-					END) AS Evidence_Page_Views
-				FROM 
-				(SELECT 
-				 page, 
-				 page_views, 
-				 sessions 
-				 FROM GA_combined_analytics 
-				 WHERE 
-				 page LIKE '%neuron_page.php?id=%' 
-				 AND NOT EXISTS (
-					 SELECT 1 
-					 FROM Type t 
-					 WHERE SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id=', -1), '&', 1) = t.id
+					END
+			   ) AS Post_2017_Views,
+
+		ROUND(
+				".DELTA_VIEWS." * (
+					SUM(
+						CASE 
+						WHEN nd.page LIKE '%neuron_page.php?id=%' THEN 
+						CASE WHEN REPLACE(nd.page_views, ',', '') > 0 
+						THEN REPLACE(nd.page_views, ',', '') 
+						ELSE REPLACE(nd.sessions, ',', '') 
+						END 
+						ELSE 0 
+						END
+					   ) + 
+					SUM(
+						CASE 
+						WHEN nd.page REGEXP 'id_neuron=[0-9]+' OR 
+						nd.page REGEXP 'id1_neuron=[0-9]+' OR 
+						nd.page REGEXP 'id_neuron_source=[0-9]+' OR 
+						nd.page REGEXP 'pre_id=[0-9]+' 
+						THEN 
+						CASE WHEN REPLACE(nd.page_views, ',', '') > 0 
+						THEN REPLACE(nd.page_views, ',', '') 
+						ELSE REPLACE(nd.sessions, ',', '') 
+						END
+						ELSE 0 
+						END
+					   )
+					)
+					) AS Estimated_Pre_2017_Views,
+		(
+		 SUM(
+			 CASE
+			 WHEN nd.page LIKE '%neuron_page.php?id=%' THEN
+			 CASE WHEN REPLACE(nd.page_views, ',', '') > 0
+			 THEN REPLACE(nd.page_views, ',', '')
+			 ELSE REPLACE(nd.sessions, ',', '')
+			 END
+			 ELSE 0
+			 END
+		    ) +
+		 SUM(
+			 CASE
+			 WHEN nd.page REGEXP 'id_neuron=[0-9]+' OR
+			 nd.page REGEXP 'id1_neuron=[0-9]+' OR
+			 nd.page REGEXP 'id_neuron_source=[0-9]+' OR
+			 nd.page REGEXP 'pre_id=[0-9]+'
+			 THEN
+			 CASE WHEN REPLACE(nd.page_views, ',', '') > 0
+			 THEN REPLACE(nd.page_views, ',', '')
+			 ELSE REPLACE(nd.sessions, ',', '')
+			 END
+			 ELSE 0
+			 END
+		    )
+		 )
+		 +
+		 ROUND(
+				 ".DELTA_VIEWS." * (
+					 SUM(
+						 CASE
+						 WHEN nd.page LIKE '%neuron_page.php?id=%' THEN
+						 CASE WHEN REPLACE(nd.page_views, ',', '') > 0
+						 THEN REPLACE(nd.page_views, ',', '')
+						 ELSE REPLACE(nd.sessions, ',', '')
+						 END
+						 ELSE 0
+						 END
+					    ) +
+					 SUM(
+						 CASE
+						 WHEN nd.page REGEXP 'id_neuron=[0-9]+' OR
+						 nd.page REGEXP 'id1_neuron=[0-9]+' OR
+						 nd.page REGEXP 'id_neuron_source=[0-9]+' OR
+						 nd.page REGEXP 'pre_id=[0-9]+'
+						 THEN
+						 CASE WHEN REPLACE(nd.page_views, ',', '') > 0
+						 THEN REPLACE(nd.page_views, ',', '')
+						 ELSE REPLACE(nd.sessions, ',', '')
+						 END
+						 ELSE 0
+						 END
+					    )
 					 )
-				) AS unmatched_data
-				),
-			FinalData AS (
-					SELECT 
-					Subregion,
-					Neuron_Type_Name,
-					SUM(IFNULL(Neuron_Page_Views, 0)) AS Neuron_Page_Views,
-					SUM(IFNULL(Evidence_Page_Views, 0)) AS Evidence_Page_Views,
-					SUM(IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0)) AS Total_Views,
-					ROUND(".DELTA_VIEWS." * SUM(IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0))) AS Estimated_Pre_2017_Views
-					FROM SubregionViews
-					GROUP BY Subregion, Neuron_Type_Name
-				     )
-				SELECT 
-				Subregion, 
-			Neuron_Type_Name, 
-			Neuron_Page_Views, 
-			Evidence_Page_Views, 
-			Total_Views,
-			Estimated_Pre_2017_Views,
-			Total_Views + Estimated_Pre_2017_Views AS Updated_Total_Views
-				FROM FinalData
-				GROUP BY Subregion, Neuron_Type_Name
-				ORDER BY 
-				(Subregion = 'N/A') ASC, 
-			Subregion, 
-			Neuron_Type_Name;";
+					 ) as Total_Views 
+					 FROM Type t
+					 LEFT JOIN (
+							 SELECT 
+							 CASE 
+							 WHEN page LIKE '%neuron_page.php?id=%' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id=', -1), '&', 1)
+							 WHEN page REGEXP 'id_neuron=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
+							 WHEN page REGEXP 'id1_neuron=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)
+							 WHEN page REGEXP 'id_neuron_source=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)
+							 WHEN page REGEXP 'pre_id=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'pre_id=', -1), '&', 1)
+							 ELSE NULL 
+							 END AS neuronID, 
+							 page, 
+							 day_index, 
+							 page_views, 
+							 sessions 
+							 FROM GA_combined_analytics 
+							 WHERE 
+							 page LIKE '%neuron_page.php?id=%' 
+							 OR page REGEXP 'id_neuron=[0-9]+' 
+							 OR page REGEXP 'id1_neuron=[0-9]+' 
+							 OR page REGEXP 'id_neuron_source=[0-9]+' 
+							 OR page REGEXP 'pre_id=[0-9]+'
+							 ) AS nd
+							 ON nd.neuronID = t.id 
+							 GROUP BY t.id, t.subregion, t.page_statistics_name, t.position
+							 ORDER BY 
+							 CASE WHEN t.subregion = 'N/A' THEN 1 ELSE 0 END,  
+		t.position,
+		Subregion, 
+		Neuron_Type_Name;";
 */
 	//echo $page_neurons_views_query;
 
@@ -3100,7 +3071,7 @@ FROM
 			return format_table_morphology($conn, $page_property_views_query, $table_string, $file_name, $columns, $neuron_ids, $write_file);
 		}
         }else{
-			//echo $page_property_views_query;
+			echo $page_property_views_query;
 		$table_string .= get_table_skeleton_first($columns);
 		$table_string .= format_table_morphology($conn, $page_property_views_query, $table_string, 'morphology_property', $columns, $neuron_ids);
 		$table_string .= get_table_skeleton_end();
