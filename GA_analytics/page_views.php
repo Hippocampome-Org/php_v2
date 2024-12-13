@@ -458,17 +458,6 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
     mysqli_data_seek($rs, 0);
     while ($row = mysqli_fetch_assoc($rs)) {                    
 	    $row = update_estimated_totals($row);
-	    /*if( ($row['Post_2017_Views'] > $row['Estimated_Pre_2017_Views']) ||
-			                              ($row['Estimated_Pre_2017_Views'] == 0 && $row['Post_2017_Views'] > 1)) {
-		    $row['Estimated_Pre_2017_Views'] = ROUND(DELTA_VIEWS * $row['Post_2017_Views']);
-		    $row['Total_Views'] = $row['Post_2017_Views'] + $row['Estimated_Pre_2017_Views'];
-	    }
-
-	    if( ($row['Post_2017_Views'] > $row['Estimated_Pre_2017_Views']) ||
-			                              ($row['Estimated_Pre_2017_Views'] == 0 && $row['Post_2017_Views'] == 1)) {
-		    $row['Estimated_Pre_2017_Views'] = ROUND(DELTA_VIEWS * $row['Post_2017_Views'], 1);
-		    $row['Total_Views'] = $row['Post_2017_Views'] + $row['Estimated_Pre_2017_Views'];
-	    }*/
 	    $bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
 	    $table_string1 .= "<tr class='$bgColor'>";
 	    $csv_rows[] = $row;
@@ -546,6 +535,11 @@ function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $wri
 				    }
 				    while ($rowvalue = mysqli_fetch_assoc($result)) {
 					    foreach ($rowvalue as $key => $value) {
+						    if (is_null($value) || trim($value) === '') {
+							    if (is_numeric($value) || $value === '' || $value === null) {
+								    $value = '0'; // Replace NULL or empty string with 0 for numeric fields
+							    }
+						    }
 						    // Check if the value is numeric and update the column total
 						    if (is_numeric($value)) {
 							    $key = str_replace("_", " ", $key);
@@ -792,6 +786,11 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 									'weak_positive'=>'Positive Inference',
 									'negative_inference'=>'Negative Inference'];
 								$rowvalue[$key] = isset($color_segments[$value]) ? $color_segments[$value] : 'Other';
+							}
+							if (is_null($value) || trim($value) === '') {
+								if (is_numeric($value) || $value === '' || $value === null) {
+									$value = '0'; // Replace NULL or empty string with 0 for numeric fields
+								}
 							}
 							if ($value == 0) {
 								$rowvalue[$key] = 0; // Replace 0 with an empty string
@@ -1164,9 +1163,9 @@ function format_table_connectivity($conn, $query, $table_string, $csv_tablename,
 							$column_totals[$property] += $value;
 						}
 						if ($j % 2 == 0) {
-							$table_string2 .= "<td class='white-bg'>$showval</td>";
+							$table_string2 .= "<td class='white-bg'>".number_format($showval)."</td>";
 						}else{
-							$table_string2 .= "<td class='blue-bg'>$showval</td>";
+							$table_string2 .= "<td class='blue-bg'>".number_format($showval)."</td>";
 						}
 					}
 					$j++;
@@ -1326,6 +1325,12 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 
 				    foreach ($properties as $property => $value) {
 					    if ($property == "") continue; // Skip empty properties
+
+					    if (is_null($value) || trim($value) === '') {
+						    if (is_numeric($value) || $value === '' || $value === null) {
+							    $value = '0'; // Replace NULL or empty string with 0 for numeric fields
+						    }
+					    }
 
 					    // Show value if >= 1, otherwise set it to zero
 					    $showVal = is_numeric($value) ? $value : 0;
@@ -1579,6 +1584,11 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 
                                     foreach ($properties as $property => $value) {
                                             if ($property == "") continue; // Skip empty properties
+					     if (is_null($value) || trim($value) === '') {
+                                                    if (is_numeric($value) || $value === '' || $value === null) {
+                                                            $value = '0'; // Replace NULL or empty string with 0 for numeric fields
+                                                    }
+                                            }
 
                                             // Show value if >= 1, otherwise set it to zero 
                                             $showVal = is_numeric($value) ? $value : 0; 
@@ -1791,6 +1801,11 @@ function format_table_biophysics($conn, $query, $table_string, $csv_tablename, $
 
 				foreach ($colors as $property => $value) {
 					$headerIndex = array_search($property, $all_headers, true);
+					if (is_null($value) || trim($value) === '') {
+						if (is_numeric($value) || $value === '' || $value === null) {
+							$value = '0'; // Replace NULL or empty string with 0 for numeric fields
+						}
+					}
 					if ($headerIndex !== false) {
 						$rowData[$headerIndex] = $value > 0 ? $value : 0; // Ensure non-negative values
 						if (is_numeric($value)) {
@@ -1964,6 +1979,11 @@ function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_
 				$totalAdded = false;
 				foreach ($colors as $property => $value) {
 					if($property == "") continue;
+					if (is_null($value) || trim($value) === '') {
+						if (is_numeric($value) || $value === '' || $value === null) {
+							$value = '0'; // Replace NULL or empty string with 0 for numeric fields
+						}
+					}
 					$showVal = 0;
 					$showVal = ($value >= 0) ? $value : 0;
 
