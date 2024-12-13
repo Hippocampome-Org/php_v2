@@ -1906,7 +1906,7 @@ function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_
 		'theta'=>'Theta (deg)', 'swr_ratio'=>'SWR Ratio','firingRate'=>'In Vivo Firing Rate (Hz)', 'gamma' => 'Gamma (deg)', 'DS_ratio' => 'DS Ratio', 
 		'Vrest' => 'Vrest (mV)', 'epsilon'=>'Epsilon','firingRateNonBaseline'=>'Non-Baseline Firing Rate (Hz)', 'APthresh'=>'APthresh (mV)', 'tau'=>'Tau (ms)', 
 		'run_stop_ratio'=>'Run/Stop Ratio', 'ripple'=>'Ripple (deg)', 'fahp'=>'fAHP (mV)','APpeal'=>'APpeak-trough (ms)',
-		'all_other'=>'Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau, AP threshold, fAHP, or APpeak trough.',''=>'Other'];
+		'all_other'=>'Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau, AP threshold, fAHP, or APpeak trough.',''=>'Other', 'None of the Above' => 'Other'];
 	$cols = [ 'Theta (deg)', 'SWR Ratio','In Vivo Firing Rate (Hz)', 'DS Ratio', 'Ripple (deg)','Gamma (deg)', 'Run/Stop Ratio','Epsilon',
 		'Non-Baseline Firing Rate (Hz)', 'Vrest (mV)', 'Tau (ms)',
 		'APthresh (mV)','fAHP (mV)','APpeak-trough (ms)','Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau, AP threshold, fAHP, or APpeak trough.','Other', 'Post_2017_Views', 'Estimated_Pre_2017_Views', 'Total_Views'];
@@ -1926,36 +1926,8 @@ function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_
 		// Initialize subregion and neuron name if not already set
 		// Check if the Neuron_Type_Name is 'None of the Above' or not and if it needs to be initialized
 		initializeNeuronData($array_subsNA, $array_subs1, $rowvalue, $cols);
-/*		$isNoneOfTheAbove = ($rowvalue['Neuron_Type_Name'] == 'None of the Above');
-		$needsInitialization = $isNoneOfTheAbove
-			? !isset($array_subsNA['N/A']['None of the Above'])
-			: !isset($array_subs1[$rowvalue['Subregion']][$rowvalue['Neuron_Type_Name']]);
-
-		// Initialize if necessary
-		if ($needsInitialization) {
-			if ($isNoneOfTheAbove) {
-				$sub = 'N/A';
-				$neuronType = 'None of the Above';
-				$array_subsNA[$sub][$neuronType] = [];
-
-				// Set all columns to 0
-				foreach ($cols as $col) {
-					$array_subsNA[$sub][$neuronType][$col] = 0;
-				}
-			} else {
-				$sub = $rowvalue['Subregion'];
-				$neuronType = $rowvalue['Neuron_Type_Name'];
-				$array_subs1[$sub][$neuronType] = [];
-
-				// Set all columns to 0
-				foreach ($cols as $col) {
-					$array_subs1[$sub][$neuronType][$col] = 0;
-				}
-			}
-		}
-*/
 		// Get the segment based on evidence
-		$segment = $neuronal_segments[$rowvalue['evidence']] ?? null;
+		$segment = $neuronal_segments[$rowvalue['Evidence']] ?? null;
 		// Increment count for the segment if it exists
 		$neuronTypeName = $rowvalue['Neuron_Type_Name'];
 		$subregion = $rowvalue['subregion'] ?? $rowvalue['Subregion'];
@@ -3125,41 +3097,70 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 				'Epsilon','Non-Baseline Firing Rate (Hz)', 
 				'Vrest (mV)', 'Tau (ms)','APthresh (mV)','fAHP (mV)','APpeak-trough (ms)','Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau, AP threshold, fAHP, or APpeak trough.', 'Other', 'Post_2017_Views', 'Estimated_Pre_2017_Views', 'Total_Views'];
 		$pageType = $page_string == 'phases' ? 'phases' : 'counts';
-		$page_counts_views_query = "
-			SELECT 
+		$page_counts_views_query = "SELECT 
 			COALESCE(t.subregion, 'N/A') AS Subregion,
 			COALESCE(t.page_statistics_name, 'None of the Above') AS Neuron_Type_Name,
-			derived.evidence AS evidence, 
-			SUM(REPLACE(derived.page_views, ',', '')) AS Post_2017_Views, 
-			ROUND(".DELTA_VIEWS." * SUM(REPLACE(derived.page_views, ',', ''))) AS Estimated_Pre_2017_Views, 
-			SUM(REPLACE(derived.page_views, ',', '')) + ROUND(".DELTA_VIEWS." * SUM(REPLACE(derived.page_views, ',', ''))) AS Total_Views 
-				FROM (
-						SELECT 
-						page, 
-						CASE WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '') ELSE sessions END AS page_views, 
-						IF(INSTR(page, 'id_neuron=') > 0,
-							SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1), 
-							IF(INSTR(page, 'id1_neuron=') > 0,
-								SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1), 
-								IF(INSTR(page, 'id_neuron_source=') > 0, 
-									SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1), 
-									''))) AS neuronID, 
-						IF(INSTR(page, 'val_property=') > 0,
-							SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '') AS evidence 
-						FROM GA_combined_analytics 
-						WHERE 
-						page LIKE '%/property_page_%' 
-						AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases' 
-						AND (page REGEXP 'id_neuron=[0-9]+' OR page REGEXP 'id1_neuron=[0-9]+' OR page REGEXP 'id_neuron_source=[0-9]+') 
-				     ) AS derived 
-				LEFT JOIN Type AS t ON t.id = derived.neuronID  
-				GROUP BY derived.page, t.subregion, t.page_statistics_name, derived.evidence 
-				ORDER BY 
-				CASE 
-				WHEN t.subregion = 'N/A' THEN 2 
-				ELSE 1
-				END,
-			t.position;";
+			COALESCE(NULLIF(derived.evidence, ''), 'None of the Above') AS Evidence,
+			SUM(
+					CASE 
+					WHEN REPLACE(derived.page_views, ',', '') > 0 
+					THEN CAST(REPLACE(derived.page_views, ',', '') AS UNSIGNED) 
+					ELSE CAST(REPLACE(derived.sessions, ',', '') AS UNSIGNED) 
+					END
+			   ) AS Post_2017_Views,
+			ROUND(
+					".DELTA_VIEWS." * SUM(
+						CASE 
+						WHEN REPLACE(derived.page_views, ',', '') > 0 
+						THEN CAST(REPLACE(derived.page_views, ',', '') AS UNSIGNED) 
+						ELSE CAST(REPLACE(derived.sessions, ',', '') AS UNSIGNED) 
+						END
+						)
+			     ) AS Estimated_Pre_2017_Views,
+			SUM(
+					CASE 
+					WHEN REPLACE(derived.page_views, ',', '') > 0 
+					THEN CAST(REPLACE(derived.page_views, ',', '') AS UNSIGNED) 
+					ELSE CAST(REPLACE(derived.sessions, ',', '') AS UNSIGNED) 
+					END
+			   ) + ROUND(
+				   ".DELTA_VIEWS." * SUM(
+					   CASE 
+					   WHEN REPLACE(derived.page_views, ',', '') > 0 
+					   THEN CAST(REPLACE(derived.page_views, ',', '') AS UNSIGNED) 
+					   ELSE CAST(REPLACE(derived.sessions, ',', '') AS UNSIGNED) 
+					   END
+					   )
+				   ) AS Total_Views
+			   FROM (
+					   SELECT 
+					   page,
+					   CASE 
+					   WHEN INSTR(page, 'id_neuron=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) 
+					   WHEN INSTR(page, 'id1_neuron=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) 
+					   WHEN INSTR(page, 'id_neuron_source=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) 
+					   WHEN INSTR(page, 'pre_id=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'pre_id=', -1), '&', 1) 
+					   ELSE NULL 
+					   END AS neuronID,
+					   CASE 
+					   WHEN INSTR(page, 'val_property=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1) 
+					   ELSE NULL 
+					   END AS evidence, page_views, sessions
+					   FROM GA_combined_analytics
+					   WHERE 
+					   page LIKE '%/property_page_%' 
+					   AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases'
+					   AND (
+						   page REGEXP 'id_neuron=[0-9]+' 
+						   OR page REGEXP 'id1_neuron=[0-9]+' 
+						   OR page REGEXP 'id_neuron_source=[0-9]+'
+						   OR page REGEXP 'pre_id=[0-9]+'
+					       )
+					   ) AS derived
+					   LEFT JOIN Type AS t ON t.id = derived.neuronID
+					   GROUP BY derived.page,
+			COALESCE(t.subregion, 'N/A'), COALESCE(t.page_statistics_name, 'None of the Above'),
+			COALESCE(NULLIF(derived.evidence, ''), 'None of the Above') ORDER BY CASE WHEN t.subregion = 'N/A' THEN 2 ELSE 1 END, t.position;";
 			//echo $page_counts_views_query;
 		if ($views_request == "views_per_month" || $views_request == "views_per_year") {
 			$page_counts_views_query= "SET SESSION group_concat_max_len = 1000000;
@@ -3457,8 +3458,6 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 			DEALLOCATE PREPARE stmt;";
 
                 }
-
-  //              echo  $page_counts_views_query;
         }
 
 	// Check for 'synpro' or 'synpro_nm' page types
@@ -3508,11 +3507,11 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 	if ($page_string == 'synpro' || $page_string == 'synpro_nm' || $page_string == 'synpro_pvals') {
 		if(isset($write_file)) {
 			return format_table_synpro($conn, $page_counts_views_query, $table_string, $csv_tablename, $columns, $neuron_ids = NULL, $write_file);
-        }else{
+		}else{
 			$table_string = format_table_synpro($conn, $page_counts_views_query, $table_string, $csv_tablename, $columns, $neuron_ids);
 			//echo $page_counts_views_query;
 			$table_string .= get_table_skeleton_end();
-        	echo $table_string;
+			echo $table_string;
 		}
 	}
 	if($page_string == 'biophysics'){
