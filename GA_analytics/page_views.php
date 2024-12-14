@@ -3988,7 +3988,7 @@ function get_domain_functionality_views_report($conn, $views_request = NULL, $wr
 					WHEN page REGEXP \"/cognome/\" THEN \"Cognome\"
 					WHEN page REGEXP \"simulation_parameters\" THEN \"Simulation Parameters\"
 					ELSE \"Other\"
-					END AS property_page_category, ',
+					END AS `Property Page Category`, ',
 					@sql,
 					',
 					SUM(
@@ -4005,9 +4005,9 @@ function get_domain_functionality_views_report($conn, $views_request = NULL, $wr
 						END
 					   ) AS Total_Views
 						FROM GA_combined_analytics
-						GROUP BY property_page_category
+						GROUP BY `Property Page Category`
 						ORDER BY FIELD(
-								property_page_category, 
+								`Property Page Category`, 
 								\"Morphology\", \"Molecular Markers\", \"Membrane Biophysics\", 
 								\"Connectivity\", \"Synaptic Physiology\", \"Firing Patterns\", 
 								\"Izhikevich Models\", \"Synapse Probabilities\", 
