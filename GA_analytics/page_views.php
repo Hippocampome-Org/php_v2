@@ -323,12 +323,12 @@ function processNeuronLink($neuron_id, $neuron_ids_array, $linkText, $write_file
 function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file = NULL, $views_request = NULL, $query2 = NULL) {
     $count = 0;
     $csv_rows = [];
+    $column_totals=[];
     if (isset($write_file)) {
 	    if ($views_request == 'views_per_month' || $views_request == 'views_per_year') {
 		    if (mysqli_multi_query($conn, $query)) {
 			    $header = [];
 			    $csv_rows = [];
-			    $count = 0;
 			    do {    
 				    if ($result = mysqli_store_result($conn)) {
 					    if (mysqli_num_rows($result) == 0) {
@@ -338,35 +338,33 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 					    if (empty($header)) {
 						    $header = array_keys(mysqli_fetch_array($result, MYSQLI_ASSOC));
 						    mysqli_data_seek($result, 0);
+		    				    $csv_headers = camel_replace($header);
 					    }
 					    while ($rowvalue = mysqli_fetch_assoc($result)) {
 						    $validRow = [];
-						    foreach ($header as $col) {
-							    if (!isset($rowvalue[$col])) {
-								    $validRow[$col] = '';
+						    foreach ($rowvalue as $column_name => $column_value) {
+							    if (!isset($rowvalue[$column_name])) {
+								    $validRow[$column_name] = '';
 							    } else {
-								    $validRow[$col] = $rowvalue[$col] === 0 ? '' : $rowvalue[$col];
+								    $validRow[$column_name] = $rowvalue[$column_name] === 0 ? '' : $rowvalue[$column_name];
+							    }
+							    if (is_numeric($column_value)) {
+								    $column_name = str_replace("_", " ", $column_name);
+								    if (!isset($column_totals[$column_name])) {
+									    $column_totals[$column_name] = 0;
+								    }
+								    $column_totals[$column_name] += $column_value;
 							    }
 						    }
-						    if (isset($validRow['Total_Views']) && is_numeric($validRow['Total_Views']) && $validRow['Total_Views'] > 0) {
-							    $csv_rows[] = $validRow;
-							    $count += $validRow['Total_Views'];
-						    }
+						    $csv_rows[] = $validRow;
 					    }
 					    mysqli_free_result($result);
 				    }
 			    } while (mysqli_next_result($conn));
-			    $totalRow = array_fill(0, count($header) - 1, '');
-			    $totalRow[] = $count;
-			    $key = array_search("", $totalRow, true);
-			    if ($key !== false) {
-				    $totalRow[$key] = "Total Count";
-			    }
-			    $totalRowAssociative = array_combine($header, $totalRow);
-			    $csv_rows[] = $totalRowAssociative;
+			    $csv_rows[] = generateTotalRow($csv_headers, true, $column_totals);
 			    $csv_data[$csv_tablename] = [
 				    'filename' => toCamelCase($csv_tablename),
-				    'headers' => $header,
+				    'headers' => $csv_headers,
 				    'rows' => $csv_rows
 			    ];
 			    return $csv_data[$csv_tablename];
