@@ -2249,8 +2249,8 @@ function get_neurons_views_report($conn, $neuron_ids=NULL, $views_request=NULL, 
 		IFNULL(Neuron_Page_Views, 0) AS Neuron_Page_Views,
 		IFNULL(Evidence_Page_Views, 0) AS Evidence_Page_Views,
 		IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0) AS Post_2017_Views,
-		ROUND(0.41475164658173 * (IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0))) AS Estimated_Pre_2017_Views,
-		IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0) + ROUND(0.41475164658173 * (IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0))) AS Total_Views
+		ROUND(".DELTA_VIEWS." * (IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0))) AS Estimated_Pre_2017_Views,
+		IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0) + ROUND(".DELTA_VIEWS." * (IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0))) AS Total_Views
 			FROM (
 					SELECT 
 					COALESCE(t.subregion, 'N/A') AS Subregion,
@@ -2655,8 +2655,6 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 						) AS full_results 
 						GROUP BY Subregion, Neuron_Type_Name, position 
 						ORDER BY position ASC, Subregion, Neuron_Type_Name;";
-	echo $page_neurons_views_query;
-
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
 
@@ -2690,80 +2688,68 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 				INTO @sql 
 				FROM (SELECT DISTINCT day_index FROM GA_combined_analytics) years; ";
 		}
-
 		$page_neurons_views_query .= "SET @sql = CONCAT(
-				 'SELECT 
-        COALESCE(Subregion, ''N/A'') AS Subregion,
-        Neuron_Type_Name,
-        ', @sql, ',
-        SUM(CASE 
-            WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') 
-            ELSE REPLACE(sessions, \'\', \'\') 
-        END) AS Total_Views
-    FROM (
-        SELECT 
-            COALESCE(t.subregion, ''N/A'') AS Subregion,
-            COALESCE(t.page_statistics_name, ''None of the Above'') AS Neuron_Type_Name,
-            ga.day_index,
-            ga.page_views,
-            ga.sessions
-        FROM (
-            SELECT 
-                CASE 
-                    WHEN page LIKE ''%neuron_page.php?id=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id='', -1), ''&'', 1)
-                    WHEN page REGEXP ''id_neuron=[0-9]+'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1)
-                    WHEN page REGEXP ''id1_neuron=[0-9]+'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1)
-                    WHEN page REGEXP ''id_neuron_source=[0-9]+'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1)
-                    WHEN page REGEXP ''pre_id=[0-9]+'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''pre_id='', -1), ''&'', 1)
-                    ELSE NULL 
-                END AS neuronID,
-                page,
-                day_index,
-                page_views,
-                sessions
-            FROM GA_combined_analytics
-            WHERE page LIKE ''%neuron_page.php?id=%'' 
-                OR page REGEXP ''id_neuron=[0-9]+'' 
-                OR page REGEXP ''id1_neuron=[0-9]+'' 
-                OR page REGEXP ''id_neuron_source=[0-9]+'' 
-                OR page REGEXP ''pre_id=[0-9]+''
-        ) AS ga
-        LEFT JOIN Type t ON ga.neuronID = t.id
-
-        UNION ALL
-
-        SELECT 
-            ''N/A'' AS Subregion,
-            ''None of the Above'' AS Neuron_Type_Name,
-            unmatched_data.day_index,
-            unmatched_data.page_views,
-            unmatched_data.sessions
-        FROM (
-            SELECT 
-                page,
-                day_index,
-                page_views,
-                sessions
-            FROM GA_combined_analytics
-            WHERE page LIKE ''%neuron_page.php?id=%'' 
-                AND NOT EXISTS (
-                    SELECT 1 
-                    FROM Type t 
-                    WHERE SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id='', -1), ''&'', 1) = t.id
-                )
-        ) AS unmatched_data
-    ) AS full_results
-    GROUP BY Subregion, Neuron_Type_Name
-    ORDER BY (Subregion = ''N/A'') ASC, Subregion, Neuron_Type_Name'
-);
-
+				'SELECT Subregion,
+				Neuron_Type_Name, ',
+				@sql, ', 
+				SUM(CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END) AS Post_2017_Views,
+				ROUND(".DELTA_VIEWS." * SUM(CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END)) AS Pre_Estimated_2017_Views,
+				SUM(CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END) +
+				ROUND(".DELTA_VIEWS." * SUM(CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END)) AS Total_Views
+				FROM (
+					SELECT
+					COALESCE(t.subregion, ''N/A'') AS Subregion,
+					COALESCE(t.page_statistics_name, ''None of the Above'') AS Neuron_Type_Name,
+					t.position,
+					nd.day_index,
+					nd.page_views,
+					nd.sessions
+					FROM (
+						SELECT
+						CASE
+						WHEN page LIKE ''%neuron_page.php?id=%'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id='', -1), ''&'', 1)
+						WHEN page REGEXP ''id_neuron=[0-9]+'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1)
+						WHEN page REGEXP ''id1_neuron=[0-9]+'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1)
+						WHEN page REGEXP ''id_neuron_source=[0-9]+'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1)
+						WHEN page REGEXP ''pre_id=[0-9]+'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''pre_id='', -1), ''&'', 1)
+						ELSE NULL
+						END AS neuronID,
+						page,
+						day_index,
+						page_views,
+						sessions
+						FROM GA_combined_analytics
+						WHERE page LIKE ''%neuron_page.php?id=%''
+						OR page REGEXP ''id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+''
+					     ) AS nd
+					LEFT JOIN Type t ON nd.neuronID = t.id
+					UNION ALL
+					SELECT ''N/A'' AS Subregion,
+					       ''None of the Above'' AS Neuron_Type_Name,
+					       9999 AS position,
+					       unmatched_data.day_index,
+					       unmatched_data.page_views,
+					       unmatched_data.sessions
+						       FROM (
+								       SELECT page, day_index, page_views, sessions
+								       FROM GA_combined_analytics
+								       WHERE page LIKE ''%neuron_page.php?id=%''
+								       AND NOT EXISTS (
+									       SELECT 1
+									       FROM Type t
+									       WHERE SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id='', -1), ''&'', 1) = t.id
+									       )
+							    ) AS unmatched_data
+						       ) AS full_results
+						       GROUP BY Subregion, Neuron_Type_Name
+						       HAVING Subregion IS NOT NULL
+						       ORDER BY (Subregion = ''N/A'') ASC, position ASC, Subregion, Neuron_Type_Name'
+						       );
 		PREPARE stmt FROM @sql;
 		EXECUTE stmt;
 		DEALLOCATE PREPARE stmt;";
-
 	}
-	//echo $page_neurons_views_query;
-	//exit;
+	//echo $page_neurons_views_query;//exit;
 	$table_string='';
 	//$table_string = get_table_skeleton_first($columns);
 	if(isset($write_file)) {
