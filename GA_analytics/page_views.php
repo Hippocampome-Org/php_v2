@@ -853,13 +853,6 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 							continue;
 						}
 						array_push($array_subs[$rowvalue['Subregion']][$rowvalue['Neuron_Type_Name']], $value);
-						// Check if the value is numeric and update the column total
-						/*if (is_numeric($value)) {
-							if (!isset($column_totals[$col])){
-								$column_totals[$col] = 0;
-							}
-							$column_totals[$col] += $value;
-						}*/
 					}
 				}
 				mysqli_free_result($result);
@@ -868,7 +861,25 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 		$array_subs = update_estimated_totals($array_subs);
 		$i=0;
 		$j=0;
+		$specialGroupKey = "N/A"; // Key for the special group
+		$specialGroup = [];       // Store the special group temporarily
+
 		foreach ($array_subs as $groupKey => $subgroups) {
+			if ($groupKey === $specialGroupKey) {
+				foreach ($subgroups as $subgroupKey => &$colors) {
+					foreach ($colors as $index => $color) {
+						$color = trim($color);
+						if (is_numeric($color) && (float)$color == (int)$color) {
+							$colors[$index] = (int)$color; // Cast to int
+						} else {
+							$colors[$index] = 0; // Default to 0 if not numeric
+						}
+					}
+				}
+				unset($colors); // Break reference
+				$specialGroup = [$groupKey => $subgroups];
+				continue;
+			}
 			$groupBgClass = ($i % 2 == 0) ? 'lightgreen-bg' : 'green-bg';
 			$table_string1 .= "<tr><td class='$groupBgClass' rowspan='" . count($subgroups) . "'>$groupKey</td>";
 			foreach ($subgroups as $subgroupKey => $colors) {
@@ -892,6 +903,31 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 			}
 			$i++;
 		}
+		if (!empty($specialGroup)) {
+			foreach ($specialGroup as $groupKey => $subgroups) {
+				$groupBgClass = ($i % 2 == 0) ? 'lightgreen-bg' : 'green-bg';
+				$table_string1 .= "<tr><td class='$groupBgClass' rowspan='" . count($subgroups) . "'>$groupKey</td>";
+				foreach ($subgroups as $subgroupKey => $colors) {
+					$subgroupBgClass = ($j % 2 == 0) ? 'white-bg' : 'blue-bg';
+					$table_string1 .= "<td class='$subgroupBgClass'>$subgroupKey</td>";
+					$colorBgClass = ($j % 2 == 0) ? 'white-bg' : 'blue-bg';
+					foreach ($colors as $col => $color) {
+						$color = max(0, $color); // Ensure color is not negative
+						if (is_numeric($color)) {
+							if (!isset($column_totals[$col])){
+								$column_totals[$col] = 0;
+							}
+							$column_totals[$col] += $color;
+						}
+						$table_string1 .= "<td class='$colorBgClass'>" . number_format($color) . "</td>";
+					}
+					$j++;
+					$table_string1 .= "</tr>";
+					//$csv_output .= "$groupKey,$subgroupKey," . implode(",", $colors) . "\n";
+				}
+				$i++;
+			}
+		} //To add N/A as the last row
 		$table_string1 .= generateTotalRow($csv_headers, false, $column_totals);
 		return $table_string1;
 	}
@@ -1887,9 +1923,11 @@ function initializeNeuronData(array &$arraySubsNA, array &$arraySubs1, array $ro
         $targetArray[$subregion][$neuronType] = [];
 
         // Initialize all columns to 0
+	if (!empty($columns)) {
         foreach ($columns as $column) {
             $targetArray[$subregion][$neuronType][$column] = 0;
         }
+	} //4columns is empty when first neuron table is sent
 
         // Ensure the reference is assigned back
         if ($isNoneOfTheAbove) {
@@ -2561,18 +2599,16 @@ SELECT
 
 function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=NULL, $write_file=NULL){ //Passed on Nov 12 2024
 	$columns = ['Subregion', 'Neuron Type Name', 'Census','Views'];
-	$page_neurons_views_query = " SELECT 
-		COALESCE(Subregion, 'N/A') AS Subregion, 
-		Neuron_Type_Name, 
-		IFNULL(Neuron_Page_Views, 0) AS Neuron_Page_Views, 
-		IFNULL(Evidence_Page_Views, 0) AS Evidence_Page_Views, 
-		IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0) AS Post_2017_Views, 
-		ROUND(".DELTA_VIEWS." * (IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0))) AS Estimated_Pre_2017_Views, 
+	$page_neurons_views_query = "SELECT COALESCE(Subregion, 'N/A') AS Subregion, Neuron_Type_Name,
+		IFNULL(Neuron_Page_Views, 0) AS Neuron_Page_Views,
+		IFNULL(Evidence_Page_Views, 0) AS Evidence_Page_Views,
+		IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0) AS Post_2017_Views,
+		ROUND(".DELTA_VIEWS." * (IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0))) AS Estimated_Pre_2017_Views,
 		IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0) + ROUND(".DELTA_VIEWS." * (IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0))) AS Total_Views
 			FROM (
 					SELECT 
-					COALESCE(t.subregion, 'N/A') AS Subregion, 
-					COALESCE(t.page_statistics_name, 'None of the Above') AS Neuron_Type_Name, 
+					COALESCE(t.subregion, 'N/A') AS Subregion,
+					COALESCE(t.page_statistics_name, 'None of the Above') AS Neuron_Type_Name,
 					SUM(
 						CASE 
 						WHEN nd.page LIKE '%neuron_page.php?id=%' THEN 
@@ -2582,7 +2618,7 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 						END 
 						ELSE 0 
 						END
-					   ) AS Neuron_Page_Views, 
+					   ) AS Neuron_Page_Views,
 					SUM(
 						CASE 
 						WHEN nd.page REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+' THEN 
@@ -2592,8 +2628,8 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 						END 
 						ELSE 0 
 						END
-					   ) AS Evidence_Page_Views, 
-					COALESCE(t.position, 9999) AS position 
+					   ) AS Evidence_Page_Views,
+					t.position
 						FROM (
 								SELECT 
 								CASE 
@@ -2602,20 +2638,20 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 								WHEN page REGEXP 'id1_neuron=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)
 								WHEN page REGEXP 'id_neuron_source=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)
 								WHEN page REGEXP 'pre_id=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'pre_id=', -1), '&', 1)
-								ELSE NULL 
-								END AS neuronID, page, day_index, page_views, sessions 
-								FROM GA_combined_analytics 
-								WHERE page LIKE '%neuron_page.php?id=%' 
+								ELSE NULL
+								END AS neuronID,
+								page, day_index, page_views, sessions
+								FROM GA_combined_analytics
+								WHERE 
+								page LIKE '%neuron_page.php?id=%' 
 								OR page REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+'
-						     ) AS nd 
-						LEFT JOIN Type t ON nd.neuronID = t.id 
+						     ) AS nd
+						LEFT JOIN Type t ON nd.neuronID = t.id
 						GROUP BY t.subregion, t.page_statistics_name, t.position
-
 						UNION ALL
-
 						SELECT 
-						'N/A' AS Subregion, 
-					'None of the Above' AS Neuron_Type_Name, 
+						'N/A' AS Subregion,
+					'None of the Above' AS Neuron_Type_Name,
 					SUM(
 							CASE 
 							WHEN page LIKE '%neuron_page.php?id=%' THEN 
@@ -2625,7 +2661,7 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 							END 
 							ELSE 0 
 							END
-					   ) AS Neuron_Page_Views, 
+					   ) AS Neuron_Page_Views,
 					SUM(
 							CASE 
 							WHEN page REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+' THEN 
@@ -2635,26 +2671,25 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 							END 
 							ELSE 0 
 							END
-					   ) AS Evidence_Page_Views, 
-					9999 AS position
+					   ) AS Evidence_Page_Views,
+					NULL AS position
 						FROM (
 								SELECT 
-								page, 
-								page_views, 
-								sessions 
-								FROM GA_combined_analytics 
-								WHERE page LIKE '%neuron_page.php?id=%' 
+								page, page_views, sessions 
+								FROM GA_combined_analytics
+								WHERE 
+								page LIKE '%neuron_page.php?id=%' 
 								AND (
-									SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id=', -1), '&', 1) NOT IN (SELECT id FROM Type)
-									OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (SELECT id FROM Type)
-									OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN (SELECT id FROM Type)
-									OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN (SELECT id FROM Type)
+									SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id=', -1), '&', 1) NOT IN (SELECT id FROM Type) 
+									OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (SELECT id FROM Type) 
+									OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN (SELECT id FROM Type) 
+									OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN (SELECT id FROM Type) 
 									OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'pre_id=', -1), '&', 1) NOT IN (SELECT id FROM Type)
 								    )
-						     ) AS unmatched_data 
-						) AS full_results 
-						GROUP BY Subregion, Neuron_Type_Name, position 
-						ORDER BY position ASC, Subregion, Neuron_Type_Name;";
+						     ) AS unmatched_data
+						) AS full_results
+						GROUP BY Subregion, Neuron_Type_Name, position
+						ORDER BY position ASC, Subregion, Neuron_Type_Name;"; 
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
 
@@ -2749,7 +2784,7 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 		EXECUTE stmt;
 		DEALLOCATE PREPARE stmt;";
 	}
-	//echo $page_neurons_views_query;//exit;
+//	echo $page_neurons_views_query;//exit;
 	$table_string='';
 	//$table_string = get_table_skeleton_first($columns);
 	if(isset($write_file)) {
@@ -2941,7 +2976,7 @@ FROM
 		EXECUTE stmt;
 		DEALLOCATE PREPARE stmt;";
 	}
-
+	//echo $page_property_views_query;//exit;
         $columns = ['Subregion', 'Neuron Type Name', 'Neuronal Attribute', 'DG:SMo', 'DG:SMi','DG:SG','DG:H','CA3:SLM','CA3:SR','CA3:SL','CA3:SP','CA3:SO','CA2:SLM','CA2:SR','CA2:SP','CA2:SO','CA1:SLM','CA1:SR','CA1:SP','CA1:SO','Sub:SM','Sub:SP','Sub:PL','EC:I','EC:II','EC:III','EC:IV','EC:V','EC:VI','Other','Post_2017_Views', 'Estimated_Pre_2017_Views', 'Total_Views'];
         $table_string='';
         if(isset($write_file)) {
