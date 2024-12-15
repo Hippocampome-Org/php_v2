@@ -150,8 +150,6 @@ function get_calculated_views_dynamically($conn) {
             $delta_value = 86523 / $total_views; 
         }
     }
-	//echo "INSIDE THE FUNCTION TOTAL VIEWS FROM DB".$total_views;
-//	echo "INSIDE FUNCTION DELTA VALUES IS".$delta_value;
     return $delta_value; 
 }
 
@@ -869,7 +867,6 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 		$j=0;
 		$specialGroupKey = "N/A"; // Key for the special group
 		$specialGroup = [];       // Store the special group temporarily
-
 		foreach ($array_subs as $groupKey => $subgroups) {
 			if ($groupKey === $specialGroupKey) {
 				foreach ($subgroups as $subgroupKey => &$colors) {
@@ -1441,6 +1438,11 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 				    }else{
 					    $table_string2 .= "<td class='blue-bg'>".$showval."</td>";
 				    }
+				    if ($property == 'Total_Views') {
+					    // Close the row if the property is "total"
+					    $table_string2 .= "</tr>";
+					    $k++;
+				    }	
 				    if (is_numeric($value)) {
 					    if (!isset($column_totals[$property])) {
 						    $column_totals[$property] = 0;
@@ -1658,49 +1660,69 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 	$i = $j = $k = $total_count = 0; 
 	$table_string2 = '';
 	$column_totals=[];
+	$specialGroupKey = "N/A"; // Key for the special group
+	$specialGroup = [];       // Store the special group temporarily
 	foreach ($array_subs as $type => $subtypes) {
 		$keyCounts = count($subtypes);
 		$typeCellAdded = false;
-
+		if ($type === $specialGroupKey) {
+			foreach ($subtypes as $subtype => &$values) {
+				 foreach ($values as $category => &$properties) {
+					 if (is_array($properties)) {
+						 // Loop through nested array of properties
+						 foreach ($properties as $property => $value) {
+							 $value = trim($value); // Ensure no leading/trailing spaces
+							 if (is_numeric($value) && (float)$value == (int)$value) {
+								 $properties[$property] = (int)$value; // Cast to int
+							 } else {
+								 $properties[$property] = 0; // Default to 0 for non-numeric
+							 }
+						 }
+					 } else {
+						 // If $properties is a direct value (not an array), handle it here
+						 $properties = trim($properties);
+						 if (is_numeric($properties) && (float)$properties == (int)$properties) {
+							 $values[$category] = (int)$properties;
+						 } else {
+							 $values[$category] = 0; // Default to 0 for non-numeric
+						 }
+					 }
+				 }
+				 unset($properties); // Break reference
+			}
+			unset($values); // Break reference
+			$specialGroup = [$type => $subtypes];
+			continue;
+		}
 		foreach ($subtypes as $subtype => $values) {
 			$keyCounts2 = count($values)+1;//Added this 1 as count is giving 6 but then one row is showing as seperate Added on April 25 2024
 			$subtyperowspan = $keyCounts2;
 			$typerowspan = $keyCounts * $keyCounts2;
-
 			if (!$typeCellAdded) {
-				//echo "typerowspan is:".$typerowspan;
 				if ($j%2==0) {
 					$table_string2 .= "<tr><td class='lightgreen-bg' rowspan='".$typerowspan."'>".$type."</td>";
 				} else {
 					$table_string2 .= "<tr><td class='green-bg' rowspan='".$typerowspan."'>".$type."</td>";
 				}
-				// Set the flag to true once the type cell is added
 				$typeCellAdded = true;
 			}
-			if($i%2==0){
-				$table_string2 .= "<td  class='white-bg' rowspan='".$subtyperowspan."'>".$subtype."</td>";
-			}else{
-				$table_string2 .= "<td  class='blue-bg' rowspan='".$subtyperowspan."'>".$subtype."</td>";
-			}
-
+			if($i%2==0){ $table_string2 .= "<td  class='white-bg' rowspan='".$subtyperowspan."'>".$subtype."</td>";
+			}else{ $table_string2 .= "<td  class='blue-bg' rowspan='".$subtyperowspan."'>".$subtype."</td>"; }
 			foreach ($values as $category => $properties) {
-				if (in_array($category, $color_cols)) {
-					$table_string2 .= "<tr>";
-				}
-				if($k%2==0){
-					$table_string2 .= "<td class='white-bg'>".$category."</td>";
-				}else{
-					$table_string2 .= "<td class='blue-bg'>".$category."</td>";
-				}
+				if (in_array($category, $color_cols)) {		$table_string2 .= "<tr>"; 	}
+				if($k%2==0){  $table_string2 .= "<td class='white-bg'>".$category."</td>";	}
+				else{	$table_string2 .= "<td class='blue-bg'>".$category."</td>"; }
 				foreach ($properties as $property => $value) {
-					// Check if the property is "total"
 					if($property == ""){continue;}
 					$showval=$value;
-
 					if($k%2==0){
 						$table_string2 .= "<td class='white-bg'>".$showval."</td>";
 					}else{
 						$table_string2 .= "<td class='blue-bg'>".$showval."</td>";
+					}
+					if ($property == 'Total_Views') {
+						$table_string2 .= "</tr>";
+						$k++;
 					}
 					if (is_numeric($value)) {
 						if (!isset($column_totals[$property])) {
@@ -1708,13 +1730,70 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 						}    
 						$column_totals[$property] += $value;
 					}            
-
 				}
 			}
 			$i++;
 			$table_string2 .= "</tr>";
 		}
 		$j++;
+	}
+	if (!empty($specialGroup)) {
+		foreach ($specialGroup as $type => $subtypes) {
+			$keyCounts = count($subtypes);
+			$typeCellAdded = false;
+			foreach ($subtypes as $subtype => $categories) {
+				$keyCounts2 = count($categories) + 1; // Adjust rowspan for categories
+				$subtyperowspan = $keyCounts2;
+				$typerowspan = $keyCounts * $keyCounts2;
+				if (!$typeCellAdded) {
+					if ($j % 2 == 0) {
+						$table_string2 .= "<tr><td class='lightgreen-bg' rowspan='" . $typerowspan . "'>" . htmlspecialchars($type) . "</td>";
+					} else {
+						$table_string2 .= "<tr><td class='green-bg' rowspan='" . $typerowspan . "'>" . htmlspecialchars($type) . "</td>";
+					}
+					$typeCellAdded = true;
+				}
+				if ($i % 2 == 0) {
+					$table_string2 .= "<td class='white-bg' rowspan='" . $subtyperowspan . "'>" . htmlspecialchars($subtype) . "</td>";
+				} else {
+					$table_string2 .= "<td class='blue-bg' rowspan='" . $subtyperowspan . "'>" . htmlspecialchars($subtype) . "</td>";
+				}
+				foreach ($categories as $category => $properties) {
+					if (in_array($category, ['Positive', 'Negative', 'Positive-Negative'])) {
+						$table_string2 .= "<tr>";
+					}
+					if ($k % 2 == 0) {
+						$table_string2 .= "<td class='white-bg'>" . htmlspecialchars($category) . "</td>";
+					} else {
+						$table_string2 .= "<td class='blue-bg'>" . htmlspecialchars($category) . "</td>";
+					}
+					foreach ($properties as $property => $value) {
+						if ($property === "") {
+							continue;
+						}
+						$showval = $value;
+						if ($k % 2 == 0) {
+							$table_string2 .= "<td class='white-bg'>" . htmlspecialchars($showval) . "</td>";
+						} else {
+							$table_string2 .= "<td class='blue-bg'>" . htmlspecialchars($showval) . "</td>";
+						}
+						if ($property === 'Total_Views') {
+							$table_string2 .= "</tr>";
+							$k++;
+						}
+						if (is_numeric($value)) {
+							if (!isset($column_totals[$property])) {
+								$column_totals[$property] = 0;
+							}
+							$column_totals[$property] += $value;
+						}
+					}
+				}
+				$i++;
+				$table_string2 .= "</tr>";
+			}
+			$j++;
+		}
 	}
 	$table_string2 .= generateTotalRow($csv_headers, false, $column_totals);
 	return $table_string2;
@@ -1729,20 +1808,6 @@ function alternateRowClass($index) {
 function alternateKeyClass($index) {
     return $index % 2 == 0 ? 'green-key' : 'light-green-key';
 }
-
-/*function update_estimated_totals($array_subs){
-        foreach ($array_subs as $groupKey => $subgroups) {
-                foreach ($subgroups as $subgroupKey => $colors) {
-                        if( ($colors['Post_2017_Views'] > $colors['Estimated_Pre_2017_Views']) || 
-                                       ($colors['Estimated_Pre_2017_Views'] == 0 && $colors['Post_2017_Views'] > 1)) {
-                               $array_subs[$groupKey][$subgroupKey]['Estimated_Pre_2017_Views'] = ROUND(DELTA_VIEWS * $colors['Post_2017_Views']);
-                               $array_subs[$groupKey][$subgroupKey]['Total_Views'] = $colors['Post_2017_Views'] +  $array_subs[$groupKey][$subgroupKey]['Estimated_Pre_2017_Views'] ;
-                       }
-                }
-        }
-       return $array_subs;
-}
-*/
 
 function update_estimated_totals($data) {
     $isSingleRow = isset($data['Post_2017_Views']); // Check if it's a single row
@@ -2302,9 +2367,9 @@ function get_neurons_views_report($conn, $neuron_ids=NULL, $views_request=NULL, 
 		SUM(CASE WHEN nd.property_page_category = 'Connectivity: Parcel-Specific Tables' THEN nd.page_views ELSE 0 END) AS `Connectivity: Parcel-Specific Tables`,
 		SUM(CASE WHEN nd.property_page_category = 'Other' THEN nd.page_views ELSE 0 END) AS `Other`,
 		SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END) AS `Post_2017_Views`,
-		ROUND(0.41475164658173 * SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END)) AS `Estimated_Pre_2017_Views`,
+		ROUND(".DELTA_VIEWS." * SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END)) AS `Estimated_Pre_2017_Views`,
 		SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END) + 
-			ROUND(0.41475164658173 * SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END)) AS `Total_Views`
+			ROUND(".DELTA_VIEWS." * SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END)) AS `Total_Views`
 			FROM 
 			Type t
 			RIGHT JOIN (
@@ -2370,9 +2435,9 @@ function get_neurons_views_report($conn, $neuron_ids=NULL, $views_request=NULL, 
 					COALESCE(t.page_statistics_name, ''None of the Above'') AS Neuron_Type_Name, ',
 					@sql, ',
 					SUM(CASE WHEN REPLACE(nd.page_views, \'\', \'\') > 0 THEN REPLACE(nd.page_views, \'\', \'\') ELSE REPLACE(nd.sessions, \'\', \'\') END) AS Post_2017_Views,
-					ROUND(0.41475164658173 * SUM(CASE WHEN REPLACE(nd.page_views, \'\', \'\') > 0 THEN REPLACE(nd.page_views, \'\', \'\') ELSE REPLACE(nd.sessions, \'\', \'\') END)) AS Estimated_Pre_2017_Views,
+					ROUND(".DELTA_VIEWS." * SUM(CASE WHEN REPLACE(nd.page_views, \'\', \'\') > 0 THEN REPLACE(nd.page_views, \'\', \'\') ELSE REPLACE(nd.sessions, \'\', \'\') END)) AS Estimated_Pre_2017_Views,
 					SUM(CASE WHEN REPLACE(nd.page_views, \'\', \'\') > 0 THEN REPLACE(nd.page_views, \'\', \'\') ELSE REPLACE(nd.sessions, \'\', \'\') END) + 
-					ROUND(0.41475164658173 * SUM(CASE WHEN REPLACE(nd.page_views, \'\', \'\') > 0 THEN REPLACE(nd.page_views, \'\', \'\') ELSE REPLACE(nd.sessions, \'\', \'\') END)) AS Total_Views
+					ROUND(".DELTA_VIEWS." * SUM(CASE WHEN REPLACE(nd.page_views, \'\', \'\') > 0 THEN REPLACE(nd.page_views, \'\', \'\') ELSE REPLACE(nd.sessions, \'\', \'\') END)) AS Total_Views
 					FROM Type t
 					RIGHT JOIN (
 						SELECT 
@@ -2585,7 +2650,7 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 		EXECUTE stmt;
 		DEALLOCATE PREPARE stmt;";
 	}
-	echo $page_neurons_views_query;//exit;
+	//echo $page_neurons_views_query;//exit;
 	$table_string='';
 	if(isset($write_file)) {
 		$file_name = "neuron_types_";
@@ -2872,19 +2937,16 @@ function get_markers_property_views_report($conn, $neuron_ids, $views_request=NU
 	//echo $page_property_views_query;
 	if ($views_request == "views_per_month" || $views_request == "views_per_year") {
 		$page_property_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
-		// Build dynamic SQL to create column names
 		$base_query = "
 			SELECT 
 			GROUP_CONCAT(
 					DISTINCT
 					CONCAT(
 						'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index), 
-							/* Dynamic part depending on the view request */
 							' THEN REPLACE(page_views, \",\", \"\") ELSE 0 END) AS `',
-						/* Dynamic part depending on the view request */
 						@time_unit, '`'
 					      )
-					ORDER BY YEAR(day_index) /* For 'views_per_month' also add 'MONTH(day_index)' here */
+					ORDER BY YEAR(day_index) 
 					SEPARATOR ', '
 				    ) INTO @sql                 
 			FROM GA_combined_analytics 
@@ -2995,6 +3057,7 @@ function get_markers_property_views_report($conn, $neuron_ids, $views_request=NU
                         return format_table_markers($conn, $page_property_views_query, $table_string, $file_name, $columns, $neuron_ids, $write_file);
                 }
 	}else{
+		//echo $page_property_views_query;
 		$table_string .= get_table_skeleton_first($columns);
 		$table_string .= format_table_markers($conn, $page_property_views_query, $table_string, 'markers_evidence_page_views', $columns, $neuron_ids);
 		$table_string .= get_table_skeleton_end();
