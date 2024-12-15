@@ -690,6 +690,7 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 			$header = []; // Initialize an array to store column names
 			do {
 				if ($result = mysqli_store_result($conn)) {
+					$na_row = null;
 					if (empty($header)) {
 						$header = array_keys(mysqli_fetch_array($result, MYSQLI_ASSOC));
 						$rows = count($header);
@@ -801,14 +802,19 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 								$column_totals[$key] += $value;
 							}
 						}
-						$csv_rows[] = $rowvalue;
+						if (is_null($na_row) && $rowvalue['Subregion'] === 'N/A' && $rowvalue['Neuron_Type_Name'] === 'None of the Above') {
+							$na_row = $rowvalue; // Temporarily store the N/A row
+						} else{
+							$csv_rows[] = $rowvalue;
+						}
 					}
 					mysqli_free_result($result);
 				}
 			} while (mysqli_next_result($conn));
+			if (!is_null($na_row)) {
+				$csv_rows[] = $na_row;
+			}
 			$csv_rows[] = generateTotalRow($csv_headers, true, $column_totals);
-			
-			// Store information about the CSV file in `$csv_data` array
 			$csv_data[$csv_tablename]=['filename'=>toCamelCase($csv_tablename),'headers'=>$csv_headers,'rows'=>$csv_rows];
 			return $csv_data[$csv_tablename];
 		} else {
@@ -2724,13 +2730,14 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 				FROM (SELECT DISTINCT day_index FROM GA_combined_analytics) years; ";
 		}
 		$page_neurons_views_query .= "SET @sql = CONCAT(
-				'SELECT Subregion,
-				Neuron_Type_Name, ',
-				@sql, ', 
-				SUM(CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END) AS Post_2017_Views,
-				ROUND(".DELTA_VIEWS." * SUM(CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END)) AS Pre_Estimated_2017_Views,
-				SUM(CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END) +
-				ROUND(".DELTA_VIEWS." * SUM(CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END)) AS Total_Views
+				'SELECT
+				COALESCE(Subregion, ''N/A'') AS Subregion,
+				COALESCE(Neuron_Type_Name, ''None of the Above'') AS Neuron_Type_Name,
+				', @sql, ',
+				SUM(CASE WHEN REPLACE(page_views, '''', '''') > 0 THEN REPLACE(page_views, '''', '''') ELSE REPLACE(sessions, '''', '''') END) AS Post_2017_Views,
+				ROUND(" . DELTA_VIEWS . " * SUM(CASE WHEN REPLACE(page_views, '''', '''') > 0 THEN REPLACE(page_views, '''', '''') ELSE REPLACE(sessions, '''', '''') END)) AS Pre_Estimated_2017_Views,
+				SUM(CASE WHEN REPLACE(page_views, '''', '''') > 0 THEN REPLACE(page_views, '''', '''') ELSE REPLACE(sessions, '''', '''') END) +
+				ROUND(" . DELTA_VIEWS . " * SUM(CASE WHEN REPLACE(page_views, '''', '''') > 0 THEN REPLACE(page_views, '''', '''') ELSE REPLACE(sessions, '''', '''') END)) AS Total_Views
 				FROM (
 					SELECT
 					COALESCE(t.subregion, ''N/A'') AS Subregion,
@@ -2758,41 +2765,21 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 						OR page REGEXP ''id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+''
 					     ) AS nd
 					LEFT JOIN Type t ON nd.neuronID = t.id
-					UNION ALL
-					SELECT ''N/A'' AS Subregion,
-					       ''None of the Above'' AS Neuron_Type_Name,
-					       9999 AS position,
-					       unmatched_data.day_index,
-					       unmatched_data.page_views,
-					       unmatched_data.sessions
-						       FROM (
-								       SELECT page, day_index, page_views, sessions
-								       FROM GA_combined_analytics
-								       WHERE page LIKE ''%neuron_page.php?id=%''
-								       AND NOT EXISTS (
-									       SELECT 1
-									       FROM Type t
-									       WHERE SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id='', -1), ''&'', 1) = t.id
-									       )
-							    ) AS unmatched_data
-						       ) AS full_results
-						       GROUP BY Subregion, Neuron_Type_Name
-						       HAVING Subregion IS NOT NULL
-						       ORDER BY (Subregion = ''N/A'') ASC, position ASC, Subregion, Neuron_Type_Name'
-						       );
+					) AS full_results
+					GROUP BY Subregion, Neuron_Type_Name, position
+					ORDER BY position, Subregion, Neuron_Type_Name
+					');
 		PREPARE stmt FROM @sql;
 		EXECUTE stmt;
 		DEALLOCATE PREPARE stmt;";
 	}
-//	echo $page_neurons_views_query;//exit;
+	//echo $page_neurons_views_query;//exit;
 	$table_string='';
-	//$table_string = get_table_skeleton_first($columns);
 	if(isset($write_file)) {
 		$file_name = "neuron_types_";
 		if($views_request == 'views_per_month' || $views_request == 'views_per_year'){
 			$file_name .= $views_request;
 		}else{$file_name .= "views"; }
-		
 		return format_table_neurons($conn, $page_neurons_views_query, $table_string, $file_name, $columns, $neuron_ids, $write_file, $views_request);
 	}else{
 		$table_string = '';
