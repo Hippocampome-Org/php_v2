@@ -688,7 +688,7 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 			$header = []; // Initialize an array to store column names
 			do {
 				if ($result = mysqli_store_result($conn)) {
-					$na_row = null;
+					$na_rows = [];
 					if (empty($header)) {
 						$header = array_keys(mysqli_fetch_array($result, MYSQLI_ASSOC));
 						$rows = count($header);
@@ -800,8 +800,8 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 								$column_totals[$key] += $value;
 							}
 						}
-						if (is_null($na_row) && $rowvalue['Subregion'] === 'N/A' && $rowvalue['Neuron_Type_Name'] === 'None of the Above') {
-							$na_row = $rowvalue; // Temporarily store the N/A row
+						if ($rowvalue['Subregion'] === 'N/A' && $rowvalue['Neuron_Type_Name'] === 'None of the Above') {
+							$na_rows[] = $rowvalue; // Temporarily store the N/A row
 						} else{
 							$csv_rows[] = $rowvalue;
 						}
@@ -809,9 +809,7 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 					mysqli_free_result($result);
 				}
 			} while (mysqli_next_result($conn));
-			if (!is_null($na_row)) {
-				$csv_rows[] = $na_row;
-			}
+            		$csv_rows = array_merge($csv_rows, $na_rows);
 			$csv_rows[] = generateTotalRow($csv_headers, true, $column_totals);
 			$csv_data[$csv_tablename]=['filename'=>toCamelCase($csv_tablename),'headers'=>$csv_headers,'rows'=>$csv_rows];
 			return $csv_data[$csv_tablename];
@@ -2971,16 +2969,6 @@ function get_markers_property_views_report($conn, $neuron_ids, $views_request=NU
 			page LIKE '%/property_page_%'
 			AND (   
 					SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'markers'
-			    )   
-			AND (   
-					LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)) = 4
-					OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)) = 4
-					OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)) = 4
-			    )
-			AND (
-					SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
-					OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
-					OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN ('4168', '4181', '2232')
 			    );";
 
 		// Determine the specific time unit and formatting based on the request
@@ -3000,61 +2988,78 @@ function get_markers_property_views_report($conn, $neuron_ids, $views_request=NU
 				);
 		$page_property_views_query .= "
 			SET @sql = CONCAT(
-					'SELECT 
-					t.subregion AS Subregion,
-					t.page_statistics_name AS Neuron_Type_Name,
-					derived.color AS Expression,
-					derived.evidence AS Marker_Evidence, ',
+					'SELECT ',
+					'COALESCE(t.subregion, ''N/A'') AS Subregion, ',
+					'COALESCE(t.page_statistics_name, ''None of the Above'') AS Neuron_Type_Name, ',
+					'COALESCE(NULLIF(derived.color, ''''), ''None of the Above'') AS Expression, ',
+					'COALESCE(NULLIF(derived.evidence, ''''), ''None of the Above'') AS Marker_Evidence, ',
 					@sql,
-					', SUM(REPLACE(derived.page_views, '','', '''')) AS Total_Views',
-					' FROM (
-						SELECT
+					', SUM(
 						CASE
-						WHEN INSTR(page, \'id_neuron=\') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id_neuron=\', -1), \'&\', 1)
-						WHEN INSTR(page, \'id1_neuron=\') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id1_neuron=\', -1), \'&\', 1)
-						WHEN INSTR(page, \'id_neuron_source=\') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id_neuron_source=\', -1), \'&\', 1)
-						ELSE \'\'
-						END AS neuronID,
-						CASE
-						WHEN INSTR(page, \'val_property=\') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'val_property=\', -1), \'&\', 1)
-						ELSE \'\'
-						END AS evidence,
-						CASE
-						WHEN INSTR(page, \'color=\') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'color=\', -1), \'&\', 1)
-						ELSE \'\'
-						END AS color,
-						page_views,
-						day_index
-						FROM GA_combined_analytics 
-						WHERE page LIKE \'%/property_page_%\'
-						AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'/property_page_\', -1), \'.\', 1) = \'markers\'
-						AND (   
-								LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id_neuron=\', -1), \'&\', 1)) = 4
-								OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id1_neuron=\', -1), \'&\', 1)) = 4
-								OR LENGTH(SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id_neuron_source=\', -1), \'&\', 1)) = 4
-						    )   
-						AND (   
-								SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id_neuron=\', -1), \'&\', 1) NOT IN (\'4168\', \'4181\', \'2232\')
-								OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id1_neuron=\', -1), \'&\', 1) NOT IN (\'4168\', \'4181\', \'2232\')
-								OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id_neuron_source=\', -1), \'&\', 1) NOT IN (\'4168\', \'4181\', \'2232\')
-						    )   
-						) AS derived    
-						JOIN Type AS t ON t.id = derived.neuronID
-						WHERE derived.neuronID NOT IN (\'4168\', \'4181\', \'2232\')
-						AND t.subregion IS NOT NULL AND t.subregion <> \'\'
-						AND t.page_statistics_name IS NOT NULL AND t.page_statistics_name <> \'\'
-						AND derived.color IS NOT NULL AND derived.color <> \'\'
-						AND derived.evidence IS NOT NULL AND derived.evidence <> \'\'
-						GROUP BY t.subregion, t.page_statistics_name, derived.evidence, derived.color
-						ORDER BY t.position;'
-						);";
-
-		 $page_property_views_query .= "
+						WHEN REPLACE(derived.page_views, '','', '''') > 0
+						THEN CAST(REPLACE(derived.page_views, '','', '''') AS UNSIGNED)
+						ELSE CAST(REPLACE(derived.sessions, '','', '''') AS UNSIGNED)
+						END
+					      ) AS Post_2017_Views, ',
+					'ROUND(".DELTA_VIEWS." * SUM(
+							CASE
+							WHEN REPLACE(derived.page_views, '','', '''') > 0
+							THEN CAST(REPLACE(derived.page_views, '','', '''') AS UNSIGNED)
+							ELSE CAST(REPLACE(derived.sessions, '','', '''') AS UNSIGNED)
+							END
+							)) AS Estimated_Pre_2017_Views, ',
+					'SUM(
+							CASE
+							WHEN REPLACE(derived.page_views, '','', '''') > 0
+							THEN CAST(REPLACE(derived.page_views, '','', '''') AS UNSIGNED)
+							ELSE CAST(REPLACE(derived.sessions, '','', '''') AS UNSIGNED)
+							END
+					    ) + ROUND(".DELTA_VIEWS." * SUM(
+							    CASE
+							    WHEN REPLACE(derived.page_views, '','', '''') > 0
+							    THEN CAST(REPLACE(derived.page_views, '','', '''') AS UNSIGNED)
+							    ELSE CAST(REPLACE(derived.sessions, '','', '''') AS UNSIGNED)
+							    END
+							    )) AS Total_Views ',
+					'FROM (',
+							'SELECT ',
+							'page, ',
+							'CASE ',
+							'WHEN INSTR(page, ''id_neuron='') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
+							'WHEN INSTR(page, ''id1_neuron='') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) ',
+							'WHEN INSTR(page, ''id_neuron_source='') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) ',
+							'ELSE NULL ',
+							'END AS neuronID, ',
+							'CASE ',
+							'WHEN INSTR(page, ''val_property='') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''val_property='', -1), ''&'', 1) ',
+							'ELSE NULL ',
+							'END AS evidence, ',
+							'CASE ',
+							'WHEN INSTR(page, ''color='') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''color='', -1), ''&'', 1) ',
+							'ELSE NULL ',
+							'END AS color, ',
+							'page_views, ',
+							'sessions, ',
+							'day_index ',
+							'FROM GA_combined_analytics ',
+							'WHERE page LIKE ''%/property_page_%'' ',
+							'AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''markers'' ',
+							'AND (INSTR(page, ''id_neuron='') > 0 OR INSTR(page, ''id1_neuron='') > 0 OR INSTR(page, ''id_neuron_source='') > 0) ',
+							') AS derived ',
+							'LEFT JOIN Type AS t ON t.id = derived.neuronID ',
+							'GROUP BY ',
+							'page, ',
+							'COALESCE(t.subregion, ''N/A''), ',
+							'COALESCE(t.page_statistics_name, ''None of the Above''), ',
+							'COALESCE(NULLIF(derived.color, ''''), ''None of the Above''), ',
+							'COALESCE(NULLIF(derived.evidence, ''''), ''None of the Above'') ',
+							'ORDER BY t.position'
+								);";
+		$page_property_views_query .= "
 			PREPARE stmt FROM @sql;
 		EXECUTE stmt;
 		DEALLOCATE PREPARE stmt;";
 	}
-
 	$columns = ["Subregion", "Neuron Type Name", "Expression", "CB", "CR", "PV", "5HT-3", "CB1", "GABAa_alfa", "mGluR1a", "Mus2R", "Sub P Rec", "vGluT3", "CCK", "ENK", "NG", "NPY", "SOM", "VIP", "a-act2", 
 			"CoupTF_2", "nNOS", "RLN", "AChE", "AMIGO2", "AR-beta1", "AR-beta2", "Astn2", "BDNF", "Bok", "Caln", "CaM", "CaMKII_alpha", "CGRP", "ChAT", "Chrna2", "CRF", "Ctip2", "Cx36", "CXCR4", 
 			"Dcn", "Disc1", "DYN", "EAAT3", "ErbB4", "GABAa_alpha2", "GABAa_alpha3", "GABAa_alpha4", "GABAa_alpha5", "GABAa_alpha6", "GABAa_beta1", "GABAa_beta2", "GABAa_beta3", "GABAa_delta", 
