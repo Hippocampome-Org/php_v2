@@ -1535,15 +1535,11 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 				$rowvalue['neuron_name'] = get_link($rowvalue['neuron_name'], $neuron_ids[$rowvalue['neuron_name']], './neuron_page.php', 'neuron');
 			}
 		}
-
 		// Extract relevant values
 		$subregion = $rowvalue['subregion'];
 		$neuron_name = $rowvalue['neuron_name'];
-		//if(!isset($color_segments[$rowvalue['color']])){ var_dump($rowvalue); }
 		$color = isset($color_segments[strtolower($rowvalue['color'])]) ? $color_segments[strtolower($rowvalue['color'])] : 'None of the Above';
-		//$color = $color_segments[$rowvalue['color']];
 		$decodedKey = urldecode($rowvalue['evidence']);
-		// Check if the key exists in the array
 		if (array_key_exists($decodedKey, $neuronal_segments)) {
 			$evidence = $neuronal_segments[$decodedKey];
 		} else {
@@ -1615,12 +1611,10 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 	$column_totals = [];
 	if (isset($write_file)) {
             $csv_rows = [];
-
-            // Iterate over array_subs to create CSV rows and accumulate totals
+	    $special_rows = []; // To hold rows starting with N/A, None of the Above
             foreach ($array_subs as $type => $subtypes) {
                     foreach ($subtypes as $subtype => $values) {
                             $typeData = [$type]; // First value in the row
-
                             foreach ($values as $category => $properties) {
                                     $rowData = array_merge($typeData, [$subtype, $category]); // Create row with type, subtype, and category
 
@@ -1643,11 +1637,16 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
                                             }                
                                             $rowData[] = $showVal;
                                     }    
-                                    // Add rowData to CSV rows 
-                                    $csv_rows[] = $rowData;
-                            }    
+				    // Check if the row is a special row (starting with N/A, None of the Above)
+				    if ($type === 'N/A' && $subtype === 'None of the Above') {
+					    $special_rows[] = $rowData; // Add to special rows
+				    } else {
+					    $csv_rows[] = $rowData;
+				    }
+			    }    
                     }    
             }    
+	    $csv_rows = array_merge($csv_rows, $special_rows);
             $csv_rows[] = generateTotalRow($csv_headers, true, $column_totals);
             // Create final CSV data structure
             $csv_data[$csv_tablename] = [
@@ -3071,7 +3070,6 @@ function get_markers_property_views_report($conn, $neuron_ids, $views_request=NU
                         return format_table_neurons($conn, $page_property_views_query, $table_string, $file_name, $columns, $neuron_ids, $write_file, $views_request); //Using this universally as this is gonna
                 }else{
                         $file_name .= "views"; 
-			//return format_table_markers($conn, $page_property_views_query, $table_string, 'markers_evidence_page_views', $columns, $neuron_ids, $write_file);
                         return format_table_markers($conn, $page_property_views_query, $table_string, $file_name, $columns, $neuron_ids, $write_file);
                 }
 	}else{
