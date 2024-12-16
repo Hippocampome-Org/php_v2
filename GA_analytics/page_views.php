@@ -3389,12 +3389,9 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 		";
 		//echo $page_counts_views_query;
 		if ($views_request == "views_per_month" || $views_request == "views_per_year") {
-
 			$page_counts_views_query = "
 				SET SESSION group_concat_max_len = 1000000;
-
 			SET @sql = NULL;";
-
 			if ($views_request == "views_per_month") {
 				$page_counts_views_query .= "
 					SELECT 
@@ -3428,10 +3425,8 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 					FROM GA_combined_analytics
 					WHERE 
 					page REGEXP 'property_page_ephys\\.php'
-					AND page REGEXP 'id_neuron=[0-9]+';
-				";
+					AND page REGEXP 'id_neuron=[0-9]+';";
 			}
-
 			$page_counts_views_query .= "
 				SET @sql = CONCAT(
 						'SELECT ',
@@ -3439,7 +3434,9 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 						't.page_statistics_name AS Neuron_Name, ',
 						'derived.evidence AS Evidence, ',
 						@sql, ', ',
-						'SUM(REPLACE(derived.page_views, \'\', \'\')) AS Total_Views ',
+						'SUM(REPLACE(derived.page_views, \'\', \'\')) AS Post_2017_Views, ',
+						'ROUND(".DELTA_VIEWS." * SUM(REPLACE(derived.page_views, '','', ''''))) AS Estimated_Pre_2017_Views, ',
+						'SUM(REPLACE(derived.page_views, '','', '''')) + ROUND(".DELTA_VIEWS." * SUM(REPLACE(derived.page_views, '','', ''''))) AS Total_Views ',
 						'FROM (',
 							'   SELECT ',
 							'       CASE ',
@@ -3453,9 +3450,9 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 							'           ELSE ''No Evidence'' ',
 							'       END AS evidence, ',
 							'       CASE ',
-							'           WHEN REPLACE(page_views, \'\', \'\') > 0 ',
-							'               THEN REPLACE(page_views, \'\', \'\') ',
-							'           ELSE REPLACE(sessions, \'\', \'\') ',
+							'           WHEN REPLACE(page_views, '','', '''') > 0 ',
+							'               THEN REPLACE(page_views, '','', '''') ',
+							'           ELSE REPLACE(sessions, '','', '''') ',
 							'       END AS page_views, ',
 							'       day_index ',
 							'   FROM GA_combined_analytics ',
@@ -3466,12 +3463,9 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 							'GROUP BY t.subregion, t.page_statistics_name, derived.evidence ',
 							'ORDER BY t.position'
 								);
-
-
 			PREPARE stmt FROM @sql;
 			EXECUTE stmt;
 			DEALLOCATE PREPARE stmt;";
-
                 }
         }
 
