@@ -1894,7 +1894,6 @@ function format_table_biophysics($conn, $query, $table_string, $csv_tablename, $
 				}
 			}
 		}
-		$csv_rows[] = $all_headers;
 		foreach ($array_subs as $groupKey => $subgroups) {
 			foreach ($subgroups as $subgroupKey => $colors) {
 				$rowData = array_fill(0, count($all_headers), 0); // Initialize the row with zeros
