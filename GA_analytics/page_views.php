@@ -2400,31 +2400,33 @@ function get_neurons_views_report($conn, $neuron_ids=NULL, $views_request=NULL, 
 			) AS nd ON nd.neuronID = t.id
 			GROUP BY t.subregion, t.page_statistics_name
 			ORDER BY t.position ASC, Subregion ASC, Neuron_Type_Name ASC;";
-	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
+	if ($views_request == "views_per_month" || $views_request == "views_per_year") {
 		$page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
 
 		if ($views_request == "views_per_month") {
-			$page_neurons_views_query .= "SELECT GROUP_CONCAT(
-					DISTINCT CONCAT(
-						'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
-							' AND MONTH(day_index) = ', MONTH(day_index),
-							' THEN CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END ELSE 0 END) AS `',
-						YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
-						)
-					ORDER BY YEAR(day_index), MONTH(day_index) SEPARATOR ', '
-					) INTO @sql
+			$page_neurons_views_query .= "
+				SELECT GROUP_CONCAT(
+						DISTINCT CONCAT(
+							'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+								' AND MONTH(day_index) = ', MONTH(day_index),
+								' THEN CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END ELSE 0 END) AS `',
+							YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
+							)
+						ORDER BY YEAR(day_index), MONTH(day_index) SEPARATOR ', '
+						) INTO @sql
 				FROM (SELECT DISTINCT day_index FROM GA_combined_analytics) months;";
 		}
 
 		if ($views_request == "views_per_year") {
-			$page_neurons_views_query .= "SELECT GROUP_CONCAT(
-					DISTINCT CONCAT(
-						'SUM(CASE WHEN YEAR(nd.day_index) = ', YEAR(nd.day_index),
-							' THEN CASE WHEN REPLACE(nd.page_views, \',\', \'\') > 0 THEN REPLACE(nd.page_views, \',\', \'\') ELSE REPLACE(nd.sessions, \',\', \'\') END ELSE 0 END) AS `',
-						YEAR(nd.day_index), '`'
-						)
-					ORDER BY YEAR(nd.day_index) SEPARATOR ', '
-					) INTO @sql
+			$page_neurons_views_query .= "
+				SELECT GROUP_CONCAT(
+						DISTINCT CONCAT(
+							'SUM(CASE WHEN YEAR(nd.day_index) = ', YEAR(nd.day_index),
+								' THEN CASE WHEN REPLACE(nd.page_views, \',\', \'\') > 0 THEN REPLACE(nd.page_views, \',\', \'\') ELSE REPLACE(nd.sessions, \',\', \'\') END ELSE 0 END) AS `',
+							YEAR(nd.day_index), '`'
+							)
+						ORDER BY YEAR(nd.day_index) SEPARATOR ', '
+						) INTO @sql
 				FROM GA_combined_analytics nd
 				WHERE nd.page REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+';";
 		}
@@ -2434,10 +2436,10 @@ function get_neurons_views_report($conn, $neuron_ids=NULL, $views_request=NULL, 
 					'SELECT COALESCE(t.subregion, ''N/A'') AS Subregion,
 					COALESCE(t.page_statistics_name, ''None of the Above'') AS Neuron_Type_Name, ',
 					@sql, ',
-					SUM(CASE WHEN REPLACE(nd.page_views, \'\', \'\') > 0 THEN REPLACE(nd.page_views, \'\', \'\') ELSE REPLACE(nd.sessions, \'\', \'\') END) AS Post_2017_Views,
-					ROUND(".DELTA_VIEWS." * SUM(CASE WHEN REPLACE(nd.page_views, \'\', \'\') > 0 THEN REPLACE(nd.page_views, \'\', \'\') ELSE REPLACE(nd.sessions, \'\', \'\') END)) AS Estimated_Pre_2017_Views,
-					SUM(CASE WHEN REPLACE(nd.page_views, \'\', \'\') > 0 THEN REPLACE(nd.page_views, \'\', \'\') ELSE REPLACE(nd.sessions, \'\', \'\') END) + 
-					ROUND(".DELTA_VIEWS." * SUM(CASE WHEN REPLACE(nd.page_views, \'\', \'\') > 0 THEN REPLACE(nd.page_views, \'\', \'\') ELSE REPLACE(nd.sessions, \'\', \'\') END)) AS Total_Views
+					SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END) AS Post_2017_Views,
+					ROUND(0.41475164658173 * SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END)) AS Estimated_Pre_2017_Views,
+					SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END) +
+					ROUND(0.41475164658173 * SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END)) AS Total_Views
 					FROM Type t
 					RIGHT JOIN (
 						SELECT 
@@ -2446,24 +2448,34 @@ function get_neurons_views_report($conn, $neuron_ids=NULL, $views_request=NULL, 
 						WHEN page REGEXP ''id1_neuron=[0-9]+'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1)
 						WHEN page REGEXP ''id_neuron_source=[0-9]+'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1)
 						WHEN page REGEXP ''pre_id=[0-9]+'' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''pre_id='', -1), ''&'', 1)
-						ELSE NULL 
+						ELSE NULL
 						END AS neuronID,
-						page,
-						day_index,
-						page_views,
-						sessions
-						FROM GA_combined_analytics nd
-						WHERE nd.page REGEXP ''id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+''
-						) AS nd
-					ON nd.neuronID = t.id
-					GROUP BY t.subregion, t.page_statistics_name
-					ORDER BY (t.subregion = ''N/A'') ASC, t.subregion, t.page_statistics_name
-					');
-
-		PREPARE stmt FROM @sql; 
-		EXECUTE stmt; 
-		DEALLOCATE PREPARE stmt;";
+						CASE
+						WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''morphology'' THEN ''Morphology: ADL / SD''
+						WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''markers'' THEN ''Molecular Markers''
+						WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''ephys'' THEN ''Membrane Biophysics''
+						WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) IN (''connectivity'', ''connectivity_orig'', ''connectivity_test'') THEN ''Connectivity: Known / Potential''
+						WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''synaptome'' THEN ''Synaptome''
+						WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''fp'' THEN ''Firing Patterns''
+						WHEN page LIKE ''%property_page_counts.php%'' THEN ''Neuron Type Census''
+						WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''phases'' THEN ''In Vivo Recordings''
+						WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) IN (''synpro_nm'', ''synpro_nm_old2'') THEN ''Connectivity: NoPS / NoC / PS''
+						WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''synpro_pvals'' THEN ''Connectivity: Parcel-Specific Tables''
+						ELSE ''Other''
+						END AS property_page_category,
+						    IFNULL(REPLACE(page_views, '','', ''''), 0) AS page_views,
+						    IFNULL(REPLACE(sessions, '','', ''''), 0) AS sessions,
+						    day_index
+							    FROM GA_combined_analytics
+							    WHERE page REGEXP ''id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+''
+							    ) AS nd
+							    ON nd.neuronID = t.id
+							    GROUP BY t.subregion, t.page_statistics_name
+							    ORDER BY t.position ASC, Subregion ASC, Neuron_Type_Name ASC'
+							    );
+		PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;";
 	}
+	//echo $page_neurons_views_query;
 	$table_string='';
 	if(isset($write_file)) {
 		$file_name = "neurons_";
@@ -3884,7 +3896,7 @@ function get_domain_functionality_views_report($conn, $views_request = NULL, $wr
 						END
 						ELSE 0
 						END
-					   ) AS POST_2017_Views,
+					   ) AS Post_2017_Views,
 					ROUND(" . DELTA_VIEWS . " * SUM(
 								CASE
 								WHEN (
@@ -4048,7 +4060,7 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 						AND (page != ''/php/'' OR day_index IS NOT NULL)) THEN ''All Others'' ELSE ''Home'' 
 					END AS Property, ', 
 					    @sql, ', 
- SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, \'0\'), \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END) AS POST_2017_Views,
+ SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, \'0\'), \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END) AS Post_2017_Views,
                                         ROUND(" . DELTA_VIEWS . " *  SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, \'0\'), \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END)) AS Pre_Estimated_2017_Views,
                                         SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, \'0\'), \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END) +  ROUND(" . DELTA_VIEWS . " *  SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, \'0\'), \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END)) AS Total_Views                                                                  
 						    FROM GA_combined_analytics 
