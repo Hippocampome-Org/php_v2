@@ -2437,9 +2437,9 @@ function get_neurons_views_report($conn, $neuron_ids=NULL, $views_request=NULL, 
 					COALESCE(t.page_statistics_name, ''None of the Above'') AS Neuron_Type_Name, ',
 					@sql, ',
 					SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END) AS Post_2017_Views,
-					ROUND(0.41475164658173 * SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END)) AS Estimated_Pre_2017_Views,
+					ROUND(".DELTA_VIEWS." * SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END)) AS Estimated_Pre_2017_Views,
 					SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END) +
-					ROUND(0.41475164658173 * SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END)) AS Total_Views
+					ROUND(".DELTA_VIEWS." * SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END)) AS Total_Views
 					FROM Type t
 					RIGHT JOIN (
 						SELECT 
@@ -2809,7 +2809,10 @@ FROM
 					'derived.evidence AS Evidence, ',
 					'CONCAT(derived.color, TRIM(derived.sp_page)) AS Color_SP, ',
 					@sql, ', ',
-					'SUM(CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END) AS Total_Views ',
+					'SUM(CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END) AS Post_2017_Views, ',
+					'ROUND(".DELTA_VIEWS." * SUM(CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END)) AS Estimated_Pre_2017_Views, ',
+					'SUM(CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END) + ',
+					'ROUND(".DELTA_VIEWS." * SUM(CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END)) AS Total_Views ',
 					'FROM (',
 						'   SELECT ',
 						'       IF(INSTR(page, ''id_neuron='') > 0, ',
@@ -2840,19 +2843,23 @@ FROM
 						'   FROM GA_combined_analytics ',
 						'   WHERE ',
 						'       page LIKE ''%/property_page_%'' ',
+						'       AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''morphology'' ',
 						'       AND (',
-								'           SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''morphology'' ',
+								'           INSTR(page, ''id_neuron='') > 0 OR ',
+								'           INSTR(page, ''id1_neuron='') > 0 OR ',
+								'           INSTR(page, ''id_neuron_source='') > 0 ',
 								'       ) ',
 						') AS derived ',
 						'LEFT JOIN Type AS t ON t.id = derived.neuronID ',
 						'GROUP BY t.subregion, t.page_statistics_name, derived.evidence, Color_SP ',
 						'ORDER BY t.position'
-							);";
+							);
+		";
 		$page_property_views_query .= "PREPARE stmt FROM @sql;
 		EXECUTE stmt;
 		DEALLOCATE PREPARE stmt;";
 	}
-	//echo $page_property_views_query;//exit;
+	//echo $page_property_views_query;exit;
         $columns = ['Subregion', 'Neuron Type Name', 'Neuronal Attribute', 'DG:SMo', 'DG:SMi','DG:SG','DG:H','CA3:SLM','CA3:SR','CA3:SL','CA3:SP','CA3:SO','CA2:SLM','CA2:SR','CA2:SP','CA2:SO','CA1:SLM','CA1:SR','CA1:SP','CA1:SO','Sub:SM','Sub:SP','Sub:PL','EC:I','EC:II','EC:III','EC:IV','EC:V','EC:VI','Other','Post_2017_Views', 'Estimated_Pre_2017_Views', 'Total_Views'];
         $table_string='';
         if(isset($write_file)) {
@@ -2866,7 +2873,6 @@ FROM
 			return format_table_morphology($conn, $page_property_views_query, $table_string, $file_name, $columns, $neuron_ids, $write_file);
 		}
         }else{
-			//echo $page_property_views_query;
 		$table_string .= get_table_skeleton_first($columns);
 		$table_string .= format_table_morphology($conn, $page_property_views_query, $table_string, 'morphology_property', $columns, $neuron_ids);
 		$table_string .= get_table_skeleton_end();
