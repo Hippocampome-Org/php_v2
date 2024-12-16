@@ -3663,7 +3663,28 @@ function get_fp_property_views_report($conn, $views_request=NULL, $write_file=NU
 						THEN REPLACE(page_views, \",\", \"\") 
 						ELSE REPLACE(sessions, \",\", \"\") 
 						END
-					     ) AS Total_Views ', 
+					     ) AS Post_2017_Views, ', 
+					' ROUND(".DELTA_VIEWS." *  SUM(
+                                                CASE
+                                                WHEN REPLACE(page_views, \",\",\"\") > 0
+                                                THEN REPLACE(page_views, \",\", \"\")
+                                                ELSE REPLACE(sessions, \",\", \"\")
+                                                END
+                                             )) AS Estimated_Pre_2017_Views, ',
+
+					' SUM(
+                                                CASE
+                                                WHEN REPLACE(page_views, \",\",\"\") > 0
+                                                THEN REPLACE(page_views, \",\", \"\")
+                                                ELSE REPLACE(sessions, \",\", \"\")
+                                                END
+                                             ) + ROUND(".DELTA_VIEWS." *  SUM(
+                                                CASE
+                                                WHEN REPLACE(page_views, \",\",\"\") > 0
+                                                THEN REPLACE(page_views, \",\", \"\")
+                                                ELSE REPLACE(sessions, \",\", \"\")
+                                                END
+                                             ))  AS Total_Views ',
 					'FROM GA_combined_analytics ', 
 					' WHERE page REGEXP ''property_page_fp\.php'' AND page REGEXP ''id_neuron=[0-9]+'' ',
 					'GROUP BY Firing_Pattern ',
@@ -3672,7 +3693,7 @@ function get_fp_property_views_report($conn, $views_request=NULL, $write_file=NU
 		";
 		$page_fp_property_views_query .= " PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt; ";
 	}
-	//echo $page_fp_property_views_query;
+	//echo $page_fp_property_views_query; exit;
 	$columns = ['Firing Pattern', 'Views'];
 	$options = ['format' => $fp_format,];
 	if(isset($write_file)) {
