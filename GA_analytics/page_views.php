@@ -318,6 +318,29 @@ function processNeuronLink($neuron_id, $neuron_ids_array, $linkText, $write_file
     return $neuron_id;
 }
 
+function processColumnValue($column_value, $column_name, &$table_string, &$column_totals) {
+    if (is_numeric($column_value)) {
+        // Format the value based on the column name
+	$formatted_value = ($column_name == "Estimated_Pre_2017_Views" || $column_name == "Total_Views")
+    ? number_format(htmlspecialchars($column_value), 2) 
+    : number_format(htmlspecialchars($column_value));
+        
+        // Append to the table string
+        $table_string .= "<td>" . $formatted_value . "</td>";
+
+        // Normalize the column name
+        $normalized_column_name = str_replace("_", " ", $column_name);
+
+        // Initialize totals if not set
+        if (!isset($column_totals[$normalized_column_name])) {
+            $column_totals[$normalized_column_name] = 0;
+        }
+
+        // Add the value to the totals
+        $column_totals[$normalized_column_name] += $column_value;
+    }
+}
+
 function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file = NULL, $views_request = NULL, $query2 = NULL) {
     $count = 0;
     $csv_rows = [];
@@ -453,7 +476,7 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
     // Reset the result set pointer to the first row
     mysqli_data_seek($rs, 0);
     while ($row = mysqli_fetch_assoc($rs)) {                    
-	    $row = update_estimated_totals($row);
+	    //$row = update_estimated_totals($row);
 	    $bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
 	    $table_string1 .= "<tr class='$bgColor'>";
 	    $csv_rows[] = $row;
@@ -462,12 +485,7 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 			    $column_value = $neuron_ids[$column_value];
 		    }
 		    if (is_numeric($column_value)) {
-		    	$table_string1 .= "<td>" . number_format(htmlspecialchars($column_value)) . "</td>";
-			$column_name = str_replace("_", " ", $column_name);
-			if (!isset($column_totals[$column_name])) {
-				$column_totals[$column_name] = 0;
-			}
-			$column_totals[$column_name] += $column_value;
+			    processColumnValue($column_value, $column_name, $table_string1, $column_totals);
 		    }
 		    else{
 		    	$table_string1 .= "<td>" . htmlspecialchars($column_value) . "</td>";
@@ -487,12 +505,7 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 				    $column_value= $neuron_ids[$column_value];
 			    }
 			    if (is_numeric($column_value)) {
-		    		$table_string1 .= "<td>" . number_format(htmlspecialchars($column_value)) . "</td>";
-				    $column_name = str_replace("_", " ", $column_name);
-				    if (!isset($column_totals[$column_name])) {
-					    $column_totals[$column_name] = 0;
-				    }
-				    $column_totals[$column_name] += $column_value;
+				    processColumnValue($column_value, $column_name, $table_string1, $column_totals);
 			    }
 			    else{
 				    $table_string1 .= "<td>" . htmlspecialchars($column_value) . "</td>";
@@ -1820,8 +1833,8 @@ function update_estimated_totals($data) {
 			$row['Estimated_Pre_2017_Views'] = 0;
 		}
 		if (($row['Post_2017_Views'] > $row['Estimated_Pre_2017_Views']) ||
-				($row['Estimated_Pre_2017_Views'] == 0 && $row['Post_2017_Views'] > 1)) {
-			$row['Estimated_Pre_2017_Views'] = round(DELTA_VIEWS * $row['Post_2017_Views']);
+				($row['Estimated_Pre_2017_Views'] == 0 && $row['Post_2017_Views'] >= 1)) {
+			$row['Estimated_Pre_2017_Views'] = round(DELTA_VIEWS * $row['Post_2017_Views'], 3);
 			$row['Total_Views'] = $row['Post_2017_Views'] + $row['Estimated_Pre_2017_Views'];
 		}
 		$data[$key] = $row; // Update the processed row in the array
@@ -1833,8 +1846,8 @@ function update_estimated_totals($data) {
 	    foreach ($array_subs as $groupKey => $subgroups) {
 		    foreach ($subgroups as $subgroupKey => $colors) {
 			    if( ($colors['Post_2017_Views'] > $colors['Estimated_Pre_2017_Views']) || 
-					    ($colors['Estimated_Pre_2017_Views'] == 0 && $colors['Post_2017_Views'] > 1)) {
-				    $array_subs[$groupKey][$subgroupKey]['Estimated_Pre_2017_Views'] = ROUND(DELTA_VIEWS * $colors['Post_2017_Views']);
+					    ($colors['Estimated_Pre_2017_Views'] == 0 && $colors['Post_2017_Views'] >= 1)) {
+				    $array_subs[$groupKey][$subgroupKey]['Estimated_Pre_2017_Views'] = ROUND(DELTA_VIEWS * $colors['Post_2017_Views'], 3);
 				    $array_subs[$groupKey][$subgroupKey]['Total_Views'] = $colors['Post_2017_Views'] +  $array_subs[$groupKey][$subgroupKey]['Estimated_Pre_2017_Views'] ;
 			    }
 		    }
@@ -2192,43 +2205,49 @@ function get_page_views($conn){ //Passed on Dec 3 2023
 
 function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL){ //Passed $conn on Dec 3 2023
 
-	$page_views_query = "SELECT 
-		subquery.page as Page, 
-		SUM(subquery.Post_2017_Views) AS Post_2017_Views,
-		SUM(subquery.Estimated_Pre_2017_Views) AS Estimated_Pre_2017_Views,
-		SUM(subquery.Total_Views) AS Total_Views
+	$page_views_query = "SELECT subquery.page AS Page, 
+		SUM(subquery.Post_2017_Views) AS Post_2017_Views, 
+		ROUND(SUM(subquery.Estimated_Pre_2017_Views), 3) AS Estimated_Pre_2017_Views, 
+		ROUND(SUM(subquery.Total_Views), 3) AS Total_Views
 			FROM (
-					SELECT 
-					gap.page, 
-					gap.day_index, 
+					SELECT gap.page, gap.day_index, 
 					SUM(
-						CASE WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED) 
-						ELSE CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED) END
-					   ) AS Post_2017_Views,
-					ROUND(".DELTA_VIEWS." * 
+						CASE 
+						WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 
+						THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED) 
+						ELSE CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED) 
+						END
+					   ) AS Post_2017_Views, 
+					ROUND(".DELTA_VIEWS." * SUM(
+							CASE 
+							WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 
+							THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED) 
+							ELSE CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED) 
+							END
+							), 3) AS Estimated_Pre_2017_Views, 
+					ROUND(
 						SUM(
-							CASE WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED)
-							ELSE CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED) END
-						   )) AS Estimated_Pre_2017_Views,
-					(SUM(
-					     CASE WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED)
-					     ELSE CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED) END
-					    )
-					 + ROUND(".DELTA_VIEWS." * SUM(
-							 CASE WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED)
-							 ELSE CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED) END
-							 ))) AS Total_Views
-						FROM 
-						GA_combined_analytics gap 
+							CASE 
+							WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 
+							THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED) 
+							ELSE CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED) 
+							END
+						   ) + ".DELTA_VIEWS." * SUM(
+							   CASE 
+							   WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 
+							   THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED) 
+							   ELSE CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED) 
+							   END
+							   ), 3
+					     ) AS Total_Views
+						FROM GA_combined_analytics gap 
 						WHERE 
-						gap.day_index IS NOT NULL
-						GROUP BY 
-						gap.page, gap.day_index
-						) AS subquery
-						GROUP BY 
-						subquery.page
-						ORDER BY 
-						Total_Views DESC";
+						gap.day_index IS NOT NULL 
+						GROUP BY gap.page, gap.day_index
+			) AS subquery 
+			GROUP BY subquery.page 
+			ORDER BY Total_Views DESC;";
+	echo $page_views_query;
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
 
