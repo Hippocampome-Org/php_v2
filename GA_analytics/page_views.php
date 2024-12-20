@@ -322,7 +322,7 @@ function processColumnValue($column_value, $column_name, &$table_string, &$colum
     if (is_numeric($column_value)) {
         // Format the value based on the column name
 	$formatted_value = ($column_name == "Estimated_Pre_2017_Views" || $column_name == "Total_Views")
-    ? number_format(htmlspecialchars($column_value), 2) 
+    ? number_format(htmlspecialchars($column_value), 3) 
     : number_format(htmlspecialchars($column_value));
         
         // Append to the table string
@@ -2207,8 +2207,8 @@ function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL)
 
 	$page_views_query = "SELECT subquery.page AS Page, 
 		SUM(subquery.Post_2017_Views) AS Post_2017_Views, 
-		ROUND(SUM(subquery.Estimated_Pre_2017_Views), 3) AS Estimated_Pre_2017_Views, 
-		ROUND(SUM(subquery.Total_Views), 3) AS Total_Views
+		ROUND(SUM(subquery.Estimated_Pre_2017_Views), 4) AS Estimated_Pre_2017_Views, 
+		ROUND(SUM(subquery.Total_Views), 4) AS Total_Views
 			FROM (
 					SELECT gap.page, gap.day_index, 
 					SUM(
@@ -2224,7 +2224,7 @@ function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL)
 							THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED) 
 							ELSE CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED) 
 							END
-							), 3) AS Estimated_Pre_2017_Views, 
+							), 4) AS Estimated_Pre_2017_Views, 
 					ROUND(
 						SUM(
 							CASE 
@@ -2238,7 +2238,7 @@ function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL)
 							   THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED) 
 							   ELSE CAST(REPLACE(COALESCE(sessions, '0'), ',', '') AS UNSIGNED) 
 							   END
-							   ), 3
+							   ), 4
 					     ) AS Total_Views
 						FROM GA_combined_analytics gap 
 						WHERE 
