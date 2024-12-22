@@ -321,7 +321,14 @@ function processNeuronLink($neuron_id, $neuron_ids_array, $linkText, $write_file
 function processColumnValue($column_value, $column_name, &$table_string, &$column_totals) {
     if (is_numeric($column_value)) {
         // Format the value based on the column name
-	$formatted_value = ($column_name == "Estimated_Pre_2017_Views" || $column_name == "Total_Views")
+	$formatted_value = ($column_name == "Estimated_Pre_2017_Views" || $column_name == "Total_Views" 
+				|| $column_name == "Main_Matrix_Accesses_Post_Views" 
+				|| $column_name == "Main_Matrix_Estimated_Pre_2017_Views" || $column_name == "Main_Matrix_Total_Views" 
+				|| $column_name == "Evidence_Accesses_Post_Views" || $column_name == "Evidence_Accesses_Estimated_Pre_2017_Views" 
+				|| $column_name == "Evidence_Accesses_Total_Views" || $column_name == "Main_Evidence_Accesses_Total_Views"
+				|| $column_name == "Main_Evidence_Estimated_Pre_2017_Total_Views" 
+				|| $column_name == "Total Views" 
+				)
     ? number_format(htmlspecialchars($column_value), 3) 
     : number_format(htmlspecialchars($column_value));
         
@@ -479,7 +486,6 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 	    //$row = update_estimated_totals($row);
 	    $bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
 	    $table_string1 .= "<tr class='$bgColor'>";
-	    $csv_rows[] = $row;
 	    foreach ($row as $column_name => $column_value) {
 		    if (isset($neuron_ids[$column_value])) {
 			    $column_value = $neuron_ids[$column_value];
@@ -491,6 +497,7 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 		    	$table_string1 .= "<td>" . htmlspecialchars($column_value) . "</td>";
 		    }
 	    }
+	    $csv_rows[] = $row;
 	    $table_string1 .= "</tr>";
 	    $i++;
     }
@@ -499,7 +506,6 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 	    while ($row = mysqli_fetch_assoc($rs2)) {
 		    $bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
 		    $table_string1 .= "<tr class='$bgColor'>";
-		    $csv_rows[] = $row;
 		    foreach ($row as $column_name => $column_value) {
 			    if (isset($neuron_ids[$column_value])) {
 				    $column_value= $neuron_ids[$column_value];
@@ -511,6 +517,7 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 				    $table_string1 .= "<td>" . htmlspecialchars($column_value) . "</td>";
 			    }
 		    }
+		    $csv_rows[] = $row;
 		    $table_string1 .= "</tr>";
 		    $i++;
 	    }
@@ -1244,7 +1251,9 @@ function generateTotalRow($headers, $isCsv = true, $columnTotals = [])
     }
     foreach ($headers as $header) {
         if (isset($columnTotals[$header])) {
-		$totalCountRow[] = $columnTotals[$header];
+		$formattedTotal = number_format($columnTotals[$header]); // Format with 2 decimal places
+		$totalCountRow[] = $formattedTotal;
+		//$totalCountRow[] = $columnTotals[$header];
         }
     }
     if ($isCsv) {
@@ -3742,138 +3751,87 @@ function get_fp_property_views_report($conn, $views_request=NULL, $write_file=NU
 
 
 function get_domain_functionality_views_report($conn, $views_request = NULL, $write_file = NULL){
-	$page_functionality_views_query="SELECT 
-		CASE 
-		WHEN page REGEXP 'property_page_fp|fp\.php' THEN 'Firing Patterns'
-		WHEN page REGEXP 'property_page_markers|markers\.php' THEN 'Molecular Markers'
-		WHEN page REGEXP 'property_page_morphology|morphology\.php' 
-		AND page NOT REGEXP 'property_page_morphology_linking_pmid_isbn' THEN 'Morphology'
-		WHEN page REGEXP 'property_page_phases|phases\.php' THEN 'In Vivo Recordings'
-		WHEN page REGEXP 'property_page_synpro|property_page_synpro_nm|property_page_synpro_pvals|property_page_synpro_nm_old2|synapse_probabilites\.php' THEN 'Synapse Probabilities'
-		WHEN page REGEXP 'property_page_connectivity|property_page_connectivity_orig|property_page_connectivity_test|connectivity\.php' THEN 'Connectivity'
-		WHEN page REGEXP 'property_page_ephys|ephys\.php' THEN 'Membrane Biophysics'
-		WHEN page REGEXP 'synaptic_mod_sum|params_summary|synaptome|synaptome_modeling\.php' THEN 'Synaptic Physiology'
-		WHEN page REGEXP 'property_page_counts|counts\.php' THEN 'Neuron Type Census'
-		WHEN page REGEXP 'Izhikevich_model' THEN 'Izhikevich Models'
-		WHEN page REGEXP '/cognome/' THEN 'Cognome'
-		WHEN page REGEXP 'simulation_parameters' THEN 'Simulation Parameters'
-		ELSE 'Other' 
-		END AS Property_Page_Category, 
-		    SUM(
-				    CASE 
-				    WHEN day_index IS NOT NULL 
-				    AND page NOT REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+'
-				    AND page REGEXP '^.*\/(property_page_.*\.php|morphology\.php|markers\.php|ephys\.php|connectivity(_test|_orig)?\.php|synaptome_modeling\.php|firing_patterns\.php|Izhikevich_model\.php|synapse_probabilities\.php|phases\.php|cognome\/.*|synaptome\.php|property_page_counts\.php|property_page_morphology\.php|property_page_ephys\.php|property_page_markers\.php|property_page_connectivity\.php|property_page_fp\.php|property_page_phases\.php|simulation_parameters\.php|synaptome/php/synaptome\.php)$' 
-				    THEN CASE 
-				    WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '') 
-				    ELSE REPLACE(sessions, ',', '') 
-				    END 
-				    ELSE 0 
-				    END
-		       ) AS Main_Matrix_Accesses,
-		    SUM(
-				    CASE 
-				    WHEN page REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+' 
-				    THEN CASE 
-				    WHEN page NOT REGEXP '^.*\/(property_page_fp|property_page_markers|property_page_morphology|property_page_phases|property_page_synpro|property_page_connectivity|property_page_ephys|synaptic_mod_sum|params_summary|synaptome|synaptome_modeling|property_page_counts|Izhikevich_model|cognome|simulation_parameters).*\.php$'
-				    THEN CASE 
-				    WHEN REPLACE(page_views, ',', '') > 0 THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED)
-				    ELSE CAST(REPLACE(sessions, ',', '') AS UNSIGNED)
-				    END
-				    ELSE 0
-				    END 
-				    ELSE 0 
-				    END
-		       ) AS Evidence_Accesses,
-		    SUM(
-				    CASE 
-				    WHEN day_index IS NOT NULL 
-				    AND page NOT REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+'
-				    AND page REGEXP '^.*\/(property_page_.*\.php|morphology\.php|markers\.php|ephys\.php|connectivity(_test|_orig)?\.php|synaptome_modeling\.php|firing_patterns\.php|Izhikevich_model\.php|synapse_probabilities\.php|phases\.php|cognome\/.*|synaptome\.php|property_page_counts\.php|property_page_morphology\.php|property_page_ephys\.php|property_page_markers\.php|property_page_connectivity\.php|property_page_fp\.php|property_page_phases\.php|simulation_parameters\.php|synaptome/php/synaptome\.php)$' 
-				    THEN CASE 
-				    WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '') 
-				    ELSE REPLACE(sessions, ',', '') 
-				    END 
-				    ELSE 0 
-				    END
-		       ) + SUM(
-			       CASE 
-			       WHEN page REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+' 
-			       THEN CASE 
-			       WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '') 
-			       ELSE REPLACE(sessions, ',', '') 
-			       END 
-			       ELSE 0 
-			       END
-			      ) AS Post_2017_Views,
-		    ROUND(
-				    ".DELTA_VIEWS." * (
-					    SUM(
-						    CASE 
-						    WHEN day_index IS NOT NULL 
-						    AND page NOT REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+'
-						    AND page REGEXP '^.*\/(property_page_.*\.php|morphology\.php|markers\.php|ephys\.php|connectivity(_test|_orig)?\.php|synaptome_modeling\.php|firing_patterns\.php|Izhikevich_model\.php|synapse_probabilities\.php|phases\.php|cognome\/.*|synaptome\.php|property_page_counts\.php|property_page_morphology\.php|property_page_ephys\.php|property_page_markers\.php|property_page_connectivity\.php|property_page_fp\.php|property_page_phases\.php|simulation_parameters\.php|synaptome/php/synaptome\.php)$' 
-						    THEN CASE 
-						    WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '') 
-						    ELSE REPLACE(sessions, ',', '') 
-						    END 
-						    ELSE 0 
-						    END
-					       ) + SUM(
-						       CASE 
-						       WHEN page REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+' 
-						       THEN CASE 
-						       WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '') 
-						       ELSE REPLACE(sessions, ',', '') 
-						       END 
-						       ELSE 0 
-						       END
-						      )
-					       )
-					       ) AS Estimated_Pre_2017_Views,
-		    SUM(
-				    CASE 
-				    WHEN day_index IS NOT NULL 
-				    AND page NOT REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+'
-				    AND page REGEXP '^.*\/(property_page_.*\.php|morphology\.php|markers\.php|ephys\.php|connectivity(_test|_orig)?\.php|synaptome_modeling\.php|firing_patterns\.php|Izhikevich_model\.php|synapse_probabilities\.php|phases\.php|cognome\/.*|synaptome\.php|property_page_counts\.php|property_page_morphology\.php|property_page_ephys\.php|property_page_markers\.php|property_page_connectivity\.php|property_page_fp\.php|property_page_phases\.php|simulation_parameters\.php|synaptome/php/synaptome\.php)$'
-				    THEN CASE 
-				    WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '') 
-				    ELSE REPLACE(sessions, ',', '') 
-				    END 
-				    ELSE 0 
-				    END
-		       ) + ROUND(
-			       ".DELTA_VIEWS." * SUM(
-				       CASE 
-				       WHEN day_index IS NOT NULL 
-				       AND page NOT REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+'
-				       AND page REGEXP '^.*\/(property_page_.*\.php|morphology\.php|markers\.php|ephys\.php|connectivity(_test|_orig)?\.php|synaptome_modeling\.php|firing_patterns\.php|Izhikevich_model\.php|synapse_probabilities\.php|phases\.php|cognome\/.*|synaptome\.php|property_page_counts\.php|property_page_morphology\.php|property_page_ephys\.php|property_page_markers\.php|property_page_connectivity\.php|property_page_fp\.php|property_page_phases\.php|simulation_parameters\.php|synaptome/php/synaptome\.php)$'
-				       THEN CASE 
-				       WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '') 
-				       ELSE REPLACE(sessions, ',', '') 
-				       END 
-				       ELSE 0 
-				       END
-				       )
-			       ) AS Total_Views
-		       FROM GA_combined_analytics
-		       GROUP BY Property_Page_Category
-		       ORDER BY FIELD(
-				       Property_Page_Category, 
-				       'Morphology', 
-				       'Molecular Markers', 
-				       'Membrane Biophysics', 
-				       'Connectivity', 
-				       'Synaptic Physiology', 
-				       'Firing Patterns', 
-				       'Izhikevich Models', 
-				       'Synapse Probabilities', 
-				       'In Vivo Recordings', 
-				       'Cognome', 
-				       'Neuron Type Census', 
-				       'Simulation Parameters', 
-				       'Other'
-				     );";
+	$page_functionality_views_query="SELECT
+		Property_Page_Category,
+		SUM(Main_Matrix_Post) AS Main_Matrix_Accesses_Post_Views,
+		ROUND(SUM(Main_Matrix_Post) * ".DELTA_VIEWS.", 3) AS Main_Matrix_Estimated_Pre_2017_Views,
+		SUM(Main_Matrix_Post) + ROUND(SUM(Main_Matrix_Post) * 0.41475164658173, 3) AS Main_Matrix_Total_Views,
+		SUM(Evidence_Accesses_Post) AS Evidence_Accesses_Post_Views,
+		ROUND(SUM(Evidence_Accesses_Post) * ".DELTA_VIEWS.", 3) AS Evidence_Accesses_Estimated_Pre_2017_Views,
+		SUM(Evidence_Accesses_Post) + ROUND(SUM(Evidence_Accesses_Post) * ".DELTA_VIEWS.", 3) AS Evidence_Accesses_Total_Views,
+		SUM(Main_Matrix_Post) + SUM(Evidence_Accesses_Post) AS Main_Evidence_Accesses_Total_Views,
+		ROUND(SUM(Main_Matrix_Post) * ".DELTA_VIEWS.", 3) + ROUND(SUM(Evidence_Accesses_Post) * ".DELTA_VIEWS.", 3)
+			AS Main_Evidence_Estimated_Pre_2017_Total_Views,
+		(SUM(Main_Matrix_Post) + ROUND(SUM(Main_Matrix_Post) * ".DELTA_VIEWS.", 3)) +
+			(SUM(Evidence_Accesses_Post) + ROUND(SUM(Evidence_Accesses_Post) * ".DELTA_VIEWS.", 3)) AS Total_Views
+			FROM (
+					SELECT
+					CASE
+					WHEN page REGEXP 'property_page_fp|fp\.php' THEN 'Firing Patterns'
+					WHEN page REGEXP 'property_page_markers|markers\.php' THEN 'Molecular Markers'
+					WHEN page REGEXP 'property_page_morphology|morphology\.php' AND page NOT REGEXP 'property_page_morphology_linking_pmid_isbn' THEN 'Morphology'
+					WHEN page REGEXP 'property_page_phases|phases\.php' THEN 'In Vivo Recordings'
+					WHEN page REGEXP 'property_page_synpro|property_page_synpro_nm|property_page_synpro_pvals|property_page_synpro_nm_old2|synapse_probabilites\.php' THEN 'Synapse Probabilities'
+					WHEN page REGEXP 'property_page_connectivity|property_page_connectivity_orig|property_page_connectivity_test|connectivity\.php' THEN 'Connectivity'
+					WHEN page REGEXP 'property_page_ephys|ephys\.php' THEN 'Membrane Biophysics'
+					WHEN page REGEXP 'synaptic_mod_sum|params_summary|synaptome|synaptome_modeling\.php' THEN 'Synaptic Physiology'
+					WHEN page REGEXP 'property_page_counts|counts\.php' THEN 'Neuron Type Census'
+					WHEN page REGEXP 'Izhikevich_model' THEN 'Izhikevich Models'
+					WHEN page REGEXP '/cognome/' THEN 'Cognome'
+					WHEN page REGEXP 'simulation_parameters' THEN 'Simulation Parameters'
+					ELSE 'Other'
+					END AS Property_Page_Category,
+					SUM(
+						CASE
+						WHEN day_index IS NOT NULL
+						AND page NOT REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+'
+						AND page REGEXP '^.*\/(property_page_.*\.php|morphology\.php|markers\.php|ephys\.php|connectivity(_test|_orig)?\.php|synaptome_modeling\.php|firing_patterns\.php|Izhikevich_model\.php|synapse_probabilities\.php|phases\.php|cognome\/.*|synaptome\.php|property_page_counts\.php|property_page_morphology\.php|property_page_ephys\.php|property_page_markers\.php|property_page_connectivity\.php|property_page_fp\.php|property_page_phases\.php|simulation_parameters\.php|synaptome/php/synaptome\.php)$'
+						THEN CASE
+						WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '')
+						ELSE REPLACE(sessions, ',', '')
+						END
+						ELSE 0
+						END
+					   ) AS Main_Matrix_Post,
+					SUM(
+							CASE
+							WHEN page REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+'
+							THEN CASE
+							WHEN page NOT REGEXP '^.*\/(property_page_fp|property_page_markers|property_page_morphology|property_page_phases|property_page_synpro|property_page_connectivity|property_page_ephys|synaptic_mod_sum|params_summary|synaptome|synaptome_modeling|property_page_counts|Izhikevich_model|cognome|simulation_parameters).*\.php$'
+							THEN CASE
+							WHEN REPLACE(page_views, ',', '') > 0 THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED)
+							ELSE CAST(REPLACE(sessions, ',', '') AS UNSIGNED)
+							END
+							ELSE 0
+							END
+							ELSE 0
+							END
+					   ) AS Evidence_Accesses_Post
+
+						FROM GA_combined_analytics
+						GROUP BY CASE
+						WHEN page REGEXP 'property_page_fp|fp\.php' THEN 'Firing Patterns'
+						WHEN page REGEXP 'property_page_markers|markers\.php' THEN 'Molecular Markers'
+						WHEN page REGEXP 'property_page_morphology|morphology\.php' AND page NOT REGEXP 'property_page_morphology_linking_pmid_isbn' THEN 'Morphology'
+						WHEN page REGEXP 'property_page_phases|phases\.php' THEN 'In Vivo Recordings'
+						WHEN page REGEXP 'property_page_synpro|property_page_synpro_nm|property_page_synpro_pvals|property_page_synpro_nm_old2|synapse_probabilites\.php' THEN 'Synapse Probabilities'
+						WHEN page REGEXP 'property_page_connectivity|property_page_connectivity_orig|property_page_connectivity_test|connectivity\.php' THEN 'Connectivity'
+						WHEN page REGEXP 'property_page_ephys|ephys\.php' THEN 'Membrane Biophysics'
+						WHEN page REGEXP 'synaptic_mod_sum|params_summary|synaptome|synaptome_modeling\.php' THEN 'Synaptic Physiology'
+						WHEN page REGEXP 'property_page_counts|counts\.php' THEN 'Neuron Type Census'
+						WHEN page REGEXP 'Izhikevich_model' THEN 'Izhikevich Models'
+						WHEN page REGEXP '/cognome/' THEN 'Cognome'
+						WHEN page REGEXP 'simulation_parameters' THEN 'Simulation Parameters'
+						ELSE 'Other'
+						END
+						) AS SubQuery
+						GROUP BY Property_Page_Category
+						ORDER BY FIELD(
+								Property_Page_Category, 'Morphology', 'Molecular Markers', 'Membrane Biophysics', 
+								'Connectivity', 'Synaptic Physiology', 'Firing Patterns', 'Izhikevich Models', 
+								'Synapse Probabilities', 'In Vivo Recordings', 'Cognome', 'Neuron Type Census', 
+								'Simulation Parameters', 'Other'
+							      );";
 	//echo $page_functionality_views_query;
 	// Check if the request is for monthly or yearly views
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
