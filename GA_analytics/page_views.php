@@ -318,22 +318,25 @@ function processNeuronLink($neuron_id, $neuron_ids_array, $linkText, $write_file
     return $neuron_id;
 }
 
-function processColumnValue($column_value, $column_name, &$table_string, &$column_totals) {
+function processColumnValue($column_value, $column_name, &$table_string, &$column_totals, $cologBgClass=NULL) {
     if (is_numeric($column_value)) {
         // Format the value based on the column name
 	$formatted_value = ($column_name == "Estimated_Pre_2017_Views" || $column_name == "Total_Views" 
-				|| $column_name == "Main_Matrix_Accesses_Post_Views" 
 				|| $column_name == "Main_Matrix_Estimated_Pre_2017_Views" || $column_name == "Main_Matrix_Total_Views" 
-				|| $column_name == "Evidence_Accesses_Post_Views" || $column_name == "Evidence_Accesses_Estimated_Pre_2017_Views" 
+				|| $column_name == "Evidence_Accesses_Estimated_Pre_2017_Views" 
 				|| $column_name == "Evidence_Accesses_Total_Views" || $column_name == "Main_Evidence_Accesses_Total_Views"
 				|| $column_name == "Main_Evidence_Estimated_Pre_2017_Total_Views" 
 				|| $column_name == "Total Views" 
+				|| $column_name == "Neuron_Page_Pre_2017_Views" || $column_name == "Neuron_Page_Total_Views"
+				|| $column_name == "Evidence_Page_Views" || $column_name == "Evidence_Page_Pre_2017_Views"
+				|| $column_name == "Evidence_Page_Total_Views" || $column_name == "Total_Neuron_Evidence_Post_Views"
+				|| $column_name == "Total_Neuron_Evidence_Estimated_Pre_2017_Views" 
 				)
     ? number_format(htmlspecialchars($column_value), 3) 
     : number_format(htmlspecialchars($column_value));
         
         // Append to the table string
-        $table_string .= "<td>" . $formatted_value . "</td>";
+        $table_string .= "<td class=".$colorBgClass.">" . $formatted_value . "</td>";
 
         // Normalize the column name
         $normalized_column_name = str_replace("_", " ", $column_name);
@@ -917,12 +920,10 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 						$color=0;
 					}
 					if (is_numeric($color)) {
-						if (!isset($column_totals[$col])){
-							$column_totals[$col] = 0;
-						}
-						$column_totals[$col] += $color;
+						processColumnValue($color, $col, $table_string1, $column_totals, $colorBgClass);
+					}else{
+						$table_string1 .= "<td class='$colorBgClass'>".number_format($color)."</td>";
 					}
-					$table_string1 .= "<td class='$colorBgClass'>".number_format($color)."</td>";
 				}
 				$j++;
 				$table_string1 .= "</tr>";
@@ -940,12 +941,10 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 					foreach ($colors as $col => $color) {
 						$color = max(0, $color); // Ensure color is not negative
 						if (is_numeric($color)) {
-							if (!isset($column_totals[$col])){
-								$column_totals[$col] = 0;
-							}
-							$column_totals[$col] += $color;
+							processColumnValue($color, $col, $table_string1, $column_totals, $colorBgClass);
+						}else{
+							$table_string1 .= "<td class='$colorBgClass'>" . number_format($color) . "</td>";
 						}
-						$table_string1 .= "<td class='$colorBgClass'>" . number_format($color) . "</td>";
 					}
 					$j++;
 					$table_string1 .= "</tr>";
@@ -2523,12 +2522,19 @@ function get_neurons_views_report($conn, $neuron_ids=NULL, $views_request=NULL, 
 
 function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=NULL, $write_file=NULL){ //Passed on Nov 12 2024
 	$columns = ['Subregion', 'Neuron Type Name', 'Census','Views'];
-	$page_neurons_views_query = "SELECT COALESCE(Subregion, 'N/A') AS Subregion, Neuron_Type_Name,
+	$page_neurons_views_query = "SELECT 
+		COALESCE(Subregion, 'N/A') AS Subregion,
+		Neuron_Type_Name,
 		IFNULL(Neuron_Page_Views, 0) AS Neuron_Page_Views,
+		ROUND(".DELTA_VIEWS." * IFNULL(Neuron_Page_Views, 0), 3) AS Neuron_Page_Pre_2017_Views,
+		IFNULL(Neuron_Page_Views, 0) + ROUND(".DELTA_VIEWS." * IFNULL(Neuron_Page_Views, 0), 3) AS Neuron_Page_Total_Views,
 		IFNULL(Evidence_Page_Views, 0) AS Evidence_Page_Views,
-		IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0) AS Post_2017_Views,
-		ROUND(".DELTA_VIEWS." * (IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0))) AS Estimated_Pre_2017_Views,
-		IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0) + ROUND(".DELTA_VIEWS." * (IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0))) AS Total_Views
+		ROUND(".DELTA_VIEWS." * IFNULL(Evidence_Page_Views, 0), 3) AS Evidence_Page_Pre_2017_Views,
+		IFNULL(Evidence_Page_Views, 0) + ROUND(".DELTA_VIEWS." * IFNULL(Evidence_Page_Views, 0), 3) AS Evidence_Page_Total_Views,
+		IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0) AS Total_Neuron_Evidence_Post_Views,
+		ROUND(".DELTA_VIEWS." * (IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0)), 3) AS Total_Neuron_Evidence_Estimated_Pre_2017_Views,
+		IFNULL(Neuron_Page_Views, 0) + IFNULL(Evidence_Page_Views, 0) + ROUND(".DELTA_VIEWS." * (IFNULL(Neuron_Page_Views, 0) + 
+					IFNULL(Evidence_Page_Views, 0)), 3) AS Total_Views
 			FROM (
 					SELECT 
 					COALESCE(t.subregion, 'N/A') AS Subregion,
@@ -2537,9 +2543,9 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 						CASE 
 						WHEN nd.page LIKE '%neuron_page.php?id=%' THEN 
 						CASE 
-						WHEN REPLACE(nd.page_views, ',', '') > 0 THEN REPLACE(nd.page_views, ',', '') 
-						ELSE REPLACE(nd.sessions, ',', '') 
-						END 
+						WHEN REPLACE(nd.page_views, ',', '') > 0 THEN REPLACE(nd.page_views, ',', '')
+						ELSE REPLACE(nd.sessions, ',', '')
+						END
 						ELSE 0 
 						END
 					   ) AS Neuron_Page_Views,
@@ -2547,9 +2553,9 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 						CASE 
 						WHEN nd.page REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+' THEN 
 						CASE 
-						WHEN REPLACE(nd.page_views, ',', '') > 0 THEN REPLACE(nd.page_views, ',', '') 
-						ELSE REPLACE(nd.sessions, ',', '') 
-						END 
+						WHEN REPLACE(nd.page_views, ',', '') > 0 THEN REPLACE(nd.page_views, ',', '')
+						ELSE REPLACE(nd.sessions, ',', '')
+						END
 						ELSE 0 
 						END
 					   ) AS Evidence_Page_Views,
@@ -2562,17 +2568,20 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 								WHEN page REGEXP 'id1_neuron=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)
 								WHEN page REGEXP 'id_neuron_source=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)
 								WHEN page REGEXP 'pre_id=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'pre_id=', -1), '&', 1)
-								ELSE NULL
+								ELSE NULL 
 								END AS neuronID,
-								page, day_index, page_views, sessions
+								page,
+								day_index,
+								page_views,
+								sessions
 								FROM GA_combined_analytics
-								WHERE 
-								page LIKE '%neuron_page.php?id=%' 
-								OR page REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+'
+								WHERE page LIKE '%neuron_page.php?id=%' OR page REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+'
 						     ) AS nd
 						LEFT JOIN Type t ON nd.neuronID = t.id
 						GROUP BY t.subregion, t.page_statistics_name, t.position
+
 						UNION ALL
+
 						SELECT 
 						'N/A' AS Subregion,
 					'None of the Above' AS Neuron_Type_Name,
@@ -2580,9 +2589,9 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 							CASE 
 							WHEN page LIKE '%neuron_page.php?id=%' THEN 
 							CASE 
-							WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '') 
-							ELSE REPLACE(sessions, ',', '') 
-							END 
+							WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '')
+							ELSE REPLACE(sessions, ',', '')
+							END
 							ELSE 0 
 							END
 					   ) AS Neuron_Page_Views,
@@ -2590,30 +2599,32 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 							CASE 
 							WHEN page REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+' THEN 
 							CASE 
-							WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '') 
-							ELSE REPLACE(sessions, ',', '') 
-							END 
+							WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '')
+							ELSE REPLACE(sessions, ',', '')
+							END
 							ELSE 0 
 							END
 					   ) AS Evidence_Page_Views,
 					NULL AS position
 						FROM (
 								SELECT 
-								page, page_views, sessions 
+								page,
+								page_views,
+								sessions
 								FROM GA_combined_analytics
-								WHERE 
-								page LIKE '%neuron_page.php?id=%' 
+								WHERE page LIKE '%neuron_page.php?id=%'
 								AND (
-									SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id=', -1), '&', 1) NOT IN (SELECT id FROM Type) 
-									OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (SELECT id FROM Type) 
-									OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN (SELECT id FROM Type) 
-									OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN (SELECT id FROM Type) 
+									SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id=', -1), '&', 1) NOT IN (SELECT id FROM Type)
+									OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) NOT IN (SELECT id FROM Type)
+									OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) NOT IN (SELECT id FROM Type)
+									OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) NOT IN (SELECT id FROM Type)
 									OR SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'pre_id=', -1), '&', 1) NOT IN (SELECT id FROM Type)
 								    )
 						     ) AS unmatched_data
 						) AS full_results
 						GROUP BY Subregion, Neuron_Type_Name, position
-						ORDER BY position ASC, Subregion, Neuron_Type_Name;"; 
+						ORDER BY position ASC, Subregion, Neuron_Type_Name;";
+	//echo $page_neurons_views_query;
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
 
