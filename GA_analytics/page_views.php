@@ -3860,7 +3860,7 @@ function get_domain_functionality_views_report($conn, $views_request = NULL, $wr
 		Property_Page_Category,
 		SUM(Main_Matrix_Post) AS Main_Matrix_Accesses_Post_Views,
 		ROUND(SUM(Main_Matrix_Post) * ".DELTA_VIEWS.", 3) AS Main_Matrix_Estimated_Pre_2017_Views,
-		SUM(Main_Matrix_Post) + ROUND(SUM(Main_Matrix_Post) * 0.41475164658173, 3) AS Main_Matrix_Total_Views,
+		SUM(Main_Matrix_Post) + ROUND(SUM(Main_Matrix_Post) * ".DELTA_VIEWS.", 3) AS Main_Matrix_Total_Views,
 		SUM(Evidence_Accesses_Post) AS Evidence_Accesses_Post_Views,
 		ROUND(SUM(Evidence_Accesses_Post) * ".DELTA_VIEWS.", 3) AS Evidence_Accesses_Estimated_Pre_2017_Views,
 		SUM(Evidence_Accesses_Post) + ROUND(SUM(Evidence_Accesses_Post) * ".DELTA_VIEWS.", 3) AS Evidence_Accesses_Total_Views,
