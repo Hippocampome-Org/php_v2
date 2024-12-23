@@ -2718,7 +2718,7 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 						) AS full_results
 						GROUP BY Subregion, Neuron_Type_Name, position
 						ORDER BY position ASC, Subregion, Neuron_Type_Name;";
-	echo $page_neurons_views_query;
+	//echo $page_neurons_views_query;
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
 
