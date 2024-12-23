@@ -318,35 +318,25 @@ function processNeuronLink($neuron_id, $neuron_ids_array, $linkText, $write_file
     return $neuron_id;
 }
 
-function processColumnValue($column_value, $column_name, &$table_string, &$column_totals, $cologBgClass=NULL) {
+function processColumnValue($column_value, $column_name, &$table_string, &$column_totals, $colorBgClass = NULL) {
     if (is_numeric($column_value)) {
-        // Format the value based on the column name
-	$formatted_value = ($column_name == "Estimated_Pre_2017_Views" || $column_name == "Total_Views" 
-				|| $column_name == "Main_Matrix_Estimated_Pre_2017_Views" || $column_name == "Main_Matrix_Total_Views" 
-				|| $column_name == "Evidence_Accesses_Estimated_Pre_2017_Views" 
-				|| $column_name == "Evidence_Accesses_Total_Views" || $column_name == "Main_Evidence_Accesses_Total_Views"
-				|| $column_name == "Main_Evidence_Estimated_Pre_2017_Total_Views" 
-				|| $column_name == "Total Views" 
-				|| $column_name == "Neuron_Page_Pre_2017_Views" || $column_name == "Neuron_Page_Total_Views"
-				|| $column_name == "Evidence_Page_Views" || $column_name == "Evidence_Page_Pre_2017_Views"
-				|| $column_name == "Evidence_Page_Total_Views" || $column_name == "Total_Neuron_Evidence_Post_Views"
-				|| $column_name == "Total_Neuron_Evidence_Estimated_Pre_2017_Views" 
-				)
-    ? number_format(htmlspecialchars($column_value), 3) 
-    : number_format(htmlspecialchars($column_value));
-        
-        // Append to the table string
-        $table_string .= "<td class=".$colorBgClass.">" . $formatted_value . "</td>";
+        if (is_int($column_value + 0)) { // Adding 0 to ensure correct type detection
+            $formatted_value = htmlspecialchars($column_value); // No decimals for integers
+        } else {
+            $formatted_value = htmlspecialchars(number_format((float)$column_value, 2, '.', '')); // 15 decimal places
+        }
+    } else {
+        $formatted_value = htmlspecialchars($column_value);
+    }
 
-        // Normalize the column name
-        $normalized_column_name = str_replace("_", " ", $column_name);
+    $table_string .= "<td class=\"" . htmlspecialchars($colorBgClass) . "\">" . $formatted_value . "</td>";
 
-        // Initialize totals if not set
+    $normalized_column_name = str_replace("_", " ", $column_name);
+
+    if (is_numeric($column_value)) {
         if (!isset($column_totals[$normalized_column_name])) {
             $column_totals[$normalized_column_name] = 0;
         }
-
-        // Add the value to the totals
         $column_totals[$normalized_column_name] += $column_value;
     }
 }
@@ -870,7 +860,7 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 				}
 				while ($rowvalue = mysqli_fetch_assoc($result)) {
 					$value = $rowvalue['Neuron_Type_Name'];
-					if (isset($neuron_ids[$value])){ 
+					if (isset($neuron_ids[$value])) {
 						if (!isset($write_file)) {
 							$rowvalue['Neuron_Type_Name'] = get_link($value, $neuron_ids[$value], './neuron_page.php', 'neuron');
 						}
@@ -878,9 +868,13 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 					if (!isset($array_subs[$rowvalue['Subregion']][$rowvalue['Neuron_Type_Name']])) {
 						$array_subs[$rowvalue['Subregion']][$rowvalue['Neuron_Type_Name']] = [];
 					}
-					foreach($rowvalue as $col=>$value){
-						if(($col == 'Neuron_Type_Name') || ($col == 'Subregion')){
+					foreach ($rowvalue as $col => $value) {
+						if (($col == 'Neuron_Type_Name') || ($col == 'Subregion')) {
 							continue;
+						}
+						// Maintain original value type
+						if (is_numeric($value)) {
+							$value = $value + 0; // Cast to int or float
 						}
 						array_push($array_subs[$rowvalue['Subregion']][$rowvalue['Neuron_Type_Name']], $value);
 					}
@@ -888,6 +882,7 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 				mysqli_free_result($result);
 			}
 		} while (mysqli_next_result($conn));
+
 		$array_subs = update_estimated_totals($array_subs);
 		$i=0;
 		$j=0;
@@ -897,11 +892,16 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 			if ($groupKey === $specialGroupKey) {
 				foreach ($subgroups as $subgroupKey => &$colors) {
 					foreach ($colors as $index => $color) {
-						$color = trim($color);
-						if (is_numeric($color) && (float)$color == (int)$color) {
-							$colors[$index] = (int)$color; // Cast to int
+						$color = trim($color); // Ensure trimming is consistent
+						if (is_numeric($color)) {
+							// Preserve the type: float or int
+							if (strpos($color, '.') !== false) {
+								$colors[$index] = (float)$color; // Cast to float if it contains a decimal point
+							} else {
+								$colors[$index] = (int)$color; // Cast to int if it's an integer-like value
+							}
 						} else {
-							$colors[$index] = 0; // Default to 0 if not numeric
+							$colors[$index] = $color; // Preserve non-numeric strings as they are
 						}
 					}
 				}
@@ -2093,7 +2093,6 @@ function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_
 			}
 		}
 	}
-//	var_dump($array_subsNA);
 	// Merge $array_subs1 and $array_subsNA into $array_subs
 	
 	$array_subs = array_merge_recursive($array_subs1, $array_subsNA);
@@ -2255,7 +2254,7 @@ function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL)
 			) AS subquery 
 			GROUP BY subquery.page 
 			ORDER BY Total_Views DESC;";
-	echo $page_views_query;
+	//echo $page_views_query;
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
 
@@ -2380,54 +2379,150 @@ function get_table_skeleton_end(){
 
 function get_neurons_views_report($conn, $neuron_ids=NULL, $views_request=NULL, $write_file=NULL){ //Passed on Dec 3 2023
 	$columns = ['Subregion', 'Neuron Type Name', 'Census','Views'];
-	$page_neurons_views_query = "SELECT 
-		COALESCE(t.subregion, 'N/A') AS Subregion,  
-		COALESCE(t.page_statistics_name, 'None of the Above') AS Neuron_Type_Name,  
-		SUM(CASE WHEN nd.property_page_category = 'Morphology: ADL / SD' THEN nd.page_views ELSE 0 END) AS `Morphology: ADL / SD`,
-		SUM(CASE WHEN nd.property_page_category = 'Molecular Markers' THEN nd.page_views ELSE 0 END) AS `Molecular Markers`,
-		SUM(CASE WHEN nd.property_page_category = 'Membrane Biophysics' THEN nd.page_views ELSE 0 END) AS `Membrane Biophysics`,
-		SUM(CASE WHEN nd.property_page_category = 'Connectivity: Known / Potential' THEN nd.page_views ELSE 0 END) AS `Connectivity: Known / Potential`,
-		SUM(CASE WHEN nd.property_page_category = 'Synaptome' THEN nd.page_views ELSE 0 END) AS `Synaptic Physiology`,
-		SUM(CASE WHEN nd.property_page_category = 'FP' THEN nd.page_views ELSE 0 END) AS `Firing Patterns`,
-		SUM(CASE WHEN nd.property_page_category = 'Census' THEN nd.page_views ELSE 0 END) AS `Neuron Type Census`,
-		SUM(CASE WHEN nd.property_page_category = 'In Vivo' THEN nd.page_views ELSE 0 END) AS `In Vivo Recordings`,
-		SUM(CASE WHEN nd.property_page_category = 'Connectivity: NoPS / NoC / PS' THEN nd.page_views ELSE 0 END) AS `Connectivity: NoPS / NoC / PS`,
-		SUM(CASE WHEN nd.property_page_category = 'Connectivity: Parcel-Specific Tables' THEN nd.page_views ELSE 0 END) AS `Connectivity: Parcel-Specific Tables`,
-		SUM(CASE WHEN nd.property_page_category = 'Other' THEN nd.page_views ELSE 0 END) AS `Other`,
-		SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END) AS `Post_2017_Views`,
-		ROUND(".DELTA_VIEWS." * SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END)) AS `Estimated_Pre_2017_Views`,
-		SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END) + 
-			ROUND(".DELTA_VIEWS." * SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END)) AS `Total_Views`
+	$page_neurons_views_query = "
+		SELECT 
+		COALESCE(t.subregion, 'N/A') AS Subregion,
+		COALESCE(t.page_statistics_name, 'None of the Above') AS Neuron_Type_Name,
+		ROUND(SUM(CASE 
+					WHEN nd.page LIKE '%/property_page_morphology.php%' THEN 
+					CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END 
+					ELSE 0 
+					END) + ".DELTA_VIEWS." * SUM(CASE 
+						WHEN nd.page LIKE '%/property_page_morphology.php%' THEN 
+						CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END 
+						ELSE 0 
+						END), 3) AS `Morphology: ADL / SD`,
+		ROUND(SUM(CASE 
+					WHEN nd.page LIKE '%/property_page_markers.php%' THEN 
+					CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END 
+					ELSE 0 
+					END) + ".DELTA_VIEWS." * SUM(CASE 
+						WHEN nd.page LIKE '%/property_page_markers.php%' THEN 
+						CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END 
+						ELSE 0 
+						END), 3) AS `Molecular Markers`,
+		ROUND(SUM(CASE 
+					WHEN nd.page LIKE '%/property_page_ephys.php%' THEN 
+					CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END 
+					ELSE 0 
+					END) + ".DELTA_VIEWS." * SUM(CASE 
+						WHEN nd.page LIKE '%/property_page_ephys.php%' THEN 
+						CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END 
+						ELSE 0 
+						END), 3) AS `Membrane Biophysics`,
+		ROUND(SUM(CASE 
+					WHEN nd.page LIKE '%/property_page_connectivity.php%' THEN 
+					CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END 
+					ELSE 0 
+					END) + ".DELTA_VIEWS." * SUM(CASE 
+						WHEN nd.page LIKE '%/property_page_connectivity.php%' THEN 
+						CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END 
+						ELSE 0 
+						END), 3) AS `Connectivity: Known / Potential`,
+		ROUND(SUM(CASE 
+					WHEN nd.page LIKE '%/synaptome_modeling.php%' THEN 
+					CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END 
+					ELSE 0 
+					END) + ".DELTA_VIEWS." * SUM(CASE 
+						WHEN nd.page LIKE '%/synaptome_modeling.php%' THEN 
+						CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END 
+						ELSE 0 
+						END), 3) AS `Synaptic Physiology`,
+		ROUND(SUM(CASE 
+					WHEN nd.page LIKE '%/property_page_fp.php%' THEN 
+					CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END 
+					ELSE 0 
+					END) + ".DELTA_VIEWS." * SUM(CASE 
+						WHEN nd.page LIKE '%/property_page_fp.php%' THEN 
+						CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END 
+						ELSE 0 
+						END), 3) AS `Firing Patterns`,
+		ROUND(SUM(CASE 
+					WHEN nd.page LIKE '%/property_page_counts.php%' THEN 
+					CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END 
+					ELSE 0 
+					END) + ".DELTA_VIEWS." * SUM(CASE 
+						WHEN nd.page LIKE '%/property_page_counts.php%' THEN 
+						CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END 
+						ELSE 0 
+						END), 3) AS `Neuron Type Census`,
+		ROUND(SUM(CASE 
+					WHEN nd.page LIKE '%/property_page_phases.php%' THEN 
+					CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END 
+					ELSE 0 
+					END) + ".DELTA_VIEWS." * SUM(CASE 
+						WHEN nd.page LIKE '%/property_page_phases.php%' THEN 
+						CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END 
+						ELSE 0 
+						END), 3) AS `In Vivo Recordings`,
+		ROUND(SUM(CASE 
+					WHEN nd.page LIKE '%/synaptic_mod_sum.php%' THEN 
+					CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END 
+					ELSE 0 
+					END) + ".DELTA_VIEWS." * SUM(CASE 
+						WHEN nd.page LIKE '%/synaptic_mod_sum.php%' THEN 
+						CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END 
+						ELSE 0 
+						END), 3) AS `Connectivity: NoPS / NoC / PS`,
+		ROUND(SUM(CASE 
+					WHEN nd.page LIKE '%/synapse_probabilities.php%' THEN 
+					CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END 
+					ELSE 0 
+					END) + ".DELTA_VIEWS." * SUM(CASE 
+						WHEN nd.page LIKE '%/synapse_probabilities.php%' THEN 
+						CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END 
+						ELSE 0 
+						END), 3) AS `Connectivity: Parcel-Specific Tables`,
+		ROUND(SUM(CASE 
+					WHEN nd.page NOT LIKE '%/property_page_morphology.php%'
+					AND nd.page NOT LIKE '%/property_page_markers.php%'
+					AND nd.page NOT LIKE '%/property_page_ephys.php%'
+					AND nd.page NOT LIKE '%/property_page_connectivity.php%'
+					AND nd.page NOT LIKE '%/synaptome_modeling.php%'
+					AND nd.page NOT LIKE '%/property_page_fp.php%'
+					AND nd.page NOT LIKE '%/property_page_counts.php%'
+					AND nd.page NOT LIKE '%/property_page_phases.php%'
+					AND nd.page NOT LIKE '%/synaptic_mod_sum.php%'
+					AND nd.page NOT LIKE '%/synapse_probabilities.php%' THEN 
+					CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END 
+					ELSE 0 
+					END) + ".DELTA_VIEWS." * SUM(CASE 
+						WHEN nd.page NOT LIKE '%/property_page_morphology.php%'
+						AND nd.page NOT LIKE '%/property_page_markers.php%'
+						AND nd.page NOT LIKE '%/property_page_ephys.php%'
+						AND nd.page NOT LIKE '%/property_page_connectivity.php%'
+						AND nd.page NOT LIKE '%/synaptome_modeling.php%'
+						AND nd.page NOT LIKE '%/property_page_fp.php%'
+						AND nd.page NOT LIKE '%/property_page_counts.php%'
+						AND nd.page NOT LIKE '%/property_page_phases.php%'
+						AND nd.page NOT LIKE '%/synaptic_mod_sum.php%'
+						AND nd.page NOT LIKE '%/synapse_probabilities.php%' THEN 
+						CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END 
+						ELSE 0 
+						END), 3) AS `Other`,
+		ROUND(SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END) + 
+				".DELTA_VIEWS." * SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END), 2) AS `Total_Views`
 			FROM 
-			Type t
-			RIGHT JOIN (
-					SELECT 
-					CASE
-					WHEN page REGEXP 'id_neuron=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
-					WHEN page REGEXP 'id1_neuron=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)
-					WHEN page REGEXP 'id_neuron_source=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)
-					WHEN page REGEXP 'pre_id=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'pre_id=', -1), '&', 1)
-					ELSE NULL
-					END AS neuronID,
-					CASE 
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'morphology' THEN 'Morphology: ADL / SD'
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'markers' THEN 'Molecular Markers'
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'ephys' THEN 'Membrane Biophysics'
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('connectivity', 'connectivity_orig', 'connectivity_test') THEN 'Connectivity: Known / Potential'
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synaptome' THEN 'Synaptome'
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'fp' THEN 'Firing Patterns'
-					WHEN page LIKE '%property_page_counts.php%' THEN 'Neuron Type Census'
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases' THEN 'In Vivo Recordings'
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) IN ('synpro_nm', 'synpro_nm_old2') THEN 'Connectivity: NoPS / NoC / PS'
-					WHEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'synpro_pvals' THEN 'Connectivity: Parcel-Specific Tables'
-					ELSE 'Other'
-					END AS property_page_category,
-		IFNULL(REPLACE(page_views, ',', ''), 0) AS page_views,
-		IFNULL(REPLACE(sessions, ',', ''), 0) AS sessions
-			FROM GA_combined_analytics WHERE page REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+'
-			) AS nd ON nd.neuronID = t.id
-			GROUP BY t.subregion, t.page_statistics_name
-			ORDER BY t.position ASC, Subregion ASC, Neuron_Type_Name ASC;";
+			GA_combined_analytics AS nd
+			LEFT JOIN 
+			Type AS t
+			ON 
+			CASE 
+			WHEN nd.page REGEXP 'id_neuron=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(nd.page, 'id_neuron=', -1), '&', 1)
+			WHEN nd.page REGEXP 'id1_neuron=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(nd.page, 'id1_neuron=', -1), '&', 1)
+			WHEN nd.page REGEXP 'id_neuron_source=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(nd.page, 'id_neuron_source=', -1), '&', 1)
+			WHEN nd.page REGEXP 'pre_id=[0-9]+' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(nd.page, 'pre_id=', -1), '&', 1)
+			ELSE NULL
+			END = t.id
+			WHERE 
+			nd.page REGEXP '^.*\/(property_page_.*\.php|property_page_counts\.php|property_page_morphology\.php|property_page_ephys\.php|property_page_markers\.php|property_page_connectivity\.php|property_page_fp\.php|property_page_phases\.php|synaptic_mod_sum\.php)\?.*(id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+)'
+			GROUP BY 
+			COALESCE(t.subregion, 'N/A'), 
+		COALESCE(t.page_statistics_name, 'None of the Above')
+			ORDER BY 
+			t.position ASC, Subregion ASC, Neuron_Type_Name ASC;
+	";
+		//echo $page_neurons_views_query;
 	if ($views_request == "views_per_month" || $views_request == "views_per_year") {
 		$page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
 
@@ -2444,7 +2539,6 @@ function get_neurons_views_report($conn, $neuron_ids=NULL, $views_request=NULL, 
 						) INTO @sql
 				FROM (SELECT DISTINCT day_index FROM GA_combined_analytics) months;";
 		}
-
 		if ($views_request == "views_per_year") {
 			$page_neurons_views_query .= "
 				SELECT GROUP_CONCAT(
@@ -2624,7 +2718,7 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 						) AS full_results
 						GROUP BY Subregion, Neuron_Type_Name, position
 						ORDER BY position ASC, Subregion, Neuron_Type_Name;";
-	//echo $page_neurons_views_query;
+	echo $page_neurons_views_query;
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
 
@@ -4026,6 +4120,7 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 					GROUP BY Property_Page_Category
 					ORDER BY FIELD(Property_Page_Category, 'Home', 'Browse', 'Search', 'Tools', 'Help', 'Neuron Type Pages', 'Evidence', 'All Others');
 	";
+	//echo $page_functionality_views_query;
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_functionality_views_query = "SET SESSION group_concat_max_len = 1000000;
 		SET @sql = NULL;";
