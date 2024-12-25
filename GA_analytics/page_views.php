@@ -1261,7 +1261,8 @@ function generateTotalRow($headers, $isCsv = true, $columnTotals = [])
         $htmlRow = "<tr><td colspan='" . ($numEmptyColumns + 1) . "' class='total-row'>Total Count</td>";
         foreach ($columnTotals as $total_value) {
             //$htmlRow .= "<td>". number_format($total_value) ."</td>"; //Commentd this line and added next line to show 2483.5 to 2484 instead of 2483
-            $htmlRow .= "<td>". number_format(round($total_value), 0) ."</td>";
+	    $htmlRow .= "<td>" . number_format(round($total_value + 0.0001), 0) . "</td>";
+            //$htmlRow .= "<td>". number_format(round($total_value), 0) ."</td>";
         }
         $htmlRow .= "</tr>";
         return $htmlRow;
