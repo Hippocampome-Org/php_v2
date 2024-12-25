@@ -319,26 +319,26 @@ function processNeuronLink($neuron_id, $neuron_ids_array, $linkText, $write_file
 }
 
 function processColumnValue($column_value, $column_name, &$table_string, &$column_totals, $colorBgClass = NULL) {
-    if (is_numeric($column_value)) {
-        if (is_int($column_value + 0)) { // Adding 0 to ensure correct type detection
-            $formatted_value = htmlspecialchars(number_format($column_value)); // No decimals for integers
-        } else {
-            $formatted_value = htmlspecialchars(number_format((float)$column_value, 2, '.', '')); // 15 decimal places
-        }
-    } else {
-        $formatted_value = htmlspecialchars($column_value);
-    }
+	if (is_numeric($column_value)) {
+		if (is_int($column_value + 0)) { // Adding 0 to ensure correct type detection
+			$formatted_value = htmlspecialchars(number_format($column_value)); // No decimals for integers
+		} else {
+			$formatted_value = htmlspecialchars(number_format((float)$column_value, 2, '.', ',')); // 2 decimal places, with thousands separator
+		}
+	} else {
+		$formatted_value = htmlspecialchars($column_value);
+	}
 
-    $table_string .= "<td class=\"" . htmlspecialchars($colorBgClass) . "\">" . $formatted_value . "</td>";
+	$table_string .= "<td class=\"" . htmlspecialchars($colorBgClass) . "\">" . $formatted_value . "</td>";
 
-    $normalized_column_name = str_replace("_", " ", $column_name);
+	$normalized_column_name = str_replace("_", " ", $column_name);
 
-    if (is_numeric($column_value)) {
-        if (!isset($column_totals[$normalized_column_name])) {
-            $column_totals[$normalized_column_name] = 0;
-        }
-        $column_totals[$normalized_column_name] += $column_value;
-    }
+	if (is_numeric($column_value)) {
+		if (!isset($column_totals[$normalized_column_name])) {
+			$column_totals[$normalized_column_name] = 0;
+		}
+		$column_totals[$normalized_column_name] += $column_value;
+	}
 }
 
 function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file = NULL, $views_request = NULL, $query2 = NULL) {
@@ -618,12 +618,7 @@ function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $wri
 			    $column_value = 'firing pattern';
 		    }
 		    if (is_numeric($column_value)) {
-			    $column_name = str_replace("_", " ", $column_name);
-			    if (!isset($column_totals[$column_name])) {
-				    $column_totals[$column_name] = 0;
-			    }
-			    $column_totals[$column_name] += $column_value;
-			    $table_string .= "<td $style>" . number_format(htmlspecialchars($column_value)) . "</td>";
+			    processColumnValue($column_value, $column_name, $table_string, $column_totals, $style);
 		    }
 		    else{
 			    $style = ($column_name === array_keys($row)[1]) ? 'style="width: 10%;"' : '';
@@ -1245,6 +1240,11 @@ function generateTotalRow($headers, $isCsv = true, $columnTotals = [])
     $totalCountRow = ["Total Count"];
     $numEmptyColumns = $numHeaders - $numTotals - 1;
     $numEmptyColumns = max($numEmptyColumns, 0); 
+    if ($columnTotals['Prorated Pre 2019 Views'] > 86523) {
+	    $columnTotals['Prorated Pre 2019 Views'] = (int)$columnTotals['Prorated Pre 2019 Views'];
+	    $columnTotals['Total Views'] = $columnTotals['Post 2019 Views'] + $columnTotals['Prorated Pre 2019 Views'];
+    }
+
     if ($numEmptyColumns >= 0) {
         $totalCountRow = array_merge($totalCountRow, array_fill(0, $numEmptyColumns, ''));
     }
@@ -1260,7 +1260,8 @@ function generateTotalRow($headers, $isCsv = true, $columnTotals = [])
     } else {
         $htmlRow = "<tr><td colspan='" . ($numEmptyColumns + 1) . "' class='total-row'>Total Count</td>";
         foreach ($columnTotals as $total_value) {
-            $htmlRow .= "<td>". number_format($total_value) ."</td>";
+            //$htmlRow .= "<td>". number_format($total_value) ."</td>"; //Commentd this line and added next line to show 2483.5 to 2484 instead of 2483
+            $htmlRow .= "<td>". number_format(round($total_value), 0) ."</td>";
         }
         $htmlRow .= "</tr>";
         return $htmlRow;
@@ -1332,26 +1333,29 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 		    $array_subs[$subregion][$neuron_name][$color_sp][$evidence] = 0;
 	    }
 
-	    if (!isset($array_subs[$subregion][$neuron_name][$color_sp]['Post_2019_Views'])) {
-		    $array_subs[$subregion][$neuron_name][$color_sp]['Post_2019_Views'] = 0;
-	    }
+	    //if (!isset($array_subs[$subregion][$neuron_name][$color_sp]['Post_2019_Views'])) { $array_subs[$subregion][$neuron_name][$color_sp]['Post_2019_Views'] = 0; }
 
-	    if (!isset($array_subs[$subregion][$neuron_name][$color_sp]['Prorated_Pre_2019_Views'])) {
-		    $array_subs[$subregion][$neuron_name][$color_sp]['Prorated_Pre_2019_Views'] = 0;
-	    }
+	    //if (!isset($array_subs[$subregion][$neuron_name][$color_sp]['Prorated_Pre_2019_Views'])) { $array_subs[$subregion][$neuron_name][$color_sp]['Prorated_Pre_2019_Views'] = 0; }
 
 	    if (!isset($array_subs[$subregion][$neuron_name][$color_sp]['Total_Views'])) {
 		    $array_subs[$subregion][$neuron_name][$color_sp]['Total_Views'] = 0;
 	    }
-	    $views = isset($rowvalue['Post_2019_Views']) && is_numeric($rowvalue['Post_2019_Views']) ? intval($rowvalue['Post_2019_Views']) : 0;
-	    $estimated_views = isset($rowvalue['Prorated_Pre_2019_Views']) && is_numeric($rowvalue['Prorated_Pre_2019_Views']) ? intval($rowvalue['Prorated_Pre_2019_Views']) : 0;
-	    $total_views = isset($rowvalue['Total_Views']) && is_numeric($rowvalue['Total_Views']) ? intval($rowvalue['Total_Views']) : 0;
+	    $views = isset($rowvalue['Total_Views']) && is_numeric($rowvalue['Total_Views']) 
+		    ? (strpos($rowvalue['Total_Views'], '.') !== false 
+				    ? floatval($rowvalue['Total_Views']) 
+				    : intval($rowvalue['Total_Views']))
+		    : 0;
+
+	    //$views = isset($rowvalue['Post_2019_Views']) && is_numeric($rowvalue['Post_2019_Views']) ? intval($rowvalue['Post_2019_Views']) : 0;
+	    //$estimated_views = isset($rowvalue['Prorated_Pre_2019_Views']) && is_numeric($rowvalue['Prorated_Pre_2019_Views']) ? intval($rowvalue['Prorated_Pre_2019_Views']) : 0;
+	    //$total_views = isset($rowvalue['Total_Views']) && is_numeric($rowvalue['Total_Views']) ? intval($rowvalue['Total_Views']) : 0;
 
 	    // Add views to respective categories
 	    $array_subs[$subregion][$neuron_name][$color_sp][$evidence] += $views;
-	    $array_subs[$subregion][$neuron_name][$color_sp]['Post_2019_Views'] += $views; // Assuming Post_2019_Views is equal to current views
-	    $array_subs[$subregion][$neuron_name][$color_sp]['Prorated_Pre_2019_Views'] += $estimated_views;
-	    $array_subs[$subregion][$neuron_name][$color_sp]['Total_Views'] += $total_views;
+	    //$array_subs[$subregion][$neuron_name][$color_sp]['Post_2019_Views'] += $views; // Assuming Post_2019_Views is equal to current views
+	    //$array_subs[$subregion][$neuron_name][$color_sp]['Prorated_Pre_2019_Views'] += $estimated_views;
+	    //$array_subs[$subregion][$neuron_name][$color_sp]['Total_Views'] += $total_views;
+	    $array_subs[$subregion][$neuron_name][$color_sp]['Total_Views'] += $views;
     }
 
     // Loop through $array_subs to initialize missing view counts and accumulate totals
@@ -1359,12 +1363,8 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 	    foreach ($neuron_names as $neuron_name => &$colors) {
 		    foreach ($colors as $color_sp => &$colorVals) {
 			    // Initialize missing view counts to 0 for the specific columns
-			    if (!isset($colorVals['Post_2019_Views'])) {
-				    $colorVals['Post_2019_Views'] = 0;
-			    }
-			    if (!isset($colorVals['Prorated_Pre_2019_Views'])) {
-				    $colorVals['Prorated_Pre_2019_Views'] = 0;
-			    }
+			    //if (!isset($colorVals['Post_2019_Views'])) { $colorVals['Post_2019_Views'] = 0; }
+			    //if (!isset($colorVals['Prorated_Pre_2019_Views'])) { $colorVals['Prorated_Pre_2019_Views'] = 0; }
 			    if (!isset($colorVals['Total_Views'])) {
 				    $colorVals['Total_Views'] = 0;
 			    }
@@ -2211,7 +2211,6 @@ function get_page_views($conn){ //Passed on Dec 3 2023
 }
 
 function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL){ //Passed $conn on Dec 3 2023
-
 	$page_views_query = "SELECT subquery.page AS Page, 
 		SUM(subquery.Post_2019_Views) AS Post_2019_Views, 
 		ROUND(SUM(subquery.Prorated_Pre_2019_Views), 4) AS Prorated_Pre_2019_Views, 
@@ -2813,7 +2812,59 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 }
 
 function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_request=NULL, $write_file=NULL){
-	$page_property_views_query = "SELECT t.subregion, t.page_statistics_name AS neuron_name, derived.evidence AS evidence, CONCAT(derived.color, TRIM(derived.sp_page)) AS color_sp, 
+	$page_property_views_query = "SELECT t.subregion, t.page_statistics_name AS neuron_name, derived.evidence AS evidence, 
+		CONCAT(derived.color, TRIM(derived.sp_page)) AS color_sp, 
+		SUM(
+				CASE 
+				WHEN REPLACE(derived.page_views, ',', '') > 0 
+				THEN REPLACE(derived.page_views, ',', '') 
+				ELSE REPLACE(derived.sessions, ',', '') 
+				END
+		   ) + 
+			ROUND(
+					".DELTA_VIEWS." * SUM(
+						CASE 
+						WHEN REPLACE(derived.page_views, ',', '') > 0 
+						THEN REPLACE(derived.page_views, ',', '') 
+						ELSE REPLACE(derived.sessions, ',', '') 
+						END
+						)
+			     , 2) AS Total_Views
+			FROM 
+			(
+			 SELECT 
+			 IF(INSTR(page, 'id_neuron=') > 0, 
+				 SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1), 
+				 IF(INSTR(page, 'id1_neuron=') > 0, 
+					 SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1), 
+					 IF(INSTR(page, 'id_neuron_source=') > 0, 
+						 SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1), 
+						 '' 
+					   )
+				   )
+			   ) AS neuronID, 
+			 IF(INSTR(page, 'val_property=') > 0, 
+				 SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), 
+				 '' 
+			   ) AS evidence, 
+			 IF(INSTR(page, 'color=') > 0, 
+				 SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1), 
+				 '' 
+			   ) AS color, 
+			 IF(INSTR(page, 'sp_page=') > 0, 
+				 SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'sp_page=', -1), '&', 1), 
+				 '' 
+			   ) AS sp_page, page_views, sessions 
+				 FROM GA_combined_analytics 
+				 WHERE page LIKE '%/property_page_%' AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'morphology' 
+				 AND (
+						 INSTR(page, 'id_neuron=') > 0 OR 
+						 INSTR(page, 'id1_neuron=') > 0 OR 
+						 INSTR(page, 'id_neuron_source=') > 0
+				     )
+				 ) AS derived LEFT JOIN Type AS t ON t.id = derived.neuronID GROUP BY t.page_statistics_name, t.subregion, color_sp, derived.evidence ORDER BY t.position;";
+
+/* SELECT t.subregion, t.page_statistics_name AS neuron_name, derived.evidence AS evidence, CONCAT(derived.color, TRIM(derived.sp_page)) AS color_sp, 
 		SUM( CASE WHEN REPLACE(derived.page_views, ',', '') > 0 THEN REPLACE(derived.page_views, ',', '') ELSE REPLACE(derived.sessions, ',', '') END ) AS views FROM (
 				SELECT IF(INSTR(page, 'id_neuron=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1), IF(INSTR(page, 'id1_neuron=') > 0, 
 						SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1), 
@@ -2833,6 +2884,7 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_
 				    ) ) AS derived
 		LEFT JOIN Type AS t ON t.id = derived.neuronID 
 		GROUP BY t.page_statistics_name, t.subregion, color_sp, derived.evidence ORDER BY t.position;";
+/*
 	$page_property_views_query = "SELECT 
     t.subregion, 
     t.page_statistics_name AS neuron_name, 
@@ -2904,6 +2956,7 @@ FROM
             )
     ) AS derived 
     LEFT JOIN Type AS t ON t.id = derived.neuronID GROUP BY t.page_statistics_name, t.subregion, color_sp, derived.evidence ORDER BY t.position;";
+*/
 	//echo $page_property_views_query;
 	if ($views_request == "views_per_month" || $views_request == "views_per_year") {
 		$page_property_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
@@ -2994,7 +3047,8 @@ FROM
 		DEALLOCATE PREPARE stmt;";
 	}
 	//echo $page_property_views_query;exit;
-        $columns = ['Subregion', 'Neuron Type Name', 'Neuronal Attribute', 'DG:SMo', 'DG:SMi','DG:SG','DG:H','CA3:SLM','CA3:SR','CA3:SL','CA3:SP','CA3:SO','CA2:SLM','CA2:SR','CA2:SP','CA2:SO','CA1:SLM','CA1:SR','CA1:SP','CA1:SO','Sub:SM','Sub:SP','Sub:PL','EC:I','EC:II','EC:III','EC:IV','EC:V','EC:VI','Other','Post_2019_Views', 'Prorated_Pre_2019_Views', 'Total_Views'];
+        $columns = ['Subregion', 'Neuron Type Name', 'Neuronal Attribute', 'DG:SMo', 'DG:SMi','DG:SG','DG:H','CA3:SLM','CA3:SR','CA3:SL','CA3:SP','CA3:SO','CA2:SLM','CA2:SR','CA2:SP','CA2:SO','CA1:SLM','CA1:SR','CA1:SP','CA1:SO','Sub:SM','Sub:SP','Sub:PL','EC:I','EC:II','EC:III','EC:IV','EC:V','EC:VI','Other','Total_Views'];
+        //$columns = ['Subregion', 'Neuron Type Name', 'Neuronal Attribute', 'DG:SMo', 'DG:SMi','DG:SG','DG:H','CA3:SLM','CA3:SR','CA3:SL','CA3:SP','CA3:SO','CA2:SLM','CA2:SR','CA2:SP','CA2:SO','CA1:SLM','CA1:SR','CA1:SP','CA1:SO','Sub:SM','Sub:SP','Sub:PL','EC:I','EC:II','EC:III','EC:IV','EC:V','EC:VI','Other','Post_2019_Views', 'Prorated_Pre_2019_Views', 'Total_Views'];
         $table_string='';
         if(isset($write_file)) {
 		$file_name = "morphology_axonal_and_dendritic_lengths_somatic_distances_evidence_page_";
@@ -4092,8 +4146,8 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 		SELECT 
 		Property_Page_Category, 
 		SUM(Views) AS Post_2019_Views, 
-		ROUND(".DELTA_VIEWS." * SUM(Views)) AS Prorated_Pre_2019_Views, 
-		SUM(Views) + ROUND(".DELTA_VIEWS." * SUM(Views)) AS Total_Views
+		ROUND(".DELTA_VIEWS." * SUM(Views), 3) AS Prorated_Pre_2019_Views, 
+		SUM(Views) + ROUND(".DELTA_VIEWS." * SUM(Views), 3) AS Total_Views
 			FROM (
 					SELECT 
 					CASE 
