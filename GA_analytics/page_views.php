@@ -346,52 +346,57 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
     $csv_rows = [];
     $column_totals=[];
     if (isset($write_file)) {
-	    if ($views_request == 'views_per_month' || $views_request == 'views_per_year') {
-		    if (mysqli_multi_query($conn, $query)) {
-			    $header = [];
-			    $csv_rows = [];
-			    do {    
-				    if ($result = mysqli_store_result($conn)) {
-					    if (mysqli_num_rows($result) == 0) {
-						    echo "No data returned from the query.";
-						    return;
-					    }
-					    if (empty($header)) {
-						    $header = array_keys(mysqli_fetch_array($result, MYSQLI_ASSOC));
-						    mysqli_data_seek($result, 0);
-		    				    $csv_headers = camel_replace($header);
-					    }
-					    while ($rowvalue = mysqli_fetch_assoc($result)) {
-						    $validRow = [];
-						    foreach ($rowvalue as $column_name => $column_value) {
-							    if (!isset($rowvalue[$column_name])) {
-								    $validRow[$column_name] = '';
-							    } else {
-								    $validRow[$column_name] = $rowvalue[$column_name] === 0 ? '' : $rowvalue[$column_name];
-							    }
-							    if (is_numeric($column_value)) {
-								    $column_name = str_replace("_", " ", $column_name);
-								    if (!isset($column_totals[$column_name])) {
-									    $column_totals[$column_name] = 0;
-								    }
-								    $column_totals[$column_name] += $column_value;
-							    }
-						    }
-						    $csv_rows[] = $validRow;
-					    }
-					    mysqli_free_result($result);
+	    if (mysqli_multi_query($conn, $query)) {
+		    $header = [];
+		    $csv_rows = [];
+		    do {    
+			    if ($result = mysqli_store_result($conn)) {
+				    if (mysqli_num_rows($result) == 0) {
+					    echo "No data returned from the query.";
+					    return;
 				    }
-			    } while (mysqli_next_result($conn));
-			    $csv_rows[] = generateTotalRow($csv_headers, true, $column_totals);
-			    $csv_data[$csv_tablename] = [
-				    'filename' => toCamelCase($csv_tablename),
-				    'headers' => $csv_headers,
-				    'rows' => $csv_rows
-			    ];
-			    return $csv_data[$csv_tablename];
-		    } else {
-			    echo "Error: " . mysqli_error($conn);
-		    }
+				    if (empty($header)) {
+					    $header = array_keys(mysqli_fetch_array($result, MYSQLI_ASSOC));
+					    mysqli_data_seek($result, 0);
+					    $csv_headers = camel_replace($header);
+				    }
+				    // Prepend the "pre-Aug 22, 2019" row with the integer value
+				    if ($csv_tablename == 'monthly_page_views') {
+					    $primary_header = isset($csv_headers[1]) ? $csv_headers[1] : 'Page Views';
+					    array_unshift($csv_rows, ['Header' => 'pre-Aug 22, 2019', 'Value' => number_format(86523)]);
+					    if (!isset($column_totals[$primary_header])) {
+						    $column_totals[$primary_header] = 0;
+					    }
+					    $column_totals[$primary_header] += 86523;
+				    }
+
+				    while ($rowvalue = mysqli_fetch_assoc($result)) {
+					    $validRow = [];
+					    foreach ($rowvalue as $column_name => $column_value) {
+						    $format_column_value = sanitizeValue($column_value);
+						    $rowvalue[$column_name] = $format_column_value;
+						    if (is_numeric($column_value)) {
+							    $column_name = str_replace("_", " ", $column_name);
+							    if (!isset($column_totals[$column_name])) {
+								    $column_totals[$column_name] = 0;
+							    }
+							    $column_totals[$column_name] += $column_value;
+						    }
+					    }
+					    $csv_rows[] = $rowvalue;
+				    }
+				    mysqli_free_result($result);
+			    }
+		    } while (mysqli_next_result($conn));
+		    $csv_rows[] = generateTotalRow($csv_headers, true, $column_totals);
+		    $csv_data[$csv_tablename] = [
+			    'filename' => toCamelCase($csv_tablename),
+			    'headers' => $csv_headers,
+			    'rows' => $csv_rows
+		    ];
+		    return $csv_data[$csv_tablename];
+	    } else {
+		    echo "Error: " . mysqli_error($conn);
 	    }
     }
 
@@ -466,7 +471,7 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 	    $table_string1 .= "<tr class='$bgColor'>";
 	    $table_string1 .= "<td>pre-Aug 22, 2019</td><td>".number_format(86523)."</td></tr>";
 
-	    $csv_rows[] = ['pre-Aug 22, 2019', 86523];
+	    $csv_rows[] = ['pre-Aug 22, 2019', number_format(86523)];
 	    if (!isset($column_totals[$header])) {
 		    $column_totals[$header] = 0;
 	    }
@@ -528,6 +533,27 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
     }
 }
 
+function sanitizeValue($value, $escape_html = true) {
+    // Handle null or empty strings
+    if (is_null($value) || trim($value) === '') {
+        return is_numeric($value) ? '0' : ''; // Default to '0' for numeric fields
+    }
+
+    // Handle numeric values
+    if (is_numeric($value)) {
+        // Check if the value is an integer
+        if ((float)$value == (int)$value) {
+            $formatted = number_format((int)$value); // Format as integer (no decimals)
+        } else {
+            $formatted = number_format((float)$value, 2, '.', ','); // Format as float (2 decimals)
+        }
+        return $escape_html ? htmlspecialchars($formatted) : $formatted; // Conditionally escape
+    }
+
+    // Handle non-numeric values
+    return $escape_html ? htmlspecialchars($value) : $value;
+}
+
 function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $write_file = NULL, $options = [], $views_request = NULL) {
     $count = 0;
     $csv_rows = [];
@@ -536,6 +562,10 @@ function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $wri
 		    $header = []; // Initialize an array to store column names
 		    do {
 			    if ($result = mysqli_store_result($conn)) {
+				    if (mysqli_num_rows($result) == 0) {
+					    echo "No data returned from the query.";
+					    return;
+				    }
 				    if (empty($header)) {
 					    $header = array_keys(mysqli_fetch_array($result, MYSQLI_ASSOC));
 					    $rows = count($header);
@@ -544,11 +574,8 @@ function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $wri
 				    }
 				    while ($rowvalue = mysqli_fetch_assoc($result)) {
 					    foreach ($rowvalue as $key => $value) {
-						    if (is_null($value) || trim($value) === '') {
-							    if (is_numeric($value) || $value === '' || $value === null) {
-								    $value = '0'; // Replace NULL or empty string with 0 for numeric fields
-							    }
-						    }
+						    $formatted_value = sanitizeValue($value);
+						    $rowvalue[$key] = $formatted_value; 
 						    // Check if the value is numeric and update the column total
 						    if (is_numeric($value)) {
 							    $key = str_replace("_", " ", $key);
@@ -556,7 +583,6 @@ function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $wri
 								    $column_totals[$key] = 0;
 							    }
 							    $column_totals[$key] += $value;
-							    $value = number_format($value); // Format with 2 decimal places
 						    }
 					    }
 					    $csv_rows[] = $rowvalue;
@@ -598,7 +624,6 @@ function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $wri
 
     while ($row = mysqli_fetch_assoc($rs)) {
 	    $csv_rows[] = $row;
-
 	    // Check for row exclusion based on 'exclude' option
 	    if (isset($options['exclude']) && in_array(current($row), $options['exclude'])) {
 		    continue;
@@ -2138,7 +2163,6 @@ function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_
 		$csv_data[$csv_tablename] = ['filename' => toCamelCase($csv_tablename), 'headers' => $csv_headers, 'rows' => $csv_rows];
 		return $csv_data[$csv_tablename];
 	}
-	//var_dump($array_subs);exit;
 	$i=$j=0;
  	$column_totals=[];
 
@@ -3993,7 +4017,6 @@ function get_domain_functionality_views_report($conn, $views_request = NULL, $wr
 								'Synapse Probabilities', 'In Vivo Recordings', 'Cognome', 'Neuron Type Census', 
 								'Simulation Parameters', 'Other'
 							      );";
-//	echo $page_functionality_views_query;
 	// Check if the request is for monthly or yearly views
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_functionality_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
@@ -4123,7 +4146,6 @@ function get_domain_functionality_views_report($conn, $views_request = NULL, $wr
 		DEALLOCATE PREPARE stmt;
 		";
 	}
-	//echo $page_functionality_views_query;//exit;
 	$columns = ['Property Category', 'Main Matrix Accesses', 'Evidence Accesses', 'Post 2019 Views', 'Prorated Pre 2019 Views', 'Total Views'];
         $table_string='';
 	$file_name='functionality_property_domain_page_';
