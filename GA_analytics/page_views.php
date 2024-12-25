@@ -556,6 +556,7 @@ function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $wri
 								    $column_totals[$key] = 0;
 							    }
 							    $column_totals[$key] += $value;
+							    $value = number_format($value); // Format with 2 decimal places
 						    }
 					    }
 					    $csv_rows[] = $rowvalue;
@@ -4175,7 +4176,6 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 					GROUP BY Property_Page_Category
 					ORDER BY FIELD(Property_Page_Category, 'Home', 'Browse', 'Search', 'Tools', 'Help', 'Neuron Type Pages', 'Evidence', 'All Others');
 	";
-	//echo $page_functionality_views_query;
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_functionality_views_query = "SET SESSION group_concat_max_len = 1000000;
 		SET @sql = NULL;";
@@ -4187,15 +4187,16 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 							'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
 								' AND MONTH(day_index) = ', MONTH(day_index),
 								  ' THEN CASE WHEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END ELSE 0 END) AS `',
+							YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`, ',
+							'ROUND(".DELTA_VIEWS." * SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index), 
+									' AND MONTH(day_index) = ', MONTH(day_index),
+									' THEN CASE WHEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END ELSE 0 END), 2) AS `Prorated_', 
 							YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
 						      )
 						ORDER BY YEAR(day_index), MONTH(day_index)
 						SEPARATOR ', '
 					    ) INTO @sql
-				FROM (
-						SELECT DISTINCT day_index
-						FROM GA_combined_analytics 
-				     ) months;";
+				FROM ( SELECT DISTINCT day_index FROM GA_combined_analytics ) months;";
 		}
 
 		if ($views_request == "views_per_year") {
@@ -4204,15 +4205,15 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 						CONCAT(
 							'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
 								' THEN CASE WHEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED)  END ELSE 0 END) AS `',
+							YEAR(day_index), '`, ',
+							'ROUND(".DELTA_VIEWS." * SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index), 
+									' THEN CASE WHEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END ELSE 0 END), 2) AS `Prorated_', 
 							YEAR(day_index), '`'
 						      )
 						ORDER BY YEAR(day_index)
 						SEPARATOR ', '
 					    ) INTO @sql
-				FROM (
-						SELECT DISTINCT day_index
-						FROM GA_combined_analytics 
-				     ) years;";
+				FROM ( SELECT DISTINCT day_index FROM GA_combined_analytics ) years;";
 		}
 
 		$page_functionality_views_query .= "
@@ -4231,9 +4232,7 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 						AND (page != ''/php/'' OR day_index IS NOT NULL)) THEN ''All Others'' ELSE ''Home'' 
 					END AS Property, ', 
 					    @sql, ', 
- SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, \'0\'), \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END) AS Post_2019_Views,
-                                        ROUND(" . DELTA_VIEWS . " *  SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, \'0\'), \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END)) AS Prorated_Pre_2019_Views,
-                                        SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, \'0\'), \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END) +  ROUND(" . DELTA_VIEWS . " *  SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, \'0\'), \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END)) AS Total_Views                                                                  
+                                        SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, \'0\'), \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END) +  ROUND(" . DELTA_VIEWS . " *  SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, \'0\'), \'\', \'\') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, \'\', \'\') AS UNSIGNED) ELSE CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END), 2) AS Total_Views                                                                  
 						    FROM GA_combined_analytics 
 						    GROUP BY Property
 						    ORDER BY FIELD ( 
@@ -4249,13 +4248,10 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 							) '
 						    );";
 
-		$page_functionality_views_query .= "
-			PREPARE stmt FROM @sql;
-		EXECUTE stmt;
-		DEALLOCATE PREPARE stmt;";
+		$page_functionality_views_query .= " PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;";
 	}
 
-	// echo $page_functionality_views_query;
+	//echo $page_functionality_views_query;
 	$options = ['exclude' => ['not php'],];
 	$options = [];//'exclude' => ['not php'],]; //Added this line to make sure we are getting all counts can remove it later
 	$columns = ['Property', 'Views'];
