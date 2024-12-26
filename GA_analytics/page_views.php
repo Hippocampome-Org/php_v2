@@ -328,7 +328,7 @@ function processColumnValue($column_value, $column_name, &$table_string, &$colum
 	} else {
 		$formatted_value = htmlspecialchars($column_value);
 	}
-
+	$colorBgClass = $colorBgClass ?? ''; // Ensure it's not null
 	$table_string .= "<td class=\"" . htmlspecialchars($colorBgClass) . "\">" . $formatted_value . "</td>";
 
 	$normalized_column_name = str_replace("_", " ", $column_name);
@@ -402,7 +402,7 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 
     $table_string1 = '';
     $count=0;
-    $array_subs = [];
+    $array_subs ??= [];
 
     $rs = mysqli_query($conn, $query);
     $rows = count($csv_headers);
@@ -714,9 +714,10 @@ function camel_replace($header, $char = NULL)
 
 function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file = NULL, $views_request = NULL) {
 	$count =$neuron_page_views = $evidence_page_views = 0;
-	$array_subs = []; 
-	$csv_rows = [];
-	$column_totals = [];
+	$array_subs ??= [];
+
+	$csv_rows ??= [];
+	$column_totals ??= [];
 	if (isset($write_file)) {
 		if (mysqli_multi_query($conn, $query)) {
 			$header = []; // Initialize an array to store column names
@@ -858,14 +859,11 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 		}
 	}
 	$table_string1 = '';
-	if (!$array_subs) {
-		$array_subs = [];
-	}
+	$array_subs ??= [];
+	$array_subs1 ??= [];
+	$array_subsNA ??= [];
 
 	$header = []; // Initialize an array to store column names
-	if(!$array_subs){ $array_subs = [];}
-        if(!$array_subs1){ $array_subs1 = [];}
-        if(!$array_subsNA){ $array_subsNA = [];}
 	$count = $neuron_page_views = $evidence_page_views = 0; // Initialize count for total views
 	$table_string1 = '';
 	$column_totals=[];
@@ -1018,9 +1016,9 @@ function format_table_connectivity($conn, $query, $table_string, $csv_tablename,
                 $table_string1 .= "<tr><td> No Data is available </td></tr>";
 		return $table_string1;
         }
-	if(!$array_subs){ $array_subs = [];}
-	if(!$array_subs1){ $array_subs1 = [];}
-	if(!$array_subsNA){ $array_subsNA = [];} 
+	$array_subs ??= [];
+	$array_subs1 ??= [];
+	$array_subsNA ??= [];
 
 	while ($rowvalue = mysqli_fetch_array($rs, MYSQLI_ASSOC)) {
                 // Modify neuron name if necessary
@@ -1138,12 +1136,13 @@ function format_table_connectivity($conn, $query, $table_string, $csv_tablename,
 			}
 
 			// Update evidence column and increment values
-			if (!isset($array_subs1[$actualSourceSubregion][$actualSourceNeuronType][$actualTargetSubregion][$actualTargetNeuronType][$evidence])) {
-				$array_subs1[$actualSourceSubregion][$actualSourceNeuronType][$actualTargetSubregion][$actualTargetNeuronType][$evidence] = 0;
-			}
-			$array_subs1[$actualSourceSubregion][$actualSourceNeuronType][$actualTargetSubregion][$actualTargetNeuronType][$evidence] += intval($views);
+			ensureArrayKeysExist($array_subs1, [$actualSourceSubregion, $actualSourceNeuronType, $actualTargetSubregion, $actualTargetNeuronType, $evidence], 0);
+			ensureArrayKeysExist($array_subs1, [$actualSourceSubregion, $actualSourceNeuronType, $actualTargetSubregion, $actualTargetNeuronType, 'Post_2019_Views'], 0);
+			ensureArrayKeysExist($array_subs1, [$actualSourceSubregion, $actualSourceNeuronType, $actualTargetSubregion, $actualTargetNeuronType, 'Prorated_Pre_2019_Views'], 0);
+			ensureArrayKeysExist($array_subs1, [$actualSourceSubregion, $actualSourceNeuronType, $actualTargetSubregion, $actualTargetNeuronType, 'Total_Views'], 0);
 
 			// Increment views and totals
+			$array_subs1[$actualSourceSubregion][$actualSourceNeuronType][$actualTargetSubregion][$actualTargetNeuronType][$evidence] += intval($views);
 			$array_subs1[$actualSourceSubregion][$actualSourceNeuronType][$actualTargetSubregion][$actualTargetNeuronType]['Post_2019_Views'] += intval($views);
 			$array_subs1[$actualSourceSubregion][$actualSourceNeuronType][$actualTargetSubregion][$actualTargetNeuronType]['Prorated_Pre_2019_Views'] += intval($estimatedViews);
 			$array_subs1[$actualSourceSubregion][$actualSourceNeuronType][$actualTargetSubregion][$actualTargetNeuronType]['Total_Views'] += intval($totalViews);
@@ -1165,12 +1164,13 @@ function format_table_connectivity($conn, $query, $table_string, $csv_tablename,
 			}
 
 			// Update evidence column and increment values
-			if (!isset($array_subs1[$actualSourceSubregion][$actualSourceNeuronType][$actualTargetSubregion][$actualTargetNeuronType][$evidence])) {
-				$array_subs1[$actualSourceSubregion][$actualSourceNeuronType][$actualTargetSubregion][$actualTargetNeuronType][$evidence] = 0;
-			}
-			$array_subs1[$actualSourceSubregion][$actualSourceNeuronType][$actualTargetSubregion][$actualTargetNeuronType][$evidence] += intval($views);
+			ensureArrayKeysExist($array_subs1, [$actualSourceSubregion, $actualSourceNeuronType, $actualTargetSubregion, $actualTargetNeuronType, $evidence], 0);
+			ensureArrayKeysExist($array_subs1, [$actualSourceSubregion, $actualSourceNeuronType, $actualTargetSubregion, $actualTargetNeuronType, 'Post_2019_Views'], 0);
+			ensureArrayKeysExist($array_subs1, [$actualSourceSubregion, $actualSourceNeuronType, $actualTargetSubregion, $actualTargetNeuronType, 'Prorated_Pre_2019_Views'], 0);
+			ensureArrayKeysExist($array_subs1, [$actualSourceSubregion, $actualSourceNeuronType, $actualTargetSubregion, $actualTargetNeuronType, 'Total_Views'], 0);
 
 			// Increment views and totals
+			$array_subs1[$actualSourceSubregion][$actualSourceNeuronType][$actualTargetSubregion][$actualTargetNeuronType][$evidence] += intval($views);
 			$array_subs1[$actualSourceSubregion][$actualSourceNeuronType][$actualTargetSubregion][$actualTargetNeuronType]['Post_2019_Views'] += intval($views);
 			$array_subs1[$actualSourceSubregion][$actualSourceNeuronType][$actualTargetSubregion][$actualTargetNeuronType]['Prorated_Pre_2019_Views'] += intval($estimatedViews);
 			$array_subs1[$actualSourceSubregion][$actualSourceNeuronType][$actualTargetSubregion][$actualTargetNeuronType]['Total_Views'] += intval($totalViews);
@@ -1266,7 +1266,7 @@ function generateTotalRow($headers, $isCsv = true, $columnTotals = [])
     $totalCountRow = ["Total Count"];
     $numEmptyColumns = $numHeaders - $numTotals - 1;
     $numEmptyColumns = max($numEmptyColumns, 0); 
-    if ($columnTotals['Prorated Pre 2019 Views'] > 86523) {
+    if (isset($columnTotal['Prorated Pre 2019 Views']) && ($columnTotals['Prorated Pre 2019 Views'] > 86523) ) {
 	    $columnTotals['Prorated Pre 2019 Views'] = (int)$columnTotals['Prorated Pre 2019 Views'];
 	    $columnTotals['Total Views'] = $columnTotals['Post 2019 Views'] + $columnTotals['Prorated Pre 2019 Views'];
     }
@@ -1322,7 +1322,7 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 	    return $table_string1;
     }
 
-    if (!$array_subs) { $array_subs = []; }
+    $array_subs ??= [];
 
     $neuronal_segments = array_change_key_case($neuronal_segments, CASE_LOWER);
     while ($rowvalue = mysqli_fetch_array($rs, MYSQLI_ASSOC)) {
@@ -1576,7 +1576,8 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
                 $table_string1 .= "<tr><td> No Data is available </td></tr>";
 		return $table_string1;
         }
-	if(!$array_subs){ $array_subs = [];}
+	$array_subs ??= [];
+
 	$color_segments = array_change_key_case($color_segments, CASE_LOWER);
 	//$neuronal_segments = array_change_key_case($neuronal_segments, CASE_LOWER);
 	while ($rowvalue = mysqli_fetch_array($rs, MYSQLI_ASSOC)) {
@@ -1880,16 +1881,37 @@ function update_estimated_totals($data) {
 	    $array_subs = $data;
 	    foreach ($array_subs as $groupKey => $subgroups) {
 		    foreach ($subgroups as $subgroupKey => $colors) {
-			    if( ($colors['Post_2019_Views'] > $colors['Prorated_Pre_2019_Views']) || 
-					    ($colors['Prorated_Pre_2019_Views'] == 0 && $colors['Post_2019_Views'] >= 1)) {
-				    $array_subs[$groupKey][$subgroupKey]['Prorated_Pre_2019_Views'] = ROUND(DELTA_VIEWS * $colors['Post_2019_Views'], 3);
-				    $array_subs[$groupKey][$subgroupKey]['Total_Views'] = $colors['Post_2019_Views'] +  $array_subs[$groupKey][$subgroupKey]['Prorated_Pre_2019_Views'] ;
+			    $post2019Views = $colors['Post_2019_Views'] ?? 0;
+			    $pre2019Views = $colors['Prorated_Pre_2019_Views'] ?? 0;
+
+			    if (($post2019Views > $pre2019Views) || ($pre2019Views == 0 && $post2019Views >= 1)) {
+				    $array_subs[$groupKey][$subgroupKey]['Prorated_Pre_2019_Views'] = round(DELTA_VIEWS * $post2019Views, 3);
+				    $array_subs[$groupKey][$subgroupKey]['Total_Views'] = $post2019Views + $array_subs[$groupKey][$subgroupKey]['Prorated_Pre_2019_Views'];
 			    }
 		    }
 	    }
 	    return $array_subs;
 
     }
+}
+
+function initializeArrayKey(&$array, $keys, $default) {
+    foreach ($keys as $key) {
+        if (!isset($array[$key])) {
+            $array[$key] = $default;
+        }
+        $array = &$array[$key];
+    }
+}
+
+function ensureArrayKeysExist(&$array, $keys, $defaultValue = 0) {
+    foreach ($keys as $key) {
+        if (!isset($array[$key])) {
+            $array[$key] = [];
+        }
+        $array = &$array[$key];
+    }
+    $array = $defaultValue;
 }
 
 function format_table_biophysics($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file = NULL, $array_subs = NULL){
@@ -1907,7 +1929,8 @@ function format_table_biophysics($conn, $query, $table_string, $csv_tablename, $
                 $table_string1 .= "<tr><td> No Data is available </td></tr>";
 		return $table_string1;
         }
-	if(!$array_subs){ $array_subs = [];}
+	$array_subs ??= [];
+
 	while($rowvalue = mysqli_fetch_array($rs, MYSQLI_ASSOC)){
 		if(isset($neuron_ids[$rowvalue['neuron_name']])){
 			$rowvalue['neuron_name'] = get_link($rowvalue['neuron_name'], $neuron_ids[$rowvalue['neuron_name']], './neuron_page.php','neuron');
@@ -1916,6 +1939,9 @@ function format_table_biophysics($conn, $query, $table_string, $csv_tablename, $
 			$array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']] = [];
                         foreach($cols as $col){
                                 $array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$col] = 0;
+				initializeArrayKey($array_subs, [$rowvalue['subregion'], $rowvalue['neuron_name'], 'Post_2019_Views'], 0);
+				initializeArrayKey($array_subs, [$rowvalue['subregion'], $rowvalue['neuron_name'], 'Prorated_Pre_2019_Views'], 0);
+				initializeArrayKey($array_subs, [$rowvalue['subregion'], $rowvalue['neuron_name'], 'Total_Views'], 0);
                         }
 			if(isset($array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$neuronal_segments[$rowvalue['evidence']]]) && $array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$neuronal_segments[$rowvalue['evidence']]] == 0){
 				$array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$neuronal_segments[$rowvalue['evidence']]] += intval($rowvalue['Post_2019_Views']);
@@ -2080,9 +2106,10 @@ function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_
                 $table_string1 .= "<tr><td> No Data is available </td></tr>";
 		return $table_string1;
         }
-	if(!$array_subs){ $array_subs = [];}
-	if(!$array_subs1){ $array_subs1 = [];}
-	if(!$array_subsNA){ $array_subsNA = [];}
+	$array_subs ??= [];
+	$array_subs1 ??= [];
+	$array_subsNA ??= [];
+
 	while ($rowvalue = mysqli_fetch_array($rs, MYSQLI_ASSOC)) {
 		// Link the neuron_name if it exists in the neuron_ids array
 		if (isset($neuron_ids[$rowvalue['Neuron_Type_Name']]) && $rowvalue['Neuron_Type_Name'] != 'None of the Above' ) {
