@@ -334,10 +334,7 @@ function processColumnValue($column_value, $column_name, &$table_string, &$colum
 	$normalized_column_name = str_replace("_", " ", $column_name);
 
 	if (is_numeric($column_value)) {
-		if (!isset($column_totals[$normalized_column_name])) {
-			$column_totals[$normalized_column_name] = 0;
-		}
-		$column_totals[$normalized_column_name] += $column_value;
+		$column_totals[$normalized_column_name] = ($column_totals[$normalized_column_name] ?? 0) + $column_value;
 	}
 }
 
@@ -376,11 +373,8 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 						    $format_column_value = sanitizeValue($column_value);
 						    $rowvalue[$column_name] = $format_column_value;
 						    if (is_numeric($column_value)) {
-							    $column_name = str_replace("_", " ", $column_name);
-							    if (!isset($column_totals[$column_name])) {
-								    $column_totals[$column_name] = 0;
-							    }
-							    $column_totals[$column_name] += $column_value;
+							    $readable_column_name = str_replace("_", " ", $column_name);
+							    $column_totals[$readable_column_name] = ($column_totals[$readable_column_name] ?? 0) + $column_value;
 						    }
 					    }
 					    $csv_rows[] = $rowvalue;
@@ -578,11 +572,8 @@ function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $wri
 						    $rowvalue[$key] = $formatted_value; 
 						    // Check if the value is numeric and update the column total
 						    if (is_numeric($value)) {
-							    $key = str_replace("_", " ", $key);
-							    if (!isset($column_totals[$key])) {
-								    $column_totals[$key] = 0;
-							    }
-							    $column_totals[$key] += $value;
+							    $readable_key = str_replace("_", " ", $key);
+                                                            $column_totals[$readable_key] = ($column_totals[$readable_key] ?? 0) + $value;
 						    }
 					    }
 					    $csv_rows[] = $rowvalue;
@@ -643,14 +634,13 @@ function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $wri
 		    if ($column_value === 'fp') {
 			    $column_value = 'firing pattern';
 		    }
+		    $style = ($column_name === array_keys($row)[1]) ? 'style="width: 10%;"' : '';
 		    if (is_numeric($column_value)) {
 			    processColumnValue($column_value, $column_name, $table_string, $column_totals, $style);
+			    continue;
 		    }
-		    else{
-			    $style = ($column_name === array_keys($row)[1]) ? 'style="width: 10%;"' : '';
-			    if (end($row) > 0) {
-				    $table_string .= "<td $style>" . htmlspecialchars($column_value) . "</td>";
-			    }
+		    if (end($row) > 0) {
+			    $table_string .= "<td $style>" . htmlspecialchars($column_value) . "</td>";
 		    }
 	    }
 
@@ -668,25 +658,33 @@ function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $wri
     }
 }
 
-
-function flattenArray($array) {
-    $result = [];
-    foreach ($array as $value) {
-        if (is_array($value)) {
-            $result = array_merge($result, flattenArray($value));
-        } else {
-            $result[] = $value;
-        }
-    }
-    return $result;
-}
-
 function toCamelCase($string) {
 	$result = str_replace('_', ' ', $string);
 	$result = ucwords($result);
 	return $result;
 }
 
+function camel_replace($header, $char = null) {
+    // Replace underscores with the specified character or a space
+    $csv_headers = array_map(function($header_item) use ($char) {
+        return str_replace('_', $char ?? ' ', $header_item);
+    }, $header);
+
+    // If no character is provided, handle "SYNPRO" case
+    if ($char === null) {
+        foreach ($csv_headers as $key => $val) {
+            if (stripos(trim($val), 'SYNPRO') !== false) {
+                // Capitalize "SYNPRO" occurrences and normalize the rest
+                $csv_headers[$key] = implode(' ', array_map(function ($word) {
+                    return strtoupper($word) === 'SYNPRO' ? 'SYNPRO' : ucfirst(strtolower($word));
+                }, explode(' ', $val)));
+            }
+        }
+    }
+
+    return $csv_headers;
+}
+/*
 function camel_replace($header, $char = NULL)
 {
 	if(!isset($char)){
@@ -711,7 +709,7 @@ function camel_replace($header, $char = NULL)
 		return $csv_headers;
 	}
 }
-
+*/
 function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file = NULL, $views_request = NULL) {
 	$count =$neuron_page_views = $evidence_page_views = 0;
 	$array_subs ??= [];
@@ -833,11 +831,8 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 								$rowvalue[$key] = 0; // Replace 0 with an empty string
 							} 
 							if (is_numeric($value)) {
-								$key = str_replace("_", " ", $key);
-								if (!isset($column_totals[$key])){
-									$column_totals[$key] = 0;
-								}
-								$column_totals[$key] += $value;
+								$readable_key = str_replace("_", " ", $key);
+                                                            	$column_totals[$readable_key] = ($column_totals[$readable_key] ?? 0) + $value;
 							}
 						}
 						if ($rowvalue['Subregion'] === 'N/A' && $rowvalue['Neuron_Type_Name'] === 'None of the Above') {
@@ -1202,10 +1197,7 @@ function format_table_connectivity($conn, $query, $table_string, $csv_tablename,
 								$row[] = 0; // Add an empty string for values less than 1
 							}
 							if (is_numeric($value)) {
-								if (!isset($column_totals[$property])) {
-									$column_totals[$property] = 0;
-								}
-								$column_totals[$property] += $value;
+								$column_totals[$property] = ($column_totals[$property] ?? 0) + $value;
 							}       
 						}
 						$csv_rows[] = $row;
@@ -1237,10 +1229,7 @@ function format_table_connectivity($conn, $query, $table_string, $csv_tablename,
 						$showval=0;
 						if($value >= 0){$showval = $value;}
 						if (is_numeric($value)) {
-							if (!isset($column_totals[$property])) {
-								$column_totals[$property] = 0;
-							}
-							$column_totals[$property] += $value;
+							$column_totals[$property] = ($column_totals[$property] ?? 0) + $value;
 						}
 						if ($j % 2 == 0) {
 							$table_string2 .= "<td class='white-bg'>".number_format($showval)."</td>";
@@ -1424,10 +1413,7 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 					    $showVal = is_numeric($value) ? $value : 0;
 
 					    if (is_numeric($value)) {
-						    if (!isset($column_totals[$property])) {
-							    $column_totals[$property] = 0;
-						    }
-						    $column_totals[$property] += $value;
+						    $column_totals[$property] = ($column_totals[$property] ?? 0) + $value;
 					    }     
 					    $rowData[] = $showVal;
 				    }
@@ -1495,10 +1481,7 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 					    $k++;
 				    }	
 				    if (is_numeric($value)) {
-					    if (!isset($column_totals[$property])) {
-						    $column_totals[$property] = 0;
-					    }
-					    $column_totals[$property] += $value;
+					    $column_totals[$property] = ($column_totals[$property] ?? 0) + $value;
 				    }     
 			    }
 		    }
@@ -1682,10 +1665,7 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
                                             $showVal = is_numeric($value) ? $value : 0; 
 
                                             if (is_numeric($value)) {
-                                                    if (!isset($column_totals[$property])) {
-                                                            $column_totals[$property] = 0; 
-                                                    }    
-                                                    $column_totals[$property] += $value;
+						    $column_totals[$property] = ($column_totals[$property] ?? 0) + $value;
                                             }                
                                             $rowData[] = $showVal;
                                     }    
@@ -1776,10 +1756,7 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 						$k++;
 					}
 					if (is_numeric($value)) {
-						if (!isset($column_totals[$property])) {
-							$column_totals[$property] = 0; 
-						}    
-						$column_totals[$property] += $value;
+						$column_totals[$property] = ($column_totals[$property] ?? 0) + $value;
 					}            
 				}
 			}
@@ -1833,10 +1810,7 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 							$k++;
 						}
 						if (is_numeric($value)) {
-							if (!isset($column_totals[$property])) {
-								$column_totals[$property] = 0;
-							}
-							$column_totals[$property] += $value;
+							$column_totals[$property] = ($column_totals[$property] ?? 0) + $value;
 						}
 					}
 				}
@@ -1989,11 +1963,7 @@ function format_table_biophysics($conn, $query, $table_string, $csv_tablename, $
 					if ($headerIndex !== false) {
 						$rowData[$headerIndex] = $value > 0 ? $value : 0; // Ensure non-negative values
 						if (is_numeric($value)) {
-							// Accumulate totals for numeric columns
-							if (!isset($column_totals[$property])) {
-								$column_totals[$property] = 0;
-							}
-							$column_totals[$property] += $value;
+							$column_totals[$property] = ($column_totals[$property] ?? 0) + $value;
 						}
 					}
 				}
@@ -2038,10 +2008,7 @@ function format_table_biophysics($conn, $query, $table_string, $csv_tablename, $
 					$table_string1 .= "<td class='blue-bg' >".$value."</td>";
 				}
 				if (is_numeric($value)) {
-					if (!isset($column_totals[$property])) {
-						$column_totals[$property] = 0;
-					}
-					$column_totals[$property] += $value;
+					$column_totals[$property] = ($column_totals[$property] ?? 0) + $value;
 				}
 			}
 			$table_string1 .= "</tr>";
@@ -2227,10 +2194,7 @@ function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_
 
 				// Accumulate totals if value is numeric
 				if (is_numeric($value)) {
-					if (!isset($column_totals[$property])) {
-						$column_totals[$property] = 0;
-					}
-					$column_totals[$property] += $value;
+					$column_totals[$property] = ($column_totals[$property] ?? 0) + $value;
 				}
 			}
 
@@ -2247,23 +2211,27 @@ function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_
 }
 
 function get_page_views($conn){ //Passed on Dec 3 2023
-	$page_views_query = "SELECT YEAR(day_index) AS year, 
-		MONTH(day_index) AS month, 
-		SUM(views) AS views
-			FROM ga_analytics_pages_views 
-			WHERE views > 0
-			GROUP BY YEAR(day_index), MONTH(day_index)";
+        $start_time = microtime(true);
+        $page_views_query = "SELECT YEAR(day_index) AS year, 
+                MONTH(day_index) AS month, 
+                SUM(views) AS views
+                        FROM ga_analytics_pages_views 
+                        WHERE views > 0
+                        GROUP BY YEAR(day_index), MONTH(day_index)";
 
-	$rs = mysqli_query($conn,$page_views_query);
-	$result_page_views_array = array();
-	while($row = mysqli_fetch_row($rs))
-	{
-		array_push($result_page_views_array, $row);
-	}
-	return $result_page_views_array;
+        $rs = mysqli_query($conn,$page_views_query);
+        $result_page_views_array = array();
+        while($row = mysqli_fetch_row($rs))
+        {
+                array_push($result_page_views_array, $row);
+        }
+        $checkpoint1 = microtime(true);
+        echo "Time for get_page_views: " . ($checkpoint1 - $start_time) . " seconds";
+        return $result_page_views_array;
 }
 
 function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL){ //Passed $conn on Dec 3 2023
+        $start_time = microtime(true);
 	$page_views_query = "SELECT subquery.page AS Page, 
 		SUM(subquery.Post_2019_Views) AS Post_2019_Views, 
 		ROUND(SUM(subquery.Prorated_Pre_2019_Views), 4) AS Prorated_Pre_2019_Views, 
@@ -2385,18 +2353,21 @@ function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL)
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
+        $checkpoint1 = microtime(true);
+        echo "Time for get_views_per_page_report: " . ($checkpoint1 - $start_time) . " seconds";
 }
 
 function get_pages_views_per_month_report($conn, $write_file=NULL){ 
-	 $page_views_per_month_query = "select concat(DATE_FORMAT(day_index,'%b'), '-', YEAR(day_index)) as 'Month-Year',
-		 SUM(
-				 CASE
-				 WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED)
-				 ELSE CAST(REPLACE(sessions, ',', '') AS UNSIGNED) 
-				 END
-		    ) AS Page_Views 
-                        from GA_combined_analytics 
-                        GROUP BY YEAR(day_index), MONTH(day_index)";
+	$start_time = microtime(true);
+	$page_views_per_month_query = "select concat(DATE_FORMAT(day_index,'%b'), '-', YEAR(day_index)) as 'Month-Year',
+		SUM(
+				CASE
+				WHEN CAST(REPLACE(COALESCE(page_views, '0'), ',', '') AS UNSIGNED) > 0 THEN CAST(REPLACE(page_views, ',', '') AS UNSIGNED)
+				ELSE CAST(REPLACE(sessions, ',', '') AS UNSIGNED) 
+				END
+		   ) AS Page_Views 
+			from GA_combined_analytics 
+			GROUP BY YEAR(day_index), MONTH(day_index)";
 	//echo $page_views_per_month_query;
 	$columns = ['Month-Year', 'Views'];
 	$table_string='';
@@ -2407,6 +2378,8 @@ function get_pages_views_per_month_report($conn, $write_file=NULL){
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
+        $checkpoint1 = microtime(true);
+        echo "Time for get_pages_views_per_month_report: " . ($checkpoint1 - $start_time) . " seconds";
 }
 
 function get_table_skeleton_first($cols, $table_id = NULL){
@@ -2430,6 +2403,7 @@ function get_table_skeleton_end(){
 }
 
 function get_neurons_views_report($conn, $neuron_ids=NULL, $views_request=NULL, $write_file=NULL){ //Passed on Dec 3 2023
+	$start_time = microtime(true);
 	$columns = ['Subregion', 'Neuron Type Name', 'Census','Views'];
 	$page_neurons_views_query = "
 		SELECT 
@@ -2664,9 +2638,12 @@ function get_neurons_views_report($conn, $neuron_ids=NULL, $views_request=NULL, 
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
+	$checkpoint1 = microtime(true);
+	echo "Time for get_neurons_views_report: " . ($checkpoint1 - $start_time) . " seconds";
 }
 
 function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=NULL, $write_file=NULL){ //Passed on Nov 12 2024
+	$start_time = microtime(true);
 	$columns = ['Subregion', 'Neuron Type Name', 'Census','Views'];
 	$page_neurons_views_query = "SELECT 
 		COALESCE(Subregion, 'N/A') AS Subregion,
@@ -2862,9 +2839,12 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
+	$checkpoint1 = microtime(true);
+	echo "Time for Section get_neuron_types_views_report: " . ($checkpoint1 - $start_time) . " seconds";
 }
 
 function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_request=NULL, $write_file=NULL){
+	$start_time = microtime(true);
 	$page_property_views_query = "SELECT t.subregion, t.page_statistics_name AS neuron_name, derived.evidence AS evidence, 
 		CONCAT(derived.color, TRIM(derived.sp_page)) AS color_sp, 
 		SUM(
@@ -3119,9 +3099,12 @@ FROM
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
         }       
+	$checkpoint1 = microtime(true);
+	echo "Time for Section get_morphology_property_views_report: " . ($checkpoint1 - $start_time) . " seconds";
 } 
 
 function get_markers_property_views_report($conn, $neuron_ids, $views_request=NULL, $write_file = NULL){
+	$start_time = microtime(true);
 	$page_property_views_query = "SELECT page,
 		COALESCE(t.subregion, 'N/A') AS subregion, 
 		COALESCE(t.page_statistics_name, 'None of the Above') AS neuron_name, 
@@ -3328,6 +3311,8 @@ function get_markers_property_views_report($conn, $neuron_ids, $views_request=NU
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
+$checkpoint1 = microtime(true);
+echo "Time for Section get_markers_property_views_report: " . ($checkpoint1 - $start_time) . " seconds";
 }
 
 function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $views_request=NULL, $write_file=NULL){
@@ -3830,6 +3815,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 }
 
 function get_fp_property_views_report($conn, $views_request=NULL, $write_file=NULL){
+	$start_time = microtime(true);
 	$fp_format = [
 		'ASP.' => 'Adapting Spiking',
 		'ASP.ASP.' => 'Adapting Spiking followed by (slower) Adapting Spiking',
@@ -3959,6 +3945,8 @@ function get_fp_property_views_report($conn, $views_request=NULL, $write_file=NU
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
+	$checkpoint1 = microtime(true);
+	echo "Time for get_fp_property_views_report: " . ($checkpoint1 - $start_time) . " seconds";
 }
 
 
@@ -4193,6 +4181,7 @@ function get_domain_functionality_views_report($conn, $views_request = NULL, $wr
 }
 
 function get_page_functionality_views_report($conn, $views_request=NULL, $write_file=NULL){
+        $start_time = microtime(true);
 	$page_functionality_views_query ="
 		SELECT 
 		Property_Page_Category, 
@@ -4317,5 +4306,7 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
+	$checkpoint1 = microtime(true);
+        echo "Time for get_page_functionality_views_report: " . ($checkpoint1 - $start_time) . " seconds";
 }
 ?>
