@@ -2249,23 +2249,25 @@ function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL)
 			) AS subquery 
 			GROUP BY subquery.page 
 			ORDER BY Total_Views DESC;";
-	//echo $page_views_query;
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
-
 		if ($views_request == "views_per_month") {
 			$page_views_query .= "
 				SELECT
-				GROUP_CONCAT(DISTINCT
-						CONCAT(
+				GROUP_CONCAT(
+						DISTINCT CONCAT(
 							'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
 								' AND MONTH(day_index) = ', MONTH(day_index),
-								' THEN CASE WHEN CAST(REPLACE(COALESCE(page_views, \\'0\\'), \\'\\', \\'\\') AS UNSIGNED) > 0 ',
-								'THEN CAST(REPLACE(page_views, \\'\\', \\'\\') AS UNSIGNED) ELSE  CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END ELSE 0 END) AS `',
+								' THEN CASE WHEN CAST(REPLACE(COALESCE(page_views, ''0''), '''', '''') AS UNSIGNED) > 0 ',
+								'THEN CAST(REPLACE(page_views, '''', '''') AS UNSIGNED) ELSE CAST(REPLACE(sessions, '''', '''') AS UNSIGNED) END ELSE 0 END) AS `',
+							YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`, ',
+							'ROUND(".DELTA_VIEWS." * SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+									' AND MONTH(day_index) = ', MONTH(day_index),
+									' THEN CASE WHEN CAST(REPLACE(COALESCE(page_views, ''0''), '''', '''') AS UNSIGNED) > 0 ',
+									'THEN CAST(REPLACE(page_views, '''', '''') AS UNSIGNED) ELSE CAST(REPLACE(sessions, '''', '''') AS UNSIGNED) END ELSE 0 END), 4) AS `Prorated ',
 							YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
-						      )
-						ORDER BY YEAR(day_index), MONTH(day_index)
-						SEPARATOR ', '
+							)
+						ORDER BY YEAR(day_index), MONTH(day_index) SEPARATOR ', '
 					    ) INTO @sql
 				FROM (
 						SELECT DISTINCT day_index
@@ -2277,15 +2279,18 @@ function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL)
 		if ($views_request == "views_per_year") {
 			$page_views_query .= "
 				SELECT
-				GROUP_CONCAT(DISTINCT
-						CONCAT(
+				GROUP_CONCAT(
+						DISTINCT CONCAT(
 							'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
-								' THEN CASE WHEN CAST(REPLACE(COALESCE(page_views, \\'0\\'), \\'\\', \\'\\') AS UNSIGNED) > 0 ',
-								'THEN CAST(REPLACE(page_views, \\'\\', \\'\\') AS UNSIGNED) ELSE CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END ELSE 0 END) AS `',
+								' THEN CASE WHEN CAST(REPLACE(COALESCE(page_views, ''0''), '''', '''') AS UNSIGNED) > 0 ',
+								'THEN CAST(REPLACE(page_views, '''', '''') AS UNSIGNED) ELSE CAST(REPLACE(sessions, '''', '''') AS UNSIGNED) END ELSE 0 END) AS `',
+							YEAR(day_index), '`, ',
+							'ROUND(".DELTA_VIEWS." * SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+									' THEN CASE WHEN CAST(REPLACE(COALESCE(page_views, ''0''), '''', '''') AS UNSIGNED) > 0 ',
+									'THEN CAST(REPLACE(page_views, '''', '''') AS UNSIGNED) ELSE CAST(REPLACE(sessions, '''', '''') AS UNSIGNED) END ELSE 0 END), 4) AS `Prorated ',
 							YEAR(day_index), '`'
-						      )
-						ORDER BY YEAR(day_index)
-						SEPARATOR ', '
+							)
+						ORDER BY YEAR(day_index) SEPARATOR ', '
 					    ) INTO @sql
 				FROM (
 						SELECT DISTINCT day_index
@@ -2297,21 +2302,21 @@ function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL)
 		$page_views_query .= "
 			SET @sql = CONCAT(
 					'SELECT page as Page, ',
-					@sql,
-					', SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, \\'0\\'), \\'\\', \\'\\') AS UNSIGNED) > 0 ',
-						'THEN CAST(REPLACE(page_views, \\'\\', \\'\\') AS UNSIGNED) ELSE  CAST(REPLACE(sessions, \'\', \'\') AS UNSIGNED) END) AS Total_Views ',
+					@sql, ', ',
+					'ROUND(SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, ''0''), '''', '''') AS UNSIGNED) > 0 ',
+							'THEN CAST(REPLACE(page_views, '''', '''') AS UNSIGNED) ELSE CAST(REPLACE(sessions, '''', '''') AS UNSIGNED) END) + ',
+						'".DELTA_VIEWS." * SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, ''0''), '''', '''') AS UNSIGNED) > 0 ',
+							'THEN CAST(REPLACE(page_views, '''', '''') AS UNSIGNED) ELSE CAST(REPLACE(sessions, '''', '''') AS UNSIGNED) END), 4) AS Total_Views ',
 					'FROM GA_combined_analytics ',
 					'WHERE day_index IS NOT NULL ',
 					'GROUP BY page ',
 					'ORDER BY Total_Views DESC'
-					);";
+					);
+		";
 
-		$page_views_query .= "
-			PREPARE stmt FROM @sql;
-		EXECUTE stmt;
-		DEALLOCATE PREPARE stmt;";
+		$page_views_query .= "PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;";
 	}
-	//echo $page_views_query;
+	//echo $page_views_query; exit;
 	$table_string ='';
 
 	$columns = ['Page', 'Views'];
