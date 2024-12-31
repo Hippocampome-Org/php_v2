@@ -684,32 +684,7 @@ function camel_replace($header, $char = null) {
 
     return $csv_headers;
 }
-/*
-function camel_replace($header, $char = NULL)
-{
-	if(!isset($char)){
-		$csv_headers = array_map(function($header) {
-                        return str_replace('_', ' ', $header);
-                    }, $header);
-                    
-                    // Capitalize headers containing "SYNPRO"
-                    foreach ($csv_headers as $key => $val) {
-                        if (stripos(trim($val), 'SYNPRO') !== false) {
-                            $csv_headers[$key] = ucwords(strtolower($val));
-                        }
-			if (stripos($val, 'SYNPRO') !== false) {
-				$csv_headers[$key] = implode(' ', array_map('ucfirst', explode(' ', strtolower($val))));
-			}
-                    }
-		return $csv_headers;
-	}else{
-		$csv_headers = array_map(function($header) {
-                        return str_replace('_', $char, $header);
-                    }, $header);
-		return $csv_headers;
-	}
-}
-*/
+
 function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file = NULL, $views_request = NULL) {
 	$count =$neuron_page_views = $evidence_page_views = 0;
 	$array_subs ??= [];
@@ -2897,99 +2872,6 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_
 				     )
 				 ) AS derived LEFT JOIN Type AS t ON t.id = derived.neuronID GROUP BY t.page_statistics_name, t.subregion, color_sp, derived.evidence ORDER BY t.position;";
 
-/* SELECT t.subregion, t.page_statistics_name AS neuron_name, derived.evidence AS evidence, CONCAT(derived.color, TRIM(derived.sp_page)) AS color_sp, 
-		SUM( CASE WHEN REPLACE(derived.page_views, ',', '') > 0 THEN REPLACE(derived.page_views, ',', '') ELSE REPLACE(derived.sessions, ',', '') END ) AS views FROM (
-				SELECT IF(INSTR(page, 'id_neuron=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1), IF(INSTR(page, 'id1_neuron=') > 0, 
-						SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1), 
-						IF(INSTR(page, 'id_neuron_source=') > 0, 
-							SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1), 
-							''))) AS neuronID,
-				IF(INSTR(page, 'val_property=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), '') AS evidence,
-				IF(INSTR(page, 'color=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1), '') AS color,
-				IF(INSTR(page, 'sp_page=') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'sp_page=', -1), '&', 1), '') AS sp_page,
-				page_views, sessions
-				FROM GA_combined_analytics 
-				WHERE 
-				page LIKE '%/property_page_%' 
-				AND (SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'morphology' ) 
-				AND (
-					INSTR(page, 'id_neuron=') > 0 OR INSTR(page, 'id1_neuron=') > 0 OR INSTR(page, 'id_neuron_source=') > 0
-				    ) ) AS derived
-		LEFT JOIN Type AS t ON t.id = derived.neuronID 
-		GROUP BY t.page_statistics_name, t.subregion, color_sp, derived.evidence ORDER BY t.position;";
-/*
-	$page_property_views_query = "SELECT 
-    t.subregion, 
-    t.page_statistics_name AS neuron_name, 
-    derived.evidence AS evidence, 
-    CONCAT(derived.color, TRIM(derived.sp_page)) AS color_sp, 
-    SUM(
-        CASE 
-            WHEN REPLACE(derived.page_views, ',', '') > 0 
-            THEN REPLACE(derived.page_views, ',', '') 
-            ELSE REPLACE(derived.sessions, ',', '') 
-        END
-    ) AS Post_2019_Views,
-    ROUND(".DELTA_VIEWS." * SUM(
-        CASE 
-            WHEN REPLACE(derived.page_views, ',', '') > 0 
-            THEN REPLACE(derived.page_views, ',', '') 
-            ELSE REPLACE(derived.sessions, ',', '') 
-        END
-    )) AS Prorated_Pre_2019_Views,
-    SUM(
-        CASE 
-            WHEN REPLACE(derived.page_views, ',', '') > 0 
-            THEN REPLACE(derived.page_views, ',', '') 
-            ELSE REPLACE(derived.sessions, ',', '') 
-        END
-    ) + ROUND(".DELTA_VIEWS." * SUM(
-        CASE 
-            WHEN REPLACE(derived.page_views, ',', '') > 0 
-            THEN REPLACE(derived.page_views, ',', '') 
-            ELSE REPLACE(derived.sessions, ',', '') 
-        END
-    )) AS Total_Views
-FROM 
-    (
-        SELECT 
-            IF(INSTR(page, 'id_neuron=') > 0, 
-                SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1), 
-                IF(INSTR(page, 'id1_neuron=') > 0, 
-                    SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1), 
-                    IF(INSTR(page, 'id_neuron_source=') > 0, 
-                        SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1), 
-                        ''
-                    )
-                )
-            ) AS neuronID, 
-            IF(INSTR(page, 'val_property=') > 0, 
-                SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1), 
-                ''
-            ) AS evidence, 
-            IF(INSTR(page, 'color=') > 0, 
-                SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1), 
-                ''
-            ) AS color, 
-            IF(INSTR(page, 'sp_page=') > 0, 
-                SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'sp_page=', -1), '&', 1), 
-                ''
-            ) AS sp_page, 
-            page_views, 
-            sessions
-        FROM 
-            GA_combined_analytics
-        WHERE 
-            page LIKE '%/property_page_%' 
-            AND (SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'morphology') 
-            AND (
-                INSTR(page, 'id_neuron=') > 0 
-                OR INSTR(page, 'id1_neuron=') > 0 
-                OR INSTR(page, 'id_neuron_source=') > 0
-            )
-    ) AS derived 
-    LEFT JOIN Type AS t ON t.id = derived.neuronID GROUP BY t.page_statistics_name, t.subregion, color_sp, derived.evidence ORDER BY t.position;";
-*/
 	//echo $page_property_views_query;
 	if ($views_request == "views_per_month" || $views_request == "views_per_year") {
 		$page_property_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
@@ -3521,7 +3403,6 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 
 	// Check for 'connectivity' page types
         if ($page_string == 'connectivity') {
-                     
                 $columns = ['Presynaptic Subregion', 'Presynaptic Neuron Type Name', 'Postsynaptic Subregion', 'Postsynaptic Neuron Type Name', 'Potential Connectivity Evidence', 'Number of Potential Synapses Parcel-Specific Table', 'Number of Potential Synapses Evidence', 'Number of Contacts Parcel-Specific Table', 'Number of Contacts Evidence', 'Synaptic Probability Parcel-Specific Table', 'Synaptic Probability Evidence', 'Other', 'Post_2019_Views', 'Prorated_Pre_2019_Views', 'Total Views'];
                 $pageType = $page_string = 'connectivity';
 		$page_counts_views_query = "SELECT derived.page, derived.source_neuronID, derived.target_neuronID,
