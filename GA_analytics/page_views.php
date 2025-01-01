@@ -4035,7 +4035,7 @@ function get_domain_functionality_views_report($conn, $views_request = NULL, $wr
 		DEALLOCATE PREPARE stmt;
 		";
 	}
-	echo $page_functionality_views_query; exit;
+	//echo $page_functionality_views_query; exit;
 	$columns = ['Property Category', 'Main Matrix Accesses', 'Evidence Accesses', 'Post 2019 Views', 'Prorated Pre 2019 Views', 'Total Views'];
         $table_string='';
 	$file_name='functionality_property_domain_page_';
