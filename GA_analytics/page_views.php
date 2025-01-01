@@ -2264,7 +2264,7 @@ function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL)
 							'ROUND(".DELTA_VIEWS." * SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
 									' AND MONTH(day_index) = ', MONTH(day_index),
 									' THEN CASE WHEN CAST(REPLACE(COALESCE(page_views, ''0''), '''', '''') AS UNSIGNED) > 0 ',
-									'THEN CAST(REPLACE(page_views, '''', '''') AS UNSIGNED) ELSE CAST(REPLACE(sessions, '''', '''') AS UNSIGNED) END ELSE 0 END), 4) AS `Prorated ',
+									'THEN CAST(REPLACE(page_views, '''', '''') AS UNSIGNED) ELSE CAST(REPLACE(sessions, '''', '''') AS UNSIGNED) END ELSE 0 END), 2) AS `Prorated ',
 							YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
 							)
 						ORDER BY YEAR(day_index), MONTH(day_index) SEPARATOR ', '
@@ -2287,7 +2287,7 @@ function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL)
 							YEAR(day_index), '`, ',
 							'ROUND(".DELTA_VIEWS." * SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
 									' THEN CASE WHEN CAST(REPLACE(COALESCE(page_views, ''0''), '''', '''') AS UNSIGNED) > 0 ',
-									'THEN CAST(REPLACE(page_views, '''', '''') AS UNSIGNED) ELSE CAST(REPLACE(sessions, '''', '''') AS UNSIGNED) END ELSE 0 END), 4) AS `Prorated ',
+									'THEN CAST(REPLACE(page_views, '''', '''') AS UNSIGNED) ELSE CAST(REPLACE(sessions, '''', '''') AS UNSIGNED) END ELSE 0 END), 2) AS `Prorated ',
 							YEAR(day_index), '`'
 							)
 						ORDER BY YEAR(day_index) SEPARATOR ', '
@@ -2306,7 +2306,7 @@ function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL)
 					'ROUND(SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, ''0''), '''', '''') AS UNSIGNED) > 0 ',
 							'THEN CAST(REPLACE(page_views, '''', '''') AS UNSIGNED) ELSE CAST(REPLACE(sessions, '''', '''') AS UNSIGNED) END) + ',
 						'".DELTA_VIEWS." * SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, ''0''), '''', '''') AS UNSIGNED) > 0 ',
-							'THEN CAST(REPLACE(page_views, '''', '''') AS UNSIGNED) ELSE CAST(REPLACE(sessions, '''', '''') AS UNSIGNED) END), 4) AS Total_Views ',
+							'THEN CAST(REPLACE(page_views, '''', '''') AS UNSIGNED) ELSE CAST(REPLACE(sessions, '''', '''') AS UNSIGNED) END), 2) AS Total_Views ',
 					'FROM GA_combined_analytics ',
 					'WHERE day_index IS NOT NULL ',
 					'GROUP BY page ',
@@ -2528,29 +2528,35 @@ function get_neurons_views_report($conn, $neuron_ids=NULL, $views_request=NULL, 
 			ORDER BY 
 			t.position ASC, Subregion ASC, Neuron_Type_Name ASC;
 	";
-		//echo $page_neurons_views_query;
 	if ($views_request == "views_per_month" || $views_request == "views_per_year") {
 		$page_neurons_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
-
 		if ($views_request == "views_per_month") {
 			$page_neurons_views_query .= "
 				SELECT GROUP_CONCAT(
 						DISTINCT CONCAT(
-							'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
-								' AND MONTH(day_index) = ', MONTH(day_index),
-								' THEN CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END ELSE 0 END) AS `',
-							YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
+							'SUM(CASE WHEN YEAR(nd.day_index) = ', YEAR(nd.day_index),
+								' AND MONTH(nd.day_index) = ', MONTH(nd.day_index),
+								' THEN CASE WHEN REPLACE(nd.page_views, \"\", \"\") > 0 THEN REPLACE(nd.page_views, \"\", \"\") ELSE REPLACE(nd.sessions, \"\", \"\") END ELSE 0 END) AS `',
+							YEAR(nd.day_index), ' ', LEFT(MONTHNAME(nd.day_index), 3), '`, ',
+							'ROUND(".DELTA_VIEWS." * SUM(CASE WHEN YEAR(nd.day_index) = ', YEAR(nd.day_index),
+									' AND MONTH(nd.day_index) = ', MONTH(nd.day_index),
+									' THEN CASE WHEN REPLACE(nd.page_views, \"\", \"\") > 0 THEN REPLACE(nd.page_views, \"\", \"\") ELSE REPLACE(nd.sessions, \"\", \"\") END ELSE 0 END), 2) AS `Prorated_',
+							YEAR(nd.day_index), ' ', LEFT(MONTHNAME(nd.day_index), 3), '`'
 							)
-						ORDER BY YEAR(day_index), MONTH(day_index) SEPARATOR ', '
+						ORDER BY YEAR(nd.day_index), MONTH(nd.day_index) SEPARATOR ', '
 						) INTO @sql
-				FROM (SELECT DISTINCT day_index FROM GA_combined_analytics) months;";
+				FROM GA_combined_analytics nd
+				WHERE nd.page REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+';";
 		}
 		if ($views_request == "views_per_year") {
 			$page_neurons_views_query .= "
 				SELECT GROUP_CONCAT(
 						DISTINCT CONCAT(
 							'SUM(CASE WHEN YEAR(nd.day_index) = ', YEAR(nd.day_index),
-								' THEN CASE WHEN REPLACE(nd.page_views, \',\', \'\') > 0 THEN REPLACE(nd.page_views, \',\', \'\') ELSE REPLACE(nd.sessions, \',\', \'\') END ELSE 0 END) AS `',
+								' THEN CASE WHEN REPLACE(nd.page_views, \",\", \"\") > 0 THEN REPLACE(nd.page_views, \",\", \"\") ELSE REPLACE(nd.sessions, \",\", \"\") END ELSE 0 END) AS `', 
+							YEAR(nd.day_index), '`, ',
+							'ROUND(".DELTA_VIEWS." * SUM(CASE WHEN YEAR(nd.day_index) = ', YEAR(nd.day_index),
+									' THEN CASE WHEN REPLACE(nd.page_views, \",\", \"\") > 0 THEN REPLACE(nd.page_views, \",\", \"\") ELSE REPLACE(nd.sessions, \",\", \"\") END ELSE 0 END), 2) AS `Prorated_', 
 							YEAR(nd.day_index), '`'
 							)
 						ORDER BY YEAR(nd.day_index) SEPARATOR ', '
@@ -2558,17 +2564,18 @@ function get_neurons_views_report($conn, $neuron_ids=NULL, $views_request=NULL, 
 				FROM GA_combined_analytics nd
 				WHERE nd.page REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+';";
 		}
-
 		$page_neurons_views_query .= "
 			SET @sql = CONCAT(
 					'SELECT COALESCE(t.subregion, ''N/A'') AS Subregion,
 					COALESCE(t.page_statistics_name, ''None of the Above'') AS Neuron_Type_Name, ',
 					@sql, ',
-					SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END) AS Post_2019_Views,
-					ROUND(".DELTA_VIEWS." * SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END)) AS Prorated_Pre_2019_Views,
-					SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END) +
-					ROUND(".DELTA_VIEWS." * SUM(CASE WHEN nd.page_views > 0 THEN nd.page_views ELSE nd.sessions END)) AS Total_Views
-					FROM Type t
+					ROUND(SUM(CASE WHEN REPLACE(COALESCE(nd.page_views, ''0''), '''', '''') > 0 
+							THEN REPLACE(COALESCE(nd.page_views, ''0''), '''', '''') 
+							ELSE REPLACE(COALESCE(nd.sessions, ''0''), '''', '''') END) + ',
+						'".DELTA_VIEWS." * SUM(CASE WHEN REPLACE(COALESCE(nd.page_views, ''0''), '''', '''') > 0 
+							THEN REPLACE(COALESCE(nd.page_views, ''0''), '''', '''') 
+							ELSE REPLACE(COALESCE(nd.sessions, ''0''), '''', '''') END), 2) AS Total_Views ',
+					'FROM Type t
 					RIGHT JOIN (
 						SELECT 
 						CASE 
@@ -2743,7 +2750,7 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 									' AND MONTH(day_index) = ', MONTH(day_index),
 									' THEN CASE WHEN REPLACE(COALESCE(page_views, \"0\"), \",\", \"\") > 0 ',
 									'THEN REPLACE(COALESCE(page_views, \"0\"), \",\", \"\") ',
-									'ELSE REPLACE(COALESCE(sessions, \"0\"), \",\", \"\") END ELSE 0 END), 4) AS `Prorated_',
+									'ELSE REPLACE(COALESCE(sessions, \"0\"), \",\", \"\") END ELSE 0 END), 2) AS `Prorated_',
 							YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
 							)
 						ORDER BY YEAR(day_index), MONTH(day_index) SEPARATOR ', '
@@ -2764,7 +2771,7 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 							'ROUND(".DELTA_VIEWS." * SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
 									' THEN CASE WHEN REPLACE(COALESCE(page_views, \"0\"), \",\", \"\") > 0 ',
 									'THEN REPLACE(COALESCE(page_views, \"0\"), \",\", \"\") ',
-									'ELSE REPLACE(COALESCE(sessions, \"0\"), \",\", \"\") END ELSE 0 END), 4) AS `Prorated_',
+									'ELSE REPLACE(COALESCE(sessions, \"0\"), \",\", \"\") END ELSE 0 END), 3) AS `Prorated_',
 							YEAR(day_index), '`'
 							)
 						ORDER BY YEAR(day_index) SEPARATOR ', '
@@ -2782,7 +2789,7 @@ function get_neuron_types_views_report($conn, $neuron_ids=NULL, $views_request=N
 						'ELSE REPLACE(COALESCE(sessions, \"0\"), \",\", \"\") END) + ',
 					'".DELTA_VIEWS." * SUM(CASE WHEN REPLACE(COALESCE(page_views, \"0\"), \",\", \"\") > 0 ',
 						'THEN REPLACE(COALESCE(page_views, \"0\"), \",\", \"\") ',
-						'ELSE REPLACE(COALESCE(sessions, \"0\"), \",\", \"\") END), 4) AS Total_Views ',
+						'ELSE REPLACE(COALESCE(sessions, \"0\"), \",\", \"\") END), 3) AS Total_Views ',
 				'FROM (SELECT
 					COALESCE(t.subregion, ''N/A'') AS Subregion,
 					COALESCE(t.page_statistics_name, ''None of the Above'') AS Neuron_Type_Name,
@@ -3797,7 +3804,6 @@ function get_fp_property_views_report($conn, $views_request=NULL, $write_file=NU
                                                 ELSE REPLACE(sessions, \",\", \"\")
                                                 END
                                              )) AS Prorated_Pre_2019_Views, ',
-
 					' SUM(
                                                 CASE
                                                 WHEN REPLACE(page_views, \",\",\"\") > 0
@@ -3947,7 +3953,7 @@ function get_domain_functionality_views_report($conn, $views_request = NULL, $wr
 									      )',
 									' THEN CASE WHEN CAST(REPLACE(COALESCE(page_views, \"0\"), \",\", \"\" ) AS UNSIGNED) > 0 ',
 									' THEN CAST(REPLACE(COALESCE(page_views, \"0\"), \",\", \"\" ) AS UNSIGNED) ',
-									' ELSE CAST(REPLACE(COALESCE(sessions, \"0\"), \",\", \"\" ) AS UNSIGNED) END ELSE 0 END), 4) AS `Prorated_',
+									' ELSE CAST(REPLACE(COALESCE(sessions, \"0\"), \",\", \"\" ) AS UNSIGNED) END ELSE 0 END), 2) AS `Prorated_',
 							YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
 								)
 								ORDER BY YEAR(day_index), MONTH(day_index) SEPARATOR ', '
@@ -3972,7 +3978,7 @@ function get_domain_functionality_views_report($conn, $views_request = NULL, $wr
 									OR page REGEXP \"id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+\") ',
 								' THEN CASE WHEN CAST(REPLACE(COALESCE(page_views, \"0\"), \",\", \"\" ) AS UNSIGNED) > 0 ',
 								' THEN CAST(REPLACE(COALESCE(page_views, \"0\"), \",\", \"\" ) AS UNSIGNED) ',
-								' ELSE CAST(REPLACE(COALESCE(sessions, \"0\"), \",\", \"\" ) AS UNSIGNED) END ELSE 0 END), 4) AS `Prorated_',
+								' ELSE CAST(REPLACE(COALESCE(sessions, \"0\"), \",\", \"\" ) AS UNSIGNED) END ELSE 0 END), 2) AS `Prorated_',
 						YEAR(day_index), '`'
 						)
 					ORDER BY YEAR(day_index) SEPARATOR ', '
