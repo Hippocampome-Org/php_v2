@@ -2264,7 +2264,7 @@ function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL)
 							'ROUND(".DELTA_VIEWS." * SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
 									' AND MONTH(day_index) = ', MONTH(day_index),
 									' THEN CASE WHEN CAST(REPLACE(COALESCE(page_views, ''0''), '''', '''') AS UNSIGNED) > 0 ',
-									'THEN CAST(REPLACE(page_views, '''', '''') AS UNSIGNED) ELSE CAST(REPLACE(sessions, '''', '''') AS UNSIGNED) END ELSE 0 END), 2) AS `Prorated ',
+									'THEN CAST(REPLACE(page_views, '''', '''') AS UNSIGNED) ELSE CAST(REPLACE(sessions, '''', '''') AS UNSIGNED) END ELSE 0 END), 4) AS `Prorated ',
 							YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
 							)
 						ORDER BY YEAR(day_index), MONTH(day_index) SEPARATOR ', '
@@ -2287,7 +2287,7 @@ function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL)
 							YEAR(day_index), '`, ',
 							'ROUND(".DELTA_VIEWS." * SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
 									' THEN CASE WHEN CAST(REPLACE(COALESCE(page_views, ''0''), '''', '''') AS UNSIGNED) > 0 ',
-									'THEN CAST(REPLACE(page_views, '''', '''') AS UNSIGNED) ELSE CAST(REPLACE(sessions, '''', '''') AS UNSIGNED) END ELSE 0 END), 2) AS `Prorated ',
+									'THEN CAST(REPLACE(page_views, '''', '''') AS UNSIGNED) ELSE CAST(REPLACE(sessions, '''', '''') AS UNSIGNED) END ELSE 0 END), 4) AS `Prorated ',
 							YEAR(day_index), '`'
 							)
 						ORDER BY YEAR(day_index) SEPARATOR ', '
@@ -2306,7 +2306,7 @@ function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL)
 					'ROUND(SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, ''0''), '''', '''') AS UNSIGNED) > 0 ',
 							'THEN CAST(REPLACE(page_views, '''', '''') AS UNSIGNED) ELSE CAST(REPLACE(sessions, '''', '''') AS UNSIGNED) END) + ',
 						'".DELTA_VIEWS." * SUM(CASE WHEN CAST(REPLACE(COALESCE(page_views, ''0''), '''', '''') AS UNSIGNED) > 0 ',
-							'THEN CAST(REPLACE(page_views, '''', '''') AS UNSIGNED) ELSE CAST(REPLACE(sessions, '''', '''') AS UNSIGNED) END), 2) AS Total_Views ',
+							'THEN CAST(REPLACE(page_views, '''', '''') AS UNSIGNED) ELSE CAST(REPLACE(sessions, '''', '''') AS UNSIGNED) END), 4) AS Total_Views ',
 					'FROM GA_combined_analytics ',
 					'WHERE day_index IS NOT NULL ',
 					'GROUP BY page ',
@@ -2318,7 +2318,6 @@ function get_views_per_page_report($conn, $views_request=NULL, $write_file=NULL)
 	}
 	//echo $page_views_query; exit;
 	$table_string ='';
-
 	$columns = ['Page', 'Views'];
 	$file_name='views_per_page';
 	if(isset($write_file)) {
