@@ -1240,7 +1240,7 @@ function generateTotalRow($headers, $isCsv = true, $columnTotals = [])
     }
     foreach ($headers as $header) {
         if (isset($columnTotals[$header])) {
-		$formattedTotal = number_format($columnTotals[$header]); // Format with 2 decimal places
+		$formattedTotal = number_format(round($columnTotals[$header] + 0.0001), 0); // Format with 2 decimal places
 		$totalCountRow[] = $formattedTotal;
 		//$totalCountRow[] = $columnTotals[$header];
         }
@@ -2886,38 +2886,37 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_
 						 INSTR(page, 'id_neuron_source=') > 0
 				     )
 				 ) AS derived LEFT JOIN Type AS t ON t.id = derived.neuronID GROUP BY t.page_statistics_name, t.subregion, color_sp, derived.evidence ORDER BY t.position;";
-
-	//echo $page_property_views_query;
 	if ($views_request == "views_per_month" || $views_request == "views_per_year") {
 		$page_property_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
-		$base_query = "SELECT GROUP_CONCAT(DISTINCT CONCAT(
-						'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index), 
-							' THEN CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') 
-							ELSE REPLACE(sessions, \'\', \'\') END ELSE 0 END) AS `',
-						@time_unit, '`'
-					      ) ORDER BY YEAR(day_index) SEPARATOR ', '
-				    ) INTO @sql
-			FROM GA_combined_analytics WHERE
-			page LIKE '%/property_page_%'
-			AND (SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'morphology');";
-
-		// Determine the specific time unit and formatting based on the request
 		if ($views_request == "views_per_month") {
-			$time_unit = "CONCAT(YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3))";
-			$ordering = "ORDER BY YEAR(day_index), MONTH(day_index)";
+			$page_property_views_query .= " SELECT GROUP_CONCAT(
+						DISTINCT CONCAT(
+							'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+								' AND MONTH(day_index) = ', MONTH(day_index),
+								' THEN CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END ELSE 0 END) AS `', 
+							YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`, ',
+							'ROUND(".DELTA_VIEWS." * SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+									' AND MONTH(day_index) = ', MONTH(day_index),
+									' THEN CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END ELSE 0 END), 2) AS `Prorated_', 
+							YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`'
+							)
+						) INTO @sql
+				FROM GA_combined_analytics
+				WHERE page LIKE '%/property_page_%'
+				AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'morphology';";
 		} elseif ($views_request == "views_per_year") {
-			$time_unit = "YEAR(day_index)";
-			$ordering = "ORDER BY YEAR(day_index)";
+			$page_property_views_query .= "SELECT GROUP_CONCAT(
+					DISTINCT CONCAT(
+						'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+							' THEN CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END ELSE 0 END) AS `', YEAR(day_index), '`, ',
+						'ROUND(".DELTA_VIEWS." * SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+								' THEN CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END ELSE 0 END), 2) AS `Prorated_', YEAR(day_index), '`'
+						)
+					) INTO @sql
+				FROM GA_combined_analytics
+				WHERE page LIKE '%/property_page_%'
+				AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'morphology';";
 		}
-
-		// Construct the final query
-		$page_property_views_query .= str_replace(
-				['@time_unit', '@ordering'],
-				[$time_unit, $ordering],
-				$base_query
-				);
-
-		// Build the main query
 		$page_property_views_query .= "
 			SET @sql = CONCAT(
 					'SELECT ',
@@ -2926,10 +2925,8 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_
 					'derived.evidence AS Evidence, ',
 					'CONCAT(derived.color, TRIM(derived.sp_page)) AS Color_SP, ',
 					@sql, ', ',
-					'SUM(CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END) AS Post_2019_Views, ',
-					'ROUND(".DELTA_VIEWS." * SUM(CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END)) AS Prorated_Pre_2019_Views, ',
-					'SUM(CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END) + ',
-					'ROUND(".DELTA_VIEWS." * SUM(CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END)) AS Total_Views ',
+					 'ROUND(SUM(CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END) + ',
+    '".DELTA_VIEWS." * SUM(CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END), 2) AS Total_Views ',
 					'FROM (',
 						'   SELECT ',
 						'       IF(INSTR(page, ''id_neuron='') > 0, ',
@@ -2978,7 +2975,6 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_
 	}
 	//echo $page_property_views_query;exit;
         $columns = ['Subregion', 'Neuron Type Name', 'Neuronal Attribute', 'DG:SMo', 'DG:SMi','DG:SG','DG:H','CA3:SLM','CA3:SR','CA3:SL','CA3:SP','CA3:SO','CA2:SLM','CA2:SR','CA2:SP','CA2:SO','CA1:SLM','CA1:SR','CA1:SP','CA1:SO','Sub:SM','Sub:SP','Sub:PL','EC:I','EC:II','EC:III','EC:IV','EC:V','EC:VI','Other','Total_Views'];
-        //$columns = ['Subregion', 'Neuron Type Name', 'Neuronal Attribute', 'DG:SMo', 'DG:SMi','DG:SG','DG:H','CA3:SLM','CA3:SR','CA3:SL','CA3:SP','CA3:SO','CA2:SLM','CA2:SR','CA2:SP','CA2:SO','CA1:SLM','CA1:SR','CA1:SP','CA1:SO','Sub:SM','Sub:SP','Sub:PL','EC:I','EC:II','EC:III','EC:IV','EC:V','EC:VI','Other','Post_2019_Views', 'Prorated_Pre_2019_Views', 'Total_Views'];
         $table_string='';
         if(isset($write_file)) {
 		$file_name = "morphology_axonal_and_dendritic_lengths_somatic_distances_evidence_page_";
@@ -2987,7 +2983,6 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_
 			return format_table_neurons($conn, $page_property_views_query, $table_string, $file_name, $columns, $neuron_ids, $write_file, $views_request); //Using this universally as this is gonna 
 		}else{
 			$file_name .= "views"; 
-			//return format_table_morphology($conn, $page_property_views_query, $table_string, 'morphology_axonal_and_dendritic_lengths_somatic_distances_evidence_page_views', $columns, $neuron_ids, $write_file);
 			return format_table_morphology($conn, $page_property_views_query, $table_string, $file_name, $columns, $neuron_ids, $write_file);
 		}
         }else{
@@ -2995,7 +2990,7 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_
 		$table_string .= format_table_morphology($conn, $page_property_views_query, $table_string, 'morphology_property', $columns, $neuron_ids);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
-        }       
+        } 
 	$checkpoint1 = microtime(true);
 	echo "Time for Section get_morphology_property_views_report: " . ($checkpoint1 - $start_time) . " seconds";
 } 
