@@ -1578,39 +1578,19 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 			 $array_subs[$subregion][$neuron_name][$color][$evidence] = 0;
 		 }
 
-		 if (!isset($array_subs[$subregion][$neuron_name][$color]['Post_2019_Views'])) {
-			 $array_subs[$subregion][$neuron_name][$color]['Post_2019_Views'] = 0;
-		 }
-
-		 if (!isset($array_subs[$subregion][$neuron_name][$color]['Prorated_Pre_2019_Views'])) {
-			 $array_subs[$subregion][$neuron_name][$color]['Prorated_Pre_2019_Views'] = 0;
-		 }
-
 		 if (!isset($array_subs[$subregion][$neuron_name][$color]['Total_Views'])) {
 			 $array_subs[$subregion][$neuron_name][$color]['Total_Views'] = 0;
 		 }
+		 $total_views = isset($rowvalue['Total_Views']) && is_numeric($rowvalue['Total_Views']) ? floatval($rowvalue['Total_Views']) : 0.0;
+		 $array_subs[$subregion][$neuron_name][$color][$evidence] += floatval($total_views);
+		 $array_subs[$subregion][$neuron_name][$color]['Total_Views'] += floatval($total_views);
 
-		 $views = isset($rowvalue['Post_2019_Views']) && is_numeric($rowvalue['Post_2019_Views']) ? intval($rowvalue['Post_2019_Views']) : 0;
-		 $estimated_views = isset($rowvalue['Prorated_Pre_2019_Views']) && is_numeric($rowvalue['Prorated_Pre_2019_Views']) ? intval($rowvalue['Prorated_Pre_2019_Views']) : 0;
-		 $total_views = isset($rowvalue['Total_Views']) && is_numeric($rowvalue['Total_Views']) ? intval($rowvalue['Total_Views']) : 0;
-		 // Increment values
-		 $array_subs[$subregion][$neuron_name][$color][$evidence] += intval($views);
-		 $array_subs[$subregion][$neuron_name][$color]['Post_2019_Views'] += intval($views);
-		 $array_subs[$subregion][$neuron_name][$color]['Prorated_Pre_2019_Views'] += intval($estimated_views);
-		 $array_subs[$subregion][$neuron_name][$color]['Total_Views'] += intval($total_views);
 	}
 
 	// Loop through $array_subs to initialize missing view counts and accumulate totals
 	foreach ($array_subs as $subregion => &$neuron_names) {
 		foreach ($neuron_names as $neuron_name => &$colors) {
 			foreach ($colors as $color => &$colorVals) {
-				// Initialize missing view counts to 0 for the specific columns
-				if (!isset($array_subs[$subregion][$neuron_name][$color]['Post_2019_Views'])) {
-					$colorVals['Post_2019_Views'] = 0;
-				}
-				if (!isset($array_subs[$subregion][$neuron_name][$color]['Prorated_Pre_2019_Views'])) {
-					$colorVals['Prorated_Pre_2019_Views'] = 0;
-				}
 				if (!isset($array_subs[$subregion][$neuron_name][$color]['Total_Views'])) {
 					$colorVals['Total_Views'] = 0;
 				}
@@ -1678,8 +1658,8 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 						 // Loop through nested array of properties
 						 foreach ($properties as $property => $value) {
 							 $value = trim($value); // Ensure no leading/trailing spaces
-							 if (is_numeric($value) && (float)$value == (int)$value) {
-								 $properties[$property] = (int)$value; // Cast to int
+							 if (is_numeric($value)){
+								 $properties[$property] = (float)$value; // Cast to int
 							 } else {
 								 $properties[$property] = 0; // Default to 0 for non-numeric
 							 }
@@ -1687,8 +1667,8 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 					 } else {
 						 // If $properties is a direct value (not an array), handle it here
 						 $properties = trim($properties);
-						 if (is_numeric($properties) && (float)$properties == (int)$properties) {
-							 $values[$category] = (int)$properties;
+						 if (is_numeric($properties)){
+							 $values[$category] = (float)$properties;
 						 } else {
 							 $values[$category] = 0; // Default to 0 for non-numeric
 						 }
@@ -1731,8 +1711,8 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 						$k++;
 					}
 					if (is_numeric($value)) {
-						$column_totals[$property] = ($column_totals[$property] ?? 0) + $value;
-					}            
+						$column_totals[$property] = ($column_totals[$property] ?? 0.0) + floatval($value);
+					}
 				}
 			}
 			$i++;
@@ -1785,7 +1765,7 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 							$k++;
 						}
 						if (is_numeric($value)) {
-							$column_totals[$property] = ($column_totals[$property] ?? 0) + $value;
+							$column_totals[$property] = ($column_totals[$property] ?? 0.0) + floatval($value);
 						}
 					}
 				}
@@ -2997,26 +2977,11 @@ function get_morphology_property_views_report($conn, $neuron_ids = NULL, $views_
 
 function get_markers_property_views_report($conn, $neuron_ids, $views_request=NULL, $write_file = NULL){
 	$start_time = microtime(true);
-	$page_property_views_query = "SELECT page,
+	$page_property_views_query = "SELECT page, 
 		COALESCE(t.subregion, 'N/A') AS subregion, 
 		COALESCE(t.page_statistics_name, 'None of the Above') AS neuron_name, 
 		COALESCE(NULLIF(derived.color, ''), 'None of the Above') AS color, 
 		COALESCE(NULLIF(derived.evidence, ''), 'None of the Above') AS evidence, 
-		SUM(
-				CASE 
-				WHEN REPLACE(derived.page_views, ',', '') > 0 
-				THEN CAST(REPLACE(derived.page_views, ',', '') AS UNSIGNED) 
-				ELSE CAST(REPLACE(derived.sessions, ',', '') AS UNSIGNED) 
-				END
-		   ) AS Post_2019_Views, 
-		ROUND( ".DELTA_VIEWS."  * SUM(
-					CASE 
-					WHEN REPLACE(derived.page_views, ',', '') > 0 
-					THEN CAST(REPLACE(derived.page_views, ',', '') AS UNSIGNED) 
-					ELSE CAST(REPLACE(derived.sessions, ',', '') AS UNSIGNED) 
-					END
-					)
-		     ) AS Prorated_Pre_2019_Views, 
 		SUM(
 				CASE 
 				WHEN REPLACE(derived.page_views, ',', '') > 0 
@@ -3029,29 +2994,29 @@ function get_markers_property_views_report($conn, $neuron_ids, $views_request=NU
 				   THEN CAST(REPLACE(derived.page_views, ',', '') AS UNSIGNED) 
 				   ELSE CAST(REPLACE(derived.sessions, ',', '') AS UNSIGNED) 
 				   END
-				   )
-			   ) AS Total_Views
+				   ), 3) AS Total_Views
 		   FROM (
 				   SELECT 
-				   page,
+				   page, 
 				   CASE 
-				   WHEN INSTR(page, 'id_neuron=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) 
-				   WHEN INSTR(page, 'id1_neuron=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) 
-				   WHEN INSTR(page, 'id_neuron_source=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) 
+				   WHEN INSTR(page, 'id_neuron=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
+				   WHEN INSTR(page, 'id1_neuron=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)
+				   WHEN INSTR(page, 'id_neuron_source=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)
 				   ELSE NULL 
 				   END AS neuronID, 
 				   CASE 
-				   WHEN INSTR(page, 'val_property=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1) 
+				   WHEN INSTR(page, 'val_property=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1)
 				   ELSE NULL 
 				   END AS evidence, 
 				   CASE 
-				   WHEN INSTR(page, 'color=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1) 
+				   WHEN INSTR(page, 'color=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1)
 				   ELSE NULL 
 				   END AS color, 
 				   page_views, 
-				   sessions 
-				   FROM GA_combined_analytics 
-				   WHERE page LIKE '%/property_page_%' 
+				   sessions
+				   FROM GA_combined_analytics
+				   WHERE 
+				   page LIKE '%/property_page_%' 
 				   AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'markers' 
 				   AND (
 						   INSTR(page, 'id_neuron=') > 0 
@@ -3059,52 +3024,28 @@ function get_markers_property_views_report($conn, $neuron_ids, $views_request=NU
 						   OR INSTR(page, 'id_neuron_source=') > 0
 				       )
 				   ) AS derived 
-				   LEFT JOIN Type AS t 
-				   ON t.id = derived.neuronID 
-				   GROUP BY 
-				   page,
-		COALESCE(t.subregion, 'N/A'), 
-		COALESCE(t.page_statistics_name, 'None of the Above'), 
-		COALESCE(NULLIF(derived.evidence, ''), 'None of the Above'), 
-		COALESCE(NULLIF(derived.color, ''), 'None of the Above') 
+				   LEFT JOIN Type AS t ON t.id = derived.neuronID
+				   GROUP BY page, COALESCE(t.subregion, 'N/A'), COALESCE(t.page_statistics_name, 'None of the Above'), COALESCE(NULLIF(derived.evidence, ''), 'None of the Above'), COALESCE(NULLIF(derived.color, ''), 'None of the Above')
 			ORDER BY t.position;";
-	//echo $page_property_views_query;
 	if ($views_request == "views_per_month" || $views_request == "views_per_year") {
 		$page_property_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
-		$base_query = "
-			SELECT 
-			GROUP_CONCAT(
-					DISTINCT
-					CONCAT(
-						'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index), 
-							' THEN REPLACE(page_views, \",\", \"\") ELSE 0 END) AS `',
-						@time_unit, '`'
-					      )
-					ORDER BY YEAR(day_index) 
-					SEPARATOR ', '
-				    ) INTO @sql                 
-			FROM GA_combined_analytics 
-			WHERE   
-			page LIKE '%/property_page_%'
-			AND (   
-					SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'markers'
-			    );";
-
-		// Determine the specific time unit and formatting based on the request
-		if ($views_request == "views_per_month") {              
-			$time_unit = "CONCAT(YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3))";
-			$ordering = "ORDER BY YEAR(day_index), MONTH(day_index)";
-		} elseif ($views_request == "views_per_year") {
-			$time_unit = "YEAR(day_index)";
-			$ordering = "ORDER BY YEAR(day_index)";
+		if($views_request == "views_per_month"){
 		}
-
-		// Construct the final query
-		$page_property_views_query .= str_replace(
-				['@time_unit', '@ordering'],
-				[$time_unit, $ordering],
-				$base_query
-				);
+		if($views_request == "views_per_year"){
+			$page_property_views_query .= "SELECT GROUP_CONCAT( DISTINCT CONCAT(
+						'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index), 
+							' THEN CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END ELSE 0 END) AS `', 
+						YEAR(day_index), '`, ',
+						'ROUND(".DELTA_VIEWS." * SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index), 
+								' THEN CASE WHEN REPLACE(page_views, \'\', \'\') > 0 THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') 
+								END ELSE 0 END), 3) AS `Prorated_', 
+						YEAR(day_index), '`'
+						)
+					) INTO @sql
+				FROM GA_combined_analytics
+				WHERE page LIKE '%/property_page_%'
+				AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'markers';";
+		}
 		$page_property_views_query .= "
 			SET @sql = CONCAT(
 					'SELECT ',
@@ -3112,35 +3053,10 @@ function get_markers_property_views_report($conn, $neuron_ids, $views_request=NU
 					'COALESCE(t.page_statistics_name, ''None of the Above'') AS Neuron_Type_Name, ',
 					'COALESCE(NULLIF(derived.color, ''''), ''None of the Above'') AS Expression, ',
 					'COALESCE(NULLIF(derived.evidence, ''''), ''None of the Above'') AS Marker_Evidence, ',
-					@sql,
-					', SUM(
-						CASE
-						WHEN REPLACE(derived.page_views, '','', '''') > 0
-						THEN CAST(REPLACE(derived.page_views, '','', '''') AS UNSIGNED)
-						ELSE CAST(REPLACE(derived.sessions, '','', '''') AS UNSIGNED)
-						END
-					      ) AS Post_2019_Views, ',
-					'ROUND(".DELTA_VIEWS." * SUM(
-							CASE
-							WHEN REPLACE(derived.page_views, '','', '''') > 0
-							THEN CAST(REPLACE(derived.page_views, '','', '''') AS UNSIGNED)
-							ELSE CAST(REPLACE(derived.sessions, '','', '''') AS UNSIGNED)
-							END
-							)) AS Prorated_Pre_2019_Views, ',
-					'SUM(
-							CASE
-							WHEN REPLACE(derived.page_views, '','', '''') > 0
-							THEN CAST(REPLACE(derived.page_views, '','', '''') AS UNSIGNED)
-							ELSE CAST(REPLACE(derived.sessions, '','', '''') AS UNSIGNED)
-							END
-					    ) + ROUND(".DELTA_VIEWS." * SUM(
-							    CASE
-							    WHEN REPLACE(derived.page_views, '','', '''') > 0
-							    THEN CAST(REPLACE(derived.page_views, '','', '''') AS UNSIGNED)
-							    ELSE CAST(REPLACE(derived.sessions, '','', '''') AS UNSIGNED)
-							    END
-							    )) AS Total_Views ',
-					'FROM (',
+					 @sql, ', ',
+					 'ROUND(SUM(CASE WHEN REPLACE(page_views, '''', '''') > 0 THEN REPLACE(page_views, '''', '''') ELSE REPLACE(sessions, '''', '''') END) + ',
+						 '".DELTA_VIEWS." * SUM(CASE WHEN REPLACE(page_views, '''', '''') > 0 THEN REPLACE(page_views, '''', '''') ELSE REPLACE(sessions, '''', '''') END), 3) AS Total_Views ',
+					 'FROM (',
 							'SELECT ',
 							'page, ',
 							'CASE ',
@@ -3174,11 +3090,10 @@ function get_markers_property_views_report($conn, $neuron_ids, $views_request=NU
 							'COALESCE(NULLIF(derived.evidence, ''''), ''None of the Above'') ',
 							'ORDER BY t.position'
 								);";
-		$page_property_views_query .= "
-			PREPARE stmt FROM @sql;
-		EXECUTE stmt;
-		DEALLOCATE PREPARE stmt;";
+		$page_property_views_query .= "	PREPARE stmt FROM @sql;EXECUTE stmt;DEALLOCATE PREPARE stmt;";
 	}
+	//echo $page_property_views_query; exit;
+/*
 	$columns = ["Subregion", "Neuron Type Name", "Expression", "CB", "CR", "PV", "5HT-3", "CB1", "GABAa_alfa", "mGluR1a", "Mus2R", "Sub P Rec", "vGluT3", "CCK", "ENK", "NG", "NPY", "SOM", "VIP", "a-act2", 
 			"CoupTF_2", "nNOS", "RLN", "AChE", "AMIGO2", "AR-beta1", "AR-beta2", "Astn2", "BDNF", "Bok", "Caln", "CaM", "CaMKII_alpha", "CGRP", "ChAT", "Chrna2", "CRF", "Ctip2", "Cx36", "CXCR4", 
 			"Dcn", "Disc1", "DYN", "EAAT3", "ErbB4", "GABAa_alpha2", "GABAa_alpha3", "GABAa_alpha4", "GABAa_alpha5", "GABAa_alpha6", "GABAa_beta1", "GABAa_beta2", "GABAa_beta3", "GABAa_delta", 
@@ -3186,6 +3101,14 @@ function get_markers_property_views_report($conn, $neuron_ids, $views_request=NU
 			"Math-2", "mGluR1", "mGluR2", "mGluR2/3", "mGluR3", "mGluR4", "mGluR5", "mGluR5a", "mGluR7a", "mGluR8a", "MOR", "Mus1R", "Mus3R", "Mus4R", "Ndst4", "NECAB1", "Neuropilin2", "NKB", "Nov",
 			"Nr3c2", "Nr4a1", "p-CREB", "PCP4", "PPE", "PPTA", "Prox1", "Prss12", "Prss23", "PSA-NCAM", "SATB1", "SATB2", "SCIP", "SPO", "SubP", "Tc1568100", "TH", "vAChT", "vGAT", "vGluT1", 
 			"vGluT2", "VILIP", "Wfs1", "Y1", "Y2", "DCX", "NeuN", "NeuroD", "CRH", "NK1R", "Other", "Post_2019_Views","Prorated_Pre_2019_Views","Total_Views"];
+*/
+	$columns = ["Subregion", "Neuron Type Name", "Expression", "CB", "CR", "PV", "5HT-3", "CB1", "GABAa_alfa", "mGluR1a", "Mus2R", "Sub P Rec", "vGluT3", "CCK", "ENK", "NG", "NPY", "SOM", "VIP", "a-act2", 
+			"CoupTF_2", "nNOS", "RLN", "AChE", "AMIGO2", "AR-beta1", "AR-beta2", "Astn2", "BDNF", "Bok", "Caln", "CaM", "CaMKII_alpha", "CGRP", "ChAT", "Chrna2", "CRF", "Ctip2", "Cx36", "CXCR4", 
+			"Dcn", "Disc1", "DYN", "EAAT3", "ErbB4", "GABAa_alpha2", "GABAa_alpha3", "GABAa_alpha4", "GABAa_alpha5", "GABAa_alpha6", "GABAa_beta1", "GABAa_beta2", "GABAa_beta3", "GABAa_delta", 
+			"GABAa_gamma1", "GABAa_gamma2", "GABA-B1", "GAT-1", "GAT-3", "GluA1", "GluA2", "GluA2/3", "GluA3", "GluA4", "GlyT2", "Gpc3", "Grp", "Htr2c", "Id_2", "Kv3_1", "Loc432748", "Man1a", 
+			"Math-2", "mGluR1", "mGluR2", "mGluR2/3", "mGluR3", "mGluR4", "mGluR5", "mGluR5a", "mGluR7a", "mGluR8a", "MOR", "Mus1R", "Mus3R", "Mus4R", "Ndst4", "NECAB1", "Neuropilin2", "NKB", "Nov",
+			"Nr3c2", "Nr4a1", "p-CREB", "PCP4", "PPE", "PPTA", "Prox1", "Prss12", "Prss23", "PSA-NCAM", "SATB1", "SATB2", "SCIP", "SPO", "SubP", "Tc1568100", "TH", "vAChT", "vGAT", "vGluT1", 
+			"vGluT2", "VILIP", "Wfs1", "Y1", "Y2", "DCX", "NeuN", "NeuroD", "CRH", "NK1R", "Other", "Total_Views"];
         $table_string='';
 	 if(isset($write_file)) {
                 $file_name = "markers_evidence_page_";
@@ -3197,14 +3120,13 @@ function get_markers_property_views_report($conn, $neuron_ids, $views_request=NU
                         return format_table_markers($conn, $page_property_views_query, $table_string, $file_name, $columns, $neuron_ids, $write_file);
                 }
 	}else{
-		//echo $page_property_views_query;
 		$table_string .= get_table_skeleton_first($columns);
 		$table_string .= format_table_markers($conn, $page_property_views_query, $table_string, 'markers_evidence_page_views', $columns, $neuron_ids);
 		$table_string .= get_table_skeleton_end();
 		echo $table_string;
 	}
-$checkpoint1 = microtime(true);
-echo "Time for Section get_markers_property_views_report: " . ($checkpoint1 - $start_time) . " seconds";
+	 $checkpoint1 = microtime(true);
+	 echo "Time for Section get_markers_property_views_report: " . ($checkpoint1 - $start_time) . " seconds";
 }
 
 function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $views_request=NULL, $write_file=NULL){
