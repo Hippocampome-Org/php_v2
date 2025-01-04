@@ -528,14 +528,10 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 }
 
 function sanitizeValue($value, $escape_html = true) {
-    // Handle null or empty strings
     if (is_null($value) || trim($value) === '') {
         return is_numeric($value) ? '0' : ''; // Default to '0' for numeric fields
     }
-
-    // Handle numeric values
     if (is_numeric($value)) {
-        // Check if the value is an integer
         if ((float)$value == (int)$value) {
             $formatted = number_format((int)$value); // Format as integer (no decimals)
         } else {
@@ -3617,14 +3613,11 @@ function get_fp_property_views_report($conn, $views_request=NULL, $write_file=NU
 	$page_fp_property_views_query = "SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'meter=', -1), '&', 1) AS Firing_Pattern, 
 		SUM( CASE WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '') ELSE REPLACE(sessions, ',', '') END ) AS Post_2019_Views,
 		ROUND(".DELTA_VIEWS." * SUM( CASE WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '')  
-					ELSE REPLACE(sessions, ',', '') END )) AS Prorated_Pre_2019_Views, 
-		SUM( CASE WHEN REPLACE(page_views, ',', '') > 0 
-				THEN REPLACE(page_views, ',', '') ELSE REPLACE(sessions, ',', '') END ) + ROUND(".DELTA_VIEWS." * SUM( CASE 
-					WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '') ELSE REPLACE(sessions, ',', '') END )) AS 
-				Total_Views 
+					ELSE REPLACE(sessions, ',', '') END ), 3) AS Prorated_Pre_2019_Views, 
+		ROUND(SUM(CASE WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '') ELSE REPLACE(sessions, ',', '') END) + 
+    ".DELTA_VIEWS." * SUM(CASE WHEN REPLACE(page_views, ',', '') > 0 THEN REPLACE(page_views, ',', '') ELSE REPLACE(sessions, ',', '') END), 3) AS Total_Views
 				FROM GA_combined_analytics WHERE page REGEXP 'property_page_fp\.php' AND page REGEXP 'id_neuron=[0-9]+' 
 				GROUP BY SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'meter=', -1), '&', 1) ORDER BY Total_Views DESC;";
-	//echo $page_fp_property_views_query;
 	if ($views_request == "views_per_year" || $views_request == "views_per_month") {
 		$page_fp_property_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
 		if ($views_request == "views_per_month") {
@@ -3634,64 +3627,39 @@ function get_fp_property_views_report($conn, $views_request=NULL, $write_file=NU
 								' THEN CASE WHEN REPLACE(page_views, \'\', \'\') > 0 ',
 								' THEN REPLACE(page_views, \'\', \'\') ',
 								' ELSE REPLACE(sessions, \'\', \'\') END ELSE 0 END) AS `', 
+							YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`, ',
+							'ROUND(".DELTA_VIEWS." * SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index), 
+									' AND MONTH(day_index) = ', MONTH(day_index),
+									' THEN CASE WHEN REPLACE(page_views, \'\', \'\') > 0 ',
+									' THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END ELSE 0 END), 2) AS `Prorated_', 
 							YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3), '`' ) 
 						ORDER BY YEAR(day_index), MONTH(day_index) SEPARATOR ', ' ) INTO @sql FROM GA_combined_analytics 
 				WHERE page REGEXP 'property_page_fp\.php' AND page REGEXP 'id_neuron=[0-9]+'; ";
 		}
 		if ($views_request == "views_per_year") {
-			$page_fp_property_views_query .= "
-				SELECT 
-				GROUP_CONCAT(
-						DISTINCT CONCAT(
+			$page_fp_property_views_query .= "SELECT GROUP_CONCAT( DISTINCT CONCAT(
 							'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
 								' THEN CASE WHEN REPLACE(page_views, \'\', \'\') > 0 ',
 								' THEN REPLACE(page_views, \'\', \'\') ',
 								' ELSE REPLACE(sessions, \'\', \'\') END ELSE 0 END) AS `', 
-							YEAR(day_index), '`'
-							)
-						ORDER BY YEAR(day_index) 
-						SEPARATOR ', '
-					    ) 
-				INTO @sql
-				FROM GA_combined_analytics
-				WHERE 
-				page REGEXP 'property_page_fp\\.php' 
-				AND page REGEXP 'id_neuron=[0-9]+'; ";
+							YEAR(day_index), '`, ',
+							'ROUND(".DELTA_VIEWS." * SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
+									' THEN CASE WHEN REPLACE(page_views, \'\', \'\') > 0 ',
+									' THEN REPLACE(page_views, \'\', \'\') ELSE REPLACE(sessions, \'\', \'\') END ELSE 0 END), 2) AS `Prorated_', 
+							YEAR(day_index), '`')
+						ORDER BY YEAR(day_index) SEPARATOR ', ' ) 
+				INTO @sql FROM GA_combined_analytics
+				WHERE page REGEXP 'property_page_fp\\.php' AND page REGEXP 'id_neuron=[0-9]+'; ";
 		}
 		$page_fp_property_views_query .= "
 			SET @sql = CONCAT(
 					'SELECT ',
 					'SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''meter='', -1), ''&'', 1) AS Firing_Pattern, ',
 					@sql, ', ', 
-					' SUM(
-						CASE 
-						WHEN REPLACE(page_views, \",\",\"\") > 0 
-						THEN REPLACE(page_views, \",\", \"\") 
-						ELSE REPLACE(sessions, \",\", \"\") 
-						END
-					     ) AS Post_2019_Views, ', 
-					' ROUND(".DELTA_VIEWS." *  SUM(
-                                                CASE
-                                                WHEN REPLACE(page_views, \",\",\"\") > 0
-                                                THEN REPLACE(page_views, \",\", \"\")
-                                                ELSE REPLACE(sessions, \",\", \"\")
-                                                END
-                                             )) AS Prorated_Pre_2019_Views, ',
-					' SUM(
-                                                CASE
-                                                WHEN REPLACE(page_views, \",\",\"\") > 0
-                                                THEN REPLACE(page_views, \",\", \"\")
-                                                ELSE REPLACE(sessions, \",\", \"\")
-                                                END
-                                             ) + ROUND(".DELTA_VIEWS." *  SUM(
-                                                CASE
-                                                WHEN REPLACE(page_views, \",\",\"\") > 0
-                                                THEN REPLACE(page_views, \",\", \"\")
-                                                ELSE REPLACE(sessions, \",\", \"\")
-                                                END
-                                             ))  AS Total_Views ',
+					   'ROUND(SUM(CASE WHEN REPLACE(page_views, \',\', \'\') > 0 THEN REPLACE(page_views, \',\', \'\') ELSE REPLACE(sessions, \',\', \'\') END) + ',
+    '".DELTA_VIEWS." * SUM(CASE WHEN REPLACE(page_views, \',\', \'\') > 0 THEN REPLACE(page_views, \',\', \'\') ELSE REPLACE(sessions, \',\', \'\') END), 2) AS `Total_Views` ',
 					'FROM GA_combined_analytics ', 
-					' WHERE page REGEXP ''property_page_fp\.php'' AND page REGEXP ''id_neuron=[0-9]+'' ',
+					' WHERE page REGEXP ''property_page_fp\\.php'' AND page REGEXP ''id_neuron=[0-9]+'' ',
 					'GROUP BY Firing_Pattern ',
 					'ORDER BY Total_Views DESC'
 					);
@@ -3702,7 +3670,6 @@ function get_fp_property_views_report($conn, $views_request=NULL, $write_file=NU
 	$columns = ['Firing Pattern', 'Views'];
 	$options = ['format' => $fp_format,];
 	if(isset($write_file)) {
-		//	return format_table_combined($conn, $page_fp_property_views_query, 'firing_pattern_page_views', $columns, $write_file, $options);
 		$file_name = "firing_pattern_page_";
 		if($views_request == 'views_per_month' || $views_request == 'views_per_year'){
 			$file_name .= $views_request;
@@ -4057,7 +4024,6 @@ function get_page_functionality_views_report($conn, $views_request=NULL, $write_
 			$file_name .= $views_request;
 		}else{$file_name .= "views"; }
 		return format_table_combined($conn, $page_functionality_views_query, $file_name,  $columns, $write_file, $options, $views_request);
-		//	return format_table_combined($conn, $page_functionality_views_query, 'functionality_domain_page_views',  $columns, $write_file, $options);
 	}else{
 		$table_string = '';//get_table_skeleton_first($columns);
 		$table_string .= format_table_combined($conn, $page_functionality_views_query, 'functionality_domain_page_views',  $columns, $write_file=NULL, $options);
