@@ -1979,7 +1979,6 @@ function initializeNeuronData(array &$arraySubsNA, array &$arraySubs1, array $ro
 }
 
 function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_headers, $neuron_ids = NULL, $write_file = NULL, $array_subs = NULL){
-	
 	$count = 0;
 	$csv_rows=[];
         $rs = mysqli_query($conn,$query);
@@ -1994,8 +1993,7 @@ function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_
 		'all_other'=>'Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau, AP threshold, fAHP, or APpeak trough.',''=>'Other', 'None of the Above' => 'Other'];
 	$cols = [ 'Theta (deg)', 'SWR Ratio','In Vivo Firing Rate (Hz)', 'DS Ratio', 'Ripple (deg)','Gamma (deg)', 'Run/Stop Ratio','Epsilon',
 		'Non-Baseline Firing Rate (Hz)', 'Vrest (mV)', 'Tau (ms)',
-		'APthresh (mV)','fAHP (mV)','APpeak-trough (ms)','Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau, AP threshold, fAHP, or APpeak trough.','Other', 'Post_2019_Views', 'Prorated_Pre_2019_Views', 'Total_Views'];
-
+		'APthresh (mV)','fAHP (mV)','APpeak-trough (ms)','Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau, AP threshold, fAHP, or APpeak trough.','Other', 'Total_Views'];
 	if(!$rs || ($rs->num_rows < 1)){
                 $table_string1 .= "<tr><td> No Data is available </td></tr>";
 		return $table_string1;
@@ -2003,90 +2001,65 @@ function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_
 	$array_subs ??= [];
 	$array_subs1 ??= [];
 	$array_subsNA ??= [];
-
 	while ($rowvalue = mysqli_fetch_array($rs, MYSQLI_ASSOC)) {
-		// Link the neuron_name if it exists in the neuron_ids array
-		if (isset($neuron_ids[$rowvalue['Neuron_Type_Name']]) && $rowvalue['Neuron_Type_Name'] != 'None of the Above' ) {
+		if (isset($neuron_ids[$rowvalue['Neuron_Type_Name']]) && $rowvalue['Neuron_Type_Name'] != 'None of the Above') {
 			$rowvalue['Neuron_Type_Name'] = get_link($rowvalue['Neuron_Type_Name'], $neuron_ids[$rowvalue['Neuron_Type_Name']], './neuron_page.php', 'neuron');
 		}
-		// Initialize subregion and neuron name if not already set
-		// Check if the Neuron_Type_Name is 'None of the Above' or not and if it needs to be initialized
 		initializeNeuronData($array_subsNA, $array_subs1, $rowvalue, $cols);
-		// Get the segment based on evidence
 		$segment = $neuronal_segments[$rowvalue['Evidence']] ?? null;
-		// Increment count for the segment if it exists
 		$neuronTypeName = $rowvalue['Neuron_Type_Name'];
 		$subregion = $rowvalue['subregion'] ?? $rowvalue['Subregion'];
-		$views = intval($rowvalue['Post_2019_Views']);
-		$estimatedViews = intval($rowvalue['Prorated_Pre_2019_Views']);
-		$totalViews = intval($rowvalue['Total_Views']);
-
+		$totalViews = floatval($rowvalue['Total_Views']);
 		if ($segment) {
-			// If Neuron_Type_Name is 'None of the Above', use $array_subsNA
 			if ($neuronTypeName == 'None of the Above' && isset($array_subsNA['N/A']['None of the Above'])) {
-
 				$sub = "N/A";
 				$neuronType = "None of the Above";
-				$array_subsNA[$sub][$neuronType][$segment] += $views;
-				$array_subsNA[$sub][$neuronType]['Post_2019_Views'] += $views;
-				$array_subsNA[$sub][$neuronType]['Prorated_Pre_2019_Views'] += $estimatedViews;
+				$array_subsNA[$sub][$neuronType][$segment] += $totalViews;
 				$array_subsNA[$sub][$neuronType]['Total_Views'] += $totalViews;
-				// If Neuron_Type_Name is not 'None of the Above', use $array_subs1
-			} else if ($neuronTypeName != 'None of the Above' && isset($array_subs1[$subregion][$neuronTypeName][$segment])) {
-				// Update the counts for a specific Neuron Type
-				$array_subs1[$subregion][$neuronTypeName][$segment] += $views;
-				$array_subs1[$subregion][$neuronTypeName]['Post_2019_Views'] += $views;
-				$array_subs1[$subregion][$neuronTypeName]['Prorated_Pre_2019_Views'] += $estimatedViews;
+			} 
+			else if ($neuronTypeName != 'None of the Above' && isset($array_subs1[$subregion][$neuronTypeName][$segment])) {
+				$array_subs1[$subregion][$neuronTypeName][$segment] += $totalViews;
 				$array_subs1[$subregion][$neuronTypeName]['Total_Views'] += $totalViews;
 			}
 		}
 	}
-	// Merge $array_subs1 and $array_subsNA into $array_subs
-	
 	$array_subs = array_merge_recursive($array_subs1, $array_subsNA);
  	$column_totals = [];
-	if(isset($write_file)){
+	if (isset($write_file)) {
 		foreach ($array_subs as $groupKey => $subgroups) {
 			foreach ($subgroups as $subgroupKey => $colors) {
 				$rowData = [];
 				$rowData[] = $groupKey;  // Include the group key only on the first line of its subgroups
 				$rowData[] = $subgroupKey;  // Add subgroup key
-
 				$totalAdded = false;
 				foreach ($colors as $property => $value) {
-					if($property == "") continue;
+					if ($property == "") continue;
 					if (is_null($value) || trim($value) === '') {
-						if (is_numeric($value) || $value === '' || $value === null) {
-							$value = '0'; // Replace NULL or empty string with 0 for numeric fields
-						}
+						$value = 0.0;  // Replace NULL or empty values with 0.0
 					}
-					$showVal = 0;
-					$showVal = ($value >= 0) ? $value : 0;
-
-					$rowData[] = $showVal;
+					$value = is_numeric($value) ? (float)$value : 0.0;
+					$showVal = ($value >= 0) ? $value : 0.0;
+					$rowData[] = number_format($showVal, 2);  // Format to 2 decimal places
 					if (is_numeric($value)) {
-                                                if (!isset($column_totals[$property])) {
-                                                        $column_totals[$property] = 0;
-                                                }
-                                                $column_totals[$property] += $value;
-                                        }
-				}
-				// If 'total' was not added in the loop, ensure it's added now
-				if (!$totalAdded) {
-					//$rowData[] = '';  // Add an empty column if 'total' wasn't in $colors
+						if (!isset($column_totals[$property])) {
+							$column_totals[$property] = 0.0;
+						}
+						$column_totals[$property] += $value;
+					}
 				}
 				$csv_rows[] = $rowData;  // Write the row to the CSV file
 			}
 		}
-		//$totalCountRow = array_merge(["Total Count"], array_fill(1, $numHeaders - 2, ''), [$count] );
-                $csv_rows[] = generateTotalRow($csv_headers, true, $column_totals);
-		//$csv_rows[] = $totalCountRow;
-		$csv_data[$csv_tablename] = ['filename' => toCamelCase($csv_tablename), 'headers' => $csv_headers, 'rows' => $csv_rows];
+		$csv_rows[] = generateTotalRow($csv_headers, true, $column_totals);
+		$csv_data[$csv_tablename] = [
+			'filename' => toCamelCase($csv_tablename),
+			'headers' => $csv_headers,
+			'rows' => $csv_rows,
+		];
 		return $csv_data[$csv_tablename];
 	}
 	$i=$j=0;
  	$column_totals=[];
-
 	// Loop through the merged $array_subs
 	foreach ($array_subs as $groupKey => $subgroups) {
 		$table_string1 .= "<tr>";
@@ -2107,33 +2080,30 @@ function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_
 			} else {
 				$table_string1 .= "<td class='blue-bg'>" . $subgroupKey . "</td>";
 			}
-
 			foreach ($colors as $property => $value) {
-				// Check if the value is greater than 0, otherwise set to 0
-				$value = is_numeric($value) && $value > 0 ? $value : 0;
-
-				// Set background color for the properties
-				if ($i % 2 == 0) {
-					$table_string1 .= "<td class='white-bg'>" . $value . "</td>";
-				} else {
-					$table_string1 .= "<td class='blue-bg'>" . $value . "</td>";
-				}
-
-				// Accumulate totals if value is numeric
 				if (is_numeric($value)) {
-					$column_totals[$property] = ($column_totals[$property] ?? 0) + $value;
+					$floatValue = (float)$value;
+					$displayValue = ($floatValue == floor($floatValue)) ? $floatValue : number_format($floatValue, 2);
+				} else {
+					$displayValue = htmlspecialchars($value);
+				}
+				if ($i % 2 == 0) {
+					$table_string1 .= "<td class='white-bg'>" . $displayValue . "</td>";
+				} else {
+					$table_string1 .= "<td class='blue-bg'>" . $displayValue . "</td>";
+				}
+				if (is_numeric($value)) {
+					$column_totals[$property] = ($column_totals[$property] ?? 0.0) + (float)$value;
 				}
 			}
-
 			$table_string1 .= "</tr>";
-			$count += (int) $value;
+			$count += (float)$value;
 			$i++;
 		}
+
 		$j++;
 	}
         $table_string1 .= generateTotalRow($csv_headers, false, $column_totals);
-	
-	//$table_string1 .= "<tr><td colspan='".($rows-1)."'><b>Total Count</b></td><td>".$count."</td></tr>";
 	return $table_string1;
 }
 
@@ -3125,184 +3095,95 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 
 	// Check for 'phases' page types
 	if ($page_string == 'phases') {
-		
-		$columns = ['Subregion', 'Neuron Type Name', 'Theta (deg)', 'SWR Ratio','In Vivo Firing Rate (Hz)', 'DS Ratio', 'Ripple (deg)','Gamma (deg)', 'Run/Stop Ratio',
-				'Epsilon','Non-Baseline Firing Rate (Hz)', 
-				'Vrest (mV)', 'Tau (ms)','APthresh (mV)','fAHP (mV)','APpeak-trough (ms)','Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau, AP threshold, fAHP, or APpeak trough.', 'Other', 'Post_2019_Views', 'Prorated_Pre_2019_Views', 'Total_Views'];
+		$columns = ['Subregion', 'Neuron Type Name', 'Theta (deg)', 'SWR Ratio','In Vivo Firing Rate (Hz)', 'DS Ratio', 'Ripple (deg)','Gamma (deg)', 'Run/Stop Ratio', 'Epsilon','Non-Baseline Firing Rate (Hz)', 'Vrest (mV)', 'Tau (ms)','APthresh (mV)','fAHP (mV)','APpeak-trough (ms)','Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau, AP threshold, fAHP, or APpeak trough.', 'Other', 'Total_Views'];
 		$pageType = $page_string == 'phases' ? 'phases' : 'counts';
-		$page_counts_views_query = "SELECT 
-			COALESCE(t.subregion, 'N/A') AS Subregion,
-			COALESCE(t.page_statistics_name, 'None of the Above') AS Neuron_Type_Name,
-			COALESCE(NULLIF(derived.evidence, ''), 'None of the Above') AS Evidence,
-			SUM(
-					CASE 
-					WHEN REPLACE(derived.page_views, ',', '') > 0 
-					THEN CAST(REPLACE(derived.page_views, ',', '') AS UNSIGNED) 
-					ELSE CAST(REPLACE(derived.sessions, ',', '') AS UNSIGNED) 
-					END
-			   ) AS Post_2019_Views,
-			ROUND(
-					".DELTA_VIEWS." * SUM(
+		$page_counts_views_query = "SELECT COALESCE(t.subregion, 'N/A') AS Subregion, COALESCE(t.page_statistics_name, 'None of the Above') AS Neuron_Type_Name, COALESCE(NULLIF(derived.evidence, ''), 'None of the Above') AS Evidence, SUM(CASE WHEN REPLACE(derived.page_views, ',', '') > 0 THEN CAST(REPLACE(derived.page_views, ',', '') AS UNSIGNED) ELSE CAST(REPLACE(derived.sessions, ',', '') AS UNSIGNED) END) 
+				+ ROUND(".DELTA_VIEWS." * SUM(CASE WHEN REPLACE(derived.page_views, ',', '') > 0 THEN CAST(REPLACE(derived.page_views, ',', '') AS UNSIGNED) ELSE CAST(REPLACE(derived.sessions, ',', '') AS UNSIGNED) END), 2) AS Total_Views
+				FROM (
+						SELECT 
 						CASE 
-						WHEN REPLACE(derived.page_views, ',', '') > 0 
-						THEN CAST(REPLACE(derived.page_views, ',', '') AS UNSIGNED) 
-						ELSE CAST(REPLACE(derived.sessions, ',', '') AS UNSIGNED) 
-						END
-						)
-			     ) AS Prorated_Pre_2019_Views,
-			SUM(
-					CASE 
-					WHEN REPLACE(derived.page_views, ',', '') > 0 
-					THEN CAST(REPLACE(derived.page_views, ',', '') AS UNSIGNED) 
-					ELSE CAST(REPLACE(derived.sessions, ',', '') AS UNSIGNED) 
-					END
-			   ) + ROUND(
-				   ".DELTA_VIEWS." * SUM(
-					   CASE 
-					   WHEN REPLACE(derived.page_views, ',', '') > 0 
-					   THEN CAST(REPLACE(derived.page_views, ',', '') AS UNSIGNED) 
-					   ELSE CAST(REPLACE(derived.sessions, ',', '') AS UNSIGNED) 
-					   END
-					   )
-				   ) AS Total_Views
-			   FROM (
-					   SELECT 
-					   page,
-					   CASE 
-					   WHEN INSTR(page, 'id_neuron=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) 
-					   WHEN INSTR(page, 'id1_neuron=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) 
-					   WHEN INSTR(page, 'id_neuron_source=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) 
-					   WHEN INSTR(page, 'pre_id=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'pre_id=', -1), '&', 1) 
-					   ELSE NULL 
-					   END AS neuronID,
-					   CASE 
-					   WHEN INSTR(page, 'val_property=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1) 
-					   ELSE NULL 
-					   END AS evidence, page_views, sessions
-					   FROM GA_combined_analytics
-					   WHERE 
-					   page LIKE '%/property_page_%' 
-					   AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases'
-					   AND (
-						   page REGEXP 'id_neuron=[0-9]+' 
-						   OR page REGEXP 'id1_neuron=[0-9]+' 
-						   OR page REGEXP 'id_neuron_source=[0-9]+'
-						   OR page REGEXP 'pre_id=[0-9]+'
-					       )
-					   ) AS derived
-					   LEFT JOIN Type AS t ON t.id = derived.neuronID
-					   GROUP BY derived.page,
-			COALESCE(t.subregion, 'N/A'), COALESCE(t.page_statistics_name, 'None of the Above'),
-			COALESCE(NULLIF(derived.evidence, ''), 'None of the Above') ORDER BY CASE WHEN t.subregion = 'N/A' THEN 2 ELSE 1 END, t.position;";
-			//echo $page_counts_views_query;
+						WHEN INSTR(page, 'id_neuron=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) 
+						WHEN INSTR(page, 'id1_neuron=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) 
+						WHEN INSTR(page, 'id_neuron_source=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1) 
+						WHEN INSTR(page, 'pre_id=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'pre_id=', -1), '&', 1) 
+						ELSE NULL 
+						END AS neuronID, 
+						CASE 
+						WHEN INSTR(page, 'val_property=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1) 
+						ELSE NULL 
+						END AS evidence, page, page_views, sessions FROM GA_combined_analytics WHERE page LIKE '%/property_page_%' 
+						AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases' 
+						AND ( page REGEXP 'id_neuron=[0-9]+' OR page REGEXP 'id1_neuron=[0-9]+' OR page REGEXP 'id_neuron_source=[0-9]+' OR page REGEXP 'pre_id=[0-9]+' ) ) AS derived 
+						LEFT JOIN Type AS t ON t.id = derived.neuronID 
+						GROUP BY derived.page, COALESCE(t.subregion, 'N/A'), COALESCE(t.page_statistics_name, 'None of the Above'), COALESCE(NULLIF(derived.evidence, ''), 'None of the Above') ORDER BY CASE WHEN t.subregion = 'N/A' THEN 2 ELSE 1 END, t.position;";
 		if ($views_request == "views_per_month" || $views_request == "views_per_year") {
-			$page_counts_views_query= "SET SESSION group_concat_max_len = 1000000;
-			SET @sql = NULL;";
-			$base_query = "
-				SELECT
-				GROUP_CONCAT(
-						DISTINCT
-						CONCAT(
-							'SUM(CASE WHEN YEAR(day_index) = ', YEAR(day_index),
-								' THEN REPLACE(page_views, \",\", \"\") ELSE 0 END) AS `',
-							@time_unit, '`'
-						      )
-						ORDER BY YEAR(day_index) 
-						SEPARATOR ', '
-					    ) INTO @sql
-				FROM GA_combined_analytics 
-				WHERE
-				page LIKE '%/property_page_%'
-				AND (
-						SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases'
-				    );";
-
-			// Determine the specific time unit and formatting based on the request
+			$page_counts_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
 			if ($views_request == "views_per_month") {
-				$time_unit = "CONCAT(YEAR(day_index), ' ', LEFT(MONTHNAME(day_index), 3))";
-				$ordering = "ORDER BY YEAR(day_index), MONTH(day_index)";
-			} elseif ($views_request == "views_per_year") {
-				$time_unit = "YEAR(day_index)";
-				$ordering = "ORDER BY YEAR(day_index)";
+				$page_counts_views_query .= "SELECT GROUP_CONCAT( DISTINCT CONCAT(
+							'SUM(CASE WHEN DATE_FORMAT(STR_TO_DATE(day_index, \"%Y-%m-%d\"), \"%Y-%b\") = \"', DATE_FORMAT(STR_TO_DATE(day_index, \"%Y-%m-%d\"), \"%Y-%b\"), '\" ',
+								'THEN CASE WHEN REPLACE(page_views, \",\", \"\") > 0 THEN CAST(REPLACE(page_views, \",\", \"\") AS UNSIGNED) ELSE CAST(REPLACE(sessions, \",\", \"\") AS UNSIGNED) END ELSE 0 END) AS `', DATE_FORMAT(STR_TO_DATE(day_index, \"%Y-%m-%d\"), \"%Y-%b\"), '`, ',
+							'ROUND(".DELTA_VIEWS." * SUM(CASE WHEN DATE_FORMAT(STR_TO_DATE(day_index, \"%Y-%m-%d\"), \"%Y-%b\") = \"', DATE_FORMAT(STR_TO_DATE(day_index, \"%Y-%m-%d\"), \"%Y-%b\"), '\" ',
+									'THEN CASE WHEN REPLACE(page_views, \",\", \"\") > 0 THEN CAST(REPLACE(page_views, \",\", \"\") AS UNSIGNED) ELSE CAST(REPLACE(sessions, \",\", \"\") AS UNSIGNED) END ELSE 0 END), 2) AS `Prorated_', DATE_FORMAT(STR_TO_DATE(day_index, \"%Y-%m-%d\"), \"%Y-%b\"), '`'
+							)
+						ORDER BY DATE_FORMAT(STR_TO_DATE(day_index, \"%Y-%m-%d\"), \"%Y-%m\") SEPARATOR ', '
+						) INTO @sql
+					FROM GA_combined_analytics
+					WHERE page LIKE '%/property_page_%'
+					AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases'
+					AND ( page REGEXP 'id_neuron=[0-9]+' OR page REGEXP 'id1_neuron=[0-9]+' OR page REGEXP 'id_neuron_source=[0-9]+' OR page REGEXP 'pre_id=[0-9]+' );";
+			}
+			elseif ($views_request == "views_per_year") {
+				$page_counts_views_query .= "SELECT GROUP_CONCAT( DISTINCT CONCAT(
+							'SUM(CASE WHEN YEAR(STR_TO_DATE(day_index, \"%Y-%m-%d\")) = ', YEAR(STR_TO_DATE(day_index, \"%Y-%m-%d\")),
+								' THEN CASE WHEN REPLACE(page_views, \",\", \"\") > 0 THEN CAST(REPLACE(page_views, \",\", \"\") AS UNSIGNED) ELSE CAST(REPLACE(sessions, \",\", \"\") AS UNSIGNED) END ELSE 0 END) AS `', YEAR(STR_TO_DATE(day_index, \"%Y-%m-%d\")), '`, ',
+							'ROUND(".DELTA_VIEWS." * SUM(CASE WHEN YEAR(STR_TO_DATE(day_index, \"%Y-%m-%d\")) = ', YEAR(STR_TO_DATE(day_index, \"%Y-%m-%d\")),
+									' THEN CASE WHEN REPLACE(page_views, \",\", \"\") > 0 THEN CAST(REPLACE(page_views, \",\", \"\") AS UNSIGNED) ELSE CAST(REPLACE(sessions, \",\", \"\") AS UNSIGNED) END ELSE 0 END), 2) AS `Prorated_', YEAR(STR_TO_DATE(day_index, \"%Y-%m-%d\")), '`'
+							)
+						ORDER BY YEAR(STR_TO_DATE(day_index, \"%Y-%m-%d\")) SEPARATOR ', '
+						) INTO @sql
+					FROM GA_combined_analytics
+					WHERE page LIKE '%/property_page_%'
+					AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) = 'phases'
+					AND ( page REGEXP 'id_neuron=[0-9]+' OR page REGEXP 'id1_neuron=[0-9]+' OR page REGEXP 'id_neuron_source=[0-9]+' OR page REGEXP 'pre_id=[0-9]+' );";
 			}
 
-			// Construct the final query
-			$page_counts_views_query .= str_replace(
-					['@time_unit', '@ordering'],
-					[$time_unit, $ordering],
-					$base_query
-					);
-
-			// Build the main query
-			$page_counts_views_query .= "
-				SET @sql = CONCAT(
-						'SELECT ',
-						't.subregion AS Subregion, ',
-						't.page_statistics_name AS Neuron_Type_Name, ',
+			$page_counts_views_query .= "SET @sql = CONCAT(
+					'SELECT ',
+					'COALESCE(t.subregion, ''N/A'') AS Subregion, ',
+					'COALESCE(t.page_statistics_name, ''None of the Above'') AS Neuron_Type_Name, ',
+					'COALESCE(NULLIF(derived.evidence, ''''), ''None of the Above'') AS Evidence, ',
+					@sql, ', ',
+					'ROUND(SUM(CASE WHEN REPLACE(page_views, \",\", \"\") > 0 THEN CAST(REPLACE(page_views, \",\", \"\") AS UNSIGNED) ELSE CAST(REPLACE(sessions, \",\", \"\") AS UNSIGNED) END) + ',
+						'".DELTA_VIEWS." * SUM(CASE WHEN REPLACE(page_views, \",\", \"\") > 0 THEN CAST(REPLACE(page_views, \",\", \"\") AS UNSIGNED) ELSE CAST(REPLACE(sessions, \",\", \"\") AS UNSIGNED) END), 2) AS Total_Views ',
+					'FROM ( ',
+						'SELECT page, day_index, page_views, sessions, ',
 						'CASE ',
-						'    WHEN derived.evidence = \'theta\' THEN \'Theta (deg)\' ',
-						'    WHEN derived.evidence = \'swr_ratio\' THEN \'SWR Ratio\' ',
-						'    WHEN derived.evidence = \'firingRate\' THEN \'In Vivo Firing Rate (Hz)\' ',
-						'    WHEN derived.evidence = \'gamma\' THEN \'Gamma (deg)\' ',
-						'    WHEN derived.evidence = \'DS_ratio\' THEN \'DS Ratio\' ',
-						'    WHEN derived.evidence = \'Vrest\' THEN \'Vrest (mV)\' ',
-						'    WHEN derived.evidence = \'epsilon\' THEN \'Epsilon\' ',
-						'    WHEN derived.evidence = \'firingRateNonBaseline\' THEN \'Non-Baseline Firing Rate (Hz)\' ',
-						'    WHEN derived.evidence = \'APthresh\' THEN \'APthresh (mV)\' ',
-						'    WHEN derived.evidence = \'tau\' THEN \'Tau (ms)\' ',
-						'    WHEN derived.evidence = \'run_stop_ratio\' THEN \'Run/Stop Ratio\' ',
-						'    WHEN derived.evidence = \'ripple\' THEN \'Ripple (deg)\' ',
-						'    WHEN derived.evidence = \'fahp\' THEN \'fAHP (mV)\' ',
-						'    WHEN derived.evidence = \'APpeal\' THEN \'APpeak-trough (ms)\' ',
-						'    WHEN derived.evidence = \'all_other\' THEN \'Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau, AP threshold, fAHP, or APpeak trough.\' ',
-						'    ELSE \'Other\' ',
-						'END AS Evidence_Description, ',
-						@sql, 
-							', SUM(CASE
-									WHEN REPLACE(derived.page_views, '','', '''') > 0
-									THEN CAST(REPLACE(derived.page_views, '','', '''') AS UNSIGNED)
-									ELSE CAST(REPLACE(derived.sessions, '','', '''') AS UNSIGNED)
-									END
-							      ) AS Post_2019_Views, ',
-							'ROUND(".DELTA_VIEWS." * SUM(
-										CASE
-										WHEN REPLACE(derived.page_views, '','', '''') > 0
-										THEN CAST(REPLACE(derived.page_views, '','', '''') AS UNSIGNED)
-										ELSE CAST(REPLACE(derived.sessions, '','', '''') AS UNSIGNED)
-										END
-										)) AS Prorated_Pre_2019_Views, ',
-							'SUM(
-									CASE
-									WHEN REPLACE(derived.page_views, '','', '''') > 0
-									THEN CAST(REPLACE(derived.page_views, '','', '''') AS UNSIGNED)
-									ELSE CAST(REPLACE(derived.sessions, '','', '''') AS UNSIGNED)
-									END
-							    ) + ROUND(".DELTA_VIEWS." * SUM(
-									    CASE
-									    WHEN REPLACE(derived.page_views, '','', '''') > 0
-									    THEN CAST(REPLACE(derived.page_views, '','', '''') AS UNSIGNED)
-									    ELSE CAST(REPLACE(derived.sessions, '','', '''') AS UNSIGNED)
-									    END
-									    )) AS Total_Views ',
-							'FROM (',
-									'    SELECT page_views, sessions, ',
-									'        IF(INSTR(page, \'id_neuron=\') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id_neuron=\', -1), \'&\', 1), ',
-										'           IF(INSTR(page, \'id1_neuron=\') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id1_neuron=\', -1), \'&\', 1), ',
-											'           IF(INSTR(page, \'id_neuron_source=\') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'id_neuron_source=\', -1), \'&\', 1), \'\' ',
-												'           ))) AS neuronID, ',
-									'        IF(INSTR(page, \'val_property=\') > 0, SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'val_property=\', -1), \'&\', 1), \'\') AS evidence, ',
-									'        day_index ',
-									'    FROM GA_combined_analytics ',
-									'    WHERE page LIKE \'%/property_page_%\' ',
-									'      AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, \'/property_page_\', -1), \'.\', 1) = \'phases\' ',
-									') AS derived ',
-							'LEFT JOIN Type AS t ON t.id = derived.neuronID ',
-							'GROUP BY t.subregion, t.page_statistics_name, Evidence_Description ',
-							'ORDER BY t.position' 
-								); ";
-			$page_counts_views_query .= "PREPARE stmt FROM @sql; EXECUTE stmt;DEALLOCATE PREPARE stmt;";
+						'WHEN INSTR(page, ''id_neuron='') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron='', -1), ''&'', 1) ',
+						'WHEN INSTR(page, ''id1_neuron='') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id1_neuron='', -1), ''&'', 1) ',
+						'WHEN INSTR(page, ''id_neuron_source='') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''id_neuron_source='', -1), ''&'', 1) ',
+						'WHEN INSTR(page, ''pre_id='') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''pre_id='', -1), ''&'', 1) ',
+						'ELSE NULL ',
+						'END AS neuronID, ',
+						'CASE ',
+						'WHEN INSTR(page, ''val_property='') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''val_property='', -1), ''&'', 1) ',
+						'ELSE NULL ',
+						'END AS evidence ',
+						'FROM GA_combined_analytics ',
+						'WHERE page LIKE ''%/property_page_%'' ',
+						'AND SUBSTRING_INDEX(SUBSTRING_INDEX(page, ''/property_page_'', -1), ''.'', 1) = ''phases'' ',
+						'AND ( ',
+							'page REGEXP ''id_neuron=[0-9]+'' ',
+							'OR page REGEXP ''id1_neuron=[0-9]+'' ',
+							'OR page REGEXP ''id_neuron_source=[0-9]+'' ',
+							'OR page REGEXP ''pre_id=[0-9]+'' ',
+							') ',
+						') AS derived ',
+						'LEFT JOIN Type AS t ON t.id = derived.neuronID ',
+						'GROUP BY COALESCE(t.subregion, ''N/A''), COALESCE(t.page_statistics_name, ''None of the Above''), COALESCE(NULLIF(derived.evidence, ''''), ''None of the Above''), page ',
+						'ORDER BY t.position;' );";
+			$page_counts_views_query .= "PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;";
 		}
-		//echo  $page_counts_views_query;
+		//echo  $page_counts_views_query; exit;
 	}
 
 	// Check for 'connectivity' page types
@@ -3367,27 +3248,13 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 							LEFT JOIN Type AS t_source ON t_source.id = derived.source_neuronID 
 							LEFT JOIN Type AS t_target ON t_target.id = derived.target_neuronID 
 							GROUP BY 
-							derived.page, 
-						derived.source_neuronID, 
-						derived.target_neuronID, 
-						t_source.page_statistics_name, 
-						t_source.subregion, 
-						derived.source_color, 
-						derived.source_evidence, 
-						t_target.page_statistics_name, 
-						t_target.subregion, 
-						derived.target_color, 
-						derived.target_evidence, 
-						derived.parcel_specific, 
-						derived.nm_page 
+							derived.page, derived.source_neuronID, derived.target_neuronID, t_source.page_statistics_name, t_source.subregion, derived.source_color, derived.source_evidence, t_target.page_statistics_name, t_target.subregion, derived.target_color, 
+						derived.target_evidence, derived.parcel_specific, derived.nm_page 
 							ORDER BY 
 							CASE 
 							WHEN t_source.subregion = 'N/A' OR t_target.subregion = 'N/A' THEN 1 
 							ELSE 0 
-							END, 
-						t_source.position, 
-						t_source.page_statistics_name, 
-						t_target.page_statistics_name;";
+							END, t_source.position, t_source.page_statistics_name, t_target.page_statistics_name;";
 		//echo $page_counts_views_query;
         }
 
