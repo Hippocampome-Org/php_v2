@@ -3097,96 +3097,40 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
         if ($page_string == 'connectivity') {
 		$columns = ['Presynaptic Subregion', 'Presynaptic Neuron Type Name', 'Postsynaptic Subregion', 'Postsynaptic Neuron Type Name', 'Potential Connectivity Evidence', 'Number of Potential Synapses Parcel-Specific Table', 'Number of Potential Synapses Evidence', 'Number of Contacts Parcel-Specific Table', 'Number of Contacts Evidence', 'Synaptic Probability Parcel-Specific Table', 'Synaptic Probability Evidence', 'Other', 'Total_Views'];
 		$pageType = $page_string = 'connectivity';
-		$page_counts_views_query = "SELECT 
-			derived.page, 
-			derived.source_neuronID, 
-			derived.target_neuronID, 
-			COALESCE(t_source.subregion, 'N/A') AS source_subregion, 
-			COALESCE(t_source.page_statistics_name, 'None of the Above') AS source_neuron_name, 
-			derived.source_evidence, 
-			derived.source_color, 
-			COALESCE(t_target.subregion, 'N/A') AS target_subregion, 
-			COALESCE(t_target.page_statistics_name, 'None of the Above') AS target_neuron_name, 
-			derived.target_evidence, 
-			derived.target_color, 
-			derived.parcel_specific, 
-			COALESCE(derived.nm_page, 'N/A') AS nm_page, 
-			ROUND(
-					SUM(CAST(REPLACE(derived.page_views, ',', '') AS DECIMAL(15, 2))) + 
-					(".DELTA_VIEWS." * SUM(CAST(REPLACE(derived.page_views, ',', '') AS DECIMAL(15, 2)))), 
-					2
-			     ) AS Total_Views
-				FROM (
-						SELECT 
-						page, 
-						CASE 
-						WHEN REPLACE(page_views, ',', '') > 0 THEN page_views 
-						ELSE sessions 
-						END AS page_views, 
-						CASE 
-						WHEN INSTR(page, 'id_neuron=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1)
-						WHEN INSTR(page, 'id1_neuron=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1)
+		$page_counts_views_query="SELECT derived.page, derived.source_neuronID, derived.target_neuronID, COALESCE(t_source.subregion, 'N/A') AS source_subregion, 
+			COALESCE(t_source.page_statistics_name, 'None of the Above') AS source_neuron_name, derived.source_evidence, derived.source_color,
+			COALESCE(t_target.subregion, 'N/A') AS target_subregion, COALESCE(t_target.page_statistics_name, 'None of the Above') AS 
+				target_neuron_name, derived.target_evidence, derived.target_color, derived.parcel_specific, COALESCE(derived.nm_page, 'N/A') AS
+				nm_page, ROUND( SUM(CAST(REPLACE(derived.page_views, ',', '') AS DECIMAL(15, 2))) + (".DELTA_VIEWS." * SUM(CAST(REPLACE(derived.page_views, ',', '') AS DECIMAL(15, 2)))), 4 ) AS Total_Views 
+				FROM ( 
+						SELECT page, CASE WHEN REPLACE(page_views, ',', '') > 0 THEN page_views ELSE sessions END AS page_views, 
+						CASE WHEN INSTR(page, 'id_neuron=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron=', -1), '&', 1) WHEN
+						INSTR(page, 'id1_neuron=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id1_neuron=', -1), '&', 1) 
 						WHEN INSTR(page, 'id_neuron_source=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_source=', -1), '&', 1)
-						ELSE NULL 
-						END AS source_neuronID, 
-						CASE 
-						WHEN INSTR(page, 'val_property=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1) 
-						WHEN INSTR(page, 'val1_property=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val1_property=', -1), '&', 1)
-						ELSE NULL 
-						END AS source_evidence, 
-						CASE 
-						WHEN INSTR(page, 'color=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1) 
+						ELSE NULL END AS source_neuronID, CASE WHEN INSTR(page, 'val_property=') > 0 THEN 
+						SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val_property=', -1), '&', 1) WHEN INSTR(page, 'val1_property=') > 0 
+						THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val1_property=', -1), '&', 1) ELSE NULL END AS source_evidence, 
+						CASE WHEN INSTR(page, 'color=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color=', -1), '&', 1) 
 						WHEN INSTR(page, 'color1=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color1=', -1), '&', 1) 
-						ELSE NULL 
-						END AS source_color, 
-						CASE 
-							WHEN INSTR(page, 'id_neuron_target=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_target=', -1), '&', 1)
-							WHEN INSTR(page, 'id2_neuron=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id2_neuron=', -1), '&', 1)
-							ELSE NULL 
-							END AS target_neuronID, 
-						CASE 
-							WHEN INSTR(page, 'val2_property=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val2_property=', -1), '&', 1) 
-							ELSE NULL 
-							END AS target_evidence, 
-						CASE 
-							WHEN INSTR(page, 'color2=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color2=', -1), '&', 1) 
-							ELSE NULL 
-							END AS target_color, 
+						ELSE NULL END AS source_color, CASE WHEN INSTR(page, 'id_neuron_target=') > 0 
+						THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id_neuron_target=', -1), '&', 1) WHEN INSTR(page, 'id2_neuron=') > 0 
+						THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'id2_neuron=', -1), '&', 1) ELSE NULL END AS target_neuronID, 
+						CASE WHEN INSTR(page, 'val2_property=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'val2_property=', -1), '&', 1) 
+						ELSE NULL END AS target_evidence, CASE WHEN INSTR(page, 'color2=') > 0 
+						THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'color2=', -1), '&', 1) ELSE NULL END AS target_color, 
 						SUBSTRING_INDEX(SUBSTRING_INDEX(page, '/property_page_', -1), '.', 1) AS parcel_specific, 
-						CASE 
-							WHEN INSTR(page, 'nm_page=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'nm_page=', -1), '&', 1) 
-							ELSE NULL 
-							END AS nm_page 
-
-							FROM GA_combined_analytics 
-							WHERE page REGEXP 'property_page_synpro|synapse_probabilities|property_page_connectivity' 
-							AND (page REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+')
-							) AS derived 
-							LEFT JOIN Type AS t_source ON t_source.id = derived.source_neuronID 
-							LEFT JOIN Type AS t_target ON t_target.id = derived.target_neuronID 
-							GROUP BY 
-							derived.page, 
-						derived.source_neuronID, 
-						derived.target_neuronID, 
-						t_source.page_statistics_name, 
-						t_source.subregion, 
-						derived.source_color, 
-						derived.source_evidence, 
-						t_target.page_statistics_name, 
-						t_target.subregion, 
-						derived.target_color, 
-						derived.target_evidence, 
-						derived.parcel_specific, 
-						derived.nm_page 
-							ORDER BY 
-							CASE 
-							WHEN t_source.subregion = 'N/A' OR t_target.subregion = 'N/A' THEN 1 
-							ELSE 0 
-							END, 
-						t_source.position, t_source.page_statistics_name, t_target.page_statistics_name;";
-		//echo $page_counts_views_query;
+						CASE WHEN INSTR(page, 'nm_page=') > 0 THEN SUBSTRING_INDEX(SUBSTRING_INDEX(page, 'nm_page=', -1), '&', 1) ELSE NULL END AS 
+						nm_page FROM GA_combined_analytics WHERE 
+						page  REGEXP 'property_page_synpro|property_page_synpro_nm|property_page_synpro_pvals|property_page_synpro_nm_old2|synapse_probabilites\.php|property_page_connectivity|
+						property_page_connectivity_orig|property_page_connectivity_test|connectivity\.php|synaptic_mod_sum|params_summary|synaptome|synaptome_modeling\.php' 
+						AND ( page REGEXP 'id_neuron=[0-9]+|id1_neuron=[0-9]+|id_neuron_source=[0-9]+|pre_id=[0-9]+' ) ) 
+						AS derived LEFT JOIN Type AS t_source ON t_source.id = derived.source_neuronID 
+						LEFT JOIN Type AS t_target ON t_target.id = derived.target_neuronID GROUP BY derived.page, derived.source_neuronID,
+						derived.target_neuronID, t_source.page_statistics_name, t_source.subregion, derived.source_color, derived.source_evidence,
+						t_target.page_statistics_name, t_target.subregion, derived.target_color, derived.target_evidence, 
+						derived.parcel_specific, derived.nm_page ORDER BY CASE WHEN t_source.subregion = 'N/A' OR t_target.subregion = 'N/A' 
+							THEN 1 ELSE 0 END, t_source.position, t_source.page_statistics_name, t_target.page_statistics_name;";
         }
-
 	// Check for 'biophysics' page types
         if ($page_string == 'biophysics') {
                 $pageType = $page_string = 'biophysics';
@@ -3268,7 +3212,6 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 								);
 			PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;";
                 }
-		//echo $page_counts_views_query;exit;
         }
 
 	// Check for 'synpro' or 'synpro_nm' page types
@@ -3280,9 +3223,7 @@ function get_counts_views_report($conn, $page_string=NULL, $neuron_ids=NULL, $vi
 		if ($page_string == 'synpro') {
 			array_splice($columns, 4, 0, ['Sp Page']); // Insert 'Sp Page' at the correct position
 		}
-		
-
-		 $page_counts_views_query = "SELECT derived.page, SUM(REPLACE(page_views, ',', '')) AS views
+		$page_counts_views_query = "SELECT derived.page, SUM(REPLACE(page_views, ',', '')) AS views
                                                 FROM (SELECT page, page_views, SUBSTRING_INDEX(SUBSTRING_INDEX(page, '?id_neuron=', -1), '&', 1) AS neuronID
                                                         FROM GA_combined_analytics 
                                                         WHERE  page LIKE '%$pageType?id_neuron=%'
@@ -3562,6 +3503,7 @@ function get_domain_functionality_views_report($conn, $views_request = NULL, $wr
 								'Synapse Probabilities', 'In Vivo Recordings', 'Cognome', 'Neuron Type Census', 
 								'Simulation Parameters', 'Other'
 							      );";
+	//echo $page_functionality_views_query;
 	// Check if the request is for monthly or yearly views
 	if (($views_request == "views_per_month") || ($views_request == "views_per_year")) {
 		$page_functionality_views_query = "SET SESSION group_concat_max_len = 1000000; SET @sql = NULL;";
