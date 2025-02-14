@@ -1059,16 +1059,14 @@ function format_table_connectivity($conn, $query, $table_string, $csv_tablename,
 					foreach ($target_neuron_values as $target_neuron => $values) {
 						$target_neuron_name = $target_neuron;
 						$row = [$source_subregion, $source_neuron_name, $target_subregion, $target_neuron_name];
-
 						foreach ($values as $property => $value) {
-							if (!is_numeric($value)) {
-								error_log("Non-numeric value encountered: $property => $value");
+							if (!isset($value) || is_null($value) || trim((string)$value) === '' || !is_numeric($value)) {
 								$value = 0.0;
+							} else {
+								$value = floatval($value);
 							}
-							$value = floatval($value);
-							$displayValue = ($value == floor($value)) ? $value : number_format($value, 2);
-
-							$row[] = max($displayValue, 0.0); // Ensure non-negative
+							$displayValue = ($value == floor($value)) ? $value : round($value, 2); 
+							$row[] = ($displayValue === 0.0) ? "0.0" : max($displayValue, 0.0);
 							$column_totals[$property] = ($column_totals[$property] ?? 0.0) + $value;
 						}
 						$csv_rows[] = $row;
@@ -1077,13 +1075,11 @@ function format_table_connectivity($conn, $query, $table_string, $csv_tablename,
 			}
 		}
 		$csv_rows[] = generateTotalRow($csv_headers, true, $column_totals);
-
 		$csv_data[$csv_tablename] = [
 			'filename' => toCamelCase($csv_tablename),
 			'headers' => $csv_headers,
 			'rows' => $csv_rows,
 		];
-
 		return $csv_data[$csv_tablename];
 	}
         $i = $j = $k = $total_count =0;
@@ -1276,15 +1272,11 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 			    $typeData = [$type]; // First value in the row
 
 			    foreach ($values as $category => $properties) {
-				    $rowData = array_merge($typeData, [$subtype, $category]); // Create row with type, subtype, and category
-
+				    $rowData = array_merge($typeData, [$subtype, $category]); 
 				    foreach ($properties as $property => $value) {
 					    if ($property == "") continue; // Skip empty properties
-
-					    if (is_null($value) || trim($value) === '') {
-						    if (is_numeric($value) || $value === '' || $value === null) {
-							    $value = '0'; // Replace NULL or empty string with 0 for numeric fields
-						    }
+					    if (is_null($value) || trim((string)$value) === '') {
+						    $value = 0;
 					    }
 
 					    // Show value if >= 1, otherwise set it to zero
@@ -1293,7 +1285,8 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 					    if (is_numeric($value)) {
 						    $column_totals[$property] = ($column_totals[$property] ?? 0) + $value;
 					    }     
-					    $rowData[] = $showVal;
+					    $rowData[] = $showVal !== 0 ? $showVal: "0";
+
 				    }
 				    // Add rowData to CSV rows
 				    $csv_rows[] = $rowData;
@@ -1510,14 +1503,11 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
                             $typeData = [$type]; // First value in the row
                             foreach ($values as $category => $properties) {
                                     $rowData = array_merge($typeData, [$subtype, $category]); // Create row with type, subtype, and category
-
                                     foreach ($properties as $property => $value) {
                                             if ($property == "") continue; // Skip empty properties
-					     if (is_null($value) || trim($value) === '') {
-                                                    if (is_numeric($value) || $value === '' || $value === null) {
-                                                            $value = '0'; // Replace NULL or empty string with 0 for numeric fields
-                                                    }
-                                            }
+					    if (is_null($value) || trim((string)$value) === '') {
+						    $value = 0;
+					    }
 
                                             // Show value if >= 1, otherwise set it to zero 
                                             $showVal = is_numeric($value) ? $value : 0; 
@@ -1525,7 +1515,7 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
                                             if (is_numeric($value)) {
 						    $column_totals[$property] = ($column_totals[$property] ?? 0) + $value;
                                             }                
-                                            $rowData[] = $showVal;
+					    $rowData[] = $showVal !== 0 ? $showVal : "0";  
                                     }    
 				    // Check if the row is a special row (starting with N/A, None of the Above)
 				    if ($type === 'N/A' && $subtype === 'None of the Above') {
@@ -1804,12 +1794,10 @@ function format_table_biophysics($conn, $query, $table_string, $csv_tablename, $
 				$rowData[1] = $subgroupKey; // Set the 'Subgroup' column
 				foreach ($colors as $property => $value) {
 					$headerIndex = array_search($property, $all_headers, true);
-					$value = is_numeric($value) ? floatval($value) : 0.0; // Ensure value is a float
+					$value = (is_numeric($value) && $value !== '') ? floatval($value) : 0.0;
 					if ($headerIndex !== false) {
-						$rowData[$headerIndex] = $value > 0 ? $value : 0; // Ensure non-negative values
-						if (is_numeric($value)) {
-							$column_totals[$property] = ($column_totals[$property] ?? 0.0) + $value; // Accumulate totals
-						}
+						$rowData[$headerIndex] = ($value > 0) ? $value : "0"; // Ensure non-negative values
+						$column_totals[$property] = ($column_totals[$property] ?? 0.0) + $value; // Accumulate totals
 					}
 				}
 				$csv_rows[] = $rowData;
