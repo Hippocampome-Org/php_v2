@@ -112,8 +112,8 @@ original paper(s) that describe the data.<o:p></o:p></span></p>
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in;mso-list:l0 level1 lfo1'><![if !supportLists]><span
 style='font-size:16.0pt;line-height:115%;mso-fareast-font-family:"Times New Roman"'><span
 style='mso-list:Ignore'>2.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
-</span></span></span><![endif]><span style='font-size:16.0pt;line-height:115%'>The
-complete name: Hippocampome.org.<o:p></o:p></span></p>
+</span></span></span><![endif]><span style='font-size:16.0pt;line-height:115%'>The 
+complete name: Hippocampome.org (RRID:SCR_009023).<o:p></o:p></span></p>
 
 <p class=MsoListParagraphCxSpLast style='text-indent:-.25in;mso-list:l0 level1 lfo1'><![if !supportLists]><span
 style='font-size:16.0pt;line-height:115%;mso-fareast-font-family:"Times New Roman"'><span
