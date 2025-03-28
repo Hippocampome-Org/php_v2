@@ -36,8 +36,162 @@ $morphology_properties_query =
 
  //to hide Firing Pattern button at the bottom page
 $query = "SELECT permission FROM user WHERE id=2"; // id=2 is anonymous user
+//echo $query;
 $rs = mysqli_query($conn,$query);
 list($permission) = mysqli_fetch_row($rs);
+
+function update_arrayHash($conflict_tables, $key, $result_subject, $id_t, $name_type, $subregion_type, $position_type, $n_result_tot, $conflict = NULL)
+{
+	$conflict_tables[$key]['table_header'] = $result_subject;
+	$conflict_tables[$key]['id_t'] = $id_t;
+	$conflict_tables[$key]['name_type'] = $name_type;
+	$conflict_tables[$key]['subregion_type'] = $subregion_type;
+	$conflict_tables[$key]['position_type'] = $position_type;
+	$conflict_tables[$key]['n_result_tot'] = $n_result_tot;	
+	return $conflict_tables[$key];
+}
+//Added on Nov 12 2022
+function dbresultsconsolidated($rs){
+	$array_conflict_ids = array();
+	while(list($id, $subject, $subject_count, $conflict) = mysqli_fetch_row($rs))
+	{
+		if (strpos($conflict, "positive") !== false) {
+			if(CheckIfArrNotEmpty($array_conflict_ids, "positive")){
+				if(intval($subject_count) == intval($array_conflict_ids["positive"][2])){
+					$old_ids = explode(", ", $array_conflict_ids["positive"][0]);
+					$idval = explode(", ", $id);
+					$ids = array_merge($old_ids, $idval);
+					$id = implode(", ", $ids);
+					$array_conflict_ids["positive"] = array($id, $subject, $subject_count, $conflict);
+				}else{
+					$array_conflict_ids[$conflict] = array($id, $subject, $subject_count, $conflict);
+				}
+			}else{
+				$array_conflict_ids["positive"] = array($id, $subject, $subject_count, $conflict);
+			}
+		}
+		else if (strpos($conflict, "negative") !== false) {
+			if(CheckIfArrNotEmpty($array_conflict_ids, "negative")){
+				if(intval($subject_count) == intval($array_conflict_ids["negative"][2])){
+					$old_ids = explode(", ", $array_conflict_ids["negative"][0]);
+					$idval = explode(", ", $id);
+					$ids = array_merge($old_ids, $idval);
+					$id = implode(", ", $ids);
+					$array_conflict_ids["negative"] = array($id, $subject, $subject_count, $conflict);
+				}else{
+					$array_conflict_ids[$conflict] = array($id, $subject, $subject_count, $conflict);
+				}
+			}else{
+				$array_conflict_ids["negative"] = array($id, $subject, $subject_count, $conflict);
+			}
+		}
+		else{
+			$array_conflict_ids[$conflict] = array($id, $subject, $subject_count, $conflict);
+		}
+	}
+	return $array_conflict_ids;
+}
+
+function CheckIfArrNotEmpty($array = array(), $key = null)
+{
+    if (array_key_exists($key, $array) && !empty($array[$key])) {
+        return true;
+    }
+    if (is_array($array)) {
+        foreach ((array)$array as $arrKey => $arrValue) {
+            if (is_array($arrValue)) {
+                return CheckIfArrNotEmpty($arrValue, $key);
+            }
+            if ($arrKey == $key && !empty($arrValue)) {
+                return $arrValue;
+            }
+        }
+    }
+    return false;
+}
+
+//Till Here
+function get_UItable($id, $subject, $conflict, $type, $name_temporary_table_result){
+	$n_result_tot_unknown = $n_result_tot=0;
+	$id_t = $name_type = $subregion_type = $position_type = $id_t_unknown = 
+	$name_type_unknown = $subregion_type_unknown = $position_type_unknown = array();
+
+	$idVals = explode(', ', $id);//looping as I printed but some error?
+	foreach($idVals as $id){
+		if (strpos($id, '0_') == 1)
+		{
+			$id = str_replace('10_', '', $id);
+			$type -> retrieve_by_id($id);
+			$status = $type -> getStatus();	
+								
+			if ($status == 'active')
+			{
+				$id_t_unknown[$n_result_tot_unknown] = $id;
+				$name_type_unknown[$n_result_tot_unknown] = $type -> getNickname();
+				$subregion_type_unknown[$n_result_tot_unknown] = $type -> getSubregion();
+				$position_type_unknown[$n_result_tot_unknown] = $type -> getPosition();
+					
+				//print("/nickname:".$name_type_unknown[$n_result_tot_unknown]);
+				//print("/subregion:".$subregion_type_unknown[$n_result_tot_unknown]);
+				$pos=0;
+				$pos= strpos($name_type_unknown[$n_result_tot_unknown],$subregion_type_unknown[$n_result_tot_unknown]);
+						
+				if($pos!==false)
+				{
+							
+					$name_type_unknown[$n_result_tot_unknown]=str_replace($subregion_type_unknown[$n_result_tot_unknown],"", $name_type_unknown[$n_result_tot_unknown]);
+					//substr_replace($subregion_type_unknown[$n_result_tot_unknown],"",$pos);		
+				}
+				$n_result_tot_unknown = $n_result_tot_unknown +1;
+			}
+		}
+		else
+		{
+			$conflictNote = NULL;
+			if (strpos($id, '_') === 0)
+			{
+				$old_id=$id;
+				$id=substr($id,1,strlen($id));
+				$conflictArr=explode("_", $id);
+				$id=$conflictArr[0];
+				$conflictNote=$conflictArr[1];
+				$inference_array[$id]=$conflictNote;
+				$up_temp ="UPDATE $name_temporary_table_result SET id_type='$id' WHERE id_type='$old_id'";
+				$query = mysqli_query($GLOBALS['conn'],$up_temp);
+			}
+			$type -> retrieve_by_id($id);
+			$status = $type -> getStatus();									
+			if ($status == 'active')
+			{
+				$id_t[$n_result_tot] = $id;
+				$name_type[$n_result_tot] = $type -> getNickname();
+				$subregion_type[$n_result_tot] = $type -> getSubregion();
+				$position_type[$n_result_tot] = $type -> getPosition();	
+
+				//print("/nickname:".$name_type[$n_result_tot]);
+				//print("/subregion:".$subregion_type[$n_result_tot]);
+				$pos=0;
+				$pos= strpos($name_type[$n_result_tot],$subregion_type[$n_result_tot]);
+							
+				if($pos!== false)
+				{
+					$name_type[$n_result_tot]= str_replace($subregion_type[$n_result_tot],"", $name_type[$n_result_tot]);
+					//print(substr_replace($subregion_type[$n_result_tot_unknown],"",$pos));
+				}
+				if($conflictNote){
+					$name_type[$n_result_tot] .= " (".$conflictNote.")";
+				}
+				$n_result_tot = $n_result_tot +1;
+			}
+		}
+	}//End For
+	if(count($id_t) >0  && count($name_type) > 0 && count($subregion_type) > 0 && count($position_type) > 0 && 
+	$n_result_tot > 0){
+	return array($id_t, $name_type, $subregion_type, $position_type, $n_result_tot);
+	}else{
+	return array($id_t_unknown, $name_type_unknown, $subregion_type_unknown, $position_type_unknown, $n_result_tot_unknown);
+	}
+}
 
 // Function to create the temporary table for the search field: ++++++++++++++++++++++++++++++++++
 function create_result_table_result ($name_temporary_table)
@@ -47,27 +201,52 @@ function create_result_table_result ($name_temporary_table)
 	
 	$creatable=	"CREATE TABLE IF NOT EXISTS $name_temporary_table (
 				   id int(4) NOT NULL AUTO_INCREMENT,
+				   subject varchar(200), -- Added on Oct 23
 				   id_type varchar(200),
+				   conflict varchar(200), -- Added on Oct 23
 				   PRIMARY KEY (id));";
+	//echo $creatable;
 	$query = mysqli_query($GLOBALS['conn'],$creatable);
 }	
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
 // Function to insert the type_id in the temporary table AND: ++++++++++++++++++++++++++++++++++++++
-function insert_result_table_result($table, $id_type, $n_type_id)
+function insert_result_table_result($table, $id_type, $n_type_id, $markers = NULL)
 {
-	for ($i=0; $i<$n_type_id; $i++)
-	{
-		$query_i = "INSERT INTO $table
-		  (id,
+	if(isset($markers)){
+		for ($i=0; $i<count($id_type); $i++){
+			$subject = $id_type[$i][0];
+			$id = $id_type[$i][1];
+			$conflict = $id_type[$i][2];
+
+			$query_i = "INSERT INTO $table
+				(id,
+				 subject,
+					id_type,
+					conflict
+				)
+				VALUES
+				(NULL,
+				'$subject',
+					'$id',
+					'$conflict'
+				)";
+			$rs2 = mysqli_query($GLOBALS['conn'],$query_i);
+		  }
+	}else{
+		for ($i=0; $i<$n_type_id; $i++)
+		{
+			$query_i = "INSERT INTO $table
+		  	(id,
 			id_type
-		   )
-		VALUES
-		  (NULL,
+		   	)
+			VALUES
+		  	(NULL,
 			'$id_type[$i]'
-		   )";
-		$rs2 = mysqli_query($GLOBALS['conn'],$query_i);	
+		   	)";
+			$rs2 = mysqli_query($GLOBALS['conn'],$query_i);	
+		}
 	}
 }
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -104,7 +283,6 @@ function unique_ids_search($relation,$value){
 // SEARCH Function for MORPHOLOGY: ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 function morphology_search_for_hippocampal_formation ($evidencepropertyyperel, $property_1, $part, $rel, $val, $type)
 {	
-	
 	if ($val == 'Hippocampal formation')
 		$property_1 -> retrive_ID(4, $part, $rel, NULL);
 	else if ($val == 'DG')
@@ -128,7 +306,6 @@ function morphology_search_for_hippocampal_formation ($evidencepropertyyperel, $
 	for ($i1=0; $i1<$n_property_id; $i1++)
 	{
 		$property_id = $property_1 -> getProperty_id($i1);    
-
 	     ///changes for ""Not IN" typse search. Issue 151
 		 if ($rel == "in")			
 		     $evidencepropertyyperel -> retrive_Type_id_by_Property_id($property_id);			
@@ -152,15 +329,16 @@ function morphology_search_for_hippocampal_formation ($evidencepropertyyperel, $
 				$evidencepropertyyperel -> retrive_for_Not_In(1,$property_id, $val, $rel, $part); 
 			}
 		$n_type_id = $evidencepropertyyperel -> getN_Type_id();
-
+	
 		for ($i2=0; $i2<$n_type_id; $i2++)
 		{	
 			$type_id[$n_tot] = $evidencepropertyyperel -> getType_id_array($i2);
 
 			// Use the id only if the id is present in Type table
 			// Retrieve the Type id from type table
-			$type -> retrive_by_id(intval($type_id[$n_tot]));
+			$type -> retrieve_by_id(intval($type_id[$n_tot]));
 			$id_type = $type->getId();	// Get the id
+			
 			// Increment only if the id is present in both the tables
 			if($id_type == $type_id[$n_tot])
 				$n_tot = $n_tot + 1;
@@ -224,43 +402,61 @@ function markers_search($evidencepropertyyperel, $property_1, $type, $subject, $
 
 	$n_tot = 0;				// Variable to be used as an index for storing the resultant Type ID
 	$new_type_id = NULL;	// Variable to store and return the complete list of Matched and Unmatched IDs
+	$new_type_id_latest = NULL;
+	$type_id_latest = array();
 	for ($i=1; $i<=$nn; $i++)
 	{
 		if(($i == 1) && ($predicate3[$i] != 'unknown'))
 		{
 			// Call the function to search for the appropriate Type Ids
-			$evidencepropertyyperel -> retrive_Type_id_by_Subject_overrideIn($subject, $predicate3[$i]);
+			$evidencepropertyyperel -> retrieve_type_id_withoutRestrictions($subject, NULL, $predicate3[$i], 1);
 		}
 		else // if it unknown
 		{
-			$evidencepropertyyperel -> retrive_Type_id_by_Subject_Object($subject, $predicate3[$i]);
+			$evidencepropertyyperel -> retrieve_type_id_withoutRestrictions($subject, $predicate3[$i], NULL, 2);
 		}
 		$n_type_id = $evidencepropertyyperel -> getN_Type_id();		// Get the total number of the search result Type IDs
-		
+
 		// Get the total number of Type Ids in Type table
 		$number_type= $type -> getNumber_type();
-		
 		// Iterate through the result of the conflict override searched Type Ids
 		for ($i1=0; $i1<$n_type_id; $i1++)
 		{
 			if($i == 1)
 			{				
 				$type_id[$n_tot] = $evidencepropertyyperel -> getType_id_array($i1);
+				$id_array = $evidencepropertyyperel -> getConflict_subject_typeid_array($subject."1");
+
+				for ($i1=0; $i1<count($id_array); $i1++){
+					list($conflict, $subject) = explode(", ",$id_array[$i1][1]);
+					$id = $id_array[$i1][0];
+					array_push($type_id_latest, array($subject, $id, $conflict));
+				}
 			}
 			else if($i == 2)
 			{
 				$type_r = $evidencepropertyyperel -> getType_id_array($i1);
 				$type_id[$n_tot] = "10_".$type_r;
+				//$id_array = $evidencepropertyyperel -> getConflict_subject_typeid_array($i1+1);
+				$id_array = $evidencepropertyyperel -> getConflict_subject_typeid_array($subject."2");
+				for ($i1=0; $i1<count($id_array); $i1++){
+					list($conflict, $subject) = explode(", ",$id_array[$i1][1]);
+					$id = "10_".$id_array[$i1][0];
+					array_push($type_id_latest, array($subject, $id, $conflict));
+				}
 			}
 			
 			$n_tot = $n_tot + 1;
 		}
-		
 		// Check if Type_id arrary is not null
 		if ($type_id != NULL)
 				$new_type_id=array_unique($type_id);
-	}	
-	return $new_type_id;
+
+		if ($type_id_latest != NULL)
+				$new_type_id_latest=$type_id_latest; //Array unique does not work as we have ENK, id and conflict
+		
+	}
+	return array($new_type_id, $new_type_id_latest);
 }
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -650,7 +846,8 @@ $n_res1 = 0;
 for ($i=0; $i<=$a; $i++)   // Count for each OR
 {
 	$id_type_res = array(); // Arrays where will be inserted the results of ID TYPE
-
+	// Added on Oct 22 2022 
+	$id_type_res_latest = array(); // Arrays where will be inserted the results of ID TYPE
 	$n_b = count($id_res[$i]);
 	//MY DELETE
 //print("...n_b:-".$n_b);
@@ -701,11 +898,13 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 		if ($property == 'Morphology')
 		{
 			$res = morphology_search_for_hippocampal_formation ($evidencepropertyyperel, $property_1, $subject, $predicate, $value, $type);	
+			
 			if ($res != NULL)
 				$id_type_res = array_merge($id_type_res, $res); 	
 	
 		}
 		// END Script for MORPHOLOGY +++++++++++++++++++++++++++++++++++++++
+		
 		
 		// Script for MARKERS +++++++++++++++++++++++++++++++++++++++++++		
 		if ($property == 'Molecular markers')
@@ -718,15 +917,15 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 			if (strpos($subject, '-act2') == 6)
 				$subject='alpha-actinin-2';				
 
-			$res_marker = markers_search($evidencepropertyyperel, $property_1, $type, $subject, $predicate);
-		
+			//$res_marker = markers_search($evidencepropertyyperel, $property_1, $type, $subject, $predicate);
+			list($res_marker, $res_marker_latest) = markers_search($evidencepropertyyperel, $property_1, $type, $subject, $predicate);
 			if ($res_marker != NULL)
 				$id_type_res = array_merge($id_type_res, $res_marker);
-				
-				//MY DELETE
-			//	print("...id_type_res:-");
-		//print_r($id_type_res);
-		//MyDelete ends	
+			
+			//Added on Oct 22 2022
+			if($res_marker_latest != NULL)
+				$id_type_res_latest = array_merge($id_type_res_latest, $res_marker_latest);	
+			//Till Here
 		}
 		// END Script for MARKERS +++++++++++++++++++++++++++++++++++++++		
 		
@@ -805,8 +1004,8 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 			
 			while ( !(($aSubregion == $theSubregion) And ($aNickname == $theNickname)) And ($aType < $number_type)) {
 				$id_type_row = $type->getID_array($aType);
-				$type -> retrive_by_id($id_type_row);
-				//$type -> retrieve_by_id($id_type_row);
+				//$type -> retrive_by_id($id_type_row);
+				$type -> retrieve_by_id($id_type_row);
 				$aSubregion = $type->getSubregion();
 				$aNickname = $type->getNickname();
 				$aType = $aType + 1;
@@ -823,29 +1022,39 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 		{
 			$res_ids = unique_ids_search($relation,$value);
 				
-			if ($res_ids != NULL)
+			if ($res_ids != NULL){
 				$id_type_res = array_merge($id_type_res, $res_ids); 	
+				//Need to test this one as new array will be multi array and res_ids will be normal array with ids
+				//$id_type_res = array_merge($id_type_res_latest, $res_ids); 	
+			} 
 		}		
 	}  // End FOR $i1 (AND)
 
 
-	// The program do the AND in the temporary table (in $n_b):
-	$n1 = count($id_type_res);
+	// The program do the AND in the temporary table (in $n_b)
+	$markers_search_temp = NULL;
+	$id_result = array();
+	if(isset($id_type_res_latest) && (count($id_type_res_latest) > 0)){
+		$markers_search_temp = 'true';
+		$n_res1 = count($id_type_res_latest);
+		$id_result = $id_type_res_latest;
+	}else{
+		$n1 = count($id_type_res);
 
-	for ($q=0; $q<$n1; $q++)
-	{
-		$ww=$id_type_res[$q];
-		$count_result = array_count_values($id_type_res);
-		
-		if ($count_result[$ww] == $n_b)
+		for ($q=0; $q<$n1; $q++)
 		{
-			$id_result[$n_res1] = $ww;
-			$n_res1 = $n_res1 + 1;
+			$ww=$id_type_res[$q];
+			$count_result = array_count_values($id_type_res);
+			
+			if ($count_result[$ww] == $n_b)
+			{
+				$id_result[$n_res1] = $ww;
+				$n_res1 = $n_res1 + 1;
+			}
 		}
 	}
-	
-	// Insert the result AND & OR in the temporary results table:
-	insert_result_table_result($name_temporary_table_result, $id_result, $n_res1);
+	//modified on OCt 23 2022
+	insert_result_table_result($name_temporary_table_result, $id_result, $n_res1, $markers_search_temp);
 
 } // END for count OR($i)
 // END The research +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -912,208 +1121,192 @@ include ("function/icon.html");
 		<!-- ****************  BODY **************** -->
 		<?php
 			$inference_array=array();
+			//If $markers
+			if($markers_search_temp){
+			$queryList = "select distinct conflict_note  from EvidencePropertyTypeRel eptr";			
+			$rsqueryList = mysqli_query($GLOBALS['conn'],$queryList);
+			$conflict_tables = array();
+			while(list($conflict_note) = mysqli_fetch_row($rsqueryList)){
+				//Create Empty Tables;
+				if(!$conflict_note){
+					$conflict_note = $cn = "nullunknown";
+				}else{
+					$cn = $conflict_note;
+				}
+				$cn  = str_replace(' ', '_', $cn);
+
+				$conflict_tables[$conflict_note] = array();
+			}
+			$query = "SELECT GROUP_CONCAT(distinct(id_type) SEPARATOR ', '), 
+							 GROUP_CONCAT(distinct(subject) SEPARATOR ', ') as subject,
+							 COUNT(distinct(subject)) as subject_count, 
+							 GROUP_CONCAT(distinct(conflict) SEPARATOR ', ') 
+	 				  FROM $name_temporary_table_result group by conflict ORDER BY subject_count DESC";
+
+			//echo $query;
+			$rs = mysqli_query($GLOBALS['conn'],$query);
+			$array_conflict_ids = dbresultsconsolidated($rs);
+			//Define tables positive table, unknwon table, table1, table2, table3array()
+			//At this point $conflict_tables will have empty row for every conflict
+			//In next while we are looping and inserting data and header into that array
+			foreach($array_conflict_ids as $array_conflict_id)
+			{
+				list($id, $subject, $subject_count, $conflict) = $array_conflict_id;
+
+				//call the function and everything in the for loop has to be done there, send the table name also
+				$subj_arr = explode(', ', $subject);
+				$conflict_note  = str_replace(' ', '_', $conflict);
+				if($conflict == 'positive'){
+					$result_subject = "Expressed ".$conflict." in ".$subject;
+					list($id_t, $name_type, $subregion_type, $position_type, $n_result_tot) = get_UItable($id, $subject, $conflict, $type, $name_temporary_table_result);
+					//array_walk($name_type, function(&$value, $key)  use ($conflict) { $value = $value." (".$conflict.")"; } );
+					$conflict_tables[$conflict_note] = update_arrayHash($conflict_tables, $conflict_note, $result_subject, $id_t, $name_type, $subregion_type, $position_type, $n_result_tot, NULL);
+				}
+				else if($conflict == 'negative'){//&& ($subject_count == count($id_res[1]))){ 
+					$result_subject = "Expressed $conflict in $subject";
+					list($id_t, $name_type, $subregion_type, $position_type, $n_result_tot)= get_UItable($id, $subject, $conflict, $type, $name_temporary_table_result);
+					//array_walk($name_type, function(&$value, $key)  use ($conflict) { $value = $value." (".$conflict.")"; } );
+					$conflict_tables[$conflict_note] = update_arrayHash($conflict_tables, $conflict_note, $result_subject, $id_t, $name_type, $subregion_type, $position_type, $n_result_tot, NULL);
+				}
+				else if($conflict == 'nullunknown'){
+					$result_subject = "Unconfirmed in $subject";
+					list($id_t, $name_type, $subregion_type, $position_type, $n_result_tot)= get_UItable($id, $subject, $conflict, $type, $name_temporary_table_result);
+					$conflict_tables[$conflict_note] = update_arrayHash($conflict_tables, $conflict_note, $result_subject, $id_t, $name_type, $subregion_type, $position_type, $n_result_tot, NULL);
+				}
+				else if($subject_count > 1){ 
+					$result_subject =  "Confirmed in $subject";
+					list($id_t, $name_type, $subregion_type, $position_type, $n_result_tot)= get_UItable($id, $subject, $conflict, $type, $name_temporary_table_result);
+					//array_walk($name_type, function(&$value, $key)  use ($conflict) { $value = $value." (".$conflict.")"; } );
+					$conflict_tables[$conflict_note] = update_arrayHash($conflict_tables, $conflict_note, $result_subject, $id_t, $name_type, $subregion_type, $position_type, $n_result_tot, $conflict);
+				}
+				else if(($subject_count == 1)){
+					$conflict_note = NULL;
+					$result_subject = "Expressed ";
+
+					if (strpos($conflict_note, "positive") !== false)
+  					{
+  						$conflict_note = "positive".$subject;
+						$result_subject .= "positive";
+ 					}
+					if (strpos($conflict_note, "negative") !== false)
+					{
+						$conflict_note = "negative".$subject;
+						$result_subject .= "negative";
+  					}
+					if(!isset($conflict_tables[$conflict_note])){
+						$conflict_tables[$conflict_note] = array();
+						list($id_t, $name_type, $subregion_type, $position_type, $n_result_tot)= get_UItable($id, $subject, $conflict, $type, $name_temporary_table_result, $conflict);
+						//array_walk($name_type, function(&$value, $key)  use ($conflict) { $value = $value." (".$conflict.")"; } );
+					}
+					else if(isset($conflict_tables[$conflict_note]) && (count($conflict_tables[$conflict_note]) > 0)){
+						//need to append so get the existing ones
+						$id_t = $conflict_tables[$conflict_note]['id_t'];
+						$name_type = $conflict_tables[$conflict_note]['name_type'];
+						$subregion_type =$conflict_tables[$conflict_note]['subregion_type'];
+						$position_type = $conflict_tables[$conflict_note]['position_type'];
+						$n_result_tot = $conflict_tables[$conflict_note]['n_result_tot'];
+
+						//Get new ones
+						list($id_t1, $name_type1, $subregion_type1, $position_type1, $n_result_tot1)= get_UItable($id, $subject, $conflict, $type, $name_temporary_table_result, $conflict);
+						//array_walk($name_type1, function(&$value, $key)  use ($conflict) { $value = $value." (".$conflict.")"; } );
+						//Merge them
+						$id_t = array_merge($id_t, $id_t1);
+						$name_type = array_merge($name_type, $name_type1);
+						$subregion_type = array_merge($subregion_type, $subregion_type1);
+						$position_type = array_merge($position_type, $position_type1);
+						$n_result_tot = $n_result_tot + $n_result_tot1;
+					}
+					//$conflict will have that value positive inference or anything
+					$result_subject .= " only in $subject";
+
+					$conflict_tables[$conflict_note] = update_arrayHash($conflict_tables, $conflict_note, $result_subject, $id_t, $name_type, $subregion_type, $position_type, $n_result_tot, $conflict);
+				}
+			} // END While
+		
+		}
+		else{
+			$conflict_tables = array();
+			$conflict_tables["Expressed"] = array();
+			$conflict_tables["NotExpressed"] = array();
+
 			$query = "SELECT DISTINCT id_type FROM $name_temporary_table_result";
+			//echo $query;
+
 			$rs = mysqli_query($GLOBALS['conn'],$query);
 			$n_result_tot=0;
 			$n_result_tot_unknown=0;
+			$id_array = array();
 			while(list($id) = mysqli_fetch_row($rs))
-			{			
-				if (strpos($id, '0_') == 1)
-				{
-					$id = str_replace('10_', '', $id);
-				
-					//$type -> retrive_by_id($id);
-					$type -> retrive_by_id($id);
-					$status = $type -> getStatus();	
-					if ($status == 'active')
-					{
-						$id_t_unknown[$n_result_tot_unknown] = $id;
-						$name_type_unknown[$n_result_tot_unknown] = $type -> getNickname();
-						$subregion_type_unknown[$n_result_tot_unknown] = $type -> getSubregion();
-						$position_type_unknown[$n_result_tot_unknown] = $type -> getPosition();
-						
-						//print("/nickname:".$name_type_unknown[$n_result_tot_unknown]);
-						//print("/subregion:".$subregion_type_unknown[$n_result_tot_unknown]);
-						$pos=0;
-						$pos= strpos($name_type_unknown[$n_result_tot_unknown],$subregion_type_unknown[$n_result_tot_unknown]);
-						
-						if($pos!==false)
-						{
-							
-							$name_type_unknown[$n_result_tot_unknown]=str_replace($subregion_type_unknown[$n_result_tot_unknown],"", $name_type_unknown[$n_result_tot_unknown]);
-							//substr_replace($subregion_type_unknown[$n_result_tot_unknown],"",$pos);
-							
-						}	
-						
-						$n_result_tot_unknown = $n_result_tot_unknown +1;
-					}						
-				}
-				else
-				{
-					if (strpos($id, '_') === 0)
-					{
-						$old_id=$id;
-						$id=substr($id,1,strlen($id));
-						$conflictArr=explode("_", $id);
-						$id=$conflictArr[0];
-						$conflictNote=$conflictArr[1];
-						$inference_array[$id]=$conflictNote;
-						$up_temp ="UPDATE $name_temporary_table_result SET id_type='$id' WHERE id_type='$old_id'";
-						$rs_up_temp = mysqli_query($GLOBALS['conn'],$up_temp);
-					}
-					//$type -> retrive_by_id($id);
-					$type -> retrive_by_id($id);
-					$status = $type -> getStatus();		
-									
-					if ($status == 'active')
-					{
-						$id_t[$n_result_tot] = $id;
-						$name_type[$n_result_tot] = $type -> getNickname();
-						$subregion_type[$n_result_tot] = $type -> getSubregion();
-						$position_type[$n_result_tot] = $type -> getPosition();
-						
-						
-						//print("/nickname:".$name_type[$n_result_tot]);
-						//print("/subregion:".$subregion_type[$n_result_tot]);
-						$pos=0;
-						$pos= strpos($name_type[$n_result_tot],$subregion_type[$n_result_tot]);
-						
-						if($pos!== false)
-						{
-							
-							
-							$name_type[$n_result_tot]= str_replace($subregion_type[$n_result_tot],"", $name_type[$n_result_tot]);
-							//print(substr_replace($subregion_type[$n_result_tot_unknown],"",$pos));
-							
-						}	
+			{
+				array_push($id_array, $id);
+			}
+			$id_string = implode(", ", $id_array);
+			list($id_t, $name_type, $subregion_type, $position_type, $n_result_tot) = get_UItable($id_string, NUll, NULL, $type, $name_temporary_table_result);
+		//	$conflict_tables["Expressed"] = update_arrayHash($conflict_tables, "Expressed" , $result_subject, $id_t, $name_type, $subregion_type, $position_type, $n_result_tot, NULL);
+			$conflict_tables["NotExpressed"] = update_arrayHash($conflict_tables, "NotExpressed" , $result_subject, $id_t, $name_type, $subregion_type, $position_type, $n_result_tot, NULL);
 
-						$n_result_tot = $n_result_tot +1;
-					}
-				}
-			} // END While
+		}//end of else
 			
 			$full_search_string = $_SESSION['full_search_string'];
 			$full_search_string_to_print = str_replace('OR', '<br>OR', $full_search_string);
 			$full_search_string_to_print = str_replace('AND', '<br>AND', $full_search_string_to_print);
-			
+			//$full_search_string_to_print .= " Table is: ".$name_temporary_table_result;
 			print ("" . $full_search_string_to_print . "<br>");
-			
-				
 		?>
 
-		<table border="0" cellspacing="3" cellpadding="0" class='table_result'>
-		<tr>
-			<td align="center" width="5%" >  </td>
-			
-			<?php
-				if($n_result_tot_unknown)
-				{
-					if($n_result_tot)
-					{
-						$query_string = "SELECT N, operator, property, part, relation, value FROM $name_temporary_table";
-						//print ("$part : ($relation $value) ");
-						print("<td align='center' width='10%' class='table_neuron_page3'> Index </td>");
-						print ("<td align='center' width='30%' class='table_neuron_page3'> Neurons </td>");
-						print('<td align="right" width="55%"> </td>');
-						//print ("<td align='center' width='30%' class='table_neuron_page3'> $part : ($relation $value) </td>");
-						//print ("<td align='center' width='30%' class='table_neuron_page3'> Is Expressed / Is Not Expressed </td>");
-					}					
-				}
-				else
-				{
-					if($n_result_tot){
-						print("<td align='center' width='10%' class='table_neuron_page3'> Index </td>");
-						print ("<td align='center' width='30%' class='table_neuron_page3'> Neuron Types </td>");
-						print('<td align="right" width="55%"> </td>');
-					}
-				}
-			
-			?>
-		</tr>
-		</table>
-		
-		<table border="0" cellspacing="3" cellpadding="0" class='table_result'>
-		
-		<?php		
-			if ($n_result_tot)
-			{
-				//array_multisort($position_type, $id_t, $name_type);
-				array_multisort($position_type,$id_t,$subregion_type,$name_type);
-                $n=0;
-				for ($i=0; $i<$n_result_tot; $i++)
-				{
-					
-					if($permission==1||$_SESSION["if"]==0){
-					if(array_key_exists($id_t[$i], $inference_array)&&strpos($inference_array[$id_t[$i]],'inference')!=false){
-						continue;
-					}
-				    }
-				    $n=$n+1;
-				    $i9=$n;
-					print ("
-							<tr>
-								<td align='center' width='5%'>  </td>
-								<td align='center' width='10%' class='table_neuron_page4'> $i9 </td>
-								<td align='center' width='30%' class='table_neuron_page4'> 
-									<a href='neuron_page.php?id=$id_t[$i]'>
-										<font class='font13'>$subregion_type[$i] $name_type[$i] </font>");
-					if(array_key_exists($id_t[$i], $inference_array)){
-						if($permission!=1 && $_SESSION["if"]==1){
-							print("<font class='font4'>(".$inference_array[$id_t[$i]].") </font>");
-							unset($inference_array[$id_t[$i]]);
-						}
-					}
-					print("	
-									</a>
-								</td>
-								<td align='right' width='55%'> </td>
-							</tr>				
-					");
-				}		
-			}
-		?>
-		</table>
-
-		
 		<?php
-			if ($n_result_tot_unknown)
-			{
-				print ("
-					<table border='0' cellspacing='3' cellpadding='0' class='table_result'>
+		foreach($conflict_tables as $key=>$conflict_table){
+
+			if($conflict_table && (count($conflict_table) > 0 )){
+				if($markers_search_temp){
+					print ("
+						<table border='0' cellspacing='3' cellpadding='0' class='table_result'>
+							<tr>
+							<td align='center' width='5%'>  </td>
+							<td align='center' width='60%' class='table_neuron_page3'>".$conflict_table["table_header"]."</td>
+							<td align='right' width='35%'> </td>
+							</tr>
+						</table>");
+				}else{
+					$colHead = ($key == 'NotExpressed') ? 'Neuron Types' : 'Neurons';
+					print("
+						<table border='0' cellspacing='3' cellpadding='0' class='table_result'>
 						<tr>
 							<td align='center' width='5%'>  </td>
 							<td align='center' width='10%' class='table_neuron_page3'> Index </td>
-							<td align='center' width='30%' class='table_neuron_page3'> Neurons with unknown expression </td>
-							<td align='right' width='55%'> </td>
+							<td align='center' width='50%' class='table_neuron_page3'> ".$colHead." </td>
+							<td align='right' width='35%'> </td>
 						</tr>
-					</table>
-				");
+						</table>");
+				}
 		
-				print ("<table border='0' cellspacing='3' cellpadding='0' class='table_result'>");
-				//	array_multisort($position_type_unknown, $id_t_unknown, $name_type_unknown);
-				array_multisort($position_type_unknown, $id_t_unknown, $subregion_type_unknown, $name_type_unknown);
-					for ($i=0; $i<$n_result_tot_unknown; $i++)
+					print ("<table border='0' cellspacing='3' cellpadding='0' class='table_result'>");
+						$id_t = $conflict_table['id_t'];
+						$name_type = $conflict_table['name_type'];
+						$subregion_type = $conflict_table['subregion_type'];
+						$position_type = $conflict_table['position_type'];
+						$n_result_tot = $conflict_table['n_result_tot'];
+					array_multisort($position_type, $id_t, $subregion_type, $name_type);
+					for ($i=0; $i<$n_result_tot; $i++)
 					{
 						$i9=$i+1;
 						print ("
 								<tr>
 									<td align='center' width='5%'>  </td>
 									<td align='center' width='10%' class='table_neuron_page4'> $i9 </td>
-									<td align='center' width='30%' class='table_neuron_page4'> 
-										<a href='neuron_page.php?id=$id_t_unknown[$i]'>
-											<font class='font13'>$subregion_type_unknown[$i]  $name_type_unknown[$i] </font>
+									<td align='center' width='50%' class='table_neuron_page4'> 
+										<a href='neuron_page.php?id=$id_t[$i]'>
+											<font class='font13'>$subregion_type[$i]  $name_type[$i] </font>
 										</a>
 									</td>
-									<td align='right' width='55%'> </td>
+									<td align='right' width='35%'> </td>
 								</tr>				
 						");
 					}		
-				print ("</table>");		
+				print ("</table>");
 			}
-		?>
-
-
-		<?php
+		}//end of for
+	
 		if ($n_result_tot == 0);
 		else {
 		
