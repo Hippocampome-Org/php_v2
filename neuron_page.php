@@ -727,7 +727,8 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 		<?php
 		  $hc2nmo->retrieve_archives_by_id($id);
 		  $n_archives = $hc2nmo->getN_archive();
-		  if ($n_archives > 0){
+		if (is_int($n_archives) && $n_archives > 0) {
+		 // if ($n_archives > 0){
 				print('
 					<table width="80%" border="0" cellspacing="2" cellpadding="0">
 						<tr>
