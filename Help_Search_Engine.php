@@ -4023,65 +4023,102 @@ style='color:blue'>delay_ms</span></b>:&gt;0 <b><span style='color:#7030A0'>AND<
 style='color:#7030A0'>AND</span></b> <b>Electrophysiology</b>:<span
 style='color:blue'>vrest</span>&lt;0))</p>
 
-<p class=MsoNormal>&nbsp;</p>
 
 <h1>API access</h1>
+<p class=MsoNormal>&nbsp;</p>
+<h2>API Access Now Requires a Token</h2>
 
-<p class=MsoNormal>The link <a
-href="http://hippocampome.org/csv2db/search_engine_json.php?query_str=">http://hippocampome.org/csv2db/search_engine_json.php?query_str=</a>
-behaves like an API. You need to put your query after “=” sign. For example,
-the URL</p>
+<p class=MsoNormal><span style='background:white'>To improve security, all API requests now require a token. The website UI remains unchanged and does not require a token.</span></p>
+
+<p class=MsoNormal>&nbsp;</p>
+<h2>Step 1: Register for a Token</h2>
+<p class=MsoNormal><span style='background:white'>1. Visit the <a href="./api/register_token.php" target="_blank"  >Token Registration Page</a></span></p>
+<p class=MsoNormal><span style='background:white'>2. Enter your email address</span></p>
+<p class=MsoNormal><span style='background:white'>3. A secure token will be generated and displayed</span></p>
+<p class=MsoNormal><span style='background:white'>4. Tokens are valid for 30 days. After that, generate a new one.</span></p>
+
+<p class=MsoNormal>&nbsp;</p>
+<h2>Step 2: Use the Token in API Requests</h2>
+<p class=MsoNormal><span style='background:white'>Add the following HTTP header:</span></p>
+<p class=MsoNormal><span style='background:white'><b><code>Authorization: Bearer YOUR_TOKEN_HERE</code></b></span></p>
+<p class=MsoNormal>&nbsp;</p>
+
+<h2>Example: Using <code>curl</code> for GET</h2>
+<table class=MsoTableGrid border=1 cellspacing=0 cellpadding=0 width="100%"
+ style='width:100.0%;background:#BFBFBF;border-collapse:collapse;border:none'>
+ <tr>
+  <td width="100%" valign=top style='width:100.0%;border:solid windowtext 1.0pt;
+  padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:0in;line-height:normal'>curl -X GET "<b>http://hippocampome.org/php/search_engine_json.php?query_str=Neuron:(Morphology:(Soma:DG))</b>" \<br>
+  -H "Authorization: Bearer YOUR_TOKEN_HERE"</p>
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal>&nbsp;</p>
+<h2>Example: Using <code>curl</code> for POST</h2>
+<table class=MsoTableGrid border=1 cellspacing=0 cellpadding=0 width="100%"
+ style='width:100.0%;background:#BFBFBF;border-collapse:collapse;border:none'>
+ <tr>
+  <td width="100%" valign=top style='width:100.0%;border:solid windowtext 1.0pt;
+  padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:0in;line-height:normal'>curl -X POST <b>http://hippocampome.org/php/search_engine_json.php</b> \<br>
+  -H "Authorization: Bearer YOUR_TOKEN_HERE" \<br>
+  -d "query_str=Neuron:(Morphology:(Soma:DG))"</p>
+  </td>
+ </tr>
+</table>
+<p class=MsoNormal>&nbsp;</p>
+
+<h2>Sample Output:</h2>
+<p class=MsoNormal>After URL encoding and resolving, you get a stringified JSON. <span style='background:white'>Parsing the results, you can access a JSON database of potential connections.</span></p>
 
 <table class=MsoTableGrid border=1 cellspacing=0 cellpadding=0 width="100%"
  style='width:100.0%;background:#BFBFBF;border-collapse:collapse;border:none'>
  <tr>
   <td width="100%" valign=top style='width:100.0%;border:solid windowtext 1.0pt;
   padding:0in 5.4pt 0in 5.4pt'>
-  <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'><a
-  href="http://hippocampome.org/csv2db/search_engine_json.php?query_str=">http://hippocampome.org/csv2db/search_engine_json.php?query_str=</a>Connection:(Presynaptic:(Neurotransmitter:Inhibitory
-  AND Morphology:(Axons:CA3:??1?? OR Soma:CA3:??1??)), Postsynaptic:(Morphology:(Soma:DG:??1?)
-  AND Name:Granule))</p>
+  <p class=MsoNormal style='margin-bottom:0in;line-height:normal'>{</p>
+  <p class=MsoNormal style='margin-bottom:0in;line-height:normal'>   &quot;<b>1</b>&quot;:{</p>
+  <p class=MsoNormal style='margin-bottom:0in;line-height:normal'>      &quot;<b>source_id</b>&quot;:&quot;1026&quot;,</p>
+  <p class=MsoNormal style='margin-bottom:0in;line-height:normal'>      &quot;<b>destination_id</b>&quot;:&quot;1000&quot;</p>
+  <p class=MsoNormal style='margin-bottom:0in;line-height:normal'>   },</p>
+  <p class=MsoNormal style='margin-bottom:0in;line-height:normal'>   &quot;<b>2</b>&quot;:{</p>
+  <p class=MsoNormal style='margin-bottom:0in;line-height:normal'>      &quot;<b>source_id</b>&quot;:&quot;2019&quot;,</p>
+  <p class=MsoNormal style='margin-bottom:0in;line-height:normal'>      &quot;<b>destination_id</b>&quot;:&quot;1000&quot;</p>
+  <p class=MsoNormal style='margin-bottom:0in;line-height:normal'>   }</p>
+  <p class=MsoNormal style='margin-bottom:0in;line-height:normal'>}</p>
   </td>
  </tr>
 </table>
+<p class=MsoNormal>&nbsp;</p>
 
-<p class=MsoNormal>After URL encoding and resolving, you get a stringified JSON.
-<span style='background:white'>Parsing the results, you can access a JSON
-database of potential connections.</span></p>
+<h2>Error Detection:</h2>
+<p class=MsoNormal>If there was an error, you may want to detect it with regex <code>/\s*&lt;pre&gt;\s*?&lt;\/pre&gt;/</code> before parsing the results.</p>
+<p class=MsoNormal>&nbsp;</p>
 
-<table class=MsoTableGrid border=1 cellspacing=0 cellpadding=0 width="100%"
- style='width:100.0%;background:#BFBFBF;border-collapse:collapse;border:none'>
- <tr>
-  <td width="100%" valign=top style='width:100.0%;border:solid windowtext 1.0pt;
-  padding:0in 5.4pt 0in 5.4pt'>
-  <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>{</p>
-  <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>   &quot;<b>1</b>&quot;:{</p>
-  <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>      &quot;<b>source_id</b>&quot;:&quot;1026&quot;,</p>
-  <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>      &quot;<b>destination_id</b>&quot;:&quot;1000&quot;</p>
-  <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>   },</p>
-  <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>   &quot;<b>2</b>&quot;:{</p>
-  <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>      &quot;<b>source_id</b>&quot;:&quot;2019&quot;,</p>
-  <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>      &quot;<b>destination_id</b>&quot;:&quot;1000&quot;</p>
-  <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>   }</p>
-  <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
-  normal'>}</p>
-  </td>
- </tr>
-</table>
+<h2>💡 Notes</h2>
 
-<p class=MsoNormal>If there was an error, you may want to detect it with regex <span
-style='color:#C45911'>/\s*&lt;pre&gt;\s*?&lt;\/pre&gt;/</span><span
-style='background:white'> </span>before parsing the results.</p>
+<ul type=disc>
+  <li>
+    <p class=MsoNormal>
+      <span style='background:white'>API tokens are <b>only required for API access</b>. The web UI continues to work without a token.</span>
+    </p>
+  </li>
+  <li>
+    <p class=MsoNormal>
+      <span style='background:white'>You must <b>include the token</b> with every GET or POST request using the <code>Authorization: Bearer YOUR_TOKEN_HERE</code> header.</span>
+    </p>
+  </li>
+  <li>
+    <p class=MsoNormal>
+      <span style='background:white'>Programs, scripts, or tools calling the API (e.g., curl, Python, Postman) must be updated to support this header.</span>
+    </p>
+  </li>
+  <li>
+    <p class=MsoNormal>
+      <span style='background:white'>Tokens are <b>valid for 30 days</b>. After expiration, generate a new one via the registration page.</span>
+    </p>
 
 <p class=MsoNormal>&nbsp;</p>
 
