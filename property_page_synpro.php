@@ -453,7 +453,7 @@ $property = new property($class_property);
 //$fragment = new fragment($class_fragment);
 $class_fragment='SynproFragment';
 $fragment = new fragment_synpro($class_fragment);
-$attachment_obj = new attachment_synpro($class_attachment);
+$attachment_obj = new attachment_synpro($class_attachment ?? null);
 //$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
 $class_evidence_property_type_rel = 'SynproEvidencePropertyTypeRel';
 $evidencepropertyyperel = new evidencepropertyyperel_synpro($class_evidence_property_type_rel);
@@ -1318,7 +1318,7 @@ function hide_element(entry_name) {
 									elseif (in_array($type_for_display,$axon_group)) {
 										$neurite_ref = $val_property.":A";	
 									}
-									$attachment_obj = new attachment_synpro($class_attachment); // this clears prior attachment results
+									$attachment_obj = new attachment_synpro($class_attachment ?? null); // this clears prior attachment results
 									$attachment_obj -> retrive_by_props($id_original, $id_neuron, $neurite_ref);
 									$attachment = $attachment_obj -> getName();
 									$attachment_type = $attachment_obj -> getType();
@@ -1326,7 +1326,7 @@ function hide_element(entry_name) {
 									$link_figure="";									
 									$attachment_jpg = $attachment;//str_replace('jpg', 'jpeg', $attachment);
 									// original article attachment
-									$attachment_obj2 = new attachment_synpro($class_attachment); // this clears prior attachment results
+									$attachment_obj2 = new attachment_synpro($class_attachment ?? null); // this clears prior attachment results
 									$attachment_obj2 -> retrive_by_props($id_original, $id_neuron, 'Original');
 									$art_orig_attachment = $attachment_obj2 -> getName();
 									$art_orig_attachment_type = $attachment_obj2 -> getType();

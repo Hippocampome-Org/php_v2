@@ -61,7 +61,7 @@ function retrieve_evidences($show1, $type_for_display, $fragment, $conn, $id1_ne
 		elseif (in_array($type_for_display,$axon_group)) {
 			$neurite_ref = $val1_property.":A";	
 		}
-		$attachment_obj = new attachment_synpro($class_attachment); // this clears prior attachment results
+		$attachment_obj = new attachment_synpro($class_attachment ?? null); // this clears prior attachment results
 		$attachment_obj -> retrive_by_props($id_original, $id1_neuron, $neurite_ref);
 		$attachment = $attachment_obj -> getName();
 		$attachment_type = $attachment_obj -> getType();
@@ -69,7 +69,7 @@ function retrieve_evidences($show1, $type_for_display, $fragment, $conn, $id1_ne
 		$link_figure="";									
 		$attachment_jpg = $attachment;//str_replace('jpg', 'jpeg', $attachment);
 		// original article attachment
-		$attachment_obj2 = new attachment_synpro($class_attachment); // this clears prior attachment results
+		$attachment_obj2 = new attachment_synpro($class_attachment ?? null); // this clears prior attachment results
 		$attachment_obj2 -> retrive_by_props($id_original, $id1_neuron, 'Original');
 		$art_orig_attachment = $attachment_obj2 -> getName();
 		$art_orig_attachment_type = $attachment_obj2 -> getType();

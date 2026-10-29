@@ -465,9 +465,9 @@ $property = new property($class_property);
 //$fragment = new fragment($class_fragment);
 $class_fragment = 'counts_fragment';
 $fragment = new fragment_counts($class_fragment);
-//$attachment_obj = new attachment($class_attachment);
+//$attachment_obj = new attachment($class_attachment ?? null);
 $class_attachment = 'attachment_counts';
-$attachment_obj = new attachment_counts($class_attachment);
+$attachment_obj = new attachment_counts($class_attachment ?? null);
 //$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
 $class_evidence_property_type_rel = 'counts_evidence_type_rel';
 $evidencepropertyyperel = new evidencepropertyyperel_counts($class_evidence_property_type_rel);
@@ -1214,7 +1214,7 @@ function show_only_authors(link, start1, stop1)
 
 								// retrieve the attachment from "attachment" with original_id and cell-id(id_neuron)
 //										$attachment_obj -> retrive_attachment_by_original_id($id_original, $id_neuron);
-								$attachment_obj = new attachment_counts($class_attachment); // this clears prior attachment results
+								$attachment_obj = new attachment_counts($class_attachment ?? null); // this clears prior attachment results
 								$attachment_obj -> retrieve_by_referenceID($referenceID);
 								$attachment = $attachment_obj -> getName();
 								$attachment_type = $attachment_obj -> getType();

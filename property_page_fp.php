@@ -251,16 +251,17 @@ function expand_protocol_text($protocol)
 }
 
 
+// PHP83-FIX by KN on OCt 29 2026
+$page = $_REQUEST['page'] ?? '';
+$sub_show_only = $_SESSION['fp_sub_show_only'] ?? ''; 
+$name_show_only_article = $_SESSION['fp_name_show_only_article'] ?? '';
 
-$page = $_REQUEST['page'];
-$sub_show_only = $_SESSION['fp_sub_show_only']; 
-$name_show_only_article = $_SESSION['fp_name_show_only_article'];
+$name_show_animal = $_SESSION['name_show_animal'] ?? '';
+$name_show_protocol = $_SESSION['name_show_protocol'] ?? '';
+$name_show_temperature = $_SESSION['name_show_temperature'] ?? '';
 
-$name_show_animal = $_SESSION['name_show_animal'];
-$name_show_protocol = $_SESSION['name_show_protocol'];
-$name_show_temperature = $_SESSION['name_show_temperature'];
-
-$see_all = $_REQUEST['see_all']; 
+// PHP83-FIX by KN on OCt 29 2026 OLD:$see_all = $_REQUEST['see_all']; 
+$see_all = $_REQUEST['see_all'] ?? ''; 
 if ($see_all == 'Open All Evidence')
 {
 	$page_in = $_REQUEST['start'];
@@ -331,7 +332,8 @@ if ($see_all == 'Close All Evidence')
 }
 
 // Change the show coloums in the temporary table: ------------------------------------------------
-if ($_REQUEST['show_1']) //  ==> ON
+// PHP83-FIX by KN on OCt 29 2026
+if (!empty($_REQUEST['show_1'])) //  ==> ON
 {
 	$name_temporary_table = $_SESSION['fp_name_temporary_table'];
 	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'];
@@ -341,8 +343,8 @@ if ($_REQUEST['show_1']) //  ==> ON
 	$query = "UPDATE $name_temporary_table SET show1 =  '1' WHERE title = '$title_paper'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);	
 }
-
-if ($_REQUEST['show_0']) //  ==> OFF
+// PHP83-FIX by KN on OCt 29 2026
+if (!empty($_REQUEST['show_0'])) //  ==> OFF
 {
 	$name_temporary_table = $_SESSION['fp_name_temporary_table'];
 	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'];
@@ -417,10 +419,10 @@ else
 {
 	$name_show_only = $_SESSION['fp_name_show_only'];
 	$_SESSION['fp_name_show_only'] = $name_show_only;
-	$name_show_only_journal = $_SESSION['fp_name_show_only_journal'];
-	$name_show_only_authors = $_SESSION['fp_name_show_only_authors'];
-	$name_show_only_article = $_SESSION['fp_name_show_only_article'];
-	$order_ok = $_REQUEST['order_ok'];
+	$name_show_only_journal = $_SESSION['fp_name_show_only_journal'] ?? '';
+	$name_show_only_authors = $_SESSION['fp_name_show_only_authors'] ?? '';
+	$name_show_only_article = $_SESSION['fp_name_show_only_article'] ?? '';
+	$order_ok = $_REQUEST['order_ok'] ?? '';
 	// clicked the Order By options
 	if ($order_ok == 'GO')             
 	{
@@ -439,46 +441,46 @@ else
 	{
 		$order_by = $_SESSION['order_by'];
 		$type_order = $_SESSION['type_order'];
-		if ($_REQUEST['up'])
+		if (!empty($_REQUEST['up']))
 		{
 			$page_in = $_REQUEST['start'];
 			$page_end = $page_in+10;		
 		}
-		if ($_REQUEST['down'])
+		if (!empty($_REQUEST['down']))
 		{
 			$page_in = $_REQUEST['start'];
 			$page_end = $page_in+10;		
 		}	
-		if ($_REQUEST['last_page'])
+		if (!empty($_REQUEST['last_page']))
 		{
 			$value_last_page = $_REQUEST['value_last_page'];
 			$page_in = $value_last_page;
 			$page_end = $_REQUEST['value_last_page_final'];
 		}
-		if ($_REQUEST['first_page'])
+		if (!empty($_REQUEST['first_page']))
 		{
 			$page_in = 0;
 			$page_end = 10;
 		}
 	}
 
-	$flag = $_REQUEST['flag'];
+	$flag = $_REQUEST['flag'] ?? '';
 	
-	$id_neuron = $_SESSION['fp_id_neuron'];
-	$parameter = $_SESSION['fp_parameter'];
+	$id_neuron = $_SESSION['fp_id_neuron'] ?? '';
+	$parameter = $_SESSION['fp_parameter'] ?? '';
 	
 	// get connection properties
-	$fp_count=$_SESSION['fp_count'];
+	$fp_count=$_SESSION['fp_count'] ?? '';
 	// add connection and its properties to session for future use
 
-	$name_temporary_table = $_SESSION['fp_name_temporary_table'];
-	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'];
+	$name_temporary_table = $_SESSION['fp_name_temporary_table'] ?? '';
+	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'] ?? '';
 
 }
 
 
 // show only dropdown clicked
-$name_show_only_var = $_REQUEST['name_show_only_var']; 
+$name_show_only_var = $_REQUEST['name_show_only_var'] ?? ''; 
 
 if ($name_show_only_var)
 {
@@ -528,7 +530,7 @@ if ($name_show_only_var)
 } 
 
 // ARTICLE - BOOK OPTION - for clicked Article/Book's evidences(quotes) set the show only flag to 1 in temporary table 
-$name_show_only_article_var = $_REQUEST['name_show_only_article_var'];
+$name_show_only_article_var = $_REQUEST['name_show_only_article_var'] ?? '';
 if ($name_show_only_article_var)
 {
 	$name_show_only_article = $_REQUEST['name_show_only_article'];
@@ -566,7 +568,7 @@ if ($name_show_only_article_var)
 } 
 
 // JOURNAL OPTION - for clicked journal's evidences(quotes) set the show only flag to 1 in temporary table 
-$name_show_only_journal_var = $_REQUEST['name_show_only_journal_var'];
+$name_show_only_journal_var = $_REQUEST['name_show_only_journal_var'] ?? '';
 if ($name_show_only_journal_var)
 {
 	$name_show_only_journal = $_REQUEST['name_show_only_journal'];
@@ -591,7 +593,7 @@ if ($name_show_only_journal_var)
 } 
 	
 // AUTHORS OPTION - for clicked author's evidences(quotes) set the show only flag to 1 in temporary table 
-$name_show_only_authors_var  = $_REQUEST['name_show_only_authors_var'];
+$name_show_only_authors_var  = $_REQUEST['name_show_only_authors_var'] ?? '';
 if ($name_show_only_authors_var)
 {	
 	$name_show_only_authors = $_REQUEST['name_show_only_authors'];
@@ -625,7 +627,7 @@ if ($name_show_only_authors_var)
 
 
 //Animal
-$name_show_animal_var = $_REQUEST['name_show_animal_var'];
+$name_show_animal_var = $_REQUEST['name_show_animal_var'] ?? '';
 
 if ($name_show_animal_var)
 {
@@ -1100,7 +1102,7 @@ if ($name_show_protocol_var)
 	
 
 //Temperature
-$name_show_temperature_var = $_REQUEST['name_show_temperature_var'];
+$name_show_temperature_var = $_REQUEST['name_show_temperature_var'] ?? '';
 
 if ($name_show_temperature_var)
 {
@@ -1354,7 +1356,7 @@ if ($name_show_temperature_var)
 
 
 // axon, dedrite/soma, known checkbox checked or unchecked
-$neuron_show_only = $_REQUEST['neuron_show_only'];
+$neuron_show_only = $_REQUEST['neuron_show_only'] ?? '';
 if ($neuron_show_only){
 	$neuron_show_only_value = $_REQUEST['neuron_show_only_value'];
 	$_SESSION['fp_neuron_show_only_value'] = $neuron_show_only_value;
@@ -1380,7 +1382,7 @@ $type -> retrive_by_id($id_neuron);
 $property = new property($class_property);
 $fragment = new fragment($class_fragment);
 
-$attachment_obj = new attachment($class_attachment);
+$attachment_obj = new attachment($class_attachment ?? '');
 $evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
 $evidencefragmentrel = new evidencefragmentrel($class_evidencefragmentrel);
 
@@ -1659,7 +1661,8 @@ function show_only_authors(link, start1, stop1)
 
 					$locationValue1[$i1] = str_replace(' ', '', $locationValue[$i1]);
 					$location_protoc = explode(",", $locationValue1[$i1]);
-					$location_protocol = $location_protoc[1];				
+					// PHP83-FIX by KN on OCt 29 2026 OLD:$location_protocol = $location_protoc[1];
+					$location_protocol = $location_protoc[1] ?? null;				
 					$location_animal = strpos($locationValue1[$i1],'mouse');					
 							
 							
@@ -1698,8 +1701,7 @@ function show_only_authors(link, start1, stop1)
 			while(list($fp_id,$fp_fragment_id,$original_id,$fp_dt,$fp_quote,$fp_page_location,$fp_pmid_isbn,$id_article,$title,$publication,$year,$pmid_isbn,$first_page,$last_page,$pmcid,$nihmsid,$doi,$open_access,$citation_count,$volume,$issue,$interpretation,$interpretation_notes,$linking_pmid_isbn,$linking_pmid_isbn_page,$linking_quote,$linking_page_location,$istim,$tstim,$fp_original_name) = mysqli_fetch_row($fp_evidence_rs))	{	
 
 
-				if ($title[$ui] == '.')
-					$title[$ui] = '';	
+				$title = str_replace('.', '', $title);
 				$articleauthorrel -> retrive_author_position($id_article);
 				$n_author = $articleauthorrel -> getN_author_id();
 				for ($ii3=0; $ii3<$n_author; $ii3++)

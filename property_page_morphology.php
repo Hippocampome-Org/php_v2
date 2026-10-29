@@ -501,7 +501,7 @@ $type = new type($class_type);
 $type -> retrive_by_id($id_neuron);
 $property = new property($class_property) ?? ''; //Changed by KN on Oct 29 2026 for php83 upgrade
 $fragment = new fragment($class_fragment) ?? ''; //Changed by KN on Oct 29 2026 for php83 upgrade
-$attachment_obj = new attachment($class_attachment) ?? '';//Changed by KN on Oct 29 2026 for php83 upgrade
+$attachment_obj = new attachment($class_attachment ?? null) ?? '';//Changed by KN on Oct 29 2026 for php83 upgrade
 $evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel) ?? '';//Changed by KN on Oct 29 2026 for php83 upgrade
 $evidencefragmentrel = new evidencefragmentrel($class_evidencefragmentrel) ?? '';//Changed by KN on Oct 29 2026 for php83 upgrade
 $articleevidencerel = new articleevidencerel($class_articleevidencerel) ?? '';//Changed by KN on Oct 29 2026 for php83 upgrade

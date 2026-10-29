@@ -469,7 +469,7 @@ $property = new property($class_property);
 //$fragment = new fragment($class_fragment);
 $class_fragment='SynproFragment';
 $fragment = new fragment_synpro($class_fragment);
-$attachment_obj = new attachment_synpro($class_attachment);
+$attachment_obj = new attachment_synpro($class_attachment ?? null);
 //$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
 $class_evidence_property_type_rel = 'SynproEvidencePropertyTypeRel';
 $evidencepropertyyperel = new evidencepropertyyperel_synpro($class_evidence_property_type_rel);
@@ -1336,7 +1336,7 @@ function show_only_authors(link, start1, stop1)
 						{	
 							$type_for_display=$type;
 							$quote_count++;
-							$attachment_obj = new attachment_synpro($class_attachment); // this clears prior attachment results
+							$attachment_obj = new attachment_synpro($class_attachment ?? null); // this clears prior attachment results
 							retrieve_evidences($show1, $type_for_display, $fragment, $GLOBALS['conn'], $id1_neuron, $id_original, $val1_property, $name_temporary_table, $subquery, $id_fragment, $class_fragment, $color1, $nm_page, $page_location, $quote, $attachment_obj);
 						}					
 					}

@@ -51,13 +51,13 @@ $articleevidencerel = new articleevidencerel($class_articleevidencerel);
 $article = new article($class_article);
 $articleauthorrel = new articleauthorrel($class_articleauthorrel);
 $author = new author($class_author);
-$attachment_obj = new attachment($class_attachment);
+$attachment_obj = new attachment($class_attachment ?? null);
 $izhmodelsmodelObject = new izhmodelsmodel($class_izhmodels_model);
 $rawizhmodelsmodelObject = new rawizhmodelsmodel($class_izhmodels_model);
-$hc2nmo = new hc2nmo($class_hc2nmo);
+$hc2nmo = new hc2nmo($class_hc2nmo ?? '');
 $phases_fragment = new fragment_phases($class_phases_fragment);
 $synpro_fragment = new fragment_synpro($class_synpro_fragment);
-if ($text_file_creation)
+if (!empty($text_file_creation))
 {
 	$name_file = neuron_page_text_file($id, $type, $synonymtyperel, $synonym, $evidencepropertyyperel, $property, $epdataevidencerel, $epdata, $class_type);
 	print ("<script type=\"text/javascript\">");

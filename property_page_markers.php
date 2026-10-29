@@ -304,7 +304,7 @@ $articleauthorrel = new articleauthorrel($class_articleauthorrel);
 
 $author = new author($class_author);
 
-$attachment_obj = new attachment($class_attachment);
+$attachment_obj = new attachment($class_attachment ?? null);
 
 
 // SHOW ONLY --------------------------------------------------------------

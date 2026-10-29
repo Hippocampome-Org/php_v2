@@ -481,7 +481,7 @@ $property = new property($class_property);
 $class_fragment='phases_fragment';
 $fragment = new fragment_phases($class_fragment);
 $class_attachment='attachment_phases';
-$attachment_obj = new attachment_phases($class_attachment);
+$attachment_obj = new attachment_phases($class_attachment ?? null);
 //$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
 $class_evidence_property_type_rel = 'phases_evidence_type_rel';
 $evidencepropertyyperel = new evidencepropertyyperel_phases($class_evidence_property_type_rel);
@@ -1268,7 +1268,7 @@ function show_only_authors(link, start1, stop1)
 								}	
 								$row_span=30;	
 								$original_id = $fragment -> getOriginal_id();
-								$attachment_obj = new attachment_phases($class_attachment); // this clears prior attachment results
+								$attachment_obj = new attachment_phases($class_attachment ?? null); // this clears prior attachment results
 								$attachment_obj -> retrive_by_referenceID($referenceID);
 								$attachment = $attachment_obj -> getName();
 								$attachment_type = $attachment_obj -> getType();

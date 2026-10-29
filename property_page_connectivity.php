@@ -494,7 +494,7 @@ $type2 = new type($class_type);
 $type2 -> retrive_by_id($conn_id_neuron[1]);
 $property = new property($class_property);
 $fragment = new fragment($class_fragment);
-$attachment_obj = new attachment($class_attachment);
+$attachment_obj = new attachment($class_attachment ?? null);
 $evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
 $evidencefragmentrel = new evidencefragmentrel($class_evidencefragmentrel);
 $articleevidencerel = new articleevidencerel($class_articleevidencerel);
