@@ -1094,6 +1094,15 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 		$marker_pos_disp_counter = 0;
 		$marker_neg_disp_counter = 0;
 		$marker_mixed_disp_counter = 0;
+		// PHP83-FIX by KN on Oct 29 2026
+		$hippo_positive = array();
+		$hippo_negative = array();
+		$hippo_weak_positive = array();
+		$hippo_positive_inference = array();
+		$hippo_neegative_inference = array();
+		$hippo_unknown = array();
+		$hippo_property_id = array();
+		
 		// loop through all evidence to look for marker evidence
 		for ($i=0; $i<$n; $i++) {
 			$property -> retrive_by_id($property_id[$i]);
@@ -1784,7 +1793,7 @@ WHERE
 		</td>
 	<?php
 	$fp_count=0;
-	$firing_parameter=$_REQUEST['pattern'];
+	$firing_parameter=$_REQUEST['pattern'] ?? '';
 	$query_to_get_parameter = "SELECT fp.overall_fp, COUNT(*) AS fp_count
 		FROM FiringPatternRel fpr, FiringPattern fp
 		WHERE fpr.FiringPattern_id = fp.id AND fpr.Type_id = $id GROUP BY fp.overall_fp";

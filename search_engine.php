@@ -912,7 +912,7 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 			
 			$subject = $part;	
 			
-			if (strpos($subject, 'GABAa') == 'TRUE')
+			if (strpos($subject, 'GABAa') === 0)
 				$subject='Gaba-a-alpha';
 			if (strpos($subject, '-act2') == 6)
 				$subject='alpha-actinin-2';				
