@@ -1,10 +1,10 @@
 <?php
 class firingpatternrel
 {
-	private $_name_table;
+	private $_name_table = '';
 	private $_firing_pattern_id;
 	private $_type_id;
-	private $_pattern_array;
+	private $_pattern_array = [];
 	private $_n_firing_pattern_id;
 	private $_type_id_array_count1;
 	private $_type_id_array_count2;

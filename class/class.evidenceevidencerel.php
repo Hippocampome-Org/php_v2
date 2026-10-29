@@ -4,7 +4,7 @@ class evidenceevidencerel
 	private $_name_table;
 	private $_id;
 	private $_evidence1_id;
-	private $_evidence2_id_array;
+	private $_evidence2_id_array = [];
 	private $_type;	
 	private $_n_evidence2;
 

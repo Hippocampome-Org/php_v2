@@ -4,20 +4,20 @@ class evidencepropertyyperel
 	private $_name_table;
 	private $_id;
 	private $_dt;
-	private $_type_id_array;
+	private $_type_id_array = [];
 	private $_Property_id;
 	private $_n_type_id;
-	private $_Property_id_array;
+	private $_Property_id_array = [];
 	private $_n_Property_id;
-	private $_evidence_id_array;
+	private $_evidence_id_array = [];
 	private $_n_evidence_id;
 	private $_unvetted;
 	private $_article_id;
 	private $_conflict_note;
 	private $_property_type_explanation;
-	private $_n_linking_quote_array;
-	private $_n_interpretation_notes_array;
-	private $_conflict_subject_typeid_array;
+	private $_n_linking_quote_array = [];
+	private $_n_interpretation_notes_array = []; 
+	private $_conflict_subject_typeid_array = [];
 
 	function __construct ($name)
 	{

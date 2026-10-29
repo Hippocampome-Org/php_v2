@@ -1,11 +1,11 @@
 <?php
 class firingpattern
 {
-	private $_name_table;
+	private $_name_table = '';
 	private $_id;
 	private $_overall_fp;
 	private $_n_id;
-	private $_id_array;                          
+	private $_id_array = [];                          
 	private $_delay_ms;                            
 	private $_pfs_ms;                         
 	private $_swa_mv;                              

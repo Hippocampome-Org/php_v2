@@ -7,7 +7,7 @@ class temporary_author
 	private $_author;
 	private $_name_table;
 	private $_n_id;
-	private $_id_array;
+	private $_id_array = [];
 	private $_author_array=array();
 
 

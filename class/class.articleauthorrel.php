@@ -5,9 +5,9 @@ class articleauthorrel
 	private $_id;
 	private $_article_id;
 	private $_n_author_id;
-	private $_author_id_array;
-	private $_author_position_array;
-	private $_article_id_array;
+	private $_author_id_array = [];
+	private $_author_position_array = [];
+	private $_article_id_array = [];
 	
 	function __construct ($name)
 	{

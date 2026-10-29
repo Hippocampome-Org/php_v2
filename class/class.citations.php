@@ -11,14 +11,14 @@ class citations
 	private $_status;
 	private $_number_type;
 	private $_number_subregion_type;
-	private $_id_array;	
+	private $_id_array = [];	
 	private $_position;
 	private $_notes;
 	private $_subregion;
 	private $_n_name_nickname;
-	private $_id_namearray;
-	private $_name_neuron_array;
-	private $_nickname_neuron_array;
+	private $_id_namearray = [];
+	private $_name_neuron_array = [];
+	private $_nickname_neuron_array = [];
 	private $_name_neuron;
 	private $_nickname_neuron;
 	private $_citation;

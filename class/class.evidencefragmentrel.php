@@ -3,9 +3,9 @@ class evidencefragmentrel
 {
 	private $_name_table;
 	private $_id;
-	private $_evidence_id_array;
+	private $_evidence_id_array = [];
 	private $_n_evidence_id;
-	private $_fragment_id_array;
+	private $_fragment_id_array = [];
 	private $_n_fragment_id;
 	private $_fragment_id;
 	

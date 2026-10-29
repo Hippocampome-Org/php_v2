@@ -18,7 +18,7 @@ class article
 	private $_n_pmid;
 	private $_issue;
 
-	private $_id_array;
+	private $_id_array = [];
 	private $_n_id;
 	
 

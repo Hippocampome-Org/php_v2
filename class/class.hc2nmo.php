@@ -1,11 +1,12 @@
 <?php
 class hc2nmo
 {	
-	private $_archive_array;
+	private $_archive_array = [];
 	private $_n_archive;
-	private $_name_array;
+	private $_name_array = [];
 	private $_n_name;
-	private $_reason_for_inclusion_array;
+	private $_reason_for_inclusion_array = [];
+        private $_name_table = '';
 
 	function __construct ($name)
 	{

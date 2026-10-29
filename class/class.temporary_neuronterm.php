@@ -7,8 +7,8 @@ class temporary_neuronterm
 	private $_neuron;
 	private $_name_table;
 	private $_n_id;
-	private $_id_array;
-	private $_neuron_array;
+	private $_id_array = [];
+	private $_neuron_array = [];
 
 
 	public function create_temp_table ()

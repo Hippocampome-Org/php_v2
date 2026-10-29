@@ -3,7 +3,7 @@ class temporary_result_neurons
 {
 	private $_id;
 	private $_id_type;	
-	private $_id_array;
+	private $_id_array = [];
 	private $_n_id;
 	
 	

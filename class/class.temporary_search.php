@@ -14,7 +14,7 @@ class temporary_search
 	private $_name_table;
 	private $n_search;
 		
-	private $_id_array;
+	private $_id_array = [];
 	private $_n_id;	
 		
 	public function create_temp_table()

@@ -4,7 +4,7 @@ class evidencemarkerdatarel
 	private $_name_table;
 	private $_id;
 	private $_evidence_id;	
-	private $_markerdata_id_array;
+	private $_markerdata_id_array = [];
 	private $_n_markerdata_id;
 
 	function __construct ($name)

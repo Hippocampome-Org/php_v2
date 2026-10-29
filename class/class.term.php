@@ -19,10 +19,10 @@ class term
 	private $_control;
 
 	private $_name;
-	private $_name_neuron_array;
+	private $_name_neuron_array = [];
 	private $_name_neuron;
 	private $_n_id;
-	private $_id_array;
+	private $_id_array = [];
 	private $_term_concept;
 	private $_parent_concept;
 

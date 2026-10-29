@@ -8,7 +8,7 @@ class utils_author_article
 	private $_year;
 	private $_pmid_isbn;
 	private $_fp;
-	private $_types_array;
+	private $_types_array = [];
 	private $_neuron;
 	function __construct() {
 		$this->_types_array=array();

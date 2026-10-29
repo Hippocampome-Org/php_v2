@@ -11,8 +11,8 @@ class fragment
 	private $_type;	
 	private $_attachment;
 	private $_attachment_type;
-	private $_attachment_array;
-	private $_attachment_type_array;
+	private $_attachment_array = [];
+	private $_attachment_type_array = [];
 	private $_interpretation;
 	private $_interpretation_notes;
 	//private $_linking_cell_id;

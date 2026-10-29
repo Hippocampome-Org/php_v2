@@ -9,11 +9,12 @@ class epdata
     private $_n;
     private $_istim;
     private $_time;    
-    private $_value1_array;
+    private $_value1_array = [];
     private $_n_value1;
     private $_rep_value;
     private $_gt_value;
-	private $_location;
+    private $_location;
+    private $_name_table = '';
     
     function __construct ($name)
     {

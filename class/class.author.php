@@ -3,9 +3,9 @@ class author
 {
 	private $_name_table;
 	private $_id;
-	private $_name_author_array;
+	private $_name_author_array = [];
 	private $_n_author;
-	private $_id_array;
+	private $_id_array = [];
 	private $_n_id;
 	
 	function __construct ($name)

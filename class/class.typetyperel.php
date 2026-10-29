@@ -2,18 +2,18 @@
 class typetyperel
 {
 	private $_type1_id;
-	private $_type2_id_array;
+	private $_type2_id_array = [];
 	private $_type2_id;
 	private $_n_type_2;	
 	private $_n_connection_status;		
 	private $_n_connection_location;		
-	private $_connection_status_array;
+	private $_connection_status_array = [];
 	private $_connection_status;
 	private $_connection_location;	
 	
-	private $_id_array;	
+	private $_id_array = [];	
 
-	private $_type1_id_array;
+	private $_type1_id_array = [];
 	private $_n_type_1;		
 	
 

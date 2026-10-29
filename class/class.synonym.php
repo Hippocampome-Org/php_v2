@@ -5,10 +5,10 @@ class synonym
 	private $_id;
 	private $_dt;
 	private $_name;
-	private $_name_neuron_array;
+	private $_name_neuron_array = [];
 	private $_name_neuron;
 	private $_n_id;
-    private $_id_array;
+	private $_id_array = [];
 	function __construct ($name)
 	{
 		$this->_name_table = $name;

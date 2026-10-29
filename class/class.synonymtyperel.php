@@ -6,7 +6,7 @@ class synonymtyperel
 	private $_type_id;	
 	private $_n_synonym;
 	private $_n_id;
-    private $_id_type_array;
+	private $_id_type_array = [];
 	
 	function __construct ($name)
 	{

@@ -3,9 +3,9 @@ class articleevidencerel
 {
 	private $_name_table;
 	private $_id;
-	private $_evidence_id_array;
+	private $_evidence_id_array = [];
 	private $_n_evidence_id;
-	private $_article_id_array;
+	private $_article_id_array = [];
 	private $_n_article_id;
 
 	function __construct ($name)
