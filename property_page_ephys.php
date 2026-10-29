@@ -125,12 +125,13 @@ function insert_temporary($table, $i1_counter, $id_fragment, $id_original, $quot
 	{
 		//set_magic_quotes_runtime(false);
 	}
-	$publication = stripslashes($publication);
-	$res = stripslashes($res);
-	$quote = stripslashes($quote);
-	$authors = stripslashes($authors);
-	$linking_quote = stripslashes($linking_quote);
-	$linking_page_location = stripslashes($linking_page_location);
+
+	$publication = stripslashes($publication ?? '');
+	$res = stripslashes($res ?? '');
+	$quote = stripslashes($quote ?? '');
+	$authors = stripslashes($authors ?? '');
+	$linking_quote = stripslashes($linking_quote ?? '');
+	$linking_page_location = stripslashes($linking_page_location ?? '');
 
 	$publication= mysqli_real_escape_string($GLOBALS['conn'],$publication);
 	$quote = mysqli_real_escape_string($GLOBALS['conn'],$quote);
@@ -1671,7 +1672,12 @@ function show_only_ephys(link, start1, stop1)
 					
 					$locationValue1[$i1] = str_replace(' ', '', $locationValue[$i1]);
 					$location_protoc = explode(",", $locationValue1[$i1]);
-					$location_protocol = $location_protoc[1];
+
+					if (count($location_protoc) > 1) {
+						$location_protocol = trim($location_protoc[1]);
+					} else {
+						$location_protocol = '';
+					}
 					$location_animal = strpos($locationValue1[$i1],'mouse');					
 					
 					$protoc[1] = str_replace(' ', '', $protoc[1]);
@@ -1723,8 +1729,7 @@ function show_only_ephys(link, start1, stop1)
 					$issue = $article -> getIssue();
 		
 					// remove period in the title ------------------------------------------
-					if ($title[$ui] == '.')
-						$title[$ui] = '';
+					$title = rtrim($title ?? '', '.');
 		
 					// retrive the Author Position from ArticleAuthorRel
 					$articleauthorrel -> retrive_author_position($id_article);
@@ -1735,19 +1740,18 @@ function show_only_ephys(link, start1, stop1)
 					if ($auth_pos)	
 						sort ($auth_pos);
 							
-					$name_authors = NULL;
-					for ($ii3=0; $ii3<$n_author; $ii3++)
-					{
-						$articleauthorrel -> retrive_author_id($id_article, $auth_pos[$ii3]);
-						$id_author = $articleauthorrel -> getAuthor_id_array(0);
-		
-						$author -> retrive_by_id($id_author);
-						$name_a = $author -> getName_author_array(0);
-						
-						$name_authors = $name_authors.', '.$name_a;
+					$name_authors = '';
+
+					for ($ii3 = 0; $ii3 < $n_author; $ii3++) {
+						$articleauthorrel->retrive_author_id($id_article, $auth_pos[$ii3]);
+						$id_author = $articleauthorrel->getAuthor_id_array(0);
+
+						$author->retrive_by_id($id_author);
+						$name_a = $author->getName_author_array(0);
+
+						$name_authors .= ', ' . $name_a;
 					}
-					$name_authors[0] = '';
-		
+
 					$name_authors = trim($name_authors);
 					
 			 		if ($page)
