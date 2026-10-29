@@ -37,7 +37,7 @@ class article
 		{	
 			$this->setID($id);
 			$this->setPmid_isbn($pmid_isbn);
-			$this->setPmcid($pmicid);
+			$this->setPmcid($pmcid); //chaned by KN on Oct 29 2026 as its typo and throwing warnign
 			$this->setNihmsid($nihmsid);
 			$this->setDoi($doi);
 			$this->setOpen_access($open_access);
@@ -63,7 +63,7 @@ class article
 		{
 			$this->setID($id);
 			$this->setPmid_isbn($pmid_isbn);
-			$this->setPmcid($pmicid);
+			$this->setPmcid($pmcid);
 			$this->setNihmsid($nihmsid);
 			$this->setDoi($doi);
 			$this->setOpen_access($open_access);
@@ -87,7 +87,7 @@ class article
 		while(list($id, $pmcid, $nihmsid, $doi, $open_access, $title, $publication, $volume, $issue, $first_page, $last_page, $year, $citation_count) = mysqli_fetch_row($rs))
 		{	
 			$this->setID($id);
-			$this->setPmcid($pmicid);
+			$this->setPmcid($pmcid);
 			$this->setNihmsid($nihmsid);
 			$this->setDoi($doi);
 			$this->setOpen_access($open_access);
@@ -198,7 +198,7 @@ class article
 	
  	public function setPmcid($val)
     {
-		  $this->_pmicid = $val;
+		  $this->_pmcid = $val;//Changed by KN on OCt 29 2026
     }	
 	
 	 public function setNihmsid($val)
@@ -290,7 +290,7 @@ class article
 
 	public function getPmcid()
     {
-    	return $this->_pmicid;
+    	return $this->_pmcid;
     }	
 	
 	public function getNihmsid()

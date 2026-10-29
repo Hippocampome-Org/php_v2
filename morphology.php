@@ -179,7 +179,9 @@ else // not from search page --------------
 // -------------------------------------------------------------------------------------------------------------
 $property = new property($class_property);
 $evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
-$hippo_select = $_SESSION['hippo_select'];
+//Changed this on Oct 29 2026 by KN
+//$hippo_select = $_SESSION['hippo_select'];
+$hippo_select = $_SESSION['hippo_select'] ?? '';
 ?>
 
 <style>

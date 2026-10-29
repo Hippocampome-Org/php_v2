@@ -38,8 +38,15 @@ function checkNeuronProperty($color)
 }
 function create_temp_table ($name_temporary_table)
 {	
-	$drop_table ="DROP TABLE $name_temporary_table";
-	$query = mysqli_query($GLOBALS['conn'],$drop_table);
+	//Changed on OCt 29 2026 as its clashing witrh local
+	if ($_SERVER['REMOTE_ADDR'] != '::1')
+	{
+		$drop_table ="DROP TABLE $name_temporary_table";
+		//echo "<pre>";
+		//var_dump($drop_table);
+		//echo "</pre>";
+		$query = mysqli_query($GLOBALS['conn'],$drop_table);
+	}
 	
 	$creatable=	"CREATE TABLE IF NOT EXISTS $name_temporary_table (
 				   id int(4) NOT NULL AUTO_INCREMENT,
@@ -74,10 +81,10 @@ function insert_temporary($table, $id_fragment, $id_original, $quote, $authors, 
 		$open_access = -1;
 	if ($citation_count == NULL)
 		$citation_count = -1;
-	
-	$publication = stripslashes($publication);
-    $quotes = stripslashes($quotes);
-	$authors = stripslashes($authors);
+	$publication = stripslashes($publication ?? '');//Changed on OCt 29 2026 by KN for php83 upgrade
+	$quotes = stripslashes($quotes ?? '');//Changed on OCt 29 2026 by KN for php83 upgrade
+
+	$authors = stripslashes($authors ?? ''); //Changed on OCt 29 2026 by KN for php83 upgrade
 	$publication= mysqli_real_escape_string($GLOBALS['conn'],$publication);
 	$quote = mysqli_real_escape_string($GLOBALS['conn'],$quote);
 	$authors = mysqli_real_escape_string($GLOBALS['conn'],$authors);
@@ -132,17 +139,27 @@ function insert_temporary($table, $id_fragment, $id_original, $quote, $authors, 
 	$rs2 = mysqli_query($GLOBALS['conn'],$query_i);					
  }
 // set property of morphology page
+//Changed on Oct 29 2026 by KN for php83
+/*
 $page = $_REQUEST['page'];
 $sub_show_only = $_SESSION['morph_sub_show_only']; 
 $name_show_only_article = $_SESSION['morph_name_show_only_article'];
 
 $see_all = $_REQUEST['see_all']; 
+*/
+$page = $_REQUEST['page'] ?? '';
+$sub_show_only = $_SESSION['morph_sub_show_only'] ?? '';
+$name_show_only_article = $_SESSION['morph_name_show_only_article'] ?? '';
+
+$see_all = $_REQUEST['see_all'] ?? '';
+//Till Here
+
 // open all evidences
 if ($see_all == 'Open All Evidence')
 {
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['morph_name_temporary_table'];
+	$page_in = $_REQUEST['start'] ?? ''; //Changed on Oct 29 2026 by KN for php83 upgrade
+	$page_end = $_REQUEST['stop'] ?? ''; //Changed on Oct 29 2026 by KN for php83 upgrade
+	$name_temporary_table = $_SESSION['morph_name_temporary_table'] ?? ''; //Changed on Oct 29 2026 by KN for php83 upgrade
 	$query = "UPDATE $name_temporary_table SET show1 =  '1'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);		
 }
@@ -155,6 +172,8 @@ if ($see_all == 'Close All Evidence')
 	$query = "UPDATE $name_temporary_table SET show1 =  '0'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);		
 }
+//Changed by KN from here on oCt 29 2026 for php83
+/*
 // Change the show coloums in the temporary table: 
 if ($_REQUEST['show_1']) //  ==> ON
 {
@@ -175,6 +194,32 @@ if ($_REQUEST['show_0']) //  ==> OFF
 	$query = "UPDATE $name_temporary_table SET show1 =  '0' WHERE title = '$title_paper'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);	
 }
+*/
+// Change the show columns in the temporary table:
+if (!empty($_REQUEST['show_1'])) // ON
+{
+        $name_temporary_table = $_SESSION['morph_name_temporary_table'];
+        $title_paper = $_REQUEST['title'] ?? '';
+        $page_in = $_REQUEST['start'] ?? '';
+        $page_end = $_REQUEST['stop'] ?? '';
+
+        $query = "UPDATE $name_temporary_table SET show1 = '1' WHERE title = '$title_paper'";
+        $rs2 = mysqli_query($GLOBALS['conn'], $query);
+}
+
+if (!empty($_REQUEST['show_0'])) // OFF
+{
+        $name_temporary_table = $_SESSION['morph_name_temporary_table'];
+        $title_paper = $_REQUEST['title'] ?? '';
+        $page_in = $_REQUEST['start'] ?? '';
+        $page_end = $_REQUEST['stop'] ?? '';
+
+        $query = "UPDATE $name_temporary_table SET show1 = '0' WHERE title = '$title_paper'";
+        $rs2 = mysqli_query($GLOBALS['conn'], $query);
+}
+
+//Till Here
+
 // Request coming from another page
 if ($page) 
 {
@@ -190,8 +235,17 @@ if ($page)
 	$val_property = $_REQUEST['val_property'];
 	$color = $_REQUEST['color'];
 	
+	/*
+	//Made below changes to ip address on OCt 29 2026 by KN to handle 
+string(40) "DROP TABLE temp_::1_1001blue__1793288519"
+
+Fatal error: Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '::1_1001blue__1793288519' at line 1 in /Users/kasturinadella/php_v2/property_page_morphology.php:45 Stack trace: #0 /Users/kasturinadella/php_v2/property_page_morphology.php(45): mysqli_query(Object(mysqli), 'DROP TABLE temp...') #1 /Users/kasturinadella/php_v2/property_page_morphology.php(239): create_temp_table('temp_::1_1001bl...') #2 {main} thrown in /Users/kasturinadella/php_v2/property_page_morphology.php on line 45
+	//$ip_address = $_SERVER['REMOTE_ADDR'];
+	//$ip_address = str_replace('.', '_', $ip_address);
+	*/
 	$ip_address = $_SERVER['REMOTE_ADDR'];
-	$ip_address = str_replace('.', '_', $ip_address);
+	$ip_address = preg_replace('/[^A-Za-z0-9_]/', '_', $ip_address);
+	//Till HEre
 	$time_t = time();
 	$name_temporary_table ='temp_'.$ip_address.'_'.$id_neuron.$color.'__'.$time_t;
 	$_SESSION['morph_name_temporary_table'] = $name_temporary_table;
@@ -221,16 +275,16 @@ if ($page)
 }
 else
 {
-	$name_show_only = $_SESSION['morph_name_show_only'];
-	$_SESSION['morph_name_show_only'] = $name_show_only;
-	$name_show_only_journal = $_SESSION['morph_name_show_only_journal'];
-	$name_show_only_authors = $_SESSION['morph_name_show_only_authors'];
-	$name_show_only_article = $_SESSION['morph_name_show_only_article'];
+	$name_show_only = $_SESSION['morph_name_show_only'] ?? ''; //Changed on Oct 26 2026 by KN for php83 upgrade
+	$_SESSION['morph_name_show_only'] = $name_show_only ?? ''; //Changed on Oct 26 2026 by KN for php83 upgrade
+	$name_show_only_journal = $_SESSION['morph_name_show_only_journal'] ?? ''; //Changed on Oct 26 2026 by KN for php83 upgrade
+	$name_show_only_authors = $_SESSION['morph_name_show_only_authors'] ?? ''; //Changed on Oct 26 2026 by KN for php83 upgrade
+	$name_show_only_article = $_SESSION['morph_name_show_only_article'] ?? ''; //Changed on Oct 26 2026 by KN for php83 upgrade
 
-	$order_ok = $_REQUEST['order_ok'];
+	$order_ok = $_REQUEST['order_ok'] ?? ''; //Changed on Oct 26 2026 by KN for php83 upgrade
 	if ($order_ok == 'GO')             // Was clicked the Order By options
 	{
-		$order_by = $_REQUEST['order'];
+		$order_by = $_REQUEST['order'] ?? ''; //Changed on Oct 26 2026 by KN for php83 upgrade
 		$_SESSION['order_by'] = $order_by;
 		
 		if ($order_by == 'year')
@@ -245,34 +299,39 @@ else
 	}
 	else    // Was clicked the paginations
 	{
-		$order_by = $_SESSION['order_by'];
-		$type_order = $_SESSION['type_order'];
-		if ($_REQUEST['up'])
+		$order_by = $_SESSION['order_by'] ?? ''; //Changed on Oct 26 2026 by KN for php83 upgrade
+		$type_order = $_SESSION['type_order'] ?? ''; //Changed on Oct 26 2026 by KN for php83 upgrade
+
+		//if ($_REQUEST['up'])
+		if (!empty($_REQUEST['up']))
 		{
-			$page_in = $_REQUEST['start'];
+			$page_in = $_REQUEST['start'] ?? ''; //Changed on Oct 26 2026 by KN for php83 upgrade
 			$page_end = $page_in+10;		
 		}
-		if ($_REQUEST['down'])
+		//if ($_REQUEST['down'])
+		if (!empty($_REQUEST['down']))
 		{
-			$page_in = $_REQUEST['start'];
+			$page_in = $_REQUEST['start'] ?? ''; //Changed on Oct 26 2026 by KN for php83 upgrade
 			$page_end = $page_in+10;		
 		}	
-		if ($_REQUEST['last_page'])
+		//if ($_REQUEST['last_page'])
+		if (!empty($_REQUEST['last_page']))
 		{
-			$value_last_page = $_REQUEST['value_last_page'];
+			$value_last_page = $_REQUEST['value_last_page'] ?? ''; //Changed on Oct 26 2026 by KN for php83 upgrade
 			$page_in = $value_last_page;
-			$page_end = $_REQUEST['value_last_page_final'];
+			$page_end = $_REQUEST['value_last_page_final'] ?? ''; //Changed on Oct 26 2026 by KN for php83 upgrade
 		}
-		if ($_REQUEST['first_page'])
+		//if ($_REQUEST['first_page'])
+		if (!empty($_REQUEST['first_page']))
 		{
 			$page_in = 0;
 			$page_end = 10;
 		}
 	}
-	$flag = $_REQUEST['flag'];
-	$id_neuron = $_SESSION['id_neuron'];
-	$val_property = $_SESSION['val_property'];
-	$color = $_SESSION['color'];
+	$flag = $_REQUEST['flag'] ?? ''; //Changed on Oct 26 2026 by KN for php83 upgrade
+	$id_neuron = $_SESSION['id_neuron'] ?? ''; //Changed on Oct 26 2026 by KN for php83 upgrade
+	$val_property = $_SESSION['val_property'] ?? ''; //Changed on Oct 26 2026 by KN for php83 upgrade
+	$color = $_SESSION['color'] ?? ''; //Changed on Oct 26 2026 by KN for php83 upgrade
 	if(!$_SESSION['morph_neuron_show_only_value']){
 		$neuron_show_only_value="";
 		if(strstr(checkNeuronProperty($color),"axons"))
@@ -290,17 +349,17 @@ else
 	
 }
 // SHOW ONLY 
-$name_show_only_var = $_REQUEST['name_show_only_var'];
+$name_show_only_var = $_REQUEST['name_show_only_var'] ?? ''; //Changed on Oct 26 2026 by KN for php83 upgrade
 
 if ($name_show_only_var)
 {
 	
-	$name_show_only = $_REQUEST['name_show_only'];
+	$name_show_only = $_REQUEST['name_show_only'] ?? ''; //Changed on Oct 26 2026 by KN for php83 upgrade
 	$_SESSION['morph_name_show_only'] = $name_show_only;
 
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['morph_name_temporary_table'];
+	$page_in = $_REQUEST['start'] ?? ''; //Changed on Oct 26 2026 by KN for php83 upgrade
+	$page_end = $_REQUEST['stop'] ?? ''; //Changed on Oct 26 2026 by KN for php83 upgrade
+	$name_temporary_table = $_SESSION['morph_name_temporary_table'] ?? ''; //Changed on Oct 26 2026 by KN for php83 upgrade
 	// Option: All:
 	if ($name_show_only == 'all')
 	{
@@ -341,7 +400,7 @@ if ($name_show_only_var)
 	}
 } 
 // ARTICLE - BOOK OPTION
-$name_show_only_article_var = $_REQUEST['name_show_only_article_var'];
+$name_show_only_article_var = $_REQUEST['name_show_only_article_var'] ?? ''; //changed on Oct 29 2026 by KN for php83 upgrade
 if ($name_show_only_article_var)
 {
 	$name_show_only_article = $_REQUEST['name_show_only_article'];
@@ -375,17 +434,17 @@ if ($name_show_only_article_var)
 	}
 } 
 // JOURNAL OPTION
-$name_show_only_journal_var = $_REQUEST['name_show_only_journal_var'];
+$name_show_only_journal_var = $_REQUEST['name_show_only_journal_var'] ?? ''; //Changed on Oct 29 2026 by KN for php83 upgrade
 if ($name_show_only_journal_var)
 {
-	$name_show_only_journal = $_REQUEST['name_show_only_journal'];
-	$_SESSION['morph_name_show_only_journal'] = $name_show_only_journal;
-	$_SESSION['morph_name_show_only_article'] = 'all';
-	$_SESSION['morph_name_show_only_authors'] = 'all';
-	$name_show_only = $_SESSION['morph_name_show_only'];
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['morph_name_temporary_table'];
+	$name_show_only_journal = $_REQUEST['name_show_only_journal'] ?? '';  //Changed on Oct 29 2026 by KN for php83 upgrade
+	$_SESSION['morph_name_show_only_journal'] = $name_show_only_journal ?? '';  //Changed on Oct 29 2026 by KN for php83 upgrade
+	$_SESSION['morph_name_show_only_article'] = 'all' ?? '';  //Changed on Oct 29 2026 by KN for php83 upgrade
+	$_SESSION['morph_name_show_only_authors'] = 'all' ?? ''; //Changed on Oct 29 2026 by KN for php83 upgrade
+	$name_show_only = $_SESSION['morph_name_show_only'] ?? ''; //Changed on Oct 29 2026 by KN for php83 upgrade
+	$page_in = $_REQUEST['start'] ?? ''; //Changed on Oct 29 2026 by KN for php83 upgrade
+	$page_end = $_REQUEST['stop'] ?? ''; //Changed on Oct 29 2026 by KN for php83 upgrade
+	$name_temporary_table = $_SESSION['morph_name_temporary_table'] ?? '';//Changed on Oct 29 2026 by KN for php83 upgrade
 	$query = "UPDATE $name_temporary_table SET show_only =  '1'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);	
 	if ($name_show_only_journal == 'all')
@@ -396,17 +455,17 @@ if ($name_show_only_journal_var)
 
 } 
 // AUTHORS OPTION
-$name_show_only_authors_var  = $_REQUEST['name_show_only_authors_var'];
+$name_show_only_authors_var  = $_REQUEST['name_show_only_authors_var'] ?? ''; //Changed by KN on Oct 29 2026 for php83 upgrade
 if ($name_show_only_authors_var)
 {
-	$name_show_only_authors = $_REQUEST['name_show_only_authors'];
-	$_SESSION['morph_name_show_only_authors'] = $name_show_only_authors;
-	$_SESSION['morph_name_show_only_article'] = 'all';
-	$_SESSION['morph_name_show_only_journal'] = 'all';
-	$name_show_only = $_SESSION['morph_name_show_only'];
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['morph_name_temporary_table'];
+	$name_show_only_authors = $_REQUEST['name_show_only_authors'] ?? ''; //Changed by KN on Oct 29 2026 for php83 upgrade
+	$_SESSION['morph_name_show_only_authors'] = $name_show_only_authors ?? ''; //Changed by KN on Oct 29 2026 for php83 upgrade
+	$_SESSION['morph_name_show_only_article'] = 'all' ?? ''; //Changed by KN on Oct 29 2026 for php83 upgrade
+	$_SESSION['morph_name_show_only_journal'] = 'all' ?? ''; //Changed by KN on Oct 29 2026 for php83 upgrade
+	$name_show_only = $_SESSION['morph_name_show_only'] ?? ''; //Changed by KN on Oct 29 2026 for php83 upgrade
+	$page_in = $_REQUEST['start'] ?? '';//Changed by KN on Oct 29 2026 for php83 upgrade
+	$page_end = $_REQUEST['stop'] ?? ''; //Changed by KN on Oct 29 2026 for php83 upgrade
+	$name_temporary_table = $_SESSION['morph_name_temporary_table'] ?? ''; //Changed by KN on Oct 29 2026 for php83 upgrade
 	if ($name_show_only_authors == 'all')
 	{
 		$query = "UPDATE $name_temporary_table SET show_only =  '1'";
@@ -426,29 +485,29 @@ if ($name_show_only_authors_var)
 	}
 } 
 // axon, dedrite/soma checkbox checked or unchecked
-$neuron_show_only = $_REQUEST['neuron_show_only'];
+$neuron_show_only = $_REQUEST['neuron_show_only'] ?? '';//Changed by KN on Oct 29 2026 for php83 upgrade
 if ($neuron_show_only){
-	$neuron_show_only_value = $_REQUEST['neuron_show_only_value'];
-	$_SESSION['morph_neuron_show_only_value'] = $neuron_show_only_value;
-	$name_show_only = $_SESSION['morph_name_show_only'];
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['morph_name_temporary_table'];
+	$neuron_show_only_value = $_REQUEST['neuron_show_only_value'] ?? '';//Changed by KN on Oct 29 2026 for php83 upgrade
+	$_SESSION['morph_neuron_show_only_value'] = $neuron_show_only_value ?? ''; //Changed by KN on Oct 29 2026 for php83 upgrade
+	$name_show_only = $_SESSION['morph_name_show_only'] ?? ''; //Changed by KN on Oct 29 2026 for php83 upgrade
+	$page_in = $_REQUEST['start'] ?? '';//Changed by KN on Oct 29 2026 for php83 upgrade
+	$page_end = $_REQUEST['stop'] ?? '';//Changed by KN on Oct 29 2026 for php83 upgrade
+	$name_temporary_table = $_SESSION['morph_name_temporary_table'] ?? '';//Changed by KN on Oct 29 2026 for php83 upgrade
 
 }
 $part=checkNeuronProperty($color);
 
 $type = new type($class_type);
 $type -> retrive_by_id($id_neuron);
-$property = new property($class_property);
-$fragment = new fragment($class_fragment);
-$attachment_obj = new attachment($class_attachment);
-$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
-$evidencefragmentrel = new evidencefragmentrel($class_evidencefragmentrel);
-$articleevidencerel = new articleevidencerel($class_articleevidencerel);
-$article = new article($class_article);
-$articleauthorrel = new articleauthorrel($class_articleauthorrel);
-$author = new author($class_author);
+$property = new property($class_property) ?? ''; //Changed by KN on Oct 29 2026 for php83 upgrade
+$fragment = new fragment($class_fragment) ?? ''; //Changed by KN on Oct 29 2026 for php83 upgrade
+$attachment_obj = new attachment($class_attachment) ?? '';//Changed by KN on Oct 29 2026 for php83 upgrade
+$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel) ?? '';//Changed by KN on Oct 29 2026 for php83 upgrade
+$evidencefragmentrel = new evidencefragmentrel($class_evidencefragmentrel) ?? '';//Changed by KN on Oct 29 2026 for php83 upgrade
+$articleevidencerel = new articleevidencerel($class_articleevidencerel) ?? '';//Changed by KN on Oct 29 2026 for php83 upgrade
+$article = new article($class_article) ?? '';//Changed by KN on Oct 29 2026 for php83 upgrade
+$articleauthorrel = new articleauthorrel($class_articleauthorrel) ?? '';//Changed by KN on Oct 29 2026 for php83 upgrade
+$author = new author($class_author) ?? '';//Changed by KN on Oct 29 2026 for php83 upgrade
 ?>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -742,8 +801,10 @@ function show_only_authors(link, start1, stop1)
 					$volume = $article -> getVolume();
 					$issue = $article -> getIssue();
 					// remove period in the title 
-					if ($title[$ui] == '.')
-						$title[$ui] = '';	
+					$title = str_replace('.', '', $title);
+					//commented next two lines on Oct 29 2026 as its throwinf warnign ans we are using above line
+					//if ($title[$ui] == '.')
+					//	$title[$ui] = '';	
 					// retrive the Author Position from ArticleAuthorRel
 					$articleauthorrel -> retrive_author_position($id_article);
 					$n_author = $articleauthorrel -> getN_author_id();
@@ -1201,14 +1262,16 @@ function show_only_authors(link, start1, stop1)
 								$subquery=$subquery."type like '".$property_array[$index]."' or ";
 							}
 						}	
-						$subquery=substr($subquery,0,count($subquery)-4);
-						$subquery=$subquery.")";
+						$subquery = substr($subquery, 0, strlen($subquery) - 4); //CHnaged on OCt 29 2026 by KN for php83 upgrade
+						$subquery = $subquery . ")";
 						// Retrive evidences stored in temporary table
 						try
 						{					
 							$query = "SELECT distinct id_fragment, id_original, quote, page_location FROM $name_temporary_table WHERE title = '$title_temp[$i]' $subquery ORDER BY id_fragment ASC";	
 							$rs = mysqli_query($GLOBALS['conn'],$query);	
-							while(list($id_fragment, $id_original, $quote, $page_location, $type) = mysqli_fetch_row($rs))
+//Removed type on Oct 29 2026 by KN as its not fetching from the table
+							$quote_count = 0;
+							while(list($id_fragment, $id_original, $quote, $page_location) = mysqli_fetch_row($rs))
 							{	
 							$quote_count++;	
 							if ($show1 == 1)
