@@ -50,7 +50,7 @@ function toPrecision($value, $digits)
     //$answer = $value;
 
     // remove tailing zeros
-    /*preg_match('/(\d+)\.(\d+)/', $answer, $answer_matches);	
+    /*preg_match('/(\d+)\.(\d+)/', ($answer ?? ''), $answer_matches);	
     $whole_number = $answer_matches[1];
     $fraction = $answer_matches[2];
 	$answer_digits = strlen($fraction);
@@ -69,14 +69,14 @@ function adjPrecision($old_val,$new_val,$digits)
 	*/
 	$adj_old_val = toPrecision($old_val,$digits);
 
-	preg_match('/(\d+)\.(\d+)/', $adj_old_val, $adj_old_val_matches);
+	preg_match('/(\d+)\.(\d+)/', ($adj_old_val ?? ''), $adj_old_val_matches);
 	$old_val_whole = $adj_old_val_matches[1];
 	$old_val_fraction = $adj_old_val_matches[2];
 	$adj_old_val_digits = strlen($adj_old_val_matches[2]);
 
 	$adj_new_val = toPrecision($new_val,$digits);		
 
-	preg_match('/(\d+)\.(\d+)/', $adj_new_val, $adj_new_val_matches);	
+	preg_match('/(\d+)\.(\d+)/', ($adj_new_val ?? ''), $adj_new_val_matches);	
 	$new_val_whole = $adj_new_val_matches[1];
 	$new_val_fraction = $adj_new_val_matches[2];
 	$adj_new_val_digits = strlen($adj_new_val_matches[2]);
@@ -268,7 +268,7 @@ $post_name=$type_target->getName();
 		if ($nm_page=='noc') {
 			$decimal_places='DECIMAL(10,2)';
 		}
-		preg_match('/(\w+):(\w+):\w+/', $parcel, $parcel_matches);
+		preg_match('/(\w+):(\w+):\w+/', ($parcel ?? ''), $parcel_matches);
 		$subregion_name = $parcel_matches[1];
 		$parcel_name = $parcel_matches[2];
 		$query = "
@@ -304,7 +304,7 @@ $post_name=$type_target->getName();
 	}
 	function return_stats($source_id, $target_id, $par_grp_conv, $nm_page, $all_value_result) {
 		//echo "par_grp_conv: ".$par_grp_conv;
-		preg_match('/(.*)_(.*)/', $par_grp_conv, $output_array);
+		preg_match('/(.*)_(.*)/', ($par_grp_conv ?? ''), $output_array);
 		$subregion = $output_array[1];
 		$parcel = $output_array[2];
 		//$subregion = explode("_", $par_grp_conv)[0];

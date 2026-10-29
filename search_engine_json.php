@@ -29,7 +29,7 @@ function getBearerToken(): ?string {
             $_SERVER['HTTP_AUTHORIZATION'] ??
             $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? null;
 
-    if ($auth && preg_match('/Bearer\s(\S+)/', $auth, $matches)) {
+    if ($auth && preg_match('/Bearer\s(\S+)/', ($auth ?? ''), $matches)) {
         return $matches[1];
     }
 

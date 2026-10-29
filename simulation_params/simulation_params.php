@@ -109,7 +109,7 @@ while(list($id, $name, $subregion, $nickname, $excit_inhib, $type_subtype, $rank
     if($result_synaptome_array && (count($result_synaptome_array) > 0)){
         $results = array();
         foreach($result_synaptome_array as $k=>$v) {
-            if(preg_match("/\b$nickname\b/i", $k)) {
+            if(preg_match("/\b$nickname\b/i", ($k ?? ''))) {
                 $results[$nickname] = $v;
                 //$value = retrieve_detail($v);
                 //var_dump($results[$nickname]);

@@ -214,8 +214,7 @@ if ($page)
 	
 	$time_t = time();
 	
-	$val_property_temp = str_replace('-', '', $val_property_temp);
-	
+	$val_property_temp = str_replace('-', '', $val_property_temp ?? '');
 	
 	$name_temporary_table ='temp_'.$ip_address.'_'.$id_neuron.$val_property_temp.$color_temporary_table.'__'.$time_t;
 	$_SESSION['marker_name_temporary_table'] = $name_temporary_table;
@@ -309,7 +308,7 @@ $attachment_obj = new attachment($class_attachment ?? null);
 
 // SHOW ONLY --------------------------------------------------------------
 // ------------------------------------------------------------------------
-$name_show_only_var = $_REQUEST['name_show_only_var'];
+$name_show_only_var = $_REQUEST['name_show_only_var'] ?? '';
 
 if ($name_show_only_var)
 {
@@ -386,7 +385,7 @@ if ($name_show_only_var)
 
 
 // ARTICLE - BOOK OPTION
-$name_show_only_article_var = $_REQUEST['name_show_only_article_var'];
+$name_show_only_article_var = $_REQUEST['name_show_only_article_var'] ?? '';
 if ($name_show_only_article_var)
 {
 	$color = $_REQUEST['color'];
@@ -431,7 +430,7 @@ if ($name_show_only_article_var)
 
 
 // JUORNAL OPTION
-$name_show_only_journal_var = $_REQUEST['name_show_only_journal_var'];
+$name_show_only_journal_var = $_REQUEST['name_show_only_journal_var'] ?? '';
 if ($name_show_only_journal_var)
 {
 	$color = $_REQUEST['color'];
@@ -463,7 +462,9 @@ if ($name_show_only_journal_var)
 } // end if $name_show_only_journal
 	
 // AUTHORS OPTION
-$name_show_only_authors_var  = $_REQUEST['name_show_only_authors_var'];
+$name_show_only_authors_var = isset($_REQUEST['name_show_only_authors_var'])
+    ? $_REQUEST['name_show_only_authors_var']
+    : '';
 if ($name_show_only_authors_var)
 {
 	$color = $_REQUEST['color'];
@@ -812,11 +813,11 @@ else {
 		              	$markerdata -> retrive_info($id_markerdata1);
 		              
 		              	$expression = $markerdata -> getExpression();
-		              	$expression = preg_replace('/[\[\]"]/', '', $expression);
+		              	$expression = preg_replace('/[\[\]"]/', '', (string)$expression);
 		              	$animal = $markerdata -> getAnimal();
-		              	$animal = preg_replace('/[\[\]"]/', '', $animal);
+		              	$animal = preg_replace('/[\[\]"]/', '', (string)$animal);
 		              	$protocol = $markerdata -> getProtocol();
-		              	$protocol = preg_replace('/[\[\]"]/', '', $protocol);
+		              	$protocol = preg_replace('/[\[\]"]/', '', (string)$protocol);
 		              
 		              	if ($expression != "positive, negative") {
 		              		if ($protocol != "unknown") {
@@ -856,11 +857,11 @@ else {
 		              	$markerdata -> retrive_info($id_markerdata1);
 		              
 		              	$expression = $markerdata -> getExpression();
-		              	$expression = preg_replace('/[\[\]"]/', '', $expression);
+		              	$expression = preg_replace('/[\[\]"]/', '', (string)$expression);
 		              	$animal = $markerdata -> getAnimal();
-		              	$animal = preg_replace('/[\[\]"]/', '', $animal);
+		              	$animal = preg_replace('/[\[\]"]/', '', (string)$animal);
 		              	$protocol = $markerdata -> getProtocol();
-		              	$protocol = preg_replace('/[\[\]"]/', '', $protocol);
+		              	$protocol = preg_replace('/[\[\]"]/', '', (string)$protocol);
 		              
 		              	if ($expression != "positive, negative") {
 		              		if ($protocol != "unknown") {
@@ -892,11 +893,11 @@ else {
 		              		$markerdata -> retrive_info($id_markerdata1);
 		              
 		              		$expression = $markerdata -> getExpression();
-		              		$expression = preg_replace('/[\[\]"]/', '', $expression);
+		              		$expression = preg_replace('/[\[\]"]/', '', (string)$expression);
 		              		$animal = $markerdata -> getAnimal();
-		              		$animal = preg_replace('/[\[\]"]/', '', $animal);
+		              		$animal = preg_replace('/[\[\]"]/', '', (string)$animal);
 		              		$protocol = $markerdata -> getProtocol();
-		              		$protocol = preg_replace('/[\[\]"]/', '', $protocol);
+		              		$protocol = preg_replace('/[\[\]"]/', '', (string)$protocol);
 		              
 		              		if ($expression != "positive, negative") {
 		              			if ($protocol != "unknown") {
@@ -936,11 +937,11 @@ else {
 		              		$markerdata -> retrive_info($id_markerdata1);
 		              
 		              		$expression = $markerdata -> getExpression();
-		              		$expression = preg_replace('/[\[\]"]/', '', $expression);
+		              		$expression = preg_replace('/[\[\]"]/', '', (string)$expression);
 		              		$animal = $markerdata -> getAnimal();
-		              		$animal = preg_replace('/[\[\]"]/', '', $animal);
+		              		$animal = preg_replace('/[\[\]"]/', '', (string)$animal);
 		              		$protocol = $markerdata -> getProtocol();
-		              		$protocol = preg_replace('/[\[\]"]/', '', $protocol);
+		              		$protocol = preg_replace('/[\[\]"]/', '', (string)$protocol);
 		              
 		              		if ($expression != "positive, negative") {
 		              			if ($protocol != "unknown") {
@@ -1077,13 +1078,13 @@ else {
 		              }
 		              
 		              print ("$image_link&nbsp;<strong>$print_color$conflict_note</strong>");
-		              
-		              if ($dissent_note)
-		              	print ("<BR>$dissent_note");
-		              if ($conflict_explanation_statement)
-		              	print ("<BR>Explanation: $conflict_explanation_statement");
-		              
-		              
+			      if (!empty($dissent_note)) {
+				      print("<BR>$dissent_note");
+			      }
+
+			      if (!empty($conflict_explanation_statement)) {
+				print("<BR>Explanation: $conflict_explanation_statement");
+                              }   
 		              
 		              // print summary arrays for debugging and vetting
 		              
@@ -1286,7 +1287,7 @@ else {
 					//$linking_cell_id= $fragment ->getLinking_cell_id();
 					$linking_pmid_isbn= $fragment ->getLinking_pmid_isbn();
 					$linking_pmid_isbn_page= $fragment ->getLinking_pmid_isbn_page();
-					$linking_quote = preg_replace("/\'/","\'",$fragment ->getLinking_quote());
+					$linking_quote = preg_replace("/\'/","\'",(string)$fragment ->getLinking_quote());
 					if($linking_quote_evidence[$i])
 						$linking_quote = $linking_quote . "<BR>Linking notes: " . $linking_quote_evidence[$i];
 					//$linking_quote= $fragment ->getLinking_quote();
@@ -1301,19 +1302,19 @@ else {
 					$id_article = $articleevidencerel -> getarticle_id_array(0);		
 			
 					$article -> retrive_by_id($id_article);
-					$title = preg_replace("/\'/","\'",$article -> getTitle());
-					$publication = preg_replace("/\'/","\'",$article -> getPublication());
-					$year = preg_replace("/\'/","\'",$article -> getYear());
-					$pmid_isbn = preg_replace("/\'/","\'",$article -> getPmid_isbn()); 
-					$first_page = preg_replace("/\'/","\'",$article -> getFirst_page()); 
-					$last_page = preg_replace("/\'/","\'",$article -> getLast_page()); 
-					$pmcid = preg_replace("/\'/","\'",$article -> getPmcid()); 
-					$nihmsid = preg_replace("/\'/","\'",$article -> getNihmsid()); 
+					$title = preg_replace("/\'/","\'",(string)$article -> getTitle());
+					$publication = preg_replace("/\'/","\'",(string)$article -> getPublication());
+					$year = preg_replace("/\'/","\'",(string)$article -> getYear());
+					$pmid_isbn = preg_replace("/\'/","\'",(string)$article -> getPmid_isbn()); 
+					$first_page = preg_replace("/\'/","\'",(string)$article -> getFirst_page()); 
+					$last_page = preg_replace("/\'/","\'",(string)$article -> getLast_page()); 
+					$pmcid = preg_replace("/\'/","\'",(string)$article -> getPmcid()); 
+					$nihmsid = preg_replace("/\'/","\'",(string)$article -> getNihmsid()); 
 					$doi = $article -> getDoi(); 
-					$open_access = preg_replace("/\'/","\'",$article -> getOpen_access()); 
-					$citation = preg_replace("/\'/","\'",$article -> getLast_page()); 
-					$volume = preg_replace("/\'/","\'",$article -> getVolume()); 
-					$issue = preg_replace("/\'/","\'",$article -> getIssue()); 
+					$open_access = preg_replace("/\'/","\'",(string)$article -> getOpen_access()); 
+					$citation = preg_replace("/\'/","\'",(string)$article -> getLast_page()); 
+					$volume = preg_replace("/\'/","\'",(string)$article -> getVolume()); 
+					$issue = preg_replace("/\'/","\'",(string)$article -> getIssue()); 
 		
 					$pages = $first_page." - ".$last_page;								
 					//echo "frag".$fragment_id_1." "."orig id:". " ". $original_id." "."evidence id:". $id_evidence2[$i1]." "."quote:". $quote." "."inter:". $interpretation." "." int notes:". $interpretation_notes." "."lpmid:". $linking_pmid_isbn." "."lpmisb:". $linking_pmid_isbn_page." "." lquote:". $linking_quote." ". $linking_page_location." authors:". $name_authors." "."title: ". $title." "."pub:". $publication." "."year:". $year." "."pmidisb: ". $pmid_isbn." "."pages: ". $pages." "."page_loc:". $page_location." "."id_marker: ". $id_markerdata." "."id_evidence: ". $id_evidence[$i]." "."id2: ". $id_evidence2[$i1]." "."type:". $type." ". "color:". $color_1[$m2]." "."pmcid:". $pmcid." "."nihmsid:". $nihmsid." "." doi:". $doi." "."citation:". $citation." "."vol:". $volume." "."issue:". $issue." "."sec_pmid:". $secondary_pmid." ";
@@ -1340,10 +1341,11 @@ else {
 					$name_authors[1] = ' ';	
 						
 					$name_authors = ltrim($name_authors);
-					$name_authors = preg_replace("/\'/","\'",$name_authors);
+					$name_authors = preg_replace("/\'/","\'",(string)$name_authors);
 
 					// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 					if ($page) {
+						$id_markerdata = $id_markerdata ?? '';
 						// Insert the data in the temporary table ********************************************************************************
 						insert_temporary($name_temporary_table, $fragment_id_1, $original_id, $quote, $interpretation, $interpretation_notes, $linking_pmid_isbn, $linking_pmid_isbn_page, $linking_quote, $linking_page_location, $name_authors, $title, $publication, $year, $pmid_isbn, $pages, $page_location, $id_markerdata, $id_evidence[$i], $id_evidence2[$i1], $type, '0', $color_1[$m2], $pmcid, $nihmsid, $doi, $citation, $volume, $issue, $secondary_pmid);
 					}							
@@ -1740,16 +1742,17 @@ else {
 						$markerdata -> retrive_info($id_markerdata);
 
 						$expression = $markerdata -> getExpression();	
-            			$expression = preg_replace('/[\[\]"]/', '', $expression);
+            			$expression = preg_replace('/[\[\]"]/', '', (string)$expression);
             			$expression = str_replace("_", " ", $expression);
             			$expression = str_replace("inference", "(inference)", $expression);
 						$animal = $markerdata -> getAnimal();	
-            			$animal = preg_replace('/[\[\]"]/', '', $animal);
+            			$animal = preg_replace('/[\[\]"]/', '', (string)$animal);
 						$protocol = $markerdata -> getProtocol();	
-           				$protocol = preg_replace('/[\[\]"]/', '', $protocol);
+           				$protocol = preg_replace('/[\[\]"]/', '', (string)$protocol);
 							
 						//if ($id_fragment_compare == $id_fragment);
-						if (($id_fragment_compare == $id_fragment) && ($id_evidence1_compare == $id_evidence1));
+						if (($id_fragment_compare ?? '') == $id_fragment &&
+    ($id_evidence1_compare ?? '') == $id_evidence1);
 						else	
 						{		
 

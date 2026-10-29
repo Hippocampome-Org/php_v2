@@ -76,7 +76,7 @@ if ($_REQUEST['search_pmid'])
 			$error_pmid = 1;
 		else
 		{
-			if (preg_match('[a-z]', $pmid)) 
+			if (preg_match('[a-z]', ($pmid ?? ''))) 
 				$error_pmid = 1;
 			else
 				$error_pmid = 0;
@@ -84,7 +84,7 @@ if ($_REQUEST['search_pmid'])
 	}
 	if ($type_search == 'ISBN')
 	{
-		if (preg_match('[a-z]', $pmid)) 
+		if (preg_match('[a-z]', ($pmid ?? ''))) 
 			$error_pmid = 1;
 		else
 			$error_pmid = 0;	

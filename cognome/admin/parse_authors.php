@@ -51,7 +51,7 @@
         $auth_str = $row["authors"];
         $pattern='/([\w]+[\'\- ]?[\w]+[\,][\W]?[\w]+[\.]? ?[\w]?[\.]? ?[\w]?[\.]? ?[\w]?[\.]? ?[\w]?[\.]? ?[\w]?[\.]?)/u';
 
-        $success = preg_match_all($pattern, $auth_str, $match);
+        $success = preg_match_all($pattern, ($auth_str ?? ''), $match);
         if ($success) {
           foreach ($match[1] as $name){
             array_push($author_names,$name);

@@ -109,7 +109,7 @@
 					$title5 = str_replace("]","",$title4);
 					$pattern = "/(".$title5.".*)/";
 					$title_matches = array();
-					preg_match($pattern, $core_articles[$i], $title_matches);
+					preg_match($pattern, ($core_articles[$i] ?? ''), $title_matches);
 					if (sizeof($title_matches) > 0 && $title != "") {
 						$core_found[$i] = 1;
 	  					array_push($output_lines, "\"".$title."\",".$year);

@@ -784,7 +784,7 @@ class PHPMailer
      */
     protected function addAnAddress($kind, $address, $name = '')
     {
-        if (!preg_match('/^(to|cc|bcc|Reply-To)$/', $kind)) {
+        if (!preg_match('/^(to|cc|bcc|Reply-To)$/', ($kind ?? ''))) {
             $this->setError($this->lang('Invalid recipient array') . ': ' . $kind);
             $this->edebug($this->lang('Invalid recipient array') . ': ' . $kind);
             if ($this->exceptions) {
@@ -2186,7 +2186,7 @@ class PHPMailer
                 // Allow for bypassing the Content-Disposition header totally
                 if (!(empty($disposition))) {
                     $encoded_name = $this->encodeHeader($this->secureHeader($name));
-                    if (preg_match('/[ \(\)<>@,;:\\"\/\[\]\?=]/', $encoded_name)) {
+                    if (preg_match('/[ \(\)<>@,;:\\"\/\[\]\?=]/', ($encoded_name ?? ''))) {
                         $mime[] = sprintf(
                             'Content-Disposition: %s; filename="%s"%s',
                             $disposition,
@@ -2320,7 +2320,7 @@ class PHPMailer
         $matchcount = 0;
         switch (strtolower($position)) {
             case 'phrase':
-                if (!preg_match('/[\200-\377]/', $str)) {
+                if (!preg_match('/[\200-\377]/', ($str ?? ''))) {
                     // Can't use addslashes as we don't know the value of magic_quotes_sybase
                     $encoded = addcslashes($str, "\0..\37\177\\\"");
                     if (($str == $encoded) && !preg_match('/[^A-Za-z0-9!#$%&\'*+\/=?^_`{|}~ -]/', $str)) {
@@ -2329,15 +2329,15 @@ class PHPMailer
                         return ("\"$encoded\"");
                     }
                 }
-                $matchcount = preg_match_all('/[^\040\041\043-\133\135-\176]/', $str, $matches);
+                $matchcount = preg_match_all('/[^\040\041\043-\133\135-\176]/', ($str ?? ''), $matches);
                 break;
             /** @noinspection PhpMissingBreakStatementInspection */
             case 'comment':
-                $matchcount = preg_match_all('/[()"]/', $str, $matches);
+                $matchcount = preg_match_all('/[()"]/', ($str ?? ''), $matches);
                 // Intentional fall-through
             case 'text':
             default:
-                $matchcount += preg_match_all('/[\000-\010\013\014\016-\037\177-\377]/', $str, $matches);
+                $matchcount += preg_match_all('/[\000-\010\013\014\016-\037\177-\377]/', ($str ?? ''), $matches);
                 break;
         }
 
@@ -2394,7 +2394,7 @@ class PHPMailer
      */
     public function has8bitChars($text)
     {
-        return (boolean)preg_match('/[\x80-\xFF]/', $text);
+        return (boolean)preg_match('/[\x80-\xFF]/', ($text ?? ''));
     }
 
     /**
@@ -2514,7 +2514,7 @@ class PHPMailer
                 break;
         }
         $matches = array();
-        if (preg_match_all("/[{$pattern}]/", $encoded, $matches)) {
+        if (preg_match_all("/[{$pattern}]/", ($encoded ?? ''), $matches)) {
             // If the string contains an '=', make sure it's the first thing we replace
             // so as to avoid double-encoding
             $eqkey = array_search('=', $matches[0]);
@@ -2903,7 +2903,7 @@ class PHPMailer
         if (isset($images[2])) {
             foreach ($images[2] as $imgindex => $url) {
                 // Convert data URIs into embedded images
-                if (preg_match('#^data:(image[^;,]*)(;base64)?,#', $url, $match)) {
+                if (preg_match('#^data:(image[^;,]*)(;base64)?,#', ($url ?? ''), $match)) {
                     $data = substr($url, strpos($url, ','));
                     if ($match[2]) {
                         $data = base64_decode($data);
@@ -2914,7 +2914,7 @@ class PHPMailer
                     if ($this->addStringEmbeddedImage($data, $cid, '', 'base64', $match[1])) {
                         $message = str_replace($images[0][$imgindex], $images[1][$imgindex] . '="cid:' . $cid . '"', $message);
                     }
-                } elseif (!preg_match('#^[A-z]+://#', $url)) {
+                } elseif (!preg_match('#^[A-z]+://#', ($url ?? ''))) {
                     // Do not change urls for absolute images (thanks to corvuscorax)
                     $filename = basename($url);
                     $directory = dirname($url);
@@ -3111,7 +3111,7 @@ class PHPMailer
     {
         $ret = array('dirname' => '', 'basename' => '', 'extension' => '', 'filename' => '');
         $pathinfo = array();
-        if (preg_match('%^(.*?)[\\\\/]*(([^/\\\\]*?)(\.([^\.\\\\/]+?)|))[\\\\/\.]*$%im', $path, $pathinfo)) {
+        if (preg_match('%^(.*?)[\\\\/]*(([^/\\\\]*?)(\.([^\.\\\\/]+?)|))[\\\\/\.]*$%im', ($path ?? ''), $pathinfo)) {
             if (array_key_exists(1, $pathinfo)) {
                 $ret['dirname'] = $pathinfo[1];
             }

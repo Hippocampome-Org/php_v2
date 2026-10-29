@@ -154,19 +154,19 @@ if (!isset($_SESSION['user_login']) || $_SESSION['user_login'] == '') {
   // title
   if ($title=='') {
   $pattern='~.*ArticleTitle\>(.+)\<.*~';
-  $result = preg_match($pattern, $pubmed_html, $match);
+  $result = preg_match($pattern, ($pubmed_html ?? ''), $match);
   $title = $match[1];
   }
   // year
   if ($year=='') {
   $pattern='~.*PubDate\W+Year\>(.+)\<.*~';
-  $result = preg_match($pattern, $pubmed_html, $match);
+  $result = preg_match($pattern, ($pubmed_html ?? ''), $match);
   $year = $match[1];
   }
   // journal
   if ($journal=='') {
   $pattern='~.*JournalIssue\W+Title>(.+)\<.*~';
-  $result = preg_match($pattern, $pubmed_html, $match);
+  $result = preg_match($pattern, ($pubmed_html ?? ''), $match);
   $journal = $match[1];
   }
   // citation data
@@ -175,8 +175,8 @@ if (!isset($_SESSION['user_login']) || $_SESSION['user_login'] == '') {
     $authors='';
     $lastname_pattern='~.*LastName>(.+)\<.*~';
     $firstinitials_pattern='~.*Initials>(.+)\<.*~';
-    $lastname_result = preg_match_all($lastname_pattern, $pubmed_html, $match_1,PREG_PATTERN_ORDER);
-    $firstinitials_result = preg_match_all($firstinitials_pattern, $pubmed_html, $match_2,PREG_PATTERN_ORDER);
+    $lastname_result = preg_match_all($lastname_pattern, ($pubmed_html ?? ''), $match_1,PREG_PATTERN_ORDER);
+    $firstinitials_result = preg_match_all($firstinitials_pattern, ($pubmed_html ?? ''), $match_2,PREG_PATTERN_ORDER);
     for( $i = 0; $i<sizeof($match_1[0]); $i++ ) {
       $authors=$authors.$match_1[1][$i].', '.$match_2[1][$i].'., ';
     }
@@ -184,19 +184,19 @@ if (!isset($_SESSION['user_login']) || $_SESSION['user_login'] == '') {
   // volume
   if ($volume=='') {
     $pattern='~.*JournalIssue\W+Volume>(.+)\<.*~';
-    $result = preg_match($pattern, $pubmed_html, $match);
+    $result = preg_match($pattern, ($pubmed_html ?? ''), $match);
     $volume = $match[1];  
   }
   // issue
   if ($issue=='') {  
     $pattern='~.*JournalIssue\W+Issue>(.+)\<.*~';
-    $result = preg_match($pattern, $pubmed_html, $match);
+    $result = preg_match($pattern, ($pubmed_html ?? ''), $match);
     $issue = $match[1];   
   }
   // pages
   if ($pages=='') {  
     $pattern='~.*Pagination\W+MedlinePgn>(.+)\<.*~';
-    $result = preg_match($pattern, $pubmed_html, $match);
+    $result = preg_match($pattern, ($pubmed_html ?? ''), $match);
     $pages = $match[1]; 
   }
   // combine for citation 
@@ -220,7 +220,7 @@ if (!isset($_SESSION['user_login']) || $_SESSION['user_login'] == '') {
   // abstract
   if ($abstract=='') {  
     $pattern='~.*AbstractText>(.+)\<.*~';
-    $result = preg_match($pattern, $pubmed_html, $match);
+    $result = preg_match($pattern, ($pubmed_html ?? ''), $match);
     $abstract = $match[1];  
   }
   // official id

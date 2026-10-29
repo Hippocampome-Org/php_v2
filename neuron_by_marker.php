@@ -3,7 +3,7 @@
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <?php
-$parameter=$_GET['marker'];
+$parameter=$_GET['marker'] && '';
 
 if ($parameter=="alpha-actinin-2")
 	$title = "&alpha;-act2";
@@ -53,7 +53,9 @@ $objArr = $property_1->retrievePropertyIdByName($parameter);
 function markers_search($evidencepropertyyperel, $property_1, $type, $predicate, $parameter) {	
 	$n_tot = 0;				// Variable to be used as an index for storing the resultant Type ID
 	$new_type_id = NULL;	// Variable to store and return the complete list of Matched and Unmatched IDs
-	
+ 	
+	$type_id = array();
+	$new_type_conflict_note = NULL;	
 	if(($predicate != 'unknown')) {
 		// Call the function to search for the appropriate Type Ids
 		$evidencepropertyyperel -> retrive_Type_id_by_Subject_override($parameter, $predicate);
@@ -133,7 +135,7 @@ function markers_search($evidencepropertyyperel, $property_1, $type, $predicate,
 	//print($query_to_get_name);
 	$rs_name = mysqli_query($GLOBALS['conn'],$query_to_get_name);
 	$row_name = mysqli_fetch_assoc($rs_name);
-	$name_val=$row_name['object'];
+	$name_val=$row_name['object'] ?? '';
 	if($name_val!="")
 		print("$name_val [$title]");
 	else
@@ -172,6 +174,8 @@ $mixed_type = Array();
 $name_type = "";
 $subregion_type ="";
 $position_type = "";
+$conflict_note = null;
+$unvetted = null;
 foreach ($predicateArr as $k => $v)
 {
 	$marker_id = Array();
@@ -284,7 +288,7 @@ foreach ($predicateArr as $k => $v)
 				<td align='center' width='20%' class='table_neuron_page1'>View page</td>
 			</tr>");
 	}
-	if(count($marker_id) > 0)
+	if(!empty($marker_id))
 	{
 		foreach ($marker_id as $idToConsider) {
 			$id = $idToConsider;
@@ -328,24 +332,24 @@ foreach ($predicateArr as $k => $v)
 							(!empty($conf_notes_se) && array_key_exists($id_t, $conf_notes_se)) ||
 							(!empty($conf_notes_sp) && array_key_exists($id_t, $conf_notes_sp)) ||
 							(!empty($conf_notes_unresolved) && array_key_exists($id_t, $conf_notes_unresolved))) {
-						$evidencepropertyyperel -> retrive_unvetted($id,$objArr['positive']);
+						$evidencepropertyyperel -> retrive_unvetted($id,($objArr['positive'] ?? null));
 						$unvetted = $evidencepropertyyperel -> getUnvetted();
-						$evidencepropertyyperel -> retrieve_conflict_note($objArr['positive'], $id);
+						$evidencepropertyyperel -> retrieve_conflict_note(($objArr['positive'] ?? null), $id);
 						$conflict_note = $evidencepropertyyperel -> getConflict_note();
 					}
 					elseif ((!empty($conf_notes_pin) && array_key_exists($id_t, $conf_notes_pin)) ||							
 							(!empty($conf_notes_pini) && array_key_exists($id_t, $conf_notes_pini)) ||
 							(!empty($conf_notes_unresolvedInf) && array_key_exists($id_t, $conf_notes_unresolvedInf)) ||
 							(!empty($conf_notes_spInf) && array_key_exists($id_t, $conf_notes_spInf))) {
-						$evidencepropertyyperel -> retrive_unvetted($id,$objArr['positive_inference']);
+						$evidencepropertyyperel -> retrive_unvetted($id,($objArr['positive_inference'] ?? null));
 						$unvetted = $evidencepropertyyperel -> getUnvetted();
-						$evidencepropertyyperel -> retrieve_conflict_note($objArr['positive_inference'], $id);
+						$evidencepropertyyperel -> retrieve_conflict_note(($objArr['positive_inference'] ?? null), $id);
 						$conflict_note = $evidencepropertyyperel -> getConflict_note();
 					}
 					elseif (!empty($conf_notes_pni) && array_key_exists($id_t, $conf_notes_pni)) {
-						$evidencepropertyyperel -> retrive_unvetted($id,$objArr['negative_inference']);
+						$evidencepropertyyperel -> retrive_unvetted($id,($objArr['negative_inference'] ?? null));
 						$unvetted = $evidencepropertyyperel -> getUnvetted();
-						$evidencepropertyyperel -> retrieve_conflict_note($objArr['negative_inference'], $id);
+						$evidencepropertyyperel -> retrieve_conflict_note(($objArr['negative_inference'] ?? null), $id);
 						$conflict_note = $evidencepropertyyperel -> getConflict_note();
 					}
 					if ($inhib_excit == 'e') {
@@ -385,7 +389,7 @@ foreach ($predicateArr as $k => $v)
 						GROUP BY sub.Type_id";
 				$rs_color = mysqli_query($GLOBALS['conn'],$query_to_get_color);
 				$row = mysqli_fetch_assoc($rs_color);
-				$color_val=$row['object'];
+				$color_val=$row['object'] && '';
 				//print("$query_to_get_color,$color_val");
 				print("<a align='left' href='property_page_markers.php?id_neuron=$id&val_property=$parameter&color=$color_val&page=markers' target='_blank'> [Evidence] </a>
 					<a align='right' href='neuron_page.php?id=$id_t' target='_blank'> [Neuron] </a>");

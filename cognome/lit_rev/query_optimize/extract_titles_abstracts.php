@@ -11,12 +11,12 @@
 	  while (! feof($fh)) 
 	  {	
 	  	$line = fgets($fh);
-	  	preg_match('/<ArticleTitle>(.*)<\/ArticleTitle>/', $line, $matches_title);
+	  	preg_match('/<ArticleTitle>(.*)<\/ArticleTitle>/', ($line ?? ''), $matches_title);
 	  	if (sizeof($matches_title) > 0) {
 	  	  array_push($titles, $matches_title[1]);
 	  	  //echo $matches_title[0]."<br>";
 	  	}
-	  	preg_match('/<AbstractText>(.*)<\/AbstractText>/', $line, $matches_abstract);
+	  	preg_match('/<AbstractText>(.*)<\/AbstractText>/', ($line ?? ''), $matches_abstract);
 	  	if (sizeof($matches_abstract) > 0) {
 	      array_push($abstracts, $matches_abstract[1]);
 	  	  //echo $matches_abstract[0]."<br>";

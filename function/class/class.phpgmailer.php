@@ -1150,7 +1150,7 @@ class PHPGMailer
       
       switch (strtolower($position)) {
         case 'phrase':
-          if (!preg_match('/[\200-\377]/', $str)) {
+          if (!preg_match('/[\200-\377]/', ($str ?? ''))) {
             // Can't use addslashes as we don't know what value has magic_quotes_sybase.
             $encoded = addcslashes($str, "\0..\37\177\\\"");
 
@@ -1159,14 +1159,14 @@ class PHPGMailer
             else
               return ("\"$encoded\"");
           }
-          $x = preg_match_all('/[^\040\041\043-\133\135-\176]/', $str, $matches);
+          $x = preg_match_all('/[^\040\041\043-\133\135-\176]/', ($str ?? ''), $matches);
           break;
         case 'comment':
-          $x = preg_match_all('/[()"]/', $str, $matches);
+          $x = preg_match_all('/[()"]/', ($str ?? ''), $matches);
           // Fall-through
         case 'text':
         default:
-          $x += preg_match_all('/[\000-\010\013\014\016-\037\177-\377]/', $str, $matches);
+          $x += preg_match_all('/[\000-\010\013\014\016-\037\177-\377]/', ($str ?? ''), $matches);
           break;
       }
 

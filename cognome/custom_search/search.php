@@ -178,7 +178,7 @@ function search($cog_conn, $file, $filename, $max_matches, $query, $snippit_size
 		$pattern_keyterm = trim($query[$f_i]);
 		//$pattern = "/(.{1,500}[ -\(]".$pattern_keyterm."[\)s -].{1,500})/i"; // /i is case insensitive
 		$pattern = "/(.{1,$snippit_size}[ -\('.,]".$pattern_keyterm."['?.,\)s -].{1,$snippit_size})/i"; // /i is case insensitive
-		$num_matches = preg_match_all($pattern, $file_contents, $matches);
+		$num_matches = preg_match_all($pattern, ($file_contents ?? ''), $matches);
 
 		// update totals
 		if ($num_matches > 0) {

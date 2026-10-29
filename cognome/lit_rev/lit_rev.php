@@ -121,40 +121,40 @@ function article_info($title, $gs_authors)
 
 	// id //
 	$pattern='~.*idlist\"\:\[\"(\d+)\"\].*~';
-	$result = preg_match($pattern, $html, $match);
+	$result = preg_match($pattern, ($html ?? ''), $match);
 	$id = $match[1];
 
 	// abstract //
 	$pm_url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id='.$id.'retmode=json&rettype=abstract';
 	$pubmed_html=file_get_contents($pm_url);
 	$pattern='~.*AbstractText>(.+)\<.*~';
-	$result = preg_match($pattern, $pubmed_html, $match);
+	$result = preg_match($pattern, ($pubmed_html ?? ''), $match);
 	$abstract = $match[1];
 
 	// authors //
 	$authors='';
     $lastname_pattern='~.*LastName>(.+)\<.*~';
     $firstinitials_pattern='~.*Initials>(.+)\<.*~';
-    $lastname_result = preg_match_all($lastname_pattern, $pubmed_html, $match_1,PREG_PATTERN_ORDER);
-    $firstinitials_result = preg_match_all($firstinitials_pattern, $pubmed_html, $match_2,PREG_PATTERN_ORDER);
+    $lastname_result = preg_match_all($lastname_pattern, ($pubmed_html ?? ''), $match_1,PREG_PATTERN_ORDER);
+    $firstinitials_result = preg_match_all($firstinitials_pattern, ($pubmed_html ?? ''), $match_2,PREG_PATTERN_ORDER);
     for( $i = 0; $i<sizeof($match_1[0]); $i++ ) {
       $authors=$authors.$match_1[1][$i].', '.$match_2[1][$i].'., ';
     }
 
     // title //
 	$pattern='~.*ArticleTitle\>(.+)\<.*~';
-	$result = preg_match($pattern, $pubmed_html, $match);
+	$result = preg_match($pattern, ($pubmed_html ?? ''), $match);
 	$pm_title = $match[1];
 	$pm_title = str_replace('"', '\'', $pm_title);
 
 	// year //
 	$pattern='~.*PubDate\W+Year\>(.+)\<.*~';
-	$result = preg_match($pattern, $pubmed_html, $match);
+	$result = preg_match($pattern, ($pubmed_html ?? ''), $match);
 	$year = $match[1];
 
 	// journal //
 	$pattern='~.*JournalIssue\W+Title>(.+)\<.*~';
-	$result = preg_match($pattern, $pubmed_html, $match);
+	$result = preg_match($pattern, ($pubmed_html ?? ''), $match);
 	$journal = $match[1];
 	
 	return array($id, $abstract, $pm_title, $pm_api_url, $authors, $year, $journal, $pm_url);

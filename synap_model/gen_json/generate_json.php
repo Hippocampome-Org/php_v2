@@ -59,7 +59,7 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
                   number_format($main_value, $decimalPlaces) : round($main_value, $decimalPlaces);
 
             // conver value to decimal places from main value
-                preg_match('/\.(.*)/', $main_value_adj, $fraction);
+                preg_match('/\.(.*)/', ($main_value_adj ?? ''), $fraction);
                 $mv_dec_places = strlen(strval($fraction[1]));
                 $val_dp_adj = number_format((float)$value, $mv_dec_places, '.', '');
 

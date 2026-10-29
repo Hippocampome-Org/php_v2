@@ -248,7 +248,7 @@
             if((strpos($query, 'Name:') !== false) && 
                (strpos($query, 'Morphology:') !== false) ){
                 $nmspl_text = explode('Name:', $query);
-                preg_match('#\((.*?)\)#', $nmspl_text[1], $match);
+                preg_match('#\((.*?)\)#', ($nmspl_text[1] ?? ''), $match);
                 if(count($match) > 0){
         			$query = $nmspl_text[0]."Name:".$match[1].")";
                 }

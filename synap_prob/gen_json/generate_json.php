@@ -63,7 +63,7 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
 	        number_format($value, $decimalPlaces) : round($value, $decimalPlaces);
 
 	    // remove tailing zeros
-	    /*preg_match('/(\d+)\.(\d+)/', $answer, $answer_matches);	
+	    /*preg_match('/(\d+)\.(\d+)/', ($answer ?? ''), $answer_matches);	
 	    $whole_number = $answer_matches[1];
 	    $fraction = $answer_matches[2];
 		$answer_digits = strlen($fraction);
@@ -82,12 +82,12 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
 		*/
 		$adj_old_val = toPrecision($old_val,$digits);
 
-		preg_match('/\d?\.(\d+)/', $adj_old_val, $adj_old_val_matches);
+		preg_match('/\d?\.(\d+)/', ($adj_old_val ?? ''), $adj_old_val_matches);
 		$adj_old_val_digits = strlen($adj_old_val_matches[1]);
 
 		$adj_new_val = toPrecision($new_val,$digits);		
 
-		preg_match('/\d?\.(\d+)/', $adj_new_val, $adj_new_val_matches);		
+		preg_match('/\d?\.(\d+)/', ($adj_new_val ?? ''), $adj_new_val_matches);		
 		$adj_new_val_digits = strlen($adj_new_val_matches[1]);
 
 		if ($adj_old_val_digits < $adj_new_val_digits) {
