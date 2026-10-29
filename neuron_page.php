@@ -687,7 +687,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 		           			$array_supp_ids[$index++]=$val;
 		           }
 		       }
-			if(count($array_supp_ids)>0){
+			if(count($array_supp_ids ?? array())>0){
 				print('<table width="80%" border="0" cellspacing="2" cellpadding="0">
 					<tr>
 						<td width="20%" align="right" class="table_neuron_page1">
@@ -1760,7 +1760,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 <td align='left' width='80%' class='table_neuron_page2'>
 	<?php
 	$fp_count=0;
-	$firing_parameter=$_REQUEST['pattern'];
+	$firing_parameter=$_REQUEST['pattern'] ?? '';
 	$query_to_get_images = "SELECT 
     DISTINCT a.name
 FROM
@@ -2264,7 +2264,7 @@ WHERE
 	  <td width='33%' align='center'>
 	  <?php
       print connection_table_head("Known sources");
-	  if (count($list_explicit_sources) < 1) // the list of targets or sources is empty
+	  if (empty($list_explicit_sources)) // the list of targets or sources is empty
 			print name_row_none("none known");
 	  else
 			foreach($list_explicit_sources as $source) { print name_row("Destination",$source); }
@@ -2285,7 +2285,7 @@ WHERE
       <td width='33%' align='center'>
 	  <?php
       print connection_table_head("Potential sources known to be avoided");
-	  if (count($list_explicit_nonsources) < 1) // the list of targets or sources is empty
+	  if (empty($list_explicit_nonsources)) // the list of targets or sources is empty
 			print name_row_none("none known");
 	  else
 			foreach($list_explicit_nonsources as $source) { print name_row("Destination",$source); }
@@ -2304,7 +2304,7 @@ WHERE
       <td width='33%' align='center'>
       <?php 
       print connection_table_head("Known targets");
-	  if (count($list_explicit_targets) < 1) // the list of targets or sources is empty
+	  if (empty($list_explicit_targets)) // the list of targets or sources is empty
 			print name_row_none("none known");
 	  else
 			foreach($list_explicit_targets as $target) { print name_row("Source",$target); }
@@ -2314,7 +2314,7 @@ WHERE
 	  <td width='33%' align='center'>
 	  <?php
       print connection_table_head("Potential targets");
-	  if (count($list_potential_targets) < 1) // the list of targets or sources is empty
+	  if (empty($list_potential_targets)) // the list of targets or sources is empty
 			print name_row_none("none known");
 	  else
 			foreach($list_potential_targets as $target) { print name_row("Source",$target); }
@@ -2325,7 +2325,7 @@ WHERE
 	  <td width='33%' align='center'>
 	  <?php
       print connection_table_head("Potential targets known to be avoided");
-	  if (count($list_explicit_nontargets) < 1) // the list of targets or sources is empty
+	  if (empty($list_explicit_nontargets)) // the list of targets or sources is empty
 			print name_row_none("none known");
 	  else
 			foreach($list_explicit_nontargets as $target) { print name_row("Source",$target); }
@@ -2345,6 +2345,7 @@ WHERE
       	include("phases/gen_json/generate_json.php");
       	$theta_val = ''; $theta_prop1 = ''; $theta_prop2 = ''; $theta_prop3 = '';
       	$swr_val = ''; $swr_prop1 = ''; $swr_prop2 = ''; $swr_prop3 = ''; 
+      	$firingrate_val = ''; $firingrate_prop1 = ''; $firingrate_prop2 = ''; $firingrate_prop3 = ''; 
       	$other_val = ''; $other_prop = '';
       	for ($i = 0; $i < count($npage_theta); $i++) {
       		if ($npage_theta[$i][0] == $id) {
@@ -2366,25 +2367,25 @@ WHERE
       	}
       	echo "<table border=\"0\" cellspacing=\"2\" cellpadding=\"0\">";
       	echo "<tr><td class=\"table_neuron_page1\"><center>Category</center></td><td class=\"table_neuron_page1\"><center>Value</center></td></tr>";
-      	if ($theta_val != '') {
+      	if ($theta_val != '' && $theta_val !== null && $theta_val !== 0) {
 	      	echo "<tr><td class=\"table_neuron_page2\">Theta (deg):</td><td class=\"table_neuron_page2\"><a href='property_page_phases.php?id_neuron=".$id."' target='_blank' style='text-decoration:none'>".$theta_val."</a></td></tr>";
 	      	echo "<tr><td class=\"table_neuron_page2\">Theta range:</td><td class=\"table_neuron_page2\"><a href='property_page_phases.php?id_neuron=".$id."' target='_blank' style='text-decoration:none'>".$theta_prop1."</a></td></tr>";
 	      	echo "<tr><td class=\"table_neuron_page2\">Theta measurements:</td><td class=\"table_neuron_page2\">".$theta_prop2."</td></tr>";
 	      	echo "<tr><td class=\"table_neuron_page2\">Theta representative selection:&nbsp;&nbsp;&nbsp;</td><td class=\"table_neuron_page2\">".$theta_prop3."</td></tr>";
       	}
-      	if ($swr_val != '') {
+      	if ($swr_val != '' && $swr_val !== null && $swr_val !== 0) {
 	      	echo "<tr><td class=\"table_neuron_page2\">SWR ratio:</td><td class=\"table_neuron_page2\"><a href='property_page_phases.php?id_neuron=".$id."' target='_blank' style='text-decoration:none'>".$swr_val."</a></td></tr>";
 	      	echo "<tr><td class=\"table_neuron_page2\">SWR ratio range:</td><td class=\"table_neuron_page2\"><a href='property_page_phases.php?id_neuron=".$id."' target='_blank' style='text-decoration:none'>".$swr_prop1."</a></td></tr>";
 	      	echo "<tr><td class=\"table_neuron_page2\">SWR ratio measurements:</td><td class=\"table_neuron_page2\">".$swr_prop2."</td></tr>";
 	      	echo "<tr><td class=\"table_neuron_page2\">SWR ratio representative selection:&nbsp;&nbsp;&nbsp;</td><td class=\"table_neuron_page2\">".$swr_prop3."</td></tr>";
       	}
-      	if ($firingrate_val != '') {
+      	if ($firingrate_val != '' && $firingrate_val !== null && $firingrate_val !== 0) {
 	      	echo "<tr><td class=\"table_neuron_page2\">In vivo firing rate (Hz):</td><td class=\"table_neuron_page2\"><a href='property_page_phases.php?id_neuron=".$id."' target='_blank' style='text-decoration:none'>".$firingrate_val."</a></td></tr>";
 	      	echo "<tr><td class=\"table_neuron_page2\">Firing rate range:</td><td class=\"table_neuron_page2\"><a href='property_page_phases.php?id_neuron=".$id."' target='_blank' style='text-decoration:none'>".$firingrate_prop1."</a></td></tr>";
 	      	echo "<tr><td class=\"table_neuron_page2\">Firing rate measurements:</td><td class=\"table_neuron_page2\">".$firingrate_prop2."</td></tr>";
 	      	echo "<tr><td class=\"table_neuron_page2\">Firing rate representative selection:&nbsp;&nbsp;&nbsp;</td><td class=\"table_neuron_page2\">".$firingrate_prop3."</td></tr>";
       	}
-      	if ($other_val != '') {
+      	if ($other_val != '' && $other_val !== null && $other_val !== 0) {
 	      	echo "<tr><td class=\"table_neuron_page2\">Other:</td><td class=\"table_neuron_page2\"><a href='property_page_phases.php?id_neuron=".$id."' target='_blank' style='text-decoration:none'>".$other_val."</a></td></tr>";
 	      	echo "<tr><td class=\"table_neuron_page2\">Other representative selection:&nbsp;&nbsp;&nbsp;</td><td class=\"table_neuron_page2\">".$other_prop."</td></tr>";
       	}

@@ -154,14 +154,14 @@
 			if ($v_i == (count($val_sep) - 1)) {
 				$separator = "";
 			}
-			$error_desc = " ± ".$error_val_sep[$v_i];
-			if ($error_val_n_sep[$v_i] != "NA") {
+			$error_desc = " ± ".($error_val_sep[$v_i] ?? '');
+			if (($error_val_n_sep[$v_i] ?? '' ) != "NA") {
 				$error_desc = $error_desc." (".$error_val_n_sep[$v_i].")";
 			}
-			if ($error_val_sep[$v_i] == "" || $error_val_sep[$v_i] == "0.0") {
+			if (($error_val_sep[$v_i] ?? '') == "" || $error_val_sep[$v_i] == "0.0") {
 				$error_desc = "";
 			}
-			if ($col != "run_stop_ratio" && strcmp($val_sep[$v_i],"") !== 0 && $error_val_n_sep[$v_i] == 1) {
+			if ($col != "run_stop_ratio" && strcmp($val_sep[$v_i],"") !== 0 && ($error_val_n_sep[$v_i] ?? '')== 1) {
 				$error_desc = $error_desc." (1)";
 			}
 
