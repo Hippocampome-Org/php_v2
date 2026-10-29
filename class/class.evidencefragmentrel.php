@@ -8,6 +8,7 @@ class evidencefragmentrel
 	private $_fragment_id_array = [];
 	private $_n_fragment_id;
 	private $_fragment_id;
+	private $_evidence_id; // PHP83-FIX by KN on 2026-10-29: declared (PHP 8.2+ warns about undeclared properties)
 	
 	function __construct ($name)
 	{
@@ -92,7 +93,7 @@ class evidencefragmentrel
 	// GET ++++++++++++++++++++++++++++++++++++++	
     public function getEvidence_id_array($i)
     {
-    	return $this->_evidence_id_array[$i];
+    	return $this->_evidence_id_array[$i] ?? null;
     }
 		
     public function getN_evidence_id()
@@ -102,7 +103,7 @@ class evidencefragmentrel
 
     public function getFragment_id_array($i)
     {
-    	return $this->_fragment_id_array[$i];
+    	return $this->_fragment_id_array[$i] ?? null;
     }
 
     public function getFragment_id()

@@ -3,7 +3,7 @@
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <?php
-session_start();
+if(session_status() === PHP_SESSION_NONE) session_start();
 $perm = $_SESSION['perm'];
 include ("function/neuron_page_text_file.php");
 include ("function/name_ephys_for_evidence.php");
@@ -1201,18 +1201,19 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 			$mixed_exp_disp_counter = count($mixed_array);
 		}
 		$hippo_property = determinePosNegCombosForAllMarkers($name_markers, $hippo_positive, $hippo_negative, $hippo_weak_positive, $hippo_positive_inference, $hippo_negative_inference, $hippo_unknown);
+		$hippo_color = array();
 		for ($f1=0; $f1<$n_markers; $f1++) {
 			$this_remapped_name = remap_marker_names($name_markers[$f1]);
-			$evidencepropertyyperel -> retrieve_conflict_note($hippo_property_id[$this_remapped_name], $id);
+			$evidencepropertyyperel -> retrieve_conflict_note($hippo_property_id[$this_remapped_name], null, $id);
 			$conflict_note = $evidencepropertyyperel -> getConflict_note();			
-			$nam_unv1 = check_unvetted1($id, $hippo_property_id[$this_remapped_name], $evidencepropertyyperel);			
+			$nam_unv1 = check_unvetted1($id, $hippo_property_id[$this_remapped_name] ?? null, $evidencepropertyyperel);			
 			$img = check_color($hippo_property[$name_markers[$f1]], $nam_unv1, $conflict_note, $permission);
 			$hippo[$this_remapped_name] = $img[0];
 			if ($img[1] == NULL)
 				$hippo[$this_remapped_name] = $img[0];
 			else
 				$hippo_color[$this_remapped_name] = $img[1];
-			$marker_URLs[$this_remapped_name] = getUrlText($id, $this_remapped_name, $hippo_color[$this_remapped_name]);
+			$marker_URLs[$this_remapped_name] = getUrlText($id, $this_remapped_name, $hippo_color[$this_remapped_name] ?? NULL);
 		}
 		?>
 		<table width="80%" border="0" cellspacing="2" cellpadding="0">
@@ -1239,7 +1240,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 					$disp_marker_name_prior = NULL;
 					for ($j=0; $j<$marker_pos_disp_counter; $j++) {
 						$markerForLink = $pos_array['part_key'][$j];
-						$this_marker_URL_start = $marker_URLs[$markerForLink];
+						$this_marker_URL_start = $marker_URLs[$markerForLink] ?? NULL;
 						if ($pos_array['unvetted_key'][$j] == 1)
 							$font_col = 'font4_unvetted';
 						else
@@ -1393,7 +1394,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 						");
 				}
 				else {
-					for ($j=0; $j<$marker_mixed_disp_counter; $j++) {
+					for ($j=0; $j<count($mixed_array['part_key'] ?? array()); $j++) {
 						$markerForLink = $mixed_array['part_key'][$j];
 						$this_marker_URL_start = $marker_URLs[$markerForLink];
 						if ($mixed_array['unvetted_key'][$j] == 1)
@@ -2064,13 +2065,13 @@ WHERE
 			if($type_array[$i]==$destination_neuron)
 				$index_destination=$i;
 		}
-		$parameter_connection=explode(",",$potn_conn_neuron_pcl_array[$index_source][$index_destination]);
+		$parameter_connection=explode(",",$potn_conn_neuron_pcl_array[$index_source ?? null][$index_destination ?? null] ?? '');
 		if($parameter_connection){
-			return getUrlForLinkConnectivity($source_neuron,$destination_neuron,$parameter_connection[1],$parameter_connection[2],$parameter_connection[4],$parameter_connection[5],$parameter_connection[6],$know_unknow_flag,$neuron2_name,$font_class);
+			return getUrlForLinkConnectivity($source_neuron,$destination_neuron,$parameter_connection[1] ?? null,$parameter_connection[2] ?? null,$parameter_connection[4] ?? null,$parameter_connection[5] ?? null,$parameter_connection[6] ?? null,$neuron2_name,$font_class,$know_unknow_flag);
 		}
 	}
 	// get URL to connectivity evidences
-	function getUrlForLinkConnectivity($id_type_row,$id_type_col,$val1,$color1,$val2,$color2,$conn_type,$know_unknow_flag=0,$name,$font_class) 
+	function getUrlForLinkConnectivity($id_type_row,$id_type_col,$val1,$color1,$val2,$color2,$conn_type,$name,$font_class,$know_unknow_flag=0) 
 	{
 		//print("Data:$id_type_row,$id_type_col,$val1,$color1,$val2,$color2,$conn_type</br>");
 		global $special_neuron_id_axo_axonic,$special_neuron_id_basket;
