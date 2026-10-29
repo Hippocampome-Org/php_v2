@@ -11,15 +11,25 @@ function remove_table_by_tyme()  // after 2 hours:
 	$n_table = 0;
 	while ($row = mysqli_fetch_assoc($rs2))
 	{
-		if  ((strpos($row[0], 'search') == 'TRUE') || (strpos($row[0], 'temp') == 'TRUE') )
-		{
-			$table[$n_table] = $row[0];
+		//Changed by KN on Octr 29 2026
+		/*
+		   if ((strpos($row[0], 'search') == 'TRUE') || (strpos($row[0], 'temp') == 'TRUE'))
+		   {
+		   $table[$n_table] = $row[0];
+		   $n_table = $n_table + 1;
+		   }
+		 */
+		$temp_value = $row[0] ?? '';
+		if (strpos($temp_value, 'search') !== false || strpos($temp_value, 'temp') !== false) {
+			$table[$n_table] = $temp_value;
 			$n_table = $n_table + 1;  
-  		}
+		}
 	}		
 
 	for ($i=0; $i<$n_table; $i++)
 	{		
+		/*
+		//Commented by KN on Oct 29 2026
 		// for search table:
 		if (strpos($table[$i], 'search1_') == 'TRUE')
 		{
@@ -64,7 +74,54 @@ function remove_table_by_tyme()  // after 2 hours:
 				$query = mysqli_query($GLOBALS['conn'],$drop_table);	
 			}
 		}
-		
+		// Till Here
+		*/
+		$tableName = $table[$i] ?? '';
+
+		// for search table:
+		if (strpos($tableName, 'search1_') !== false)
+		{
+			$new_name = strstr($tableName, '__');
+			$new_name = str_replace('__', '', $new_name);
+
+			$delta_t = $time_1 - $new_name;
+
+			if ($delta_t > $time_rem)  // 36000
+			{
+				$drop_table = "DROP TABLE $tableName";
+				mysqli_query($GLOBALS['conn'], $drop_table);
+			}
+		}
+
+		// for result table:
+		if (strpos($tableName, 'search_result_table_') !== false)
+		{
+			$new_name = strstr($tableName, '__');
+			$new_name = str_replace('__', '', $new_name);
+
+			$delta_t = $time_1 - $new_name;
+
+			if ($delta_t > $time_rem)  // 36000
+			{
+				$drop_table = "DROP TABLE $tableName";
+				mysqli_query($GLOBALS['conn'], $drop_table);
+			}
+		}
+
+		// for temp table (page evidence):
+		if (strpos($tableName, 'temp_') !== false)
+		{
+			$new_name = strstr($tableName, '__');
+			$new_name = str_replace('__', '', $new_name);
+
+			$delta_t = $time_1 - $new_name;
+
+			if ($delta_t > $time_rem)  // 36000
+			{
+				$drop_table = "DROP TABLE $tableName";
+				mysqli_query($GLOBALS['conn'], $drop_table);
+			}
+		}
 	}
 }
 
