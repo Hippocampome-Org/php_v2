@@ -168,7 +168,7 @@ function header_row_special($title, $value) {
 
 $page = $_REQUEST['page'];
 $sub_show_only = $_SESSION['conn_sub_show_only']; 
-$name_show_only_article = $_SESSION['conn_name_show_only_article'];
+$name_show_only_article = $_SESSION['conn_name_show_only_article'] ?? '';
 
 if ($page)
 {
@@ -229,15 +229,15 @@ if ($page)
 }
 else
 {
-	$name_show_only = $_SESSION['marker_name_show_only'];
-	$_SESSION['marker_name_show_only'] = $name_show_only;
-	$name_show_only_journal = $_SESSION['marker_name_show_only_journal'];
-	$name_show_only_authors = $_SESSION['marker_name_show_only_authors'];
-	$name_show_only_article = $_SESSION['marker_name_show_only_article'];
+	$name_show_only = $_SESSION['marker_name_show_only'] ?? '';
+	$_SESSION['marker_name_show_only'] = $name_show_only ?? '';
+	$name_show_only_journal = $_SESSION['marker_name_show_only_journal'] ?? '';
+	$name_show_only_authors = $_SESSION['marker_name_show_only_authors'] ?? '';
+	$name_show_only_article = $_SESSION['marker_name_show_only_article'] ?? '';
 
-	$color=$_SESSION['colore'];	
+	$color=$_SESSION['colore'] ?? '';	
 
-	$order_ok = $_REQUEST['order_ok'];
+	$order_ok = $_REQUEST['order_ok'] ?? '';
 	if ($order_ok == 'GO')             // Was clicked the Order By options
 	{
 		$order_by = $_REQUEST['order'];
@@ -255,14 +255,14 @@ else
 		$type_order = $_SESSION['type_order'];
 	}
 
-	$flag = $_REQUEST['flag'];
+	$flag = $_REQUEST['flag'] ?? '';
 	
-	$id_neuron = $_SESSION['id_neuron'];
-	$val_property = $_SESSION['val_property'];
+	$id_neuron = $_SESSION['id_neuron'] ?? '';
+	$val_property = $_SESSION['val_property'] ?? '';
 
 	
-	$name_temporary_table = $_SESSION['marker_name_temporary_table'];
-	$id_change = $_REQUEST['id_change'];
+	$name_temporary_table = $_SESSION['marker_name_temporary_table'] ?? '';
+	$id_change = $_REQUEST['id_change'] ?? '';
 
 	// update the show1 variable in the temporary table:	
 	if ($flag == 'on')
@@ -320,11 +320,11 @@ if ($name_show_only_var)
 	$name_show_only = $_REQUEST['name_show_only'];
 	$_SESSION['marker_name_show_only'] = $name_show_only;
 	
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['marker_name_temporary_table'];
+	$page_in = $_REQUEST['start'] ?? '';
+	$page_end = $_REQUEST['stop'] ?? '';
+	$name_temporary_table = $_SESSION['marker_name_temporary_table'] ?? '';
 	
-	$sub_show_only = $_REQUEST['sub_show_only'];
+	$sub_show_only = $_REQUEST['sub_show_only'] ?? '';
 	$_SESSION['marker_sub_show_only'] = $sub_show_only;	
 	
 
@@ -388,21 +388,21 @@ if ($name_show_only_var)
 $name_show_only_article_var = $_REQUEST['name_show_only_article_var'] ?? '';
 if ($name_show_only_article_var)
 {
-	$color = $_REQUEST['color'];
-	$order_by = $_SESSION['order_by'];
-	$type_order = $_SESSION['type_order'];
+	$color = $_REQUEST['color'] ?? '';
+	$order_by = $_SESSION['order_by'] ?? '';
+	$type_order = $_SESSION['type_order'] ?? '';
 
-	$sub_show_only = $_SESSION['marker_sub_show_only'];
+	$sub_show_only = $_SESSION['marker_sub_show_only'] ?? '';
 		
-	$name_show_only_article = $_REQUEST['name_show_only_article'];
-	$_SESSION['marker_name_show_only_article'] = $name_show_only_article;
+	$name_show_only_article = $_REQUEST['name_show_only_article'] ?? '';
+	$_SESSION['marker_name_show_only_article'] = $name_show_only_article ?? '';
 	$_SESSION['marker_name_show_only_journal'] = 'all';
 	$_SESSION['marker_name_show_only_authors'] = 'all';
 
-	$name_show_only = $_SESSION['name_show_only'];
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['marker_name_temporary_table'];
+	$name_show_only = $_SESSION['name_show_only'] ?? '';
+	$page_in = $_REQUEST['start'] ?? '';
+	$page_end = $_REQUEST['stop'] ?? '';
+	$name_temporary_table = $_SESSION['marker_name_temporary_table'] ?? '';
 
 	$query = "UPDATE $name_temporary_table SET show_only =  '1'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);	
@@ -433,21 +433,21 @@ if ($name_show_only_article_var)
 $name_show_only_journal_var = $_REQUEST['name_show_only_journal_var'] ?? '';
 if ($name_show_only_journal_var)
 {
-	$color = $_REQUEST['color'];
-	$order_by = $_SESSION['order_by'];
-	$type_order = $_SESSION['type_order'];
+	$color = $_REQUEST['color'] ?? '';
+	$order_by = $_SESSION['order_by'] ?? '';
+	$type_order = $_SESSION['type_order'] ?? '';
 
-	$sub_show_only = $_SESSION['marker_sub_show_only'];
+	$sub_show_only = $_SESSION['marker_sub_show_only'] ?? '';
 				
-	$name_show_only_journal = $_REQUEST['name_show_only_journal'];
+	$name_show_only_journal = $_REQUEST['name_show_only_journal'] ?? '';
 	$_SESSION['marker_name_show_only_journal'] = $name_show_only_journal;
 	$_SESSION['marker_name_show_only_article'] = 'all';
 	$_SESSION['marker_name_show_only_authors'] = 'all';
 
-	$name_show_only = $_SESSION['name_show_only'];
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['marker_name_temporary_table'];
+	$name_show_only = $_SESSION['name_show_only'] ?? '';
+	$page_in = $_REQUEST['start'] ?? '';
+	$page_end = $_REQUEST['stop'] ?? '';
+	$name_temporary_table = $_SESSION['marker_name_temporary_table'] ?? '';
 
 	$query = "UPDATE $name_temporary_table SET show2 =  '1'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);	
@@ -467,21 +467,21 @@ $name_show_only_authors_var = isset($_REQUEST['name_show_only_authors_var'])
     : '';
 if ($name_show_only_authors_var)
 {
-	$color = $_REQUEST['color'];
-	$order_by = $_SESSION['order_by'];
-	$type_order = $_SESSION['type_order'];
+	$color = $_REQUEST['color'] ?? '';
+	$order_by = $_SESSION['order_by'] ?? '';
+	$type_order = $_SESSION['type_order'] ?? '';
 
-	$sub_show_only = $_SESSION['marker_sub_show_only'];
+	$sub_show_only = $_SESSION['marker_sub_show_only'] ?? '';
 			
-	$name_show_only_authors = $_REQUEST['name_show_only_authors'];
+	$name_show_only_authors = $_REQUEST['name_show_only_authors'] ?? '';
 	$_SESSION['marker_name_show_only_authors'] = $name_show_only_authors;
 	$_SESSION['marker_name_show_only_article'] = 'all';
 	$_SESSION['marker_name_show_only_journal'] = 'all';
 
-	$name_show_only = $_SESSION['name_show_only'];
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['marker_name_temporary_table'];
+	$name_show_only = $_SESSION['name_show_only'] ?? '';
+	$page_in = $_REQUEST['start'] ?? '';
+	$page_end = $_REQUEST['stop'] ?? '';
+	$name_temporary_table = $_SESSION['marker_name_temporary_table'] ?? '';
 
 
 	if ($name_show_only_authors == 'all')
