@@ -64,9 +64,10 @@ class articleevidencerel
 
     public function getarticle_id_array($i)
     {
-    	return $this->_article_id_array[$i];
-    }
-		
+	    return isset($this->_article_id_array[$i])
+		    ? $this->_article_id_array[$i]
+		    : null;
+    }		
     public function getN_article_id()
     {
     	return $this->_n_article_id;

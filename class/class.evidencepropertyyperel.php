@@ -100,7 +100,7 @@ class evidencepropertyyperel
 		$this->setN_Type_id($n);
 	}
 	//Added for enhancement 712
-	public function retrieve_type_id_withoutRestrictions($Subject, $Object=NULL, $Conflict_note=NULL, $ival)
+	public function retrieve_type_id_withoutRestrictions($Subject, $Object=NULL, $Conflict_note=NULL, $ival=NULL)
 	{
 		$table 	= $this->getName_table();
 		$table1 = "Property";
