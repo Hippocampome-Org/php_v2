@@ -120,7 +120,8 @@ function insert_temporary($table, $i1_counter, $id_fragment, $id_original, $quot
 {
 	if ($open_access == NULL)
 		$open_access = -1;
-	if(get_magic_quotes_runtime())
+	// PHP83-FIX by KN on 2026-10-29 OLD: if(get_magic_quotes_runtime())
+	if(false)
 	{
 		//set_magic_quotes_runtime(false);
 	}
