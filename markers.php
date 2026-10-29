@@ -5,8 +5,8 @@ include ("permission_check.php");
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<!-- Google Analytics Tracking -->  
-<?php include_once("analytics.php") ?>
+<!-- Google Analytics Tracking Added on July 10 2024-->
+<?php include_once("analytics.php"); ?>
 <meta http-equiv="Content-Type" content="text/html" />
 <script type="text/javascript" src="style/resolution.js"></script>
 <link rel="stylesheet" href="function/menu_support_files/menu_main_style.css" type="text/css" />
@@ -736,8 +736,8 @@ function HideShowColumns ()
 	var myGrid = $('#nGrid');
 	var customWidth = screen.availWidth-100;
 
-	var markers_array = ["AChE","AMIGO2","AR-beta1","AR-beta2","Astn2","BDNF","Bok","Caln","CaM","CaMKII_alpha","CGRP","ChAT","Chrna2","CRF","Ctip2","Cx36","CXCR4","Dcn","Disc1","DYN","EAAT3","ErbB4","GABA-B1","GABAa_delta","GABAa_alpha2","GABAa_alpha3","GABAa_alpha4","GABAa_alpha5","GABAa_alpha6","GABAa_beta1","GABAa_beta2","GABAa_beta3","GABAa_gamma1","GABAa_gamma2","GAT-1","GAT-3","GluA1","GluA2","GluA2_3","GluA3","GluA4","GlyT2","Gpc3","Grp","Htr2c","Id-2","Kv3_1","Loc432748","Man1a","Math-2","mGluR1","mGluR2","mGluR2_3","mGluR3","mGluR4","mGluR5","mGluR5a","mGluR7a","mGluR8a","MOR","Mus1R","Mus3R","Mus4R","Ndst4","NECAB1","Neuropilin2","NKB","Nov","Nr3c2","Nr4a1","p-CREB","PCP4","PPE","PPTA","Prox1","Prss12","Prss23","PSA-NCAM","SATB1","SATB2","SCIP","SPO","SubP","Tc1568100","TH","vAChT","vGAT","vGlut1","vGluT2","VILIP","Wfs1","Y1","Y2","DCX","NeuN","NeuroD","CRH","NK1R"];
-
+	var markers_array = ["AChE","AMIGO2","AR-beta1","AR-beta2","Astn2","BDNF","Bok","Caln","CaM","CaMKII_alpha","CGRP","ChAT","Chrna2","CRF","Ctip2","Cx36","CXCR4","Dcn","Disc1","DYN","EAAT3","ErbB4","GABA-B1","GABAa_delta","GABAa_alpha2","GABAa_alpha3","GABAa_alpha4","GABAa_alpha5","GABAa_alpha6","GABAa_beta1","GABAa_beta2","GABAa_beta3","GABAa_gamma1","GABAa_gamma2","GAT-1","GAT-3","GluA1","GluA2","GluA2_3","GluA3","GluA4","GlyT2","Gpc3","Grp","Htr2c","Id-2","Kv3_1","Loc432748","Man1a","Math-2","mGluR1","mGluR2","mGluR2_3","mGluR3","mGluR4","mGluR5","mGluR5a","mGluR7a","mGluR8a","MOR","Mus1R","Mus3R","Mus4R","Ndst4","NECAB1","Neuropilin2","NKB","Nov","Nr3c2","Nr4a1","p-CREB","PCP4","PPE","PPTA","Prox1","Prss12","Prss23","PSA-NCAM","SATB1","SATB2","SCIP","SPO","SubP","Tc1568100","TH","vAChT","vGAT","vGlut1","vGluT2","vGluT3","VILIP","Wfs1","Y1","Y2","DCX","NeuN","NeuroD","CRH","NK1R"];
+//Added vGluT3 on April 1 2025
 	//myGrid.jqGrid('setFrozenColumns');
 	//set frozen columns when document is loaded
 	$(document).ready(function() {
@@ -801,7 +801,7 @@ function HideShowColumns ()
 			//myGrid.jqGrid('setGridParam', {shrinkToFit: false});
 			myGrid.jqGrid('setGridParam', {scrollerbar: true});
 			myGrid.jqGrid('showCol', markers_array);
-			// myGrid.jqGrid('showCol', ["AChE","AMIGO2","AR-beta1","AR-beta2","Astn2","BDNF","Bok","Caln","CaM","CaMKII_alpha","CGRP","ChAT","Chrna2","CRF","Ctip2","Cx36","CXCR4","Dcn","Disc1","DYN","EAAT3","ErbB4","GABA-B1","GABAa_delta","GABAa_alpha2","GABAa_alpha3","GABAa_alpha4","GABAa_alpha5","GABAa_alpha6","GABAa_beta1","GABAa_beta2","GABAa_beta3","GABAa_gamma1","GABAa_gamma2","GAT-1","GAT-3","GluA1","GluA2","GluA2_3","GluA3","GluA4","GlyT2","Gpc3","Grp","Htr2c","Id-2","Kv3_1","Loc432748","Man1a","Math-2","mGluR1","mGluR2","mGluR2_3","mGluR3","mGluR4","mGluR5","mGluR5a","mGluR7a","mGluR8a","MOR","Mus1R","Mus3R","Mus4R","Ndst4","NECAB1","Neuropilin2","NKB","Nov","Nr3c2","Nr4a1","p-CREB","PCP4","PPE","PPTA","Prox1","Prss12","Prss23","PSA-NCAM","SATB1","SATB2","SCIP","SPO","SubP","Tc1568100","TH","vAChT","vGAT","vGlut1","vGluT2","VILIP","Wfs1","Y1","Y2"]);
+			// myGrid.jqGrid('showCol', ["AChE","AMIGO2","AR-beta1","AR-beta2","Astn2","BDNF","Bok","Caln","CaM","CaMKII_alpha","CGRP","ChAT","Chrna2","CRF","Ctip2","Cx36","CXCR4","Dcn","Disc1","DYN","EAAT3","ErbB4","GABA-B1","GABAa_delta","GABAa_alpha2","GABAa_alpha3","GABAa_alpha4","GABAa_alpha5","GABAa_alpha6","GABAa_beta1","GABAa_beta2","GABAa_beta3","GABAa_gamma1","GABAa_gamma2","GAT-1","GAT-3","GluA1","GluA2","GluA2_3","GluA3","GluA4","GlyT2","Gpc3","Grp","Htr2c","Id-2","Kv3_1","Loc432748","Man1a","Math-2","mGluR1","mGluR2","mGluR2_3","mGluR3","mGluR4","mGluR5","mGluR5a","mGluR7a","mGluR8a","MOR","Mus1R","Mus3R","Mus4R","Ndst4","NECAB1","Neuropilin2","NKB","Nov","Nr3c2","Nr4a1","p-CREB","PCP4","PPE","PPTA","Prox1","Prss12","Prss23","PSA-NCAM","SATB1","SATB2","SCIP","SPO","SubP","Tc1568100","TH","vAChT","vGAT","vGlut1","vGluT2","vGluT3","VILIP","Wfs1","Y1","Y2"]);
 			$("#checkbox1").click(function() {
 				if ($("#checkbox1").is(':checked')) {
 					myGrid.setGridWidth(customWidth,false);
@@ -816,7 +816,7 @@ function HideShowColumns ()
 		else {
 			myGrid.setGridWidth("722");
 			myGrid.jqGrid('hideCol', markers_array);
-			// myGrid.jqGrid('hideCol', ["AChE","AMIGO2","AR-beta1","AR-beta2","Astn2","BDNF","Bok","Caln","CaM","CaMKII_alpha","CGRP","ChAT","Chrna2","CRF","Ctip2","Cx36","CXCR4","Dcn","Disc1","DYN","EAAT3","ErbB4","GABA-B1","GABAa_delta","GABAa_alpha2","GABAa_alpha3","GABAa_alpha4","GABAa_alpha5","GABAa_alpha6","GABAa_beta1","GABAa_beta2","GABAa_beta3","GABAa_gamma1","GABAa_gamma2","GAT-1","GAT-3","GluA1","GluA2","GluA2_3","GluA3","GluA4","GlyT2","Gpc3","Grp","Htr2c","Id-2","Kv3_1","Loc432748","Man1a","Math-2","mGluR1","mGluR2","mGluR2_3","mGluR3","mGluR4","mGluR5","mGluR5a","mGluR7a","mGluR8a","MOR","Mus1R","Mus3R","Mus4R","Ndst4","NECAB1","Neuropilin2","NKB","Nov","Nr3c2","Nr4a1","p-CREB","PCP4","PPE","PPTA","Prox1","Prss12","Prss23","PSA-NCAM","SATB1","SATB2","SCIP","SPO","SubP","Tc1568100","TH","vAChT","vGAT","vGlut1","vGluT2","VILIP","Wfs1","Y1","Y2"]);
+			// myGrid.jqGrid('hideCol', ["AChE","AMIGO2","AR-beta1","AR-beta2","Astn2","BDNF","Bok","Caln","CaM","CaMKII_alpha","CGRP","ChAT","Chrna2","CRF","Ctip2","Cx36","CXCR4","Dcn","Disc1","DYN","EAAT3","ErbB4","GABA-B1","GABAa_delta","GABAa_alpha2","GABAa_alpha3","GABAa_alpha4","GABAa_alpha5","GABAa_alpha6","GABAa_beta1","GABAa_beta2","GABAa_beta3","GABAa_gamma1","GABAa_gamma2","GAT-1","GAT-3","GluA1","GluA2","GluA2_3","GluA3","GluA4","GlyT2","Gpc3","Grp","Htr2c","Id-2","Kv3_1","Loc432748","Man1a","Math-2","mGluR1","mGluR2","mGluR2_3","mGluR3","mGluR4","mGluR5","mGluR5a","mGluR7a","mGluR8a","MOR","Mus1R","Mus3R","Mus4R","Ndst4","NECAB1","Neuropilin2","NKB","Nov","Nr3c2","Nr4a1","p-CREB","PCP4","PPE","PPTA","Prox1","Prss12","Prss23","PSA-NCAM","SATB1","SATB2","SCIP","SPO","SubP","Tc1568100","TH","vAChT","vGAT","vGlut1","vGluT2","vGluT3","VILIP","Wfs1","Y1","Y2"]);
 			$("#checkbox1").click(function() {
 				if ($("#checkbox1").is(':checked')) {
 					myGrid.setGridWidth("722");

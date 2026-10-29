@@ -6,8 +6,6 @@ include ("permission_check.php");
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<!-- Google Analytics Tracking -->  
-<?php include_once("analytics.php") ?>
 <meta http-equiv="Content-Type" content="text/html" />
 <script type="text/javascript" src="style/resolution.js"></script>
 <link rel="stylesheet" href="function/menu_support_files/menu_main_style.css" type="text/css" />
@@ -130,18 +128,25 @@ function create_or_linkfile(){
          var neuron_name = $(this).closest('td').find('span').first().text();
          neurons.push(neuron_name);//Based on neuron name list when creating zip file get the data
       });
+   /*
+	   *  $('#results-table input:checked').each(function() {
+                var neuron_name = $(this).closest('td').find('span').first().text();
+                neurons.push(neuron_name);//Based on neuron name list when creating zip file get the data
+        });
+    */
 
-   alert("Line 129 Neurons:"+neurons);
+   //alert("Line 129 Neurons:"+neurons);
 
    var selectedsubvalues = 'neurons='+neurons;
 
-   alert("Selected Sub Values:"+selectedsubvalues);
+   //alert("Selected Sub Values:"+selectedsubvalues);
    var xmlHttp = new XMLHttpRequest();
    const url_call = './simulation_params/temp_zipfile_creation.php';
 
    xmlHttp.onreadystatechange = function () {
       if (xmlHttp.readyState == 4) {
          if (xmlHttp.status == 200) {
+//		 alert(xmlHttp.responseText);
             if(xmlHttp.responseText == 'Please select Neurons to create zip file.'){
                alert(xmlHttp.responseText);
             }else{
@@ -150,10 +155,12 @@ function create_or_linkfile(){
          }
       }
    }
-   xmlHttp.open("post", url_call, true); 
+   xmlHttp.open("POST", url_call, true); //Changed post to POST on Nov 1 2023
    xmlHttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+   xmlHttp.setRequestHeader("Accept","application/json");//Added this line on Nov 1 2023
    xmlHttp.send(selectedsubvalues);
    //xmlHttp.send("selectedsubvalues="+selectedsubvalues);
+
 }
 function OptionsSelected(me)
 {

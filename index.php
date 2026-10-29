@@ -14,7 +14,7 @@ $_SESSION['im']=0;
 $_SESSION['sy']=0;
 $_SESSION['cg']=0;
 $_SESSION['sp']=0;
-$query = "SELECT permission FROM user WHERE id=2"; // id=2 is anonymous user
+$query = "SELECT permission FROM user WHERE id=1"; //Changed to id=1 on Feb 11 2025 // id=2 is anonymous user
 $rs = mysqli_query($conn,$query);
 list($permission) = mysqli_fetch_row($rs);
 if ($permission == 1) { 
@@ -342,7 +342,7 @@ jQuery(document).ready(function() {
             portal was vetted using the "fair use" criteria defined in
             <a href="http://www.copyright.gov/title17/92chap1.html#107" target="_blank">Title 17 of the U.S. Code,
             &sect; 107</a>. This content, cited throughout this portal, may be protected by Copyright Law and unavailable
-            for reuse.  Except otherwise noted, this web portal is &copy; 
+	    for reuse.  Except otherwise noted, this web portal is &copy; 
 <?php call_user_func(function($y){$c=date('Y');echo $y.(($y!=$c)?'-'.$c:'');}, 2015); ?>
  by George Mason University, under a
             <a href =' http://creativecommons.org/licenses/by-sa/3.0/' target="_blank">Creative Commons

@@ -3,8 +3,6 @@
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <head>
-<!-- Google Analytics Tracking -->  
-<?php include_once("analytics.php") ?>
 <title>Help</title>
 <script type="text/javascript" src="style/resolution.js"></script>
 </head>
@@ -29,6 +27,7 @@
 			<li><a href='images/Interpretation_Flowchart.jpeg'><font class="font7"> Interpretation Protocols Flowchart</font></a></li>
   			<li><a href='Help_Formal_Name_Encoding.php'><font class="font7"> Formal Name Encoding</font></a></li>
   			<li><a href='help/Formal_Neuron_Type_Definitions.html'><font class="font7"> Formal Neuron Type Definitions</font></a></li>
+                        <li><a href='https://hippocampome.org/legacy_v1/'><font class="font7"> Legacy v1 website</font></a></li>
 			</ul>
 
 			<font class='font1a'>Feedback:</font> &nbsp; &nbsp;
@@ -63,7 +62,7 @@
 			<li><a href='data/High-conf-genes_CA3-SP.pdf'><font class="font7"> High-conf-genes_CA3-SP</font></a></li>
 			<li><a href='data/High-conf-genes_DG-SG.pdf'><font class="font7"> High-conf-genes_DG-SG</font></a></li>
 			<li><a href='data/GeneParcelExpressionConfidence.xlsx'><font class="font7"> Allen Brain Atlas gene expression confidence by parcel</font></a></li>
-			<li><a href='http://hippocampome.org/genexan'><font class="font7"> Gene Expression Analyzer</font></a></li>
+			<li><a href='help/genexan.html'><font class="font7"> Gene Expression Analyzer</font></a></li>
 			<li><a href='data/REIs.xlsx'><font class="font7"> Relational Expression Inferences (REIs)</font></a></li>
 			</ul>
 			

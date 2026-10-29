@@ -1421,11 +1421,11 @@ minor-latin;mso-hansi-theme-font:minor-latin;mso-bidi-theme-font:minor-latin'><o
 normal'><span style='font-size:20.0pt;font-family:"Calibri","sans-serif";
 mso-ascii-theme-font:minor-latin;mso-hansi-theme-font:minor-latin;mso-bidi-theme-font:
 minor-latin'><o:p>&nbsp;</o:p></span></p>
-
+<? //changed the link <a href="http://www.hippocampome.org/php/Help_FAQ.php"> from to https://hippocampome.org as its pointing to index page instead of FAQ page chaged on Feb 14 2024?>
 <p class=MsoNormal style='margin-bottom:0in;margin-bottom:.0001pt;line-height:
 normal'><span style='font-size:20.0pt;font-family:"Calibri","sans-serif";
 mso-ascii-theme-font:minor-latin;mso-hansi-theme-font:minor-latin;mso-bidi-theme-font:
-minor-latin'>Visit </span><a href="http://www.hippocampome.org/php/Help_FAQ.php"><b
+minor-latin'>Visit </span><a href="https://hippocampome.org/php/Help_FAQ.php"><b
 style='mso-bidi-font-weight:normal'><span style='font-size:20.0pt;font-family:
 "Calibri","sans-serif";mso-ascii-theme-font:minor-latin;mso-hansi-theme-font:
 minor-latin;mso-bidi-theme-font:minor-latin'>Frequently Asked Questions</span></b></a><span

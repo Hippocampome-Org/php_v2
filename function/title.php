@@ -8,8 +8,19 @@
 
 <body>
 	<!--
-		Note: <?php echo $menuaddr ?> is present below to fix subdirectory relative links.
+		Note: <?php //echo $menuaddr ?> is present below to fix subdirectory relative links.
 	-->
+<?php
+//Changed by KN on June 27 2025
+if(!isset($menuaddr)){
+	$menuaddr = '';
+}
+/*
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}//Till Here
+ */
+?>
 <div class='main_bar'>
 	<div class='hippocampo_immage'>
 		<script type="text/javascript">

@@ -3,7 +3,7 @@
   $research = $_REQUEST['research'];
   // Define all the necessary classes needed for the application
   require_once('class/class.type.php');
-  require_once('class/class.izhmodelsmodel.php');
+// dww_20240112  require_once('class/class.izhmodelsmodel.php');
   require_once('counts/class/class.counts.php');
 
   define('ORANGE', '#FF8C00');
@@ -20,6 +20,7 @@
  * $color - red/blue or violet 
  * */
 
+/* dww_20240112
 if(!isset($_GET['page'])) $page=1;
 else $page = $_GET['page'];
 //page=1&rows=5&sidx=1&sord=asc
@@ -38,10 +39,11 @@ else $sord = $_GET['sord'];
 
 // if we not pass at first time index use the first column for the index or what you want
 if(!$sidx) $sidx =1;
+*/
 $number_type = 0;
 
 $type = new type($class_type);
-$izhmodelsmodel = new izhmodelsmodel($class_izhmodels_model);
+// dww_20240112 $izhmodelsmodel = new izhmodelsmodel($class_izhmodels_model);
 $counts = new counts($class_counts);
 
 $research = $_REQUEST['research'];
@@ -49,7 +51,7 @@ $table = $_REQUEST['table_result'];
 
 if (isset($research)) // From page of search; retrieve the id from search_table (temporary) -----------------------
 {
-	echo("<script>console.log('PHP: In ifvich.php');</script>");
+// dww_20240112	echo("<script>console.log('PHP: In ifvich.php');</script>");
 	$table_result = $_REQUEST['table_result'];
 	$temporary_result_neurons = new temporary_result_neurons();
 	$temporary_result_neurons -> setName_table($table_result);
@@ -81,7 +83,7 @@ if (isset($research)) // From page of search; retrieve the id from search_table 
 }
 else // not from search page --------------
 {
-	     echo("<script>console.log('PHP: In elsevich.php');</script>");
+// dww_20240112	     echo("<script>console.log('PHP: In elsevich.php');</script>");
 		if($_GET['_search']=='false') // Condition to check ifthe 
 		{
 			$type -> retrive_id();
@@ -98,7 +100,7 @@ else // not from search page --------------
 		}
 }
 
-
+/* dww_20240112
 $count = $number_type;
 //echo "The number of elements are ".$count." and the limit is ".$limit;
 if($count <= $limit)
@@ -137,7 +139,7 @@ $responce = (object) array('page' => $page, 'total' => $total_pages, 'records' =
 $responce->page = $page;
 $responce->total = $total_pages;
 $responce->records = $count;
-
+*/
 if($research!="1")
 {
 	//$type -> retieve_ordered_List($start,$limit);
@@ -161,7 +163,7 @@ if($research!="1")
 $neuron = array("DG"=>'DG('.$nDG.')',"CA3"=>'CA3('.$nCA3.')',"CA3c"=>'CA3('.$nCA3.')',"CA2"=>'CA2('.$nCA2.')',"CA1"=>'CA1('.$nCA1.')',"Sub"=>'Sub('.$nSub.')',"EC"=>'EC('.$nEC.')');
 //$neuron = array("DG"=>'DG(35)',"CA3"=>'CA3(35)',"CA3c"=>'CA3(35)',"CA2"=>'CA2(5)',"CA1"=>'CA1(60)',"Sub"=>'Sub(7)',"EC"=>'EC(33)');
 $neuronColor = array("DG"=>'#770000',"CA3"=>'#C08181',"CA3c"=>'#C08181',"CA2"=>'#FFCC00',"CA1"=>'#FF6103',"SUB"=>'#FFCC33',"EC"=>'#336633');
-echo("<script>console.log('PHP: In getizhikevich.php');</script>");
+// dww_20240112 echo("<script>console.log('PHP: In getizhikevich.php');</script>");
 // main logic for calculating anf filling json starts here -->
 $ii = -1;
 for($i = 0; $i<$number_type; $i++)
@@ -275,7 +277,7 @@ for($i = 0; $i<$number_type; $i++)
 			if ($optimum == 0){
 				$rows[$ii]['cell'][3] = '';
 			}else{
-				$rows[$ii]['cell'][3] = '<span class="link_left font4">'.round($optimum*0.41).'</span>';		
+				$rows[$ii]['cell'][3] = '<span class="link_left font4">'.round(intval($optimum)*0.41).'</span>';		
 			}
 		}
 		else
@@ -290,7 +292,7 @@ for($i = 0; $i<$number_type; $i++)
 			if ($optimum == 0){
 				$rows[$ii]['cell'][3] = '';
 			}else{
-				$rows[$ii]['cell'][3] = '<span class="link_left font4">'.round($optimum*0.41).'</span>';		
+				$rows[$ii]['cell'][3] = '<span class="link_left font4">'.round(intval($optimum)*0.41).'</span>';		
 			}
 		}
 	}

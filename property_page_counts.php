@@ -484,7 +484,7 @@ $counts = new counts($class_counts);
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <!-- Google Analytics Tracking -->  
-<?php include_once("analytics.php") ?>
+<?php include_once("analytics.php"); ?>
 <script type="text/javascript">
 // Javascript function 
 //================changes===========================
@@ -674,7 +674,7 @@ function show_only_authors(link, start1, stop1)
 					$fragment -> retrive_by_id($fragment_id[$i]);
 					$quote = $fragment -> getQuote();
 					$quote = quote_replaceIDwithName($quote);
-//					$original_id = $fragment -> getOriginal_id();
+					$original_id = $fragment -> getOriginal_id();
 					$referenceID = $fragment -> getReferenceID();
 					$pmid_isbn= $fragment -> getPmid_isbn();
 					$pmid_isbn_page= $fragment -> getPmid_isbn_page();

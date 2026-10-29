@@ -11,8 +11,8 @@
 	Author: Nate Sutton 
 	Date:   2020
 	*/
-
-	include ("../db_access/permission_check.php"); // must be logged in
+	// Commented next line on Feb 23 2024 By KN
+	//include ("../db_access/permission_check.php"); // must be logged in
 
 	$path_to_files = "phases/gen_json/";
 	$csv_output = '';

@@ -1,6 +1,6 @@
 <?php
 
-function style_subregionsdynamically($result_array, $div_location){
+function style_subregionsdynamically($result_array, $div_location, $pathdir){
 
     if($div_location == 'left'){
         $return_value = "<div style='width:25%;float:left;'>"; //left div which will have DG, CA2 and EC
@@ -53,7 +53,7 @@ function style_subregionsdynamically($result_array, $div_location){
             $return_value.="</a>";
             $return_value.="</div>";
             $return_value.="</td></tr>";
-            $i++;
+            //$i++;//Commented on Nov 9 2023
         }
         $return_value.="</table>";
     }
@@ -63,10 +63,10 @@ function style_subregionsdynamically($result_array, $div_location){
 
 function retrieve_subregions($result_array)
 {
-    $pathdir = "/hippocampome/php_v2/simulation_params/";
+    $pathdir = "/php/simulation_params/";
 
-    $return_value = style_subregionsdynamically($result_array, 'left');
-    $return_value .= style_subregionsdynamically($result_array, 'right');
+    $return_value = style_subregionsdynamically($result_array, 'left', $pathdir);
+    $return_value .= style_subregionsdynamically($result_array, 'right', $pathdir);//added pathdir on Nov 9 2023
     
     $return_value .= "<div style='clear: both;'></div>";
 

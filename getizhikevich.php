@@ -140,6 +140,7 @@ if($research!="1")
 {
 	//$type -> retieve_ordered_List($start,$limit);
 	$type -> retrive_id();
+//	$type -> retrive_id_v1p0();
 	$number_type = $type->getNumber_type();
 
 	$type -> retrieve_id_by_subregion('DG');

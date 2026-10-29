@@ -13,7 +13,10 @@ $devur2 = 0;
 $query = "SELECT permission FROM user WHERE password=\"dev2\""; // id=2 is anonymous user
 $rs = mysqli_query($conn,$query);
 list($devur2) = mysqli_fetch_row($rs);
-session_start();
+//Changed by KN on June 27 2025
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}//Till Here
 ?>
 </head>
 
@@ -23,7 +26,7 @@ session_start();
 
 	<ul id="css3menu0" class="topmenu">
 		<!--
-			Note: <?php echo $menuaddr ?> is present below to allow files in subdirectories to set a
+			Note: <?php //echo $menuaddr ?> is present below to allow files in subdirectories to set a
 			different base directory in links. Given that relative location links are used this fixes
 			link address issues.
 		-->

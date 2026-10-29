@@ -103,9 +103,11 @@ function check_color($id,$type, $unvetted,$val,$part) //$type --> whether axons/
       FROM EvidencePropertyTypeRel eptr
       JOIN (Property p, Type t) ON (eptr.Property_id = p.id AND eptr.Type_id = t.id)
       WHERE predicate = 'in' AND object REGEXP ':'AND eptr.Type_id = '$id' AND subject = 'somata';";
-	
+	#echo $soma_location_check;	
 	$result = mysqli_query($GLOBALS['conn'],$soma_location_check);
 	$flag=0;
+	#echo $val;
+	#exit;
 	while(list($subject,$object) = mysqli_fetch_row($result)){
 		if($subject=='somata' && $object==$val){
 			$flag=1;

@@ -1,7 +1,3 @@
-<?php
-include ("permission_check.php");
-?>
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 
@@ -9,122 +5,15 @@ include ("permission_check.php");
 <head>
 <link rel="shortcut icon" href="#">
 <meta http-equiv="Content-Type" content="text/html" />
-<script type="text/javascript" src="plotlyjs/plotly-latest.min.js"></script>
-</head>
-
-
-<body>
-
 <?php
-
-try {
-  $currentChosenNeuronName = "";
-  $jsonStr = $_SESSION['Izhikevich_model_json_only'];
-  $output = json_decode($jsonStr, true);
-  //echo '<pre>';
-  /*foreach($output as $key => $value){
-	 echo  $key."*********************".sizeof($value)."--------------".$value[0]['id']."<br/>";
-  }*/
-   //echo '</pre>';
-  //Reading the neurones from the session, JSON decoding and parsing
-  //We create the dropdown menu for neuron types here
-  echo '<b>Neuron Types:</b>&nbsp;&nbsp;<select name="modelIz" id="modelIz" onchange="modelSelected()" onclick="modelSelected()">';
-  echo '<option value="">------------------------------------------------------------</option>';
-  //var_dump($output);
-  
- 
-  foreach($output as $key => $value){
-	$selectedFlag = "";
-	if(trim($_GET["neuronId"])== trim($value[0]["unique_id"])) {
-		$selectedFlag = "selected";
-		$currentChosenNeuronName = $key;
-	}
-	echo '<option value="'.$key.'||||'.sizeof($value).'" '.$selectedFlag.'>'.$key."</option>";
-  }
-  
-  
-  echo '</select>';
-  //echo '</pre>';
-  echo '<br/>';
-  echo '<br/>';
-  echo '<div id="modelIzSubDiv"><b>Sub Types:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-  echo '<select id="modelIzSub" onchange="subModelSelected()" onclick="subModelSelected()">';
-  echo '<option value="">------------------------------------------------------------</option>';
-  
-  //echo $_GET['modelsCount'];
-  $currentSubIndex = intval($_GET["currentIndex"]);
-  $currentCount = intval($_GET['modelsCount']);
-  //echo ">>>>>>currentSubIndex $currentSubIndex";
-  //echo ">>>>>>currentCount $currentCount";
-  for($i=0;$i<$currentCount;$i++) {
-	    $subselectedFlag = "";
-		if($i==$currentSubIndex) {
-			$subselectedFlag = "selected";
-		}
-		
-		$encodedJSON = json_encode($output[$currentChosenNeuronName][$i]);
-		echo '<option value="'.base64_encode($encodedJSON).'" '.$subselectedFlag.'>'.$currentChosenNeuronName.' SUB TYPE '.($i+1).'</option>';
-  
-		//echo '<option  value="'.$i.'">'.json_encode($output[$currentChosenNeuronName][$currentSubIndex]).'</option>';
-  }
-  
-  echo '</select></div>';
-   echo '<br/>';
-  
-  } catch (Exception $e) {
-		echo 'Caught exception: ',  $e->getMessage(), "\n";
-  }
+include ("permission_check.php");
+include("load_all_izhikevich_cells_json_only.php");
 ?>
 
-
-<table>
-<tr><td><b>Input Current (pA):</b></td><td><input type="text" id="inputCurrentText" /></td><tr>
-<tr><td><b>Start time (ms):</b></td><td><input type="text" id="inputStartTimeText" /></td><tr>
-<tr><td><b>End time (ms):</b></td><td><input type="text" id="inputEndTimeText" /></td><tr>
-<tr><td></td><td></td><tr>
-<tr><td></td><td></td><tr>
-<tr><td><b>Model Parameters:</b></td><td></td><tr>
-<tr><td><b>Parameter k</b></td><td><input value="<?php echo $_GET["paramK"]; ?>" id="input_k" type="text"/></td></tr>
-<tr><td><b>Parameter a</b></td><td><input value="<?php echo $_GET["paramA"]; ?>" id="input_a" type="text"/></td></tr>
-<tr><td><b>Parameter b</b></td><td><input value="<?php echo $_GET["paramB"]; ?>" id="input_b" type="text"/></td></tr>
-<tr><td><b>Parameter d</b></td><td><input value="<?php echo $_GET["paramD"]; ?>" id="input_d" type="text"/></td></tr>
-<tr><td><b>Parameter Cm</b></td><td><input value="<?php echo $_GET["paramC"]; ?>" id="input_Cm" type="text"/></td></tr>
-<tr><td><b>Parameter vr</b></td><td><input value="<?php echo $_GET["paramVr"]; ?>" id="input_vr" type="text"/></td></tr>
-<tr><td><b>Parameter vt</b></td><td><input value="<?php echo $_GET["paramVt"]; ?>" id="input_vt" type="text"/></td></tr>
-<tr><td><b>Parameter vmin</b></td><td><input value="<?php echo $_GET["paramVmin"]; ?>" id="input_vmin" type="text"/></td></tr>
-<tr><td><b>Parameter vpeak</b></td><td><input value="<?php echo $_GET["paramVpeak"]; ?>" id="input_vpeak" type="text"/></td></tr>
-<tr><td></td><td></td><tr>
-<tr><td></td><td></td><tr>
-<tr><td><b>Add a Refactory Period:</b></td><td><input id="refactoryPeriod" type="checkbox" onchange="showWarning(this)"/></td></tr>
-</table>
-<div id="warningDiv" style="visibility: hidden;">
-<table>
-<tr><td><b>Refractory Period Parameters:</b></td><td></td></tr>
-<tr><td><b>Refractory Period</b></td><td><input value="1" id="input_refrac" type="text"/></td></tr>
-<!--<tr><td><b>refrac_c</b></td><td><input value="0" id="input_refrac_c" type="text"/></td></tr>-->
-</table>
-<br/>
-<b style="color:red;">Caution: a refractory period was not originally part of the Izhikevich model formulation.</b>
-</div><br/>
-
-<button type="button" id="simulateButton"  onclick="runPLOT();">Simulate Model</button>&nbsp;
-<button type="button" id="clearButton"  onclick="clearPLOT();">Clear</button>&nbsp;
-<button type="button" id="dataButton" style="visibility:hidden;" onclick="downloadData();">Download Data</button>
- 
-<br/>
-
-<div id="plotlyDiv" style="width:800px;height:550px;"></div>
-
-<br/>
- 
-
-<br/>	
-
- 
-
-<br/>
-
-<script type="text/javascript">
+<script type="text/javascript" src="plotlyjs/plotly-latest.min.js"></script>
+<!-- Moved sCript to top so that functions will be available -->
+<script>
+var globalJSON = <?php echo $_SESSION['Izhikevich_model_json_only']; ?>
 
 function showWarning(checkboxElem) {
   var warningDiv = document.getElementById("warningDiv");
@@ -137,12 +26,11 @@ function showWarning(checkboxElem) {
 
 var refactoryPeriodEnabled = false;
 
+//var globalJSON = <?php echo $_SESSION['Izhikevich_model_json_only']; ?>
 
-var globalJSON = <?php echo $_SESSION['Izhikevich_model_json_only']; ?>
- 
 var dropDownValues;
 
-var refrac;// = 1000;
+var refrac = 2000;
 // var refrac_c = 0;
 var spk_tDiff = 0;
 var lastSpikeTime = -1;
@@ -203,7 +91,7 @@ function modelSelected() {
  
  if(numberOfChilds > 0) {
 	document.getElementById("modelIzSubDiv").style.visibility = "visible";
-	//console.log(JSON.stringify(globalJSON[key]));		
+	console.log(JSON.stringify(globalJSON[key]));		
 	var select = document.getElementById("modelIzSub");
 	select.innerHTML="";
 	
@@ -328,7 +216,7 @@ var derives2 = function(x, y, inputCurrent) {
 	
 	dydx[1] = a*(b*(y[0]-vr) - y[1]);
 	
-	if (y[0] >= vpeak) {
+	if(y[0]>vpeak) {
 		//console.log("WARNING"+y[0]);
 		if (refactoryPeriodEnabled === false) {
 			y[0] = vmin;
@@ -400,15 +288,15 @@ function calculate(inputCurrent,startIndex,endIndex) {
 
 		// refrac_c -= 1;
 		
-		// if(refactoryPeriodEnabled === true) {
-		// 	if (returnedVal[0] >= vpeak) {
-		// 		refrac_c = refrac;
-		// 	}
-		// 	if (refrac_c > 0) {
-		// 		refrac_c -= 1;
-		// 		returnedVal[0] = vmin;
-		// 	}
-		// }
+		if(refactoryPeriodEnabled === true) {
+			if (returnedVal[0] >= vpeak) {
+				refrac_c = refrac;
+			}
+			if (refrac_c > 0) {
+				refrac_c -= 1;
+				returnedVal[0] = vmin;
+			}
+		}
 		
 		xs.push(x1);
 		ys.push(returnedVal[0]);
@@ -424,21 +312,22 @@ function calculate(inputCurrent,startIndex,endIndex) {
 function runPLOT() {
 	clearPLOT();
 	refactoryPeriodEnabled = document.getElementById("refactoryPeriod").checked;
-	
-     refrac = parseFloat(document.getElementById("input_refrac").value)*1000;//2000;
-	 refrac_c = 0;//parseFloat(document.getElementById("input_refrac_c").value);//0;
-	
-	 k=parseFloat(document.getElementById("input_k").value);
-	 a=parseFloat(document.getElementById("input_a").value);
-	 b=parseFloat(document.getElementById("input_b").value);
-	 d=parseFloat(document.getElementById("input_d").value);
-	 Cm=parseFloat(document.getElementById("input_Cm").value);
-	 vr=parseFloat(document.getElementById("input_vr").value);
-	 vt=parseFloat(document.getElementById("input_vt").value);
-	 vmin=parseFloat(document.getElementById("input_vmin").value);
-	 vpeak=parseFloat(document.getElementById("input_vpeak").value);
-	 
+
+	refrac = parseFloat(document.getElementById("input_refrac").value);//2000;
+	refrac_c = 0;//parseFloat(document.getElementById("input_refrac_c").value);//0;
+
+	k=parseFloat(document.getElementById("input_k").value);
+	a=parseFloat(document.getElementById("input_a").value);
+	b=parseFloat(document.getElementById("input_b").value);
+	d=parseFloat(document.getElementById("input_d").value);
+	Cm=parseFloat(document.getElementById("input_Cm").value);
+	vr=parseFloat(document.getElementById("input_vr").value);
+	vt=parseFloat(document.getElementById("input_vt").value);
+	vmin=parseFloat(document.getElementById("input_vmin").value);
+	vpeak=parseFloat(document.getElementById("input_vpeak").value);
+
 	 //alert("k="+k+"|a="+a+"|b="+b+"|d="+d+"|Cm="+Cm+"|vr="+vr+"|vt="+vt+"|vmin="+vmin+"|vpeak="+vpeak);
+try {	
 	
 	TESTER = document.getElementById("plotlyDiv");
 	
@@ -447,7 +336,7 @@ function runPLOT() {
 	var  I2 = parseFloat(document.getElementById("inputCurrentText").value);
 	var startTimeIndex =parseFloat(document.getElementById("inputStartTimeText").value);
 	var endTimeIndex =parseFloat(document.getElementById("inputEndTimeText").value);
-	
+
 	startStepIndex = startTimeIndex/step;
 	endStepIndex = endTimeIndex/step;
 	
@@ -492,10 +381,11 @@ function runPLOT() {
 	  margin: { t: 0 }
 	  
 	};
-	
-	
 	Plotly.plot( TESTER, data, layout);
 	document.getElementById("dataButton").style.visibility = "visible";
+}catch(err) {
+	alert(err.message);
+}
 }
 
 function clearPLOT() {
@@ -553,6 +443,121 @@ function downloadData() {
 
  
 
+
+</head>
+
+
+<body>
+
+<?php
+
+try {
+	$currentChosenNeuronName = "";
+	$jsonStr = $_SESSION['Izhikevich_model_json_only'];
+	$output = json_decode($jsonStr, true);
+	//echo '<pre>';
+	/*foreach($output as $key => $value){
+		echo  $key."*********************".sizeof($value)."--------------".$value[0]['id']."<br/>";
+	}*/
+	//echo '</pre>';
+	//Reading the neurones from the session, JSON decoding and parsing
+	//We create the dropdown menu for neuron types here
+	echo "<b>Neuron Types:</b>&nbsp;&nbsp;<select name='modelIz' id='modelIz' onchange='modelSelected()' onclick='modelSelected()'>";
+	echo "<option value=''>------------------------------------------------------------</option>";
+	//var_dump($output);
+
+
+	foreach($output as $key => $value){
+		$selectedFlag = "";
+		if(trim($_GET["neuronId"])== trim($value[0]["unique_id"])) {
+			$selectedFlag = "selected";
+			$currentChosenNeuronName = $key;
+		}
+		//echo '<option value="'.$key.'||||'.sizeof($value).'" '.$selectedFlag.'>'.$key."</option>";
+		echo "<option value='".$key."||||".sizeof($value)."' ".$selectedFlag.">".$key."</option>";
+	}
+
+
+	echo '</select>';
+	//echo '</pre>';
+	echo '<br/>';
+	echo '<br/>';
+	echo '<div id="modelIzSubDiv"><b>Sub Types:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+	echo '<select id="modelIzSub" onchange="subModelSelected()" onclick="subModelSelected()">';
+	echo '<option value="">------------------------------------------------------------</option>';
+
+	//echo $_GET['modelsCount'];
+	$currentSubIndex = intval($_GET["currentIndex"]);
+	$currentCount = intval($_GET['modelsCount']);
+	//echo ">>>>>>currentSubIndex $currentSubIndex";
+	//echo ">>>>>>currentCount $currentCount";
+	for($i=0;$i<$currentCount;$i++) {
+		$subselectedFlag = "";
+		if($i==$currentSubIndex) {
+			$subselectedFlag = "selected";
+		}
+
+		$encodedJSON = json_encode($output[$currentChosenNeuronName][$i]);
+		echo '<option value="'.base64_encode($encodedJSON).'" '.$subselectedFlag.'>'.$currentChosenNeuronName.' SUB TYPE '.($i+1).'</option>';
+
+		//echo '<option  value="'.$i.'">'.json_encode($output[$currentChosenNeuronName][$currentSubIndex]).'</option>';
+	}
+
+	echo '</select></div>';
+	echo '<br/>';
+
+} catch (Exception $e) {
+	echo 'Caught exception: ',  $e->getMessage(), "\n";
+}
+?>
+
+
+<table>
+<tr><td><b>Input Current (pA):</b></td><td><input type="text" id="inputCurrentText" /></td><tr>
+<tr><td><b>Start time (ms):</b></td><td><input type="text" id="inputStartTimeText" /></td><tr>
+<tr><td><b>End time (ms):</b></td><td><input type="text" id="inputEndTimeText" /></td><tr>
+<tr><td></td><td></td><tr>
+<tr><td></td><td></td><tr>
+<tr><td><b>Model Parameters:</b></td><td></td><tr>
+<tr><td><b>Parameter k</b></td><td><input value="<?php echo $_GET["paramK"]; ?>" id="input_k" type="text"/></td></tr>
+<tr><td><b>Parameter a</b></td><td><input value="<?php echo $_GET["paramA"]; ?>" id="input_a" type="text"/></td></tr>
+<tr><td><b>Parameter b</b></td><td><input value="<?php echo $_GET["paramB"]; ?>" id="input_b" type="text"/></td></tr>
+<tr><td><b>Parameter d</b></td><td><input value="<?php echo $_GET["paramD"]; ?>" id="input_d" type="text"/></td></tr>
+<tr><td><b>Parameter Cm</b></td><td><input value="<?php echo $_GET["paramC"]; ?>" id="input_Cm" type="text"/></td></tr>
+<tr><td><b>Parameter vr</b></td><td><input value="<?php echo $_GET["paramVr"]; ?>" id="input_vr" type="text"/></td></tr>
+<tr><td><b>Parameter vt</b></td><td><input value="<?php echo $_GET["paramVt"]; ?>" id="input_vt" type="text"/></td></tr>
+<tr><td><b>Parameter vmin</b></td><td><input value="<?php echo $_GET["paramVmin"]; ?>" id="input_vmin" type="text"/></td></tr>
+<tr><td><b>Parameter vpeak</b></td><td><input value="<?php echo $_GET["paramVpeak"]; ?>" id="input_vpeak" type="text"/></td></tr>
+<tr><td></td><td></td><tr>
+<tr><td></td><td></td><tr>
+<tr><td><b>Add a 2 ms Refactory Period:</b></td><td><input id="refactoryPeriod" type="checkbox" onchange="showWarning(this)"/></td></tr>
+</table>
+<div id="warningDiv" style="visibility: hidden;">
+<table>
+<tr><td><b>Refractory Period Parameters:</b></td><td></td></tr>
+<tr><td><b>refrac</b></td><td><input value="1" id="input_refrac" type="text"/></td></tr>
+<!--<tr><td><b>refrac_c</b></td><td><input value="0" id="input_refrac_c" type="text"/></td></tr>-->
+</table>
+<br/><br/>
+<b style="color:red;">Caution: a refractory period was not originally part of the Izhikevich model formulation.</b>
+</div><br/>
+
+<button type="button" id="simulateButton"  onclick="runPLOT();">Simulate Model</button>&nbsp;
+<button type="button" id="clearButton"  onclick="clearPLOT();">Clear</button>&nbsp;
+<button type="button" id="dataButton" style="visibility:hidden;" onclick="downloadData();">Download Data</button>
+ 
+<br/>
+
+<div id="plotlyDiv" style="width:800px;height:550px;"></div>
+
+<br/>
+ 
+
+<br/>	
+
+ 
+
+<br/>
 
 </body>
 </html>

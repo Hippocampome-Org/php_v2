@@ -512,7 +512,7 @@ if ($name_show_only_authors_var)
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <!-- Google Analytics Tracking -->  
-<?php include_once("analytics.php") ?>
+<?php include_once("analytics.php"); ?>
 <script type="text/javascript">
 // Javascript function *****************************************************************************************************
 function show_only(link, color)

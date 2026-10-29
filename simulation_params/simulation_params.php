@@ -1,6 +1,6 @@
 <?php
     include('./functions/retrieve_subregions.php');
-    include ("../../access_db.php");
+    include ("../access_db.php");//Changed on Nov 1 2023
 
 function get_synaptome_details($sub_synaptome, $sub, $conn_synaptome, $table_name){
     $subs = explode(", ", substr($sub, 0, -2));

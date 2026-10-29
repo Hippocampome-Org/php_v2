@@ -1,4 +1,7 @@
 <?php
+//ini_set('display_errors', '1');
+//ini_set('display_startup_errors', '1');
+//error_reporting(E_ALL);
 	include ("generate_json_params.php"); // import parameters for this software
 
 	if ($page=="write_file" || $page==null) {
@@ -76,9 +79,10 @@
 					$rec = $row['recordingMethod'];
 					$behav = $row['behavioralStatus'];
 					$rank = $row['metadataRank'];
-					$error_val = $row['error_val'];
-					$error_val_n = $row['error_val_n'];
-					$error_type_desc = $row['error_type'];
+					$error_val = isset($row['error_val']) ? $row['error_val'] : ''; //Added on Feb 23 2023 by KN
+					$error_val_n = isset($row['error_val_n']) ? $row['error_val_n'] : ''; //Added on Feb 23 2023 by KN
+					$error_type_desc = isset($row['error_type']) ? $row['error_type'] : '';//Added on Feb 23 2023 by KN
+
 					if ($val != '') {
 						$val_found = true;
 						$rank_entry[0]=$species;
@@ -378,6 +382,10 @@
 			}
 			if (!isset($conditions)) {
 				$conditions = '';
+			}
+			//Added next condition on Feb 23 2024 by KN
+			if (!isset($val_property)) {
+				$val_property = '';
 			}
 			$write_output = retrieve_values($conn, $i, $theta_values, $spw_values, $firingrate_values, $other_values, $neuron_ids, $conditions, $best_ranks_theta, $best_ranks_swr, $best_ranks_firingrate, $npage_theta, $npage_swr, $npage_firingrate, $npage_other, $pmid_limit, $referenceID, $other_all, $val_property, $best_ranks_other);
 			$theta_values = $write_output[0];

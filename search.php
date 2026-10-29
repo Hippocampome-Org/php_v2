@@ -1,4 +1,4 @@
-<?ph
+<?php
   include ("permission_check.php");
 ?>
 
@@ -295,8 +295,6 @@ $n_property = 8;
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-<!-- Google Analytics Tracking -->  
-<?php include_once("analytics.php") ?>
 
 <?php
 
@@ -655,9 +653,9 @@ include ("function/icon.html");
 			if ($property1 == 'Molecular markers')
 			{
 				getSubject_untracked();	// Function to store all the untracked Subjects from the property table (function/part.php)
-				$expressiondata = $markerdata -> retrieve_expression();
-				$n_part = $expressiondata -> getNumber_expression();
-//				$n_part = 113; // see csv2db_import/csv2db/lib/markerdata_string_field.py
+				//$expressiondata = $markerdata -> retrieve_expression(); //Commented on Nov 2 2023 by @KN
+				//$n_part = $expressiondata -> getNumber_expression(); //Commented on Nov 2 2023 by @KN
+				$n_part = 113; // see csv2db_import/csv2db/lib/markerdata_string_field.py //Uncommented on Nov 2 2023 by @KN
 			}
 
 			if ($property1 == 'Electrophysiology')

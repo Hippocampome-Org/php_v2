@@ -5,8 +5,6 @@ include("permission_check.php");
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<!-- Google Analytics Tracking -->  
-<?php include_once("analytics.php") ?>
 <meta http-equiv="Content-Type" content="text/html" />
 <script type="text/javascript" src="style/resolution.js"></script>
 <link rel="stylesheet" href="function/menu_support_files/menu_main_style.css" type="text/css" />
@@ -52,6 +50,15 @@ jQuery(document).ready(function() {
     url: 'load_matrix_session_connectivity.php',
     success: function() {}
   });
+/*
+  $.ajax({
+    type: 'GET',
+    cache: false,
+    contentType: 'application/json; charset=utf-8',
+    url: 'load_all_izhikevich_cells_json_only.php',
+    success: function() {}
+  });
+*/
   $.ajax({
 		type: 'GET',
 		cache: false,
@@ -75,11 +82,6 @@ jQuery(document).ready(function() {
 require_once("load_matrix_session_izhikevich_model.php");
 $jsonStr = $_SESSION['Izhikevich_model'];
 $color_selected ='#EBF283';
-
-$type = new type($class_type);
-$type -> retrive_id();
-$nTypes = $type->getNumber_type();
-
 $research = $_REQUEST['research'];
 $hippo_select = $_SESSION['hippo_select'];
 ?>
@@ -287,7 +289,7 @@ $(function(){
 	   {name:'type', index:'type', width:50,sortable:false, cellattr: function (rowId, tv, rawObject, cm, rdata) {
           return 'id=\'type' + rowId + "\'";   
       } },
-      {name:'NeuronType', index:'nickname', width:300,sortable:false},
+      {name:'NeuronType', index:'nickname', width:175,sortable:false},
       {name:'k', index:'k', width:75,search:false,sortable:false},
       {name:'a', index:'a', width:75,search:false,sortable:false},
       {name:'b', index:'b', width:75,search:false,sortable:false},
@@ -341,10 +343,8 @@ $(function(){
 ,{name:'P2', index:'P2', width:75, search:false,sortable:false,hidden: true}
 	], 
    
-    rowNum:<?php echo $nTypes ?>,
-    rowList:[<?php echo $nTypes ?>],
-//    rowNum:175,
-//    rowList:[175],
+    rowNum:125,
+    rowList:[125],
   
     viewrecords: true, 
     gridview: true,
@@ -363,7 +363,7 @@ $(function(){
     //caption: 'Morphology Matrix',
     scrollerbar:false,
     height:"450",
-    width:"1000",
+    width:"900",
     shrinkToFit: true,
     gridComplete: function () {
     	var gridName = "nGrid"; // p the grid Name
@@ -453,11 +453,11 @@ function HideShowColumns ()
     $(document).ready(function() {
     myGrid.jqGrid('setGridParam', {scrollerbar: true});
     myGrid.jqGrid('setColProp', 'type', {frozen: true });
-    myGrid.jqGrid('setColProp', 'NeuronType', {frozen: true });
+    myGrid.jqGrid('setColProp', 'NeuronType', {frozen: true })
     myGrid.jqGrid('setFrozenColumns');
     myGrid.jqGrid('setGridParam', {shrinkToFit: false});
   
-    //myGrid.jqGrid('setGridParam', {autowidth: true});
+  //myGrid.jqGrid('setGridParam', {autowidth: true});
 });
   $("#checkbox1").click(function() {
   
@@ -484,7 +484,7 @@ function HideShowColumns ()
       
     }
     else {
-      myGrid.jqGrid('destroyFrozenColumns');
+      myGrid.jqGrid('destroyFrozenColumns')
       myGrid.jqGrid('showCol', ["k"]);
       myGrid.jqGrid('showCol', ["a"]);
       myGrid.jqGrid('showCol', ["b"]);
@@ -495,9 +495,9 @@ function HideShowColumns ()
       myGrid.jqGrid('showCol', ["Vpeak"]);
       myGrid.jqGrid('showCol', ["Vmin"]);
       myGrid.jqGrid('hideCol', ["k0","a0","b0","d0","C0","Vr0","Vt0","Vpeak0","Vmin0","k1","a1","b1","d1","C1","Vr1","Vt1","Vpeak1","Vmin1","G0","P0","k2","a2","b2","d2","C2","Vr2","Vt2","Vpeak2","Vmin2","G1","P1","k3","a3","b3","d3","C3","Vr3","Vt3","Vpeak3","Vmin3","G2","P2"]);
-      myGrid.setGridWidth("1000", true);
-      myGrid.jqGrid('setGridParam', {autowidth: true});
-      myGrid.jqGrid('setGridParam', {shrinkToFit: false});
+      myGrid.setGridWidth("900",true);
+      //myGrid.jqGrid('setGridParam', {autowidth: true});
+      myGrid.jqGrid('setGridParam', {shrinkToFit: true});
       myGrid.jqGrid('setGridParam', {scrollerbar: true});
      
     }
@@ -516,14 +516,14 @@ function HideShowColumns ()
 
 <!-- COPY IN ALL PAGES -->
 <?php 
-	include ("function/title_v1.php");
+	include ("function/title.php");
 	include ("function/menu_main.php");
 ?>		
 
 <div class='title_area'>
   <form id='supertypeForm'>
-    <font id= "title" class="font1">Browse Izhikevich matrix</font> &emsp;
-    <input type="checkbox" value="check1" name="check1" id="checkbox1"><span>Multi-compartment Model</span>
+    <font id= "title" class="font1">Browse Izhikevich matrix</font>
+    <input type="checkbox" value="check1" name="check1" id="checkbox1"><span>Multi Compartment Model</span>
   </form>
 </div>
 
@@ -536,17 +536,20 @@ function HideShowColumns ()
 	</tr>
 </table>
 
+<div style="position: fixed; top: 30%; right: 15%; width: 300px; border: 3px solid #73AD21;"><a href="simulate2.php">Izhikevich Simulator</a></div>
+<!--Used to be: --> <!-- <a href="simulate.php">Izhikevich Simulator</a> -->
+
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class='body_table'>  
-    <tr>
-        <td width="60">
-    		<font class='font5'><strong>Legend:</strong> </font>
-        </td>
-		<td>
-            <font face="Verdana, Arial, Helvetica, sans-serif" color="#339900" size="2"> +/green: </font> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> Excitatory</font>
-    		&emsp; &emsp;
-		    <font face="Verdana, Arial, Helvetica, sans-serif" color="#CC0000" size="2"> -/red: </font> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> Inhibitory</font>
-        </td>
-    </tr>
+  <tr>
+    <td>
+		  <font class='font5'><strong>Legend:</strong> </font>&nbsp; &nbsp;
+    </td>
+	   <!-- &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; -->
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" color="#339900" size="2"> +/green: </font> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> Excitatory</font></td>
+		&nbsp; &nbsp; 
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" color="#CC0000" size="2"> -/red: </font> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> Inhibitory</font></td>
+  </tr>
+	
 </table>
 </div>
 </body>

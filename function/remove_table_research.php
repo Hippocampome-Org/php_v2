@@ -9,22 +9,16 @@ function remove_table_by_tyme()  // after 2 hours:
 	$query = "SHOW TABLES";// from {$GLOBALS['DB_NAME']} ";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);		
 	$n_table = 0;
-	while ($row = mysqli_fetch_assoc($rs2))
-	{
-		//Changed by KN on Octr 29 2026
-		/*
-		   if ((strpos($row[0], 'search') == 'TRUE') || (strpos($row[0], 'temp') == 'TRUE'))
-		   {
-		   $table[$n_table] = $row[0];
-		   $n_table = $n_table + 1;
-		   }
-		 */
-		$temp_value = $row[0] ?? '';
-		if (strpos($temp_value, 'search') !== false || strpos($temp_value, 'temp') !== false) {
-			$table[$n_table] = $temp_value;
-			$n_table = $n_table + 1;  
-		}
-	}		
+	//Changed from here on Nov 2 2023 by @KN as we need to handle it dynamically as it will change based on database
+        while ($row = mysqli_fetch_assoc($rs2)) {
+                foreach($row as $rowkey => $rowvalue) {
+                        if  ((strpos($rowvalue, 'search') == 'TRUE') || (strpos($rowvalue, 'temp') == 'TRUE') )
+                        {
+                                $table[$n_table] = $rowvalue;
+                                $n_table = $n_table + 1;
+                        }
+                }
+        }
 
 	for ($i=0; $i<$n_table; $i++)
 	{		

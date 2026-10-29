@@ -1,13 +1,21 @@
 <?php
-
-include ("../../access_db.php");
-//include ("./CreateExcel.php");
+$conn_synaptome=NULL;
+ini_set('display_errors', 1);
+//Changed from here on Nov 1 2023
+include ("../access_db.php");
+    $database="synaptome";
+    if(is_null($conn_synaptome)){
+            $conn_synaptome = mysqli_connect($servername, $username, $password, $database);
+    }
+    if(!$conn_synaptome)
+    {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+//Till Here
 include ("./CreateCSV.php");
-ini_set('display_errors', 'On');
 include ("./get_connection_parameters.php");
 include ("./get_neuron_parameters.php");
 include('./functions/default_data_type_synap.php');
-
 
 $excel_file_names = array();
 $result_default_synaptome_array = array();
@@ -57,10 +65,11 @@ function generate_file_name($neu_vals, $excel_file_names){
     }
     return $excel_file_name;
 }
-/*var_dump($_POST);
+/*
+var_dump($_POST);
 echo "Neurons: ";var_dump($_POST['neurons']);
 echo "Synaptic: ";if(isset($_POST['synaptic'])){var_dump($_POST['synaptic']);}exit;*/
-if($_POST){
+if($_POST && isset($_POST['neurons']) && !empty($_POST['neurons']) ){
 
     //Before calling any connection data get the default values
     $synprocptotal_data = $type_details = array();
@@ -69,8 +78,6 @@ if($_POST){
     //Including this table name is for future as we know we might need details from different tables
     $synaptic='mean';
     if(isset($_POST['synaptic'])){$synaptic=$_POST['synaptic'];}
-    //var_dump($_POST['synaptic']);
-    //var_dump($_POST['neurons']);
     if($_POST['neurons'] == "selectall_neuron"){
         $subregions = array('DG','CA3','CA1','EC','MEC','LEC','CA2','Sub');
         list($neurons, $neurons_subregions) = get_neurons($type_details, $subregions);
@@ -81,14 +88,15 @@ if($_POST){
         $neurons =  explode(",", $_POST['neurons']);
         $result_default_synaptome_array['tm_cond16'] = get_default_synaptome_details($conn_synaptome, 'tm_cond16', $synprocptotal_data, $type_details, $synaptic, $neurons);
         $result_default_neuron_params_array = get_default_neuron_params_details($conn);
+
     }
-    //var_dump($neurons);
+
     array_push($excel_conn_param_data, $result_default_synaptome_array['tm_cond16']);
     array_push($excel_neuron_param_data, $result_default_neuron_params_array);
     //var_dump($excel_neuron_param_data);
 
     foreach($neurons as $neuron){
-        //$neu_vals = explode('_', $neuron); //Commented on May 7 2023
+        //$neu_vals = explode('_', $neuron);//Commented on May 7 2023
         $neu_vals = explode(' ', $neuron);
         $neuron = implode(" ", $neu_vals);
         //To generate the file name dynamically
@@ -105,19 +113,25 @@ if($_POST){
 
 // Enter the name of directory
 $root = $_SERVER["DOCUMENT_ROOT"];
-$root_server = $_SERVER['HTTP_SERVER'];
-$pathdir = "/hippocampome/php_v2/data/"; 
+if(isset($_SERVER['HTTP_SERVER'])){
+        $root_server = $_SERVER['HTTP_SERVER'];
+        $pathdir = "../data/";
+}else{//On the serve to make sure it was using the path properly
+        //$root_server = $_SERVER['server_name'];
+        //$root_server = $_SERVER["DOCUMENT_ROOT"];
+        $root_server = '';
+        $pathdir = "/php/data/";//Changed to php on Nov 9 2023
+}
 $filepath = $root . $pathdir;
 $downloadpath = $root_server. $pathdir;
 
 //Create function to create temp directory
 function create_directory($temp_dir, $dir_path){
-    //$temp_dir = "temp_zipfiles/";
     if(!is_dir($dir_path.$temp_dir)){
         if(mkdir($dir_path.$temp_dir, 0777,true)){
-            //  echo "Directory ".$dir_path.$temp_dir." Created"; //log
+             // echo "Directory ".$dir_path.$temp_dir." Created"; //log
         }else{
-          //  echo "Directory ".$dir_path.$temp_dir." exists"; /log
+            //echo "Directory ".$dir_path.$temp_dir." exists"; //log
         }
     }
 }
@@ -136,7 +150,8 @@ function get_files($folder){
         if(is_dir($file)){
             array_merge($valid_files, get_files($folder . '/' . $file));
         } else {
-            $valid_files[] = $folder . '/' . $file;
+            //$valid_files[] = $folder . '/' . $file;
+            array_push($valid_files, $folder . '/' . $file);
         }
     }
     return $valid_files;
@@ -152,7 +167,7 @@ function emptyDir($dir) {
                         unlink($dir . '/' . $files);
                     } else {
                         emptyDir($dir . '/' . $files);
-                        rmdir($dir . '/' . $files);
+ rmdir($dir . '/' . $files);
                     }
                 }
             }
@@ -165,9 +180,10 @@ function delete_old_folders($path){
     $ffs = scandir($path);
     foreach($ffs as $file){
         if ($file != "." && $file != ".." && !strstr($file,'.php')) {
-            $filectime=stat($path.$file)['ctime'];
+            //$filectime=stat($path.$file)['ctime'];
+            $filectime=filectime($path.$file);//Get file ctime this is working on the server
             if($filectime and $filectime+$cache_max_age<time()){
-              //  echo "unlinking ".$path.$file;
+             //   echo "unlinking ".$path.$file;
                 emptyDir($path.$file);
                 rmdir($path.$file);
             }
@@ -191,53 +207,56 @@ function download_zip($filepath,$filename, $download_zip_file){
                 ob_end_clean();
             }
             ob_start();
+	    $size = (string)filesize($filepath.$filename);
             header($_SERVER['SERVER_PROTOCOL'].' 200 OK');
             header("Content-Type: application/octet-stream");
-            header("Content-Transfer-Encoding: Binary");
-            header("Content-Length: ".(string)filesize($filepath.$filename));
+	    header("Content-Transfer-Encoding: Binary"); //Commented on Nov 9 2023 for nginx server
+	  //   header("Content-Length: ".$size);//Commented this out on Nov 9 2023 as nginx is not supporting the size etc and modified in the /etc/nginx/nginx.conf for the size increase
             header('Pragma: no-cache');
-           // header("Content-Disposition: attachment; filename=\"".basename($zipfile)."\"");
             header("Content-Disposition: attachment; filename=\"export.zip\"");
+           // header("Content-Disposition: attachment; filename=\"".basename($zipfile)."\"");
 
             ob_clean();
             ob_end_flush();
             echo $download_zip_file."/".$filename;
         }
     }
-  
 }
 
+date_default_timezone_set('America/New_York');//Added for server
 $name = date('Y-m-d_H-i-s');
 //Create directory
 $temp_dir = "temp_zipfiles/";
 create_directory($temp_dir, $filepath); //create temp directory if it does not exist
 
+
 if(!is_dir($filepath.$temp_dir.$name)){
     if( !file_exists($filepath.$temp_dir.$name) ) {
         mkdir($filepath.$temp_dir.$name, 0777, true);
         if(file_exists($filepath.$temp_dir.$name) ) {
-            //echo "Directory made ".$filepath.$temp_dir.$name; //log dont echo
+//            echo "Directory made ".$filepath.$temp_dir.$name; //log dont echo
         }else{
-           // echo "Directory is not created";
+  //          echo "Directory is not created";
         }
     }
     else{
-       // echo "Line 36 ...".$filepath.$temp_dir.$name." Exists";
+    //   echo "Line 36 ...".$filepath.$temp_dir.$name." Exists";
     }
 }
 $file_name = date('Y-m-d_H-i-s').'.csv';
 $zipcreated = "paramsfile".date('m-d-Y_H_i_s').".zip";
-
 if(is_dir($filepath.$temp_dir.$name)){
     delete_old_folders($filepath.$temp_dir);
     //Commented on May 4 2023 as we dont need those every time but kept the logic for future
-    //$src = $filepath."/default_zipfiles/";  // source folder or file
+    //$src = $filepath."/default_zipfiles/*.zip";  // /*source folder or file
     $dest = $filepath.$temp_dir.$name;   // destination folder or file        
-    //copy_files($src, $dest);
-    
+    //copy_files($src, $dest);//Commented this on May 4 2023 as we dont need to copy default zip files to generated zip file
+
     if($excel_conn_param_data){
+        //var_dump($excel_conn_param_data);
+        //create_excel_file($filepath.$temp_dir.$name, $excel_file_names, $excel_conn_param_data, $excel_neuron_param_data);
         create_csv_files($filepath.$temp_dir.$name, $excel_file_names, $excel_conn_param_data, $excel_neuron_param_data);
- //     create_excel_file($filepath.$temp_dir.$name, $excel_file_names, $excel_conn_param_data, $excel_neuron_param_data);
+
     }
     //Make the zip file of the excel file too
 
@@ -245,7 +264,7 @@ if(is_dir($filepath.$temp_dir.$name)){
     $download_zip_file = $downloadpath.$temp_dir.$name;
 
     $valid_files = get_files($dest);//."/");
-    if(count($valid_files)) {    
+    if(count($valid_files)) {
         $newzip = new ZipArchive();
 
         if($newzip->open($tmp_zip_file, ZIPARCHIVE::CREATE) !== true) {
@@ -258,12 +277,12 @@ if(is_dir($filepath.$temp_dir.$name)){
         $newzip->close();
         if (file_exists($filepath.$temp_dir.$name."/".$zipcreated)) {
             chmod($filepath.$temp_dir.$name."/".$zipcreated, 0777);
-            download_zip($filepath.$temp_dir.$name."/", $zipcreated, $download_zip_file); 
+            download_zip($filepath.$temp_dir.$name."/", $zipcreated, $download_zip_file);
         }
     }
     else
     {
-        return false;
+    return false;
     }
 }
 ?>

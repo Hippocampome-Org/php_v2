@@ -40,6 +40,7 @@ class fragment_counts
 			$this->setReferenceID($referenceID);
 			$this->setID($id);
 			//$this->setOriginal_id($FTQ_ID);			
+			$this->setOriginal_id($cellID);
 			$this->setQuote($material_used);
 			//$this->setPage_location($page_location);
 			$this->setPmid_isbn($PMID);
