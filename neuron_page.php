@@ -1204,7 +1204,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 		$hippo_color = array();
 		for ($f1=0; $f1<$n_markers; $f1++) {
 			$this_remapped_name = remap_marker_names($name_markers[$f1]);
-			$evidencepropertyyperel -> retrieve_conflict_note($hippo_property_id[$this_remapped_name], null, $id);
+			$evidencepropertyyperel -> retrieve_conflict_note($hippo_property_id[$this_remapped_name] ?? null, $id);
 			$conflict_note = $evidencepropertyyperel -> getConflict_note();			
 			$nam_unv1 = check_unvetted1($id, $hippo_property_id[$this_remapped_name] ?? null, $evidencepropertyyperel);			
 			$img = check_color($hippo_property[$name_markers[$f1]], $nam_unv1, $conflict_note, $permission);
