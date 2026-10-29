@@ -28,7 +28,7 @@ if ($_REQUEST['resume_searching_tab'])
 if ($_REQUEST['searching'])
 {
 	$ip_address = $_SERVER['REMOTE_ADDR'];
-	$ip_address = str_replace('.', '_', $ip_address);
+	$ip_address = str_replace(array('.', ':'), '_', $ip_address);
 	$time_t = time();
 	$name_temporary_table ='search1_'.$ip_address."__".$time_t;
 	$_SESSION[$search_temporary_table] = $name_temporary_table;
@@ -40,7 +40,7 @@ if ($_REQUEST['searching'])
 if($_REQUEST['new'])
 {
 	$ip_address = $_SERVER['REMOTE_ADDR'];
-	$ip_address = str_replace('.', '_', $ip_address);
+	$ip_address = str_replace(array('.', ':'), '_', $ip_address);
 	$time_t = time();
 	$name_temporary_table ='search1_'.$ip_address."__".$time_t;
 	$_SESSION[$search_temporary_table] = $name_temporary_table;

@@ -41,7 +41,7 @@ function create_temp_table ($name_temporary_table)
 	//Changed on OCt 29 2026 as its clashing witrh local
 	if ($_SERVER['REMOTE_ADDR'] != '::1')
 	{
-		$drop_table ="DROP TABLE $name_temporary_table";
+		$drop_table ="DROP TABLE IF EXISTS $name_temporary_table";
 		//echo "<pre>";
 		//var_dump($drop_table);
 		//echo "</pre>";
@@ -237,11 +237,11 @@ if ($page)
 	
 	/*
 	//Made below changes to ip address on OCt 29 2026 by KN to handle 
-string(40) "DROP TABLE temp_::1_1001blue__1793288519"
+string(40) "DROP TABLE IF EXISTS temp_::1_1001blue__1793288519"
 
-Fatal error: Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '::1_1001blue__1793288519' at line 1 in /Users/kasturinadella/php_v2/property_page_morphology.php:45 Stack trace: #0 /Users/kasturinadella/php_v2/property_page_morphology.php(45): mysqli_query(Object(mysqli), 'DROP TABLE temp...') #1 /Users/kasturinadella/php_v2/property_page_morphology.php(239): create_temp_table('temp_::1_1001bl...') #2 {main} thrown in /Users/kasturinadella/php_v2/property_page_morphology.php on line 45
+Fatal error: Uncaught mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '::1_1001blue__1793288519' at line 1 in /Users/kasturinadella/php_v2/property_page_morphology.php:45 Stack trace: #0 /Users/kasturinadella/php_v2/property_page_morphology.php(45): mysqli_query(Object(mysqli), 'DROP TABLE IF EXISTS temp...') #1 /Users/kasturinadella/php_v2/property_page_morphology.php(239): create_temp_table('temp_::1_1001bl...') #2 {main} thrown in /Users/kasturinadella/php_v2/property_page_morphology.php on line 45
 	//$ip_address = $_SERVER['REMOTE_ADDR'];
-	//$ip_address = str_replace('.', '_', $ip_address);
+	//$ip_address = str_replace(array('.', ':'), '_', $ip_address);
 	*/
 	$ip_address = $_SERVER['REMOTE_ADDR'];
 	$ip_address = preg_replace('/[^A-Za-z0-9_]/', '_', $ip_address);

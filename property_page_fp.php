@@ -35,7 +35,7 @@ require_once('class/class.epdataevidencerel.php');
 
 function create_temp_table ($name_temporary_table)
 {	
-	$drop_table ="DROP TABLE $name_temporary_table";
+	$drop_table ="DROP TABLE IF EXISTS $name_temporary_table";
 	$query = mysqli_query($GLOBALS['conn'],$drop_table);
 	$creatable=	"CREATE TABLE IF NOT EXISTS $name_temporary_table (
 					id int(4) NOT NULL AUTO_INCREMENT,
@@ -78,7 +78,7 @@ function create_temp_table ($name_temporary_table)
 
 function create_temp_table_ephysprotocol ($name_temporary_table)
 {
-	$drop_table ="DROP TABLE $name_temporary_table";
+	$drop_table ="DROP TABLE IF EXISTS $name_temporary_table";
 	$query = mysqli_query($GLOBALS['conn'],$drop_table);
 
 	$createtable=	"CREATE TABLE IF NOT EXISTS $name_temporary_table (
@@ -383,7 +383,7 @@ if ($page)
 	$fp_count=$_REQUEST['count'];
 	// create temporary table
 	$ip_address = $_SERVER['REMOTE_ADDR'];
-	$ip_address = str_replace('.', '_', $ip_address);
+	$ip_address = str_replace(array('.', ':'), '_', $ip_address);
 	$time_t = time();
 	if($parameter=="-"){
 		$name_temporary_table ='temp_'.$ip_address.'_'.$id_neuron."_".'__'.$time_t;

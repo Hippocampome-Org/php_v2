@@ -50,7 +50,7 @@ function checkNeuronProperty($color)
 }
 function create_temp_table ($name_temporary_table)
 {	
-	$drop_table ="DROP TABLE $name_temporary_table";
+	$drop_table ="DROP TABLE IF EXISTS $name_temporary_table";
 	$query = mysqli_query($GLOBALS['conn'],$drop_table);
 	
 	$creatable=	"CREATE TABLE IF NOT EXISTS $name_temporary_table (
@@ -220,7 +220,7 @@ if (true)
 	$color = $_REQUEST['color'];
 	
 	$ip_address = $_SERVER['REMOTE_ADDR'];
-	$ip_address = str_replace('.', '_', $ip_address);
+	$ip_address = str_replace(array('.', ':'), '_', $ip_address);
 	$ip_address = str_replace(':', '_', $ip_address);
 	$time_t = time();
 	//echo "name_temporary_table: ".$name_temporary_table;

@@ -36,7 +36,7 @@ $full_search_string="";
 if ($_REQUEST['searching'])
 {
 	$ip_address = $_SERVER['REMOTE_ADDR'];
-	$ip_address = str_replace('.', '_', $ip_address);
+	$ip_address = str_replace(array('.', ':'), '_', $ip_address);
 
 	$time_t = time();
 

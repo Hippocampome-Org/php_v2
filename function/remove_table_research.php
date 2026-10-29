@@ -34,7 +34,7 @@ function remove_table_by_tyme()  // after 2 hours:
 						
 			if ($delta_t > $time_rem)  // 36000
 			{
-				$drop_table ="DROP TABLE $table[$i]";
+				$drop_table ="DROP TABLE IF EXISTS $table[$i]";
 				$query = mysqli_query($GLOBALS['conn'],$drop_table);	
 			}
 		}
@@ -49,7 +49,7 @@ function remove_table_by_tyme()  // after 2 hours:
 			
 			if ($delta_t > $time_rem)  // 36000
 			{
-				$drop_table ="DROP TABLE $table[$i]";
+				$drop_table ="DROP TABLE IF EXISTS $table[$i]";
 				$query = mysqli_query($GLOBALS['conn'],$drop_table);	
 			}
 		}
@@ -64,7 +64,7 @@ function remove_table_by_tyme()  // after 2 hours:
 			
 			if ($delta_t > $time_rem)  // 36000
 			{
-				$drop_table ="DROP TABLE $table[$i]";
+				$drop_table ="DROP TABLE IF EXISTS $table[$i]";
 				$query = mysqli_query($GLOBALS['conn'],$drop_table);	
 			}
 		}
@@ -82,7 +82,7 @@ function remove_table_by_tyme()  // after 2 hours:
 
 			if ($delta_t > $time_rem)  // 36000
 			{
-				$drop_table = "DROP TABLE $tableName";
+				$drop_table = "DROP TABLE IF EXISTS $tableName";
 				mysqli_query($GLOBALS['conn'], $drop_table);
 			}
 		}
@@ -97,7 +97,7 @@ function remove_table_by_tyme()  // after 2 hours:
 
 			if ($delta_t > $time_rem)  // 36000
 			{
-				$drop_table = "DROP TABLE $tableName";
+				$drop_table = "DROP TABLE IF EXISTS $tableName";
 				mysqli_query($GLOBALS['conn'], $drop_table);
 			}
 		}
@@ -112,7 +112,7 @@ function remove_table_by_tyme()  // after 2 hours:
 
 			if ($delta_t > $time_rem)  // 36000
 			{
-				$drop_table = "DROP TABLE $tableName";
+				$drop_table = "DROP TABLE IF EXISTS $tableName";
 				mysqli_query($GLOBALS['conn'], $drop_table);
 			}
 		}

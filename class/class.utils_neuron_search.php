@@ -61,7 +61,7 @@ class utils_neuron_search{
     public function create_temp_table ()
     { 
         $temp_table=$this->get_table_name();      
-        $drop_table ="DROP TABLE $temp_table";
+        $drop_table ="DROP TABLE IF EXISTS $temp_table";
         //$query = mysqli_query($GLOBALS['conn'],$drop_table);
         $query= "CREATE TABLE IF NOT EXISTS  $temp_table(                    
                        id int(4) NOT NULL AUTO_INCREMENT,

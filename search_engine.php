@@ -196,7 +196,7 @@ function get_UItable($id, $subject, $conflict, $type, $name_temporary_table_resu
 // Function to create the temporary table for the search field: ++++++++++++++++++++++++++++++++++
 function create_result_table_result ($name_temporary_table)
 {	
-	$drop_table ="DROP TABLE $name_temporary_table";
+	$drop_table ="DROP TABLE IF EXISTS $name_temporary_table";
 	$query = mysqli_query($GLOBALS['conn'],$drop_table);
 	
 	$creatable=	"CREATE TABLE IF NOT EXISTS $name_temporary_table (
@@ -828,7 +828,7 @@ for ($i=0; $i<$n_line; $i++)
 
 // Creates $a table to insert the results for each AND:
 $ip_address = $_SERVER['REMOTE_ADDR'];
-$ip_address = str_replace('.', '_', $ip_address);
+$ip_address = str_replace(array('.', ':'), '_', $ip_address);
 $time_t = time();
 
 $name_temporary_table_result = "search_result_table_".$ip_address."__".$time_t;

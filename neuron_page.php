@@ -1013,7 +1013,8 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 				}
 				$name_authors = $name_authors.', '.$name_a;
 			}
-			$name_authors[0] = '';			
+			//$name_authors[0] = '';			
+			$name_authors = ltrim($name_authors, ', ');
  			//$name_authors_representative[0]= '';
 			$name_authors_representative=trim($name_authors_representative);
 			$name_authors = trim($name_authors);				

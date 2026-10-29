@@ -20,10 +20,12 @@ class temporary_search
 	public function create_temp_table()
 	{	
 		$name_temporary_table=$this->getName_table();
+		if (strpos($name_temporary_table, '::1') === false)
+		{	
+			$drop_table ="DROP TABLE IF EXISTS $name_temporary_table";
+			$query = mysqli_query($GLOBALS['conn'],$drop_table);
+		}
 	
-		$drop_table ="DROP TABLE IF EXISTS $name_temporary_table";
-		$query = mysqli_query($GLOBALS['conn'],$drop_table);
-		
 		$creatable=	"CREATE TABLE IF NOT EXISTS $name_temporary_table (
 					   id int(4) NOT NULL AUTO_INCREMENT,
 					   N int(3),

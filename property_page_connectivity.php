@@ -39,7 +39,7 @@ function checkNeuronProperty($color)
 
 function create_temp_table ($name_temporary_table)
 {	
-	$drop_table ="DROP TABLE $name_temporary_table";
+	$drop_table ="DROP TABLE IF EXISTS $name_temporary_table";
 	$query = mysqli_query($GLOBALS['conn'],$drop_table);
 	$creatable=	"CREATE TABLE IF NOT EXISTS $name_temporary_table (
 				   id int(4) NOT NULL AUTO_INCREMENT,
@@ -210,7 +210,7 @@ if ($page)
 	$axonic_basket_flag=$_REQUEST['axonic_basket_flag'];
 	// create temporary table
 	$ip_address = $_SERVER['REMOTE_ADDR'];
-	$ip_address = str_replace('.', '_', $ip_address);
+	$ip_address = str_replace(array('.', ':'), '_', $ip_address);
 	$time_t = time();
 	$name_temporary_table ='temp_'.$ip_address.'_'.$conn_id_neuron[0].$conn_color[0].'__'.$time_t;
 	$_SESSION['conn_name_temporary_table'] = $name_temporary_table;

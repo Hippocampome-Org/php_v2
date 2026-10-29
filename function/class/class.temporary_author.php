@@ -15,7 +15,7 @@ class temporary_author
 	{	
 		$table=$this->getName_table();
 	
-		$drop_table ="DROP TABLE $table";
+		$drop_table ="DROP TABLE IF EXISTS $table";
 		$query = mysqli_query($GLOBALS['conn'],$drop_table);
 		
 		$creatable=	"CREATE TABLE IF NOT EXISTS $table (

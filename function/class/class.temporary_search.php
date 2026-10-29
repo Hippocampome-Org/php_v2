@@ -21,7 +21,7 @@ class temporary_search
 	{	
 		$name_temporary_table=$this->getName_table();
 	
-		$drop_table ="DROP TABLE $name_temporary_table";
+		$drop_table ="DROP TABLE IF EXISTS $name_temporary_table";
 		$query = mysqli_query($GLOBALS['conn'],$drop_table);
 		
 		$creatable=	"CREATE TABLE IF NOT EXISTS $name_temporary_table (
