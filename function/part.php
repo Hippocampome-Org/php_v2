@@ -43,7 +43,7 @@ function getSubject_untracked()
 			$subject = "&alpha;-act2";
 	
 		$flag = 0;
-		for($i = 0; $i < count($name_markers); $i++)
+		for($i = 0; $i < count($name_markers ?? array()); $i++)
 		{
 			// Check if Subject has Tracked Markers
 			if(strcmp($name_markers[$i], $subject) == 0)
@@ -152,13 +152,13 @@ function partFiringPatternParameter()
 	$query_to_get_firing_pattern = "SELECT * FROM FiringPattern WHERE definition_parameter like 'definition'";
 	$rs_firing_pattern = mysqli_query($GLOBALS['conn'],$query_to_get_firing_pattern);	
 	while($firing_pattern = mysqli_fetch_array($rs_firing_pattern,MYSQLI_NUM)){						
-		for($ind=3;$ind<(count($firing_pattern)-1) ;$ind++ ){	
+		for($ind=3;$ind<(count($firing_pattern ?? array())-1) ;$ind++ ){	
 			if($firing_pattern[$ind]==1)
 				$part_view[$ind-3] = 1;
 		}
 	}
 	$index=0;
-	for($ind=3;$ind<(count($firing_pattern_parameter)-1) ;$ind++ ){	
+	for($ind=3;$ind<(count($firing_pattern_parameter ?? array())-1) ;$ind++ ){	
 		//print($firing_pattern__parameter[$ind].",");
 		if($part_view[$ind-3]==1)
 			$part[$index++] = $firing_pattern_parameter[$ind];

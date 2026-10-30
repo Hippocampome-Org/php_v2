@@ -37,7 +37,7 @@ class utils_author_article
 			}	
 			else
 			{
-				$author_searched[$index]=$pieces[0];
+				$author_searched[$index]= $pieces[0] ?? null;
 			}	
 			$index++;
 		}
@@ -127,7 +127,7 @@ class utils_author_article
 						// 'Amaral D'  in 'Robin J,Amaral D, Linkon P' then 'Robin J,<b>Amaral D</b>, Linkon P'
 						// 'Amaral D'  in 'Robin J, Linkon P,Amaral D' then  'Robin J, Linkon P,<b>Amaral D</b>''
 						$searched_name=substr($authors,$start,($end-$start));
-						$authors=str_replace($searched_name,"<b>$searched_name</b>", $authors);
+						$authors=str_replace($searched_name,"<b>$searched_name</b>", ($authors ?? ''));
 					}			
 				}
 				// In case of AND condtion skip the record. 	

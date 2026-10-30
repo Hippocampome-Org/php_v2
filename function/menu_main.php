@@ -15,7 +15,7 @@ $rs = mysqli_query($conn,$query);
 list($devur2) = mysqli_fetch_row($rs);
 //Changed by KN on June 27 2025
 if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+    if (session_status() === PHP_SESSION_NONE) session_start();
 }//Till Here
 ?>
 </head>

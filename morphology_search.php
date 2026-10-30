@@ -64,11 +64,11 @@ function check_axon_dendrite($variable, $hippo_axon, $hippo_dendrite)
 } */	
 // ------------------------------------------------------------------------------------------
 $color_selected ='#EBF283';
-$type = new type($class_type);
-$research = $_REQUEST['research'];
+$type = new type($class_type ?? null);
+$research = $_REQUEST['research'] ?? null;
 /* if ($research) // From page of search; retrieve the id from search_table (temporary) -----------------------
 {
-	$table_result = $_REQUEST['table_result'];
+	$table_result = $_REQUEST['table_result'] ?? null;
 
 	$temporary_result_neurons = new temporary_result_neurons();
 	$temporary_result_neurons -> setName_table($table_result);
@@ -104,9 +104,9 @@ else // not from search page --------------
 	$number_type = $type->getNumber_type();
 } */
 // -------------------------------------------------------------------------------------------------------------
-$property = new property($class_property);
-$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
-$hippo_select = $_SESSION['hippo_select'];
+$property = new property($class_property ?? null);
+$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel ?? null);
+$hippo_select = $_SESSION['hippo_select'] ?? null;
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -628,7 +628,7 @@ $("#nGrid").mouseout(function(e) {
 	</form>
 	<?php 
 			if ($research){
-				$full_search_string = $_SESSION['full_search_string'];
+				$full_search_string = $_SESSION['full_search_string'] ?? null;
 				if ($number_type == 1)
 					print ("<font class='font3'> $number_type Result  [$full_search_string]</font>");
 				else

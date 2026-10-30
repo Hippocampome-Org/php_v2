@@ -7,55 +7,55 @@
 
   // submit research properties
   if ($_POST['subjects']!='') {
-    $subjects = $_POST['subjects'];
-    for ($i=0; $i<count($subjects); $i++)
+    $subjects = $_POST['subjects'] ?? null;
+    for ($i=0; $i<count($subjects ?? array()); $i++)
     {
       $sql = "INSERT INTO `$cog_database`.`article_has_subject` (`subject_id`, `article_id`) VALUES ('".$subjects[$i]."', '".$_POST['new_art_numb']."');";
       $result = $cog_conn->query($sql);
     }    
   }
   if ($_POST['details']!='') {
-    $details = $_POST['details'];
+    $details = $_POST['details'] ?? null;
     $sql = "INSERT INTO `$cog_database`.`article_has_detail` (`detail_id`, `article_id`) VALUES ('".$details[0]."', '".$_POST['new_art_numb']."');";
     $result = $cog_conn->query($sql);
   }
   if ($_POST['implementations']!='') {
-    $implementations = $_POST['implementations'];
+    $implementations = $_POST['implementations'] ?? null;
     $sql = "INSERT INTO `$cog_database`.`article_has_implmnt` (`level_id`, `article_id`) VALUES ('".$implementations[0]."', '".$_POST['new_art_numb']."');";
     $result = $cog_conn->query($sql);
   }
   if ($_POST['network_scales']!='') {
-    $network_scales = $_POST['network_scales'];
+    $network_scales = $_POST['network_scales'] ?? null;
     $sql = "INSERT INTO `$cog_database`.`article_has_scale` (`scale_id`, `article_id`) VALUES ('".$network_scales[0]."', '".$_POST['new_art_numb']."');";
     $result = $cog_conn->query($sql);
   }  
   if ($_POST['neuron_types']!='') {
-    $network_scales = $_POST['neuron_types'];
-    for ($i=0; $i<count($network_scales); $i++)
+    $network_scales = $_POST['neuron_types'] ?? null;
+    for ($i=0; $i<count($network_scales ?? array()); $i++)
     {    
       $sql = "INSERT INTO `$cog_database`.`article_has_neuron` (`neuron_id`, `article_id`) VALUES ('".$network_scales[$i]."', '".$_POST['new_art_numb']."');";
       $result = $cog_conn->query($sql);
     }
   }    
   if ($_POST['regions']!='') {
-    $regions = $_POST['regions'];
-    for ($i=0; $i<count($regions); $i++)
+    $regions = $_POST['regions'] ?? null;
+    for ($i=0; $i<count($regions ?? array()); $i++)
     {
       $sql = "INSERT INTO `$cog_database`.`article_has_region` (`region_id`, `article_id`) VALUES ('".$regions[$i]."', '".$_POST['new_art_numb']."');";
       $result = $cog_conn->query($sql);
     } 
   }
   if ($_POST['theory_category']!='') {
-    $theories = $_POST['theory_category'];
-    for ($i=0; $i<count($theories); $i++)
+    $theories = $_POST['theory_category'] ?? null;
+    for ($i=0; $i<count($theories ?? array()); $i++)
     {
       $sql = "INSERT INTO `$cog_database`.`article_has_theory` (`theory_id`, `article_id`) VALUES ('".$theories[$i]."', '".$_POST['new_art_numb']."');";
       $result = $cog_conn->query($sql);
     }    
   }
   if ($_POST['keywords']!='') {
-    $keywords = $_POST['keywords'];
-    for ($i=0; $i<count($keywords); $i++)
+    $keywords = $_POST['keywords'] ?? null;
+    for ($i=0; $i<count($keywords ?? array()); $i++)
     {
       $sql = "INSERT INTO `$cog_database`.`article_has_keyword` (`keyword_id`, `article_id`) VALUES ('".$keywords[$i]."', '".$_POST['new_art_numb']."');";
       $result = $cog_conn->query($sql);

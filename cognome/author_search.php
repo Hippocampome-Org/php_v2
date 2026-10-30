@@ -75,7 +75,7 @@
     'Z'=>'/^[Zz].*/');
 
     if (isset($_GET['letter'])) {
-      $letter = $_GET['letter'];
+      $letter = $_GET['letter'] ?? null;
     }
     else {
       $letter = 'A';
@@ -100,7 +100,7 @@
       //  Get article ids that incldue the author
       //  Output formatted reports on each article corresponding to the id
       //
-      $author_id = $_GET['author_id'];
+      $author_id = $_GET['author_id'] ?? null;
       $sql = "SELECT author FROM $cog_database.authors WHERE id = ".$author_id.";";
       $result = $cog_conn->query($sql);
       if ($result->num_rows > 0) { 

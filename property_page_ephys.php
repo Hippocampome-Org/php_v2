@@ -249,7 +249,7 @@ function insert_temporary($table, $i1_counter, $id_fragment, $id_original, $quot
 
 function expand_protocol_text($protocol)
 {
-	$protocol = str_replace(' ', '', $protocol);
+	$protocol = str_replace(' ', '', ($protocol ?? ''));
 	$prot_pieces = explode("|", $protocol);
 	
 	if ($prot_pieces[0] == "r")
@@ -289,22 +289,22 @@ function expand_protocol_text($protocol)
 
 // *********************************************************************************************************************************
 
-$page = $_REQUEST['page'];
+$page = $_REQUEST['page'] ?? null;
 
 
-$sub_show_only = $_SESSION['sub_show_only']; 
-$name_show_only_article = $_SESSION['name_show_only_article'];
+$sub_show_only = $_SESSION['sub_show_only'] ?? null; 
+$name_show_only_article = $_SESSION['name_show_only_article'] ?? null;
 
-$name_show_animal = $_SESSION['name_show_animal'];
-$name_show_protocol = $_SESSION['name_show_protocol'];
-$name_show_temperature = $_SESSION['name_show_temperature'];
+$name_show_animal = $_SESSION['name_show_animal'] ?? null;
+$name_show_protocol = $_SESSION['name_show_protocol'] ?? null;
+$name_show_temperature = $_SESSION['name_show_temperature'] ?? null;
 
-$see_all = $_REQUEST['see_all']; 
+$see_all = $_REQUEST['see_all'] ?? null; 
 if ($see_all == 'Open All Evidence')
 {
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['name_temporary_table'];
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
+	$name_temporary_table = $_SESSION['name_temporary_table'] ?? null;
 	$name_show_animal_t = strtolower($name_show_animal);
 	$name_show_protocol_t = strtolower($name_show_protocol);
 	$name_show_protocol_t1 = substr($name_show_protocol_t , 0, 5);
@@ -353,33 +353,33 @@ if ($see_all == 'Open All Evidence')
 
 if ($see_all == 'Close All Evidence')
 {
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['name_temporary_table'];
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
+	$name_temporary_table = $_SESSION['name_temporary_table'] ?? null;
 	$query = "UPDATE $name_temporary_table SET show1 =  '0'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);		
 }
 
 // Change the show coloums in the temporary table: ------------------------------------------------
-if ($_REQUEST['show_1']) //  ==> ON
+if (!empty($_REQUEST['show_1'])) //  ==> ON
 {
-	$name_temporary_table = $_SESSION['name_temporary_table'];
-	$title_paper = $_REQUEST['title'];
+	$name_temporary_table = $_SESSION['name_temporary_table'] ?? null;
+	$title_paper = $_REQUEST['title'] ?? null;
 
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
 				
 	$query = "UPDATE $name_temporary_table SET show1 =  '1' WHERE title = '$title_paper'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);	
 }
 
-if ($_REQUEST['show_0']) //  ==> OFF
+if (!empty($_REQUEST['show_0'])) //  ==> OFF
 {
-	$name_temporary_table = $_SESSION['name_temporary_table'];
-	$title_paper = $_REQUEST['title'];
+	$name_temporary_table = $_SESSION['name_temporary_table'] ?? null;
+	$title_paper = $_REQUEST['title'] ?? null;
 	
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
 	
 	$query = "UPDATE $name_temporary_table SET show1 =  '0' WHERE title = '$title_paper'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);	
@@ -407,17 +407,17 @@ if ($page) // Come from another page
 	$name_show_only_article = 'all';
 	$name_show_only_journal = 'all';	
 	
-	$id_neuron = $_REQUEST['id_neuron'];
-	$id_ephys = $_REQUEST['id_ephys'];
-	$ep1 = $_REQUEST['ep'];
+	$id_neuron = $_REQUEST['id_neuron'] ?? null;
+	$id_ephys = $_REQUEST['id_ephys'] ?? null;
+	$ep1 = $_REQUEST['ep'] ?? null;
 	
 	$ep= real_name_ephys($ep1);
 	$parameter= parameter_ephys($ep);
 	$complete_name = real_name_ephys_evidence($ep1);
 	$res=show_ephys($ep);
 	
-	$ip_address = $_SERVER['REMOTE_ADDR'];
-	$ip_address = str_replace(array('.', ':'), '_', $ip_address);
+	$ip_address = $_SERVER['REMOTE_ADDR'] ?? null;
+	$ip_address = str_replace(array('.', ':'), '_', ($ip_address ?? ''));
 	
 	$time_t = time();
 	
@@ -438,15 +438,15 @@ if ($page) // Come from another page
 }
 else
 {
-	$name_show_only = $_SESSION['name_show_only'];
+	$name_show_only = $_SESSION['name_show_only'] ?? null;
 	$_SESSION['name_show_only'] = $name_show_only;
-	$name_show_only_journal = $_SESSION['name_show_only_journal'];
-	$name_show_only_authors = $_SESSION['name_show_only_authors'];
-	$name_show_only_article = $_SESSION['name_show_only_article'];
-	$order_ok = $_REQUEST['order_ok'];
+	$name_show_only_journal = $_SESSION['name_show_only_journal'] ?? null;
+	$name_show_only_authors = $_SESSION['name_show_only_authors'] ?? null;
+	$name_show_only_article = $_SESSION['name_show_only_article'] ?? null;
+	$order_ok = $_REQUEST['order_ok'] ?? null;
 	if ($order_ok == 'GO')             // Was clicked the Order By options
 	{
-		$order_by = $_REQUEST['order'];
+		$order_by = $_REQUEST['order'] ?? null;
 		$_SESSION['order_by'] = $order_by;
 		
 		if ($order_by == 'year')
@@ -461,27 +461,27 @@ else
 	}
 	else    // Was clicked the paginations
 	{
-		$order_by = $_SESSION['order_by'];
+		$order_by = $_SESSION['order_by'] ?? null;
 
-		$type_order = $_SESSION['type_order'];
+		$type_order = $_SESSION['type_order'] ?? null;
 	
-		if ($_REQUEST['up'])
+		if (!empty($_REQUEST['up']))
 		{
-			$page_in = $_REQUEST['start'];
+			$page_in = $_REQUEST['start'] ?? null;
 			$page_end = $page_in+10;		
 		}
-		if ($_REQUEST['down'])
+		if (!empty($_REQUEST['down']))
 		{
-			$page_in = $_REQUEST['start'];
+			$page_in = $_REQUEST['start'] ?? null;
 			$page_end = $page_in+10;		
 		}	
-		if ($_REQUEST['last_page'])
+		if (!empty($_REQUEST['last_page']))
 		{
-			$value_last_page = $_REQUEST['value_last_page'];
+			$value_last_page = $_REQUEST['value_last_page'] ?? null;
 			$page_in = $value_last_page;
-			$page_end = $_REQUEST['value_last_page_final'];
+			$page_end = $_REQUEST['value_last_page_final'] ?? null;
 		}
-		if ($_REQUEST['first_page'])
+		if (!empty($_REQUEST['first_page']))
 		{
 			$page_in = 0;
 			$page_end = 10;
@@ -489,29 +489,29 @@ else
 	}
 
 
-	$flag = $_REQUEST['flag'];
+	$flag = $_REQUEST['flag'] ?? null;
 	
-	$id_neuron = $_SESSION['id_neuron'];
-	$id_ephys = $_REQUEST['id_ephys'];
-	$ep1 = $_REQUEST['ep'];
+	$id_neuron = $_SESSION['id_neuron'] ?? null;
+	$id_ephys = $_REQUEST['id_ephys'] ?? null;
+	$ep1 = $_REQUEST['ep'] ?? null;
 		
-	$name_temporary_table = $_SESSION['name_temporary_table'];
+	$name_temporary_table = $_SESSION['name_temporary_table'] ?? null;
 	
 }
 
 
 // SHOW ONLY --------------------------------------------------------------
 // ------------------------------------------------------------------------
-$name_show_only_var = $_REQUEST['name_show_only_var'];
+$name_show_only_var = $_REQUEST['name_show_only_var'] ?? null;
 
 if ($name_show_only_var)
 {
-	$name_show_only = $_REQUEST['name_show_only'];
+	$name_show_only = $_REQUEST['name_show_only'] ?? null;
 	$_SESSION['name_show_only'] = $name_show_only;
 	
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['name_temporary_table'];
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
+	$name_temporary_table = $_SESSION['name_temporary_table'] ?? null;
 
 	// Option: All:
 	if ($name_show_only == 'all')
@@ -562,18 +562,18 @@ if ($name_show_only_var)
 
 
 // ARTICLE - BOOK OPTION
-$name_show_only_article_var = $_REQUEST['name_show_only_article_var'];
+$name_show_only_article_var = $_REQUEST['name_show_only_article_var'] ?? null;
 if ($name_show_only_article_var)
 {
-	$name_show_only_article = $_REQUEST['name_show_only_article'];
+	$name_show_only_article = $_REQUEST['name_show_only_article'] ?? null;
 	$_SESSION['name_show_only_article'] = $name_show_only_article;
 	$_SESSION['name_show_only_journal'] = 'all';
 	$_SESSION['name_show_only_authors'] = 'all';
 
-	$name_show_only = $_SESSION['name_show_only'];
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['name_temporary_table'];
+	$name_show_only = $_SESSION['name_show_only'] ?? null;
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
+	$name_temporary_table = $_SESSION['name_temporary_table'] ?? null;
 
 	$query = "UPDATE $name_temporary_table SET show_only =  '1'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);	
@@ -601,18 +601,18 @@ if ($name_show_only_article_var)
 
 
 // JOURNAL OPTION
-$name_show_only_journal_var = $_REQUEST['name_show_only_journal_var'];
+$name_show_only_journal_var = $_REQUEST['name_show_only_journal_var'] ?? null;
 if ($name_show_only_journal_var)
 {
-	$name_show_only_journal = $_REQUEST['name_show_only_journal'];
+	$name_show_only_journal = $_REQUEST['name_show_only_journal'] ?? null;
 	$_SESSION['name_show_only_journal'] = $name_show_only_journal;
 	$_SESSION['name_show_only_article'] = 'all';
 	$_SESSION['name_show_only_authors'] = 'all';
 
-	$name_show_only = $_SESSION['name_show_only'];
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['name_temporary_table'];
+	$name_show_only = $_SESSION['name_show_only'] ?? null;
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
+	$name_temporary_table = $_SESSION['name_temporary_table'] ?? null;
 
 	$query = "UPDATE $name_temporary_table SET show_only =  '1'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);	
@@ -627,18 +627,18 @@ if ($name_show_only_journal_var)
 } // end if $name_show_only_journal
 	
 // AUTHORS OPTION
-$name_show_only_authors_var  = $_REQUEST['name_show_only_authors_var'];
+$name_show_only_authors_var  = $_REQUEST['name_show_only_authors_var'] ?? null;
 if ($name_show_only_authors_var)
 {
-	$name_show_only_authors = $_REQUEST['name_show_only_authors'];
+	$name_show_only_authors = $_REQUEST['name_show_only_authors'] ?? null;
 	$_SESSION['name_show_only_authors'] = $name_show_only_authors;
 	$_SESSION['name_show_only_article'] = 'all';
 	$_SESSION['name_show_only_journal'] = 'all';
 
-	$name_show_only = $_SESSION['name_show_only'];
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['name_temporary_table'];
+	$name_show_only = $_SESSION['name_show_only'] ?? null;
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
+	$name_temporary_table = $_SESSION['name_temporary_table'] ?? null;
 
 
 	if ($name_show_only_authors == 'all')
@@ -664,18 +664,18 @@ if ($name_show_only_authors_var)
 
 
 //Animal
-$name_show_animal_var = $_REQUEST['name_show_animal_var'];
+$name_show_animal_var = $_REQUEST['name_show_animal_var'] ?? null;
 
 if ($name_show_animal_var)
 {
 	$query = "UPDATE $name_temporary_table SET show1 = '0'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);
-	$name_show_animal = $_REQUEST['name_show_animal'];
+	$name_show_animal = $_REQUEST['name_show_animal'] ?? null;
 	$_SESSION['name_show_animal'] = $name_show_animal;
 	
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['name_temporary_table'];
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
+	$name_temporary_table = $_SESSION['name_temporary_table'] ?? null;
 
 	// Option: Mice:
 	if ($name_show_animal == 'Mice')
@@ -901,18 +901,18 @@ if ($name_show_animal_var)
 }
 
 //Protocol
-$name_show_protocol_var = $_REQUEST['name_show_protocol_var'];
+$name_show_protocol_var = $_REQUEST['name_show_protocol_var'] ?? null;
 
 if ($name_show_protocol_var)
 {
 	$query = "UPDATE $name_temporary_table SET show1 = '0'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);
-	$name_show_protocol = $_REQUEST['name_show_protocol'];
+	$name_show_protocol = $_REQUEST['name_show_protocol'] ?? null;
 	$_SESSION['name_show_protocol'] = $name_show_protocol;
 	
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['name_temporary_table'];
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
+	$name_temporary_table = $_SESSION['name_temporary_table'] ?? null;
 
 	// Option: Patch Clamp:
 	if ($name_show_protocol == 'Patch_Clamp')
@@ -1137,18 +1137,18 @@ if ($name_show_protocol_var)
 	
 
 //Temperature
-$name_show_temperature_var = $_REQUEST['name_show_temperature_var'];
+$name_show_temperature_var = $_REQUEST['name_show_temperature_var'] ?? null;
 
 if ($name_show_temperature_var)
 {
 	$query = "UPDATE $name_temporary_table SET show1 = '0'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);
-	$name_show_temperature = $_REQUEST['name_show_temperature'];
+	$name_show_temperature = $_REQUEST['name_show_temperature'] ?? null;
 	$_SESSION['name_show_temperature'] = $name_show_temperature;
 	
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['name_temporary_table'];
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
+	$name_temporary_table = $_SESSION['name_temporary_table'] ?? null;
 
 	// Option: Body:
 	if ($name_show_temperature == 'Body')
@@ -1389,26 +1389,26 @@ if ($name_show_temperature_var)
 }
 
 
-$type = new type($class_type);
+$type = new type($class_type ?? null);
 $type -> retrive_by_id($id_neuron);
 
-$property = new property($class_property);
-$fragment = new fragment ($class_fragment);
+$property = new property($class_property ?? null);
+$fragment = new fragment ($class_fragment ?? null);
 
 $attachment_obj = new attachment($class_attachment ?? null);
-$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
-$evidencefragmentrel = new evidencefragmentrel($class_evidencefragmentrel);
+$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel ?? null);
+$evidencefragmentrel = new evidencefragmentrel($class_evidencefragmentrel ?? null);
 
-$articleevidencerel = new articleevidencerel($class_articleevidencerel);
-$article = new article($class_article);
+$articleevidencerel = new articleevidencerel($class_articleevidencerel ?? null);
+$article = new article($class_article ?? null);
 
-$epdataevidencerel = new epdataevidencerel($class_epdataevidencerel);
-$epdata = new epdata($class_epdata);
+$epdataevidencerel = new epdataevidencerel($class_epdataevidencerel ?? null);
+$epdata = new epdata($class_epdata ?? null);
 
-$evidenceevidencerel = new evidenceevidencerel($class_evidenceevidencerel);
+$evidenceevidencerel = new evidenceevidencerel($class_evidenceevidencerel ?? null);
 
-$articleauthorrel = new articleauthorrel($class_articleauthorrel);
-$author = new author($class_author);
+$articleauthorrel = new articleauthorrel($class_articleauthorrel ?? null);
+$author = new author($class_author ?? null);
 
 ?>
 
@@ -1668,19 +1668,19 @@ function show_only_ephys(link, start1, stop1)
 					
 					// Extract page_location and protocol
 					$protoc = explode(",", $page_loc);
-					$page_location=$protoc[0];
+					$page_location= $protoc[0] ?? null;
 					
-					$locationValue1[$i1] = str_replace(' ', '', $locationValue[$i1]);
+					$locationValue1[$i1] = str_replace(' ', '', ($locationValue[$i1] ?? ''));
 					$location_protoc = explode(",", $locationValue1[$i1]);
 
-					if (count($location_protoc) > 1) {
+					if (count($location_protoc ?? array()) > 1) {
 						$location_protocol = trim($location_protoc[1]);
 					} else {
 						$location_protocol = '';
 					}
 					$location_animal = strpos($locationValue1[$i1],'mouse');					
 					
-					$protoc[1] = str_replace(' ', '', $protoc[1]);
+					$protoc[1] = str_replace(' ', '', ($protoc[1] ?? ''));
 					$protoc_pieces = explode("|", $protoc[1]);
 					
 					if($location_protocol == 'patchelectrode' && $protoc_pieces[1] != 'p')
@@ -1779,7 +1779,7 @@ function show_only_ephys(link, start1, stop1)
 			
 			// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-			$query = "SELECT DISTINCT title FROM $name_temporary_table WHERE show_only = 1 ORDER BY $order_by $type_order LIMIT $page_in , 10";
+			$query = "SELECT DISTINCT title FROM $name_temporary_table WHERE show_only = 1 ORDER BY $order_by $type_order LIMIT ".(int)$page_in." , 10";
 			$rs = mysqli_query($GLOBALS['conn'],$query);
 			$n_id = 0;
 	        
@@ -1789,7 +1789,7 @@ function show_only_ephys(link, start1, stop1)
 				$n_id = $n_id + 1;
 			}
 
-            $query = "SELECT DISTINCT title FROM $name_temporary_table WHERE show_only = 1 ORDER BY $order_by $type_order LIMIT $page_in , 10";
+            $query = "SELECT DISTINCT title FROM $name_temporary_table WHERE show_only = 1 ORDER BY $order_by $type_order LIMIT ".(int)$page_in." , 10";
 		    $rs = mysqli_query($GLOBALS['conn'],$query);
 		    
 			?>
@@ -2005,7 +2005,7 @@ function show_only_ephys(link, start1, stop1)
 							{
 								$aut1=$aut1.", ".$aut;
 							}					
-							$aut1=str_replace(', ', '*', $aut1);
+							$aut1=str_replace(', ', '*', ($aut1 ?? ''));
 							$single_aut=explode('*', $aut1);
 
 							sort($single_aut);
@@ -2013,7 +2013,7 @@ function show_only_ephys(link, start1, stop1)
 							
 							// Remove the blank from array:
 							$ni=0;
-							for ($i1=0; $i1<count($single_aut2); $i1++)
+							for ($i1=0; $i1<count($single_aut2 ?? array()); $i1++)
 							{
 								 
 								if ($single_aut2[$i1] == NULL);
@@ -2033,7 +2033,7 @@ function show_only_ephys(link, start1, stop1)
 							}
 							print ("<OPTION VALUE='all'> ALL </OPTION>");
 							
-							for ($i1=0; $i1<count($single_aut3); $i1++)
+							for ($i1=0; $i1<count($single_aut3 ?? array()); $i1++)
 							{
 							
 								// retrieve the number of articles for this publication:
@@ -2221,7 +2221,7 @@ function show_only_ephys(link, start1, stop1)
 						$query = "select id_original FROM $name_temporary_table";
 						$rs = mysqli_query($GLOBALS['conn'],$query);
 						$list_original_id = result_set_to_array($rs,'id_original');
-						$number_of_original_id = count($list_original_id);
+						$number_of_original_id = count($list_original_id ?? array());
 						
 						
 						$query = "SELECT id_fragment, id_original, quote, page_location, protocol, complete_name, parameter, interpretation, interpretation_notes, linking_pmid_isbn, linking_pmid_isbn_page, linking_quote, linking_page_location, res0, res2, res3, value1, value2, error, n_measurement, rep_value, gt_value, istim, std_sem, time, locationValue FROM $name_temporary_table WHERE title = '$title_temp[$i]' ORDER BY id_fragment ASC";
@@ -2276,7 +2276,7 @@ function show_only_ephys(link, start1, stop1)
 								$tag = $attachment_obj->getProtocol_tag();
 								
 								$temp_protocol = $protocol;
-								$new_temp_protocol = str_replace(' ','', $temp_protocol);
+								$new_temp_protocol = str_replace(' ','', ($temp_protocol ?? ''));
 								$new_temp_protocol_pieces = explode("|", $new_temp_protocol);
 								
 								$temp_tag = 0;
@@ -2346,7 +2346,7 @@ function show_only_ephys(link, start1, stop1)
 						
 							// change PFD in JPG:
 							$link_figure="";
-							$attachment_jpg = str_replace('jpg', 'jpeg', $attachment);
+							$attachment_jpg = str_replace('jpg', 'jpeg', ($attachment ?? ''));
 							//echo "$attachment_jpg";
 												
 							if($attachment_type=="ephys_figure"||$attachment_type=="ephys_table"){
@@ -2354,7 +2354,7 @@ function show_only_ephys(link, start1, stop1)
 							}
 							//$link_figure = "figure/".$attachment_jpg;
 						
-							$attachment_pdf = str_replace('jpg', 'pdf', $attachment);
+							$attachment_pdf = str_replace('jpg', 'pdf', ($attachment ?? ''));
 							$link_figure_pdf = "figure_pdf/".$attachment_pdf;
 							// **************************************************************************************
 						

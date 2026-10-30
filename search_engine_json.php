@@ -1,6 +1,6 @@
 <?php
 ob_start();          // Optional: helps buffer output to avoid header issues
-session_start();  
+if (session_status() === PHP_SESSION_NONE) session_start();  
 require_once("SearchEngine/ParenthesisParser.php");
 require_once("SearchEngine/NeuronConnection.php");
 require_once('SearchEngine/Parser.php');
@@ -38,11 +38,11 @@ function getBearerToken(): ?string {
 
 function getClientIP() {
     if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? null;
     } elseif (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-        $ip = $_SERVER['HTTP_CLIENT_IP'];
+        $ip = $_SERVER['HTTP_CLIENT_IP'] ?? null;
     } else {
-        $ip = $_SERVER['REMOTE_ADDR'];
+        $ip = $_SERVER['REMOTE_ADDR'] ?? null;
     }
 
     // Handle IPv6 localhost (::1) and convert it to 127.0.0.1
@@ -88,7 +88,7 @@ function validateToken($conn, $plain_token) {
 }
 
 // --- Unified Input Handling ---
-$requestMethod = $_SERVER['REQUEST_METHOD'];
+$requestMethod = $_SERVER['REQUEST_METHOD'] ?? null;
 $query_str = '';
 if ($requestMethod === 'POST') {
     $query_str = trim($_POST['query_str'] ?? '');
@@ -122,10 +122,10 @@ try{
 	$requestType =$requestMethod;
 	$requestData = $query_str;
 	$clientIP = getClientIP(); //echo "Client IP:".$clientIP;
-	$requestURI = $_SERVER["REQUEST_URI"]; //echo "Request URI:".$requestURI;
+	$requestURI = $_SERVER["REQUEST_URI"] ?? null; //echo "Request URI:".$requestURI;
 	$returnType = "JSON"; //echo "Return Type:".$returnType;
-	if($_REQUEST['query_str']){
-		$queryString =$_REQUEST['query_str'];
+	if (!empty($_REQUEST['query_str'])){
+		$queryString = $_REQUEST['query_str'] ?? null;
     		// Escape HTML entities (for safe display in browser/UI, not for API calls)
 		$queryString = htmlspecialchars($query_str, ENT_QUOTES, 'UTF-8');
 		//$queryString = trim($_REQUEST['query_str']);
@@ -135,7 +135,7 @@ try{
 		$test->setSearchQuery($queryString);
 		$matchingConn=$test->parseQuery();
 		$data = array();
-		for($i=0;$i<count($matchingConn);$i++){
+		for($i=0;$i<count($matchingConn ?? array());$i++){
 			$index=$i+1;
 			$destinationId = $matchingConn[$i]->getDestinationId();
 			if ($destinationId == NULL) {

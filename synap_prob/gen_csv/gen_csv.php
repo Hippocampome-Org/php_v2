@@ -34,7 +34,7 @@ Date:   2020
 	echo "<center><button onclick=\"window.location.href = '?page=allcsvs';\" class='button'>Generate Evidence CSV Files</button></center><br><hr>";
 
 	// write csv file
-	$page=$_REQUEST['page'];
+	$page= $_REQUEST['page'] ?? null;
 	if ($page=='allcsvs') {
 		$csv_output_file1 = $path_to_files."evi_pro_type_rel_nbyk.csv";
 		$output_file1 = fopen($csv_output_file1, 'w') or die("Can't open file.");
@@ -64,7 +64,7 @@ Date:   2020
 				foreach ($refIDs as $refID) {
 					$source_id=$row['source_id'];
 					$target_id=$row['target_id'];
-					$refID=str_replace(' ', '', $refID); # remove whitespace
+					$refID=str_replace(' ', '', ($refID ?? '')); # remove whitespace
 					$frag_id = refID_to_fragID($fragments, $refID);
 					$evi_id = fragID_to_eviID($evidence, $frag_id);
 					if ($refID!=''&&$evi_id!='') {

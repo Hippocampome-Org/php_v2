@@ -6,12 +6,12 @@
   ini_set('session.gc_maxlifetime', 86400);
   // each client should remember their session id for exactly 1 day
   session_set_cookie_params(86400);
-  session_start(); 
+  if (session_status() === PHP_SESSION_NONE) session_start(); 
   if (isset($_POST['site_theme'])) {
-    $_SESSION['site_theme'] = $_POST['site_theme'];
+    $_SESSION['site_theme'] = $_POST['site_theme'] ?? null;
   }
   if (isset($_SESSION['site_theme'])) {
-    $theme = $_SESSION['site_theme'];
+    $theme = $_SESSION['site_theme'] ?? null;
     if ($theme=='light_white_bg') {
       echo "<link rel='stylesheet' type='text/css' href='light_white_bg_colors.css'>";
     }

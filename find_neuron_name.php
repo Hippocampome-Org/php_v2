@@ -15,19 +15,19 @@ $default_neuron_letter='C';
 $temporary = new utils_neuron_search();
 	
 // Resume searching.
-if ($_REQUEST['resume_searching_tab'])
+if (!empty($_REQUEST['resume_searching_tab']))
 {
-	$resume_searching = $_SESSION['resume_searching'];	
+	$resume_searching = $_SESSION['resume_searching'] ?? null;	
 	$name_temporary_table = $resume_searching;
 	$_SESSION[$search_temporary_table] = $name_temporary_table;
 	$temporary ->setName_table($name_temporary_table);
 }
 
 // Creates the temporary table for the search. 
-if ($_REQUEST['searching'])
+if (!empty($_REQUEST['searching']))
 {
-	$ip_address = $_SERVER['REMOTE_ADDR'];
-	$ip_address = str_replace(array('.', ':'), '_', $ip_address);
+	$ip_address = $_SERVER['REMOTE_ADDR'] ?? null;
+	$ip_address = str_replace(array('.', ':'), '_', ($ip_address ?? ''));
 	$time_t = time();
 	$name_temporary_table ='search1_'.$ip_address."__".$time_t;
 	$_SESSION[$search_temporary_table] = $name_temporary_table;
@@ -36,10 +36,10 @@ if ($_REQUEST['searching'])
 	$temporary -> insert_temporary($default_neuron_id,$default_neuron_letter,$defualt_neuron_name);
 }
 // New request.
-if($_REQUEST['new'])
+if (!empty($_REQUEST['new']))
 {
-	$ip_address = $_SERVER['REMOTE_ADDR'];
-	$ip_address = str_replace(array('.', ':'), '_', $ip_address);
+	$ip_address = $_SERVER['REMOTE_ADDR'] ?? null;
+	$ip_address = str_replace(array('.', ':'), '_', ($ip_address ?? ''));
 	$time_t = time();
 	$name_temporary_table ='search1_'.$ip_address."__".$time_t;
 	$_SESSION[$search_temporary_table] = $name_temporary_table;
@@ -49,13 +49,13 @@ if($_REQUEST['new'])
 	
 }
 // Dropdown for letter is changed hence fetch all neuron name starting with that letter and insert first neuron name in temporary table. If no neuron name found display '-'
-if ($_REQUEST['letter'])
+if (!empty($_REQUEST['letter']))
 {
 	// if no neuron name found starting with letter then put -1 as type_id and '-' as searched neuron name.
 	$neuron_name_update="-";
     $type_id_update="-1";
-	$letter = $_REQUEST['letter'];
-	$id_update = $_REQUEST['id'];
+	$letter = $_REQUEST['letter'] ?? null;
+	$id_update = $_REQUEST['id'] ?? null;
 	// fetch all neuron name starting with letter and display first one.
 	$utils_type=new utils_type();
     $type_or_synonym_array=$utils_type->retriveNeuronsWithLetter($letter);
@@ -68,39 +68,39 @@ if ($_REQUEST['letter'])
 	$temporary -> update_temporary($id_update,$type_id_update,$letter,$neuron_name_update,1);
 }
 // Dropdown for neuron name is changed hence get the new neuron name from option and update name, letter and type_id in the temporary table.
-if ($_REQUEST['neuron'])
+if (!empty($_REQUEST['neuron']))
 {
-	$neuron_name = $_REQUEST['neuron'];
-	$id_update = $_REQUEST['id'];
-	$type_id_update = $_REQUEST['type_id'];
+	$neuron_name = $_REQUEST['neuron'] ?? null;
+	$id_update = $_REQUEST['id'] ?? null;
+	$type_id_update = $_REQUEST['type_id'] ?? null;
 	$temporary ->set_table_name($_SESSION[$search_temporary_table]);
 	// update record in temporary table at index $id_update with neuron id as $type_id_update and name as $neuron. Letter will remain same, hence NULL is passed
 	$temporary -> update_temporary($id_update,$type_id_update,NULL, $neuron_name,2);
 }
 // Add new search neuron record at last index with default search neuron name and letter.
-if ($_REQUEST['plus'])
+if (!empty($_REQUEST['plus']))
 {
 	$temporary ->set_table_name($_SESSION[$search_temporary_table]);
 	$temporary -> insert_temporary($default_neuron_id,$default_neuron_letter,$defualt_neuron_name);
 }
 
 // Remove search nueron record at specified index($id).
-if ($_REQUEST['remove'])
+if (!empty($_REQUEST['remove']))
 {
 	$temporary ->set_table_name($_SESSION[$search_temporary_table]);
-	$id = $_REQUEST['id'];
+	$id = $_REQUEST['id'] ?? null;
 	$temporary -> remove($id);
 }
 
 // Show result. 
-if ($_REQUEST['see_result'])
+if (!empty($_REQUEST['see_result']))
 {
 	$name_temporary_table = $_SESSION[$search_temporary_table];
 	$temporary ->set_table_name($name_temporary_table);
 }
 
 // Flush temporary table by removing all records.
-if ($_REQUEST['clear_all'])
+if (!empty($_REQUEST['clear_all']))
 {
 	$temporary->set_table_name($_SESSION[$search_temporary_table]);
 	$temporary->flushTempNeuronSearchTable();
@@ -262,7 +262,7 @@ if ($_REQUEST['clear_all'])
 		</table>
 
 		<?php
-			if ($_REQUEST['see_result'])
+			if (!empty($_REQUEST['see_result']))
 			{
 				$aut_art_utils=new utils_author_article();
 				$aut_art_typ_rec=$aut_art_utils->getAuthorArticleRelatedToType($_SESSION[$search_temporary_table]);

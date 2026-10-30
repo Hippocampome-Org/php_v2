@@ -1,6 +1,8 @@
 <?php
 class temporary_search
 {
+	// PHP83-FIX by KN on 2026-10-30: declared (PHP 8.2+ warns about undeclared properties)
+	public $_n_search;
 	private $_id;
 	private $_N;
 	private $_operator;

@@ -94,7 +94,7 @@
       // display differences
       // search for sugg
       $diff_found = False;      
-      for ($i = 0; $i < count($sugg_entry);$i++) {
+      for ($i = 0; $i < count($sugg_entry ?? array());$i++) {
         if ($sugg_entry[$i] != $orig_entry[$i]) {
           $diff_found = True;
         }
@@ -105,7 +105,7 @@
           echo "<table style='padding: .4rem;font-size:.9em;'>";
       }
       $article_id = '';
-      for ($i = 0; $i < count($sugg_entry);$i++) {
+      for ($i = 0; $i < count($sugg_entry ?? array());$i++) {
         if ($sugg_entry[$i] != $orig_entry[$i]) {
           //echo "<tr><td>User suggestion from:</td><td>$username</td></tr>";
           if ($tbl == 'article_has_subject') {
@@ -137,7 +137,7 @@
       }
       // search for orig
       $diff_found_orig = False;
-      for ($i = 0; $i < count($sugg_entry);$i++) {
+      for ($i = 0; $i < count($sugg_entry ?? array());$i++) {
         if ($sugg_entry[$i] != $orig_entry[$i] && $orig_entry[$i] != '') {
           $diff_found_orig = True;
         }
@@ -147,7 +147,7 @@
         echo "Original entry:";
         echo "<table style='padding: .4rem;font-size:.9em;'>";    
       }   
-      for ($i = 0; $i < count($sugg_entry);$i++) {
+      for ($i = 0; $i < count($sugg_entry ?? array());$i++) {
         if ($sugg_entry[$i] != $orig_entry[$i] && $orig_entry[$i] != '') {
             echo "<tr><td>Original entry:</td></tr>";
             $orig_entry_data = '[no entry]';

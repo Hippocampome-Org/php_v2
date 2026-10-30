@@ -64,8 +64,8 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
 
 	    // remove tailing zeros
 	    /*preg_match('/(\d+)\.(\d+)/', ($answer ?? ''), $answer_matches);	
-	    $whole_number = $answer_matches[1];
-	    $fraction = $answer_matches[2];
+	    $whole_number = $answer_matches[1] ?? null;
+	    $fraction = $answer_matches[2] ?? null;
 		$answer_digits = strlen($fraction);
 		if ($answer_digits > $digits) {
 			$answer_trimmed_digits = substr($fraction,0,($digits+1));
@@ -118,12 +118,12 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
 	$i is row that is a neuron type	
 	$j is column that is a parcel type
 	*/
-	for ($i = 0; $i < count($neuron_ids); $i++) {
+	for ($i = 0; $i < count($neuron_ids ?? array()); $i++) {
 	//for ($i = 0; $i < 5; $i++) {
 		$all_totals='';
 		if ($page!='') {echo $i." ";}
 		if ($page=='dal' || $page=='sd') {
-			for ($j=0;$j<count($parcel_group);$j=$j+2) {
+			for ($j=0;$j<count($parcel_group ?? array());$j=$j+2) {
 				if (!in_array($j, $parcels_skip)) {
 					$entry_output = "\"";
 					$i_adj = $i;
@@ -206,7 +206,7 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
 		            $all_parcel_search = new ArrayObject($all_parcel_dend);	            
 		        }
 		        if ($page == 'dal') {
-			        for ($s_i = 0; $s_i < count($all_parcel_search); $s_i++) {
+			        for ($s_i = 0; $s_i < count($all_parcel_search ?? array()); $s_i++) {
 		                $sql    = "SELECT CAST(AVG(CAST(filtered_total_length AS DECIMAL(10,2))) AS DECIMAL(10,2)) AS avg, CAST(STD(CAST(filtered_total_length AS DECIMAL(10,2))) AS DECIMAL(10,2)) AS std, CAST(COUNT(CAST(filtered_total_length AS DECIMAL(10))) AS DECIMAL(10)) AS count_tl FROM neurite_quantified WHERE neurite_quantified.unique_id=".$neuron_ids[$i_adj]." AND neurite_quantified.neurite='" . $all_parcel_search[$s_i] . "' AND filtered_total_length!='' AND filtered_total_length!=0;";
 		                $result = $conn->query($sql);
 		                if ($result->num_rows > 0) {
@@ -241,7 +241,7 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
 	}
 
 	function n_by_m_values($conn, $type, $neuron_group, $neuron_group_long, $i, $write_output, $neuron_ids) {
-		for ($j=0;$j<count($neuron_ids);$j++) {
+		for ($j=0;$j<count($neuron_ids ?? array());$j++) {
 		//for ($j=0;$j<3;$j++) {
 			$entry_output = "";
 			if ($type == 'ps') {
@@ -354,7 +354,7 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
 
 		for ($o_i = 0; $o_i<$total_rows; $o_i++) {
 			if ($o_i==($total_rows-1)) {
-				$last_index = count($write_output)-1; // last line
+				$last_index = count($write_output ?? array())-1; // last line
 				fwrite($output_file, $write_output[$last_index]."]}]}"); 
 			}
 			elseif (in_array($o_i, $neuron_group_cols)) {
@@ -416,7 +416,7 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
 
 		for ($o_i = 0; $o_i<$total_rows; $o_i++) {
 			if ($o_i==($total_rows-1)) {
-				$last_index = count($write_output)-1; // last line
+				$last_index = count($write_output ?? array())-1; // last line
 				fwrite($output_file, "\"".$write_output[$last_index]."\"]}]}"); 
 			}
 			elseif (in_array($o_i, $neuron_group_cols)) {

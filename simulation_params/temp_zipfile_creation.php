@@ -77,7 +77,7 @@ if($_POST && isset($_POST['neurons']) && !empty($_POST['neurons']) ){
     $type_details = get_type_details($conn);
     //Including this table name is for future as we know we might need details from different tables
     $synaptic='mean';
-    if(isset($_POST['synaptic'])){$synaptic=$_POST['synaptic'];}
+    if(isset($_POST['synaptic'])){$synaptic= $_POST['synaptic'] ?? null;}
     if($_POST['neurons'] == "selectall_neuron"){
         $subregions = array('DG','CA3','CA1','EC','MEC','LEC','CA2','Sub');
         list($neurons, $neurons_subregions) = get_neurons($type_details, $subregions);
@@ -112,9 +112,9 @@ if($_POST && isset($_POST['neurons']) && !empty($_POST['neurons']) ){
 }
 
 // Enter the name of directory
-$root = $_SERVER["DOCUMENT_ROOT"];
+$root = $_SERVER["DOCUMENT_ROOT"] ?? null;
 if(isset($_SERVER['HTTP_SERVER'])){
-        $root_server = $_SERVER['HTTP_SERVER'];
+        $root_server = $_SERVER['HTTP_SERVER'] ?? null;
         $pathdir = "../data/";
 }else{//On the serve to make sure it was using the path properly
         //$root_server = $_SERVER['server_name'];
@@ -264,7 +264,7 @@ if(is_dir($filepath.$temp_dir.$name)){
     $download_zip_file = $downloadpath.$temp_dir.$name;
 
     $valid_files = get_files($dest);//."/");
-    if(count($valid_files)) {
+    if(count($valid_files ?? array())) {
         $newzip = new ZipArchive();
 
         if($newzip->open($tmp_zip_file, ZIPARCHIVE::CREATE) !== true) {

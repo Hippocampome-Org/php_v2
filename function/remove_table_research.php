@@ -12,7 +12,7 @@ function remove_table_by_tyme()  // after 2 hours:
 	//Changed from here on Nov 2 2023 by @KN as we need to handle it dynamically as it will change based on database
         while ($row = mysqli_fetch_assoc($rs2)) {
                 foreach($row as $rowkey => $rowvalue) {
-                        if  ((strpos($rowvalue, 'search') == 'TRUE') || (strpos($rowvalue, 'temp') == 'TRUE') )
+                        if  ((strpos($rowvalue, 'search') === 0) || (strpos($rowvalue, 'temp') === 0) )
                         {
                                 $table[$n_table] = $rowvalue;
                                 $n_table = $n_table + 1;
@@ -25,10 +25,10 @@ function remove_table_by_tyme()  // after 2 hours:
 		/*
 		//Commented by KN on Oct 29 2026
 		// for search table:
-		if (strpos($table[$i], 'search1_') == 'TRUE')
+		if (strpos($table[$i], 'search1_') === 0)
 		{
 			$new_name = strstr($table[$i], '__');
-			$new_name = str_replace('__', '', $new_name);
+			$new_name = str_replace('__', '', ($new_name ?? ''));
 			
 			$delta_t = $time_1 - $new_name; 
 						
@@ -40,10 +40,10 @@ function remove_table_by_tyme()  // after 2 hours:
 		}
 
 		// for result table:
-		if (strpos($table[$i], 'search_result_table_') == 'TRUE')
+		if (strpos($table[$i], 'search_result_table_') === 0)
 		{
 			$new_name = strstr($table[$i], '__');
-			$new_name = str_replace('__', '', $new_name);
+			$new_name = str_replace('__', '', ($new_name ?? ''));
 			
 			$delta_t = $time_1 - $new_name; 
 			
@@ -55,10 +55,10 @@ function remove_table_by_tyme()  // after 2 hours:
 		}
 
 		// for temp table (page evidence):
-		if (strpos($table[$i], 'temp_') == 'TRUE')
+		if (strpos($table[$i], 'temp_') === 0)
 		{
 			$new_name = strstr($table[$i], '__');
-			$new_name = str_replace('__', '', $new_name);
+			$new_name = str_replace('__', '', ($new_name ?? ''));
 			
 			$delta_t = $time_1 - $new_name; 
 			
@@ -76,7 +76,7 @@ function remove_table_by_tyme()  // after 2 hours:
 		if (strpos($tableName, 'search1_') !== false)
 		{
 			$new_name = strstr($tableName, '__');
-			$new_name = str_replace('__', '', $new_name);
+			$new_name = str_replace('__', '', ($new_name ?? ''));
 
 			$delta_t = $time_1 - $new_name;
 
@@ -91,7 +91,7 @@ function remove_table_by_tyme()  // after 2 hours:
 		if (strpos($tableName, 'search_result_table_') !== false)
 		{
 			$new_name = strstr($tableName, '__');
-			$new_name = str_replace('__', '', $new_name);
+			$new_name = str_replace('__', '', ($new_name ?? ''));
 
 			$delta_t = $time_1 - $new_name;
 
@@ -106,7 +106,7 @@ function remove_table_by_tyme()  // after 2 hours:
 		if (strpos($tableName, 'temp_') !== false)
 		{
 			$new_name = strstr($tableName, '__');
-			$new_name = str_replace('__', '', $new_name);
+			$new_name = str_replace('__', '', ($new_name ?? ''));
 
 			$delta_t = $time_1 - $new_name;
 

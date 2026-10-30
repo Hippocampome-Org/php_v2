@@ -71,10 +71,10 @@ td, th {
 	$pre_id = 0;
 	$post_id = 0;
 	if (isset($_REQUEST['pre_id'])) {
-		$pre_id = $_REQUEST['pre_id'];
+		$pre_id = $_REQUEST['pre_id'] ?? null;
 	}
 	if (isset($_REQUEST['post_id'])) {
-		$post_id = $_REQUEST['post_id'];
+		$post_id = $_REQUEST['post_id'] ?? null;
 	}	
 	$query = "SELECT type_name FROM synprotypetyperel WHERE type_id=$pre_id;";
 	$rs = mysqli_query($conn2,$query);

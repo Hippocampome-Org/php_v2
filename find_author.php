@@ -12,28 +12,28 @@ $default_author_letter='A';
 
 $temporary = new temporary_author();	
 // Select AND / OR:
-if ($_REQUEST['and_or'])
+if (!empty($_REQUEST['and_or']))
 {
-	$and_or = $_REQUEST['and_or'];
+	$and_or = $_REQUEST['and_or'] ?? null;
 	$_SESSION['and_or'] = $and_or;	
 	$name_temporary_table = $_SESSION[$search_temporary_table];
 	$temporary ->setName_table($name_temporary_table);
 }
 
 // Resume searching.
-if ($_REQUEST['resume_searching_tab'])
+if (!empty($_REQUEST['resume_searching_tab']))
 {
-	$resume_searching = $_SESSION['resume_searching'];	
+	$resume_searching = $_SESSION['resume_searching'] ?? null;	
 	$name_temporary_table = $resume_searching;
 	$_SESSION[$search_temporary_table] = $name_temporary_table;
 	$temporary ->setName_table($name_temporary_table);
 }	
 	
 // Creates the temporary table for search
-if ($_REQUEST['searching'])
+if (!empty($_REQUEST['searching']))
 {
-	$ip_address = $_SERVER['REMOTE_ADDR'];
-	$ip_address = str_replace(array('.', ':'), '_', $ip_address);
+	$ip_address = $_SERVER['REMOTE_ADDR'] ?? null;
+	$ip_address = str_replace(array('.', ':'), '_', ($ip_address ?? ''));
 	$time_t = time();
 	$name_temporary_table ='search1_'.$ip_address."__".$time_t;
 	$_SESSION[$search_temporary_table] = $name_temporary_table;
@@ -45,10 +45,10 @@ if ($_REQUEST['searching'])
 }
 
 // New request.
-if($_REQUEST['new'])
+if (!empty($_REQUEST['new']))
 {
-	$ip_address = $_SERVER['REMOTE_ADDR'];
-	$ip_address = str_replace(array('.', ':'), '_', $ip_address);
+	$ip_address = $_SERVER['REMOTE_ADDR'] ?? null;
+	$ip_address = str_replace(array('.', ':'), '_', ($ip_address ?? ''));
 	$time_t = time();
 	$name_temporary_table ='search1_'.$ip_address."__".$time_t;
 	$_SESSION[$search_temporary_table] = $name_temporary_table;
@@ -60,54 +60,54 @@ if($_REQUEST['new'])
 }
 	
 // Dropdown for letter is changed hence fetch all author name starting with that letter and insert first author name in temporary table. If no neuron name found display '-'
-if ($_REQUEST['letter'])
+if (!empty($_REQUEST['letter']))
 {
 	$author_name_update="-";
-	$letter = $_REQUEST['letter'];
-	$id_update = $_REQUEST['id'];
+	$letter = $_REQUEST['letter'] ?? null;
+	$id_update = $_REQUEST['id'] ?? null;
 	$temp_author= new temporary_author();
     $authors_array=$temp_author->retriveAuthorsWithLetter($letter);
     if(sizeof($authors_array)>0){
-    	$author_name_update=$authors_array[0];
+    	$author_name_update= $authors_array[0] ?? null;
 	}
 	// update record in temporary table at index $id_update with letter as $letter and name as $author_name_update.
 	$temp_author ->setName_table($_SESSION[$search_temporary_table]);
 	$temp_author -> update_temporary($letter, $author_name_update, 1, $id_update);
-	$and_or = $_SESSION['and_or'];
+	$and_or = $_SESSION['and_or'] ?? null;
 }
 // Dropdown for author name is changed hence get the new author name from option and update name and letter in the temporary table.
-if ($_REQUEST['author'])
+if (!empty($_REQUEST['author']))
 {
-	$author_name = $_REQUEST['author'];
-	$id_update = $_REQUEST['id'];
+	$author_name = $_REQUEST['author'] ?? null;
+	$id_update = $_REQUEST['id'] ?? null;
 	$temporary ->setName_table($_SESSION[$search_temporary_table]);
 	$temporary -> update_temporary(NULL, $author_name, 2, $id_update);	
-	$and_or = $_SESSION['and_or'];
+	$and_or = $_SESSION['and_or'] ?? null;
 }
 
 // Add new search author record at last index with default search author name and letter.
-if ($_REQUEST['plus'])
+if (!empty($_REQUEST['plus']))
 {
 	$temporary ->setName_table($_SESSION[$search_temporary_table]);
 	$temporary -> insert_temporary('A', 'Amaral DG');
-	$and_or = $_SESSION['and_or'];
+	$and_or = $_SESSION['and_or'] ?? null;
 }
 // Remove search author record at specified index($id_temp).
-if ($_REQUEST['remove'])
+if (!empty($_REQUEST['remove']))
 {
 	$temporary ->setName_table($_SESSION[$search_temporary_table]);
-	$id_temp = $_REQUEST['id'];
+	$id_temp = $_REQUEST['id'] ?? null;
 	$temporary -> remove($id_temp);
-	$and_or = $_SESSION['and_or'];
+	$and_or = $_SESSION['and_or'] ?? null;
 }
 // Show result 
-if ($_REQUEST['see_result'])
+if (!empty($_REQUEST['see_result']))
 {
 	$temporary ->setName_table($_SESSION[$search_temporary_table]);
-	$and_or = $_SESSION['and_or'];
+	$and_or = $_SESSION['and_or'] ?? null;
 }
 // Flush temporary table by removing all records.
-if ($_REQUEST['clear_all'])
+if (!empty($_REQUEST['clear_all']))
 {
 	$temporary -> setName_table($_SESSION[$search_temporary_table]);	
 	$temporary->removeAll();
@@ -294,10 +294,10 @@ if ($_REQUEST['clear_all'])
 		</div>
 		<div>
 		<?php
-		if ($_REQUEST['see_result'])
+		if (!empty($_REQUEST['see_result']))
 		{	
 			$aut_art_typ_utils=new utils_author_article();
-			$or_and_flag = $_SESSION['and_or'];
+			$or_and_flag = $_SESSION['and_or'] ?? null;
 	    	$temp_table_name = $_SESSION[$search_temporary_table];
 			$aut_art_typ_rec=$aut_art_typ_utils->getAuthorRelatedToArticle($or_and_flag,$temp_table_name);	
 			print ("<table border='0'  class='table_result' id='tab_res' width='100%'>");

@@ -5,13 +5,13 @@
 $gmdatetimenice = gmdate('Y-m-d H:i');
 $gmdatetimestamp = gmdate('YmdHi');
 
-$name_send = $_REQUEST['name_send'];
-$institute_send = $_REQUEST['institute_send'];
-$email_send = $_REQUEST['email_send'];
-$pmid_send = $_REQUEST['pmid_send'];
-$title_send = $_REQUEST['title_send'];
-$author_send = $_REQUEST['author_send'];
-$publication_send = $_REQUEST['publication_send'];
+$name_send = $_REQUEST['name_send'] ?? null;
+$institute_send = $_REQUEST['institute_send'] ?? null;
+$email_send = $_REQUEST['email_send'] ?? null;
+$pmid_send = $_REQUEST['pmid_send'] ?? null;
+$title_send = $_REQUEST['title_send'] ?? null;
+$author_send = $_REQUEST['author_send'] ?? null;
+$publication_send = $_REQUEST['publication_send'] ?? null;
 
 
 // Check if the user email is valid:

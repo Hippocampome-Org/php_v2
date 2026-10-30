@@ -86,12 +86,12 @@
 		  while (($line_array = fgetcsv($fh, 10000, ",")) !== FALSE && ($current_file_lines <= $max_lines_in_file))
 		  {	
 		  	if ($db_name == 'scholar') {
-		  		$title = str_replace("\"", "", $line_array[2]);
-		  		$year = $line_array[3];
+		  		$title = str_replace("\"", "", ($line_array[2] ?? ''));
+		  		$year = $line_array[3] ?? null;
 		  	}
 		  	if ($db_name == 'pubmed') {
-		  		$title = str_replace("\"", "", $line_array[1]);
-		  		$year = str_replace("\"", "", $line_array[6]);
+		  		$title = str_replace("\"", "", ($line_array[1] ?? ''));
+		  		$year = str_replace("\"", "", ($line_array[6] ?? ''));
 		  	}
 
 			if ($title != "Title") {
@@ -102,11 +102,11 @@
 					$schars_array = explode(",", $special_chars);
 					foreach ($schars_array as $char) {
 						$escaped_char = "\\".$char;
-						$title2 = str_replace($char,$escaped_char,$title2);
+						$title2 = str_replace($char,$escaped_char, ($title2 ?? ''));
 					}
 
-					$title4 = str_replace("[","",$title2);
-					$title5 = str_replace("]","",$title4);
+					$title4 = str_replace("[","", ($title2 ?? ''));
+					$title5 = str_replace("]","", ($title4 ?? ''));
 					$pattern = "/(".$title5.".*)/";
 					$title_matches = array();
 					preg_match($pattern, ($core_articles[$i] ?? ''), $title_matches);
@@ -131,16 +131,16 @@
 	}
 
 	function write_output($output_filepath, $output_file, $output_values, $max_lines_in_file, $firstline) {
-		$file_numbers = $output_values[0];
-		$core_sum = $output_values[1];
-		$progress_marker = $output_values[2];
-		$current_line_num = $output_values[3];
-		$multi_high_scores = $output_values[4];
-		$multi_article_totals = $output_values[5];
-		$multi_file_numbers = $output_values[6];
-		$multi_score_thresholds = $output_values[7];
-		$num_gs_files = $output_values[8];
-		$num_pm_files = $output_values[9];
+		$file_numbers = $output_values[0] ?? null;
+		$core_sum = $output_values[1] ?? null;
+		$progress_marker = $output_values[2] ?? null;
+		$current_line_num = $output_values[3] ?? null;
+		$multi_high_scores = $output_values[4] ?? null;
+		$multi_article_totals = $output_values[5] ?? null;
+		$multi_file_numbers = $output_values[6] ?? null;
+		$multi_score_thresholds = $output_values[7] ?? null;
+		$num_gs_files = $output_values[8] ?? null;
+		$num_pm_files = $output_values[9] ?? null;
 
 		$output_file = fopen($output_filepath, 'a') or die("Can't open file.");
 
@@ -170,18 +170,18 @@
 	while (TRUE) {
 		$i++;
 		$file_list_array = generate_file_list($num_gs_files, $num_pm_files, $gs_files, $pm_files, $i);
-		$file_list = $file_list_array[0];
-		$file_numbers = $file_list_array[1];
+		$file_list = $file_list_array[0] ?? null;
+		$file_numbers = $file_list_array[1] ?? null;
 		$core_found = array_fill(0, sizeof($core_articles), 0);
 		$output_lines = array();
 		$current_line_num = 0;
 		for ($j = 0; $j < sizeof($file_list); $j++) {
 			$file_num++;
 			$results_array = extract_articles($file_list[$j], $output_lines, $core_articles, $core_found, $line_num, $current_line_num, $max_lines_in_file);
-			$output_lines = $results_array[0];
-			$core_found = $results_array[1];
-			$line_num = $results_array[2];
-			$current_line_num = $results_array[3];
+			$output_lines = $results_array[0] ?? null;
+			$core_found = $results_array[1] ?? null;
+			$line_num = $results_array[2] ?? null;
+			$current_line_num = $results_array[3] ?? null;
 		}
 
 		// count results

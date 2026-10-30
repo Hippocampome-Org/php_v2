@@ -124,7 +124,7 @@ if (!isset($_GET['page']))
 }
 else
 {
-        $page = $_GET['page'];
+        $page = $_GET['page'] ?? null;
 }
 
 //page=1&rows=5&sidx=1&sord=asc
@@ -135,7 +135,7 @@ if (!isset($_GET['rows']))
 }
 else
 {
-        $limit = $_GET['rows'];
+        $limit = $_GET['rows'] ?? null;
 }
 // get index row - i.e. user click to sort. At first time sortname parameter -
 // after that the index from colModel
@@ -145,7 +145,7 @@ if (!isset($_GET['sidx']))
 }
 else
 {
-        $sidx = $_GET['sidx'];
+        $sidx = $_GET['sidx'] ?? null;
 }
 // sorting order - at first time sortorder
 if (!isset($_GET['sord']))
@@ -154,18 +154,18 @@ if (!isset($_GET['sord']))
 }
 else
 {
-        $sord = $_GET['sord'];
+        $sord = $_GET['sord'] ?? null;
 }
 // if we not pass at first time index use the first column for the index or what you want
 if (!$sidx)
 {
         $sidx = 1;
 }
-$type = new type($class_type);
+$type = new type($class_type ?? null);
 //$research = $_GET['researchVar'];
 if (isset($research)) // From page of search; retrieve the id from search_table (temporary) -----------------------
 {
-        $table_result = $_REQUEST['table_result'];
+        $table_result = $_REQUEST['table_result'] ?? null;
         $temporary_result_neurons = new temporary_result_neurons();
         $temporary_result_neurons->setName_table($table_result);
 
@@ -206,13 +206,13 @@ else // not from search page --------------
                 echo "Search Operator : ".$_GET['searchOper']; //� the operator choosen in the search field (ex. equal, greater than, �) */
         }
 }
-$property = new property($class_property);
-$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
-$epdataevidencerel = new epdataevidencerel($class_epdataevidencerel);
-$evidenceevidencerel = new evidenceevidencerel($class_evidenceevidencerel);
-$evidencefragmentrel = new evidencefragmentrel($class_evidencefragmentrel);
-$fragment = new fragment ($class_fragment);
-$epdata = new epdata($class_epdata);
+$property = new property($class_property ?? null);
+$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel ?? null);
+$epdataevidencerel = new epdataevidencerel($class_epdataevidencerel ?? null);
+$evidenceevidencerel = new evidenceevidencerel($class_evidenceevidencerel ?? null);
+$evidencefragmentrel = new evidencefragmentrel($class_evidencefragmentrel ?? null);
+$fragment = new fragment ($class_fragment ?? null);
+$epdata = new epdata($class_epdata ?? null);
 
 //$hippo_select = $_SESSION['hippo_select'];
 $count = $number_type;
@@ -328,7 +328,7 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
                 }
         }
         $q = 0;
-        for ($i1=0; $i1<count($ephys); $i1++) // check for each name Eg. Vrest,Rin,tm etc..
+        for ($i1=0; $i1<count($ephys ?? array()); $i1++) // check for each name Eg. Vrest,Rin,tm etc..
         {
                 $name_epys= $ephys[$i1]; // retrieve each property for the corresponding index value
                 $property->retrive_ID(3, $name_epys, NULL, NULL); // Retrieve Id for a particular name_ephys
@@ -374,14 +374,14 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
                                         // Extract page_location and protocol
                                         if(isset($page_loc) && !empty($page_loc)){ //Kept this if condition on Nov 2 2023 by @KN as sometimes its empty
                                                 $protoc = explode(",", $page_loc);
-                                                $page_location=$protoc[0];
+                                                $page_location= $protoc[0] ?? null;
 
                                                 //$locationValue1[$i1] = str_replace(' ', '', $locationValue[$i1]);
                                                 //$location_protoc = explode(",", $locationValue1[$i1]);
                                                 //$location_protocol = $location_protoc[1];
                                                 //$location_animal = strpos($locationValue1[$i1],'mouse');                                      
 
-                                                $protoc[1] = str_replace(' ', '', $protoc[1]);
+                                                $protoc[1] = str_replace(' ', '', ($protoc[1] ?? ''));
                                                 $protoc_pieces = explode("|", $protoc[1]);
                                                 if($protoc_pieces[1] != 'p')
                                                 {
@@ -555,7 +555,7 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
         }
 	preg_match('!\d+!',substr($type->getName(),strpos($type->getName(), ')')),$matches);
         $neurite_pattern=str_split($matches[0]);
-        $new_neurite_pattern = str_replace($neurite_pattern[$soma_position], "<strong>".$neurite_pattern[$soma_position]."</strong>", $neurite_pattern);
+        $new_neurite_pattern = str_replace($neurite_pattern[$soma_position], "<strong>".$neurite_pattern[$soma_position]."</strong>", ($neurite_pattern ?? ''));
         $neurite_pattern_new = implode('',$new_neurite_pattern);
         //print_r($neurite_pattern_new);
 

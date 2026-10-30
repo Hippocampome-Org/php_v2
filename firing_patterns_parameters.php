@@ -65,7 +65,7 @@ jQuery(document).ready(function() {
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <?php
-$jsonStr = $_SESSION['firingpatternparameter'];
+$jsonStr = $_SESSION['firingpatternparameter'] ?? null;
 
 require_once('class/class.type.php');
 require_once('class/class.property.php');
@@ -73,27 +73,27 @@ require_once('class/class.evidencepropertyyperel.php');
 require_once('class/class.temporary_result_neurons.php');
 
 // view firing pattern matrix for selected dropdown
-if($_REQUEST['show_only'])
-	$indexFP = $_REQUEST['show_only'];
+if (!empty($_REQUEST['show_only']))
+	$indexFP = $_REQUEST['show_only'] ?? null;
 else
 	$indexFP = 0;
 
-$type = new type($class_type);
+$type = new type($class_type ?? null);
 $type -> retrive_id();
 $nTypes = $type->getNumber_type();
 
 $research = "";
 if(isset($_REQUEST['research']))
-	$research = $_REQUEST['research'];
+	$research = $_REQUEST['research'] ?? null;
 
 $table_result ="";
 if(isset($_REQUEST['table_result']))
-	$table_result = $_REQUEST['table_result'];
+	$table_result = $_REQUEST['table_result'] ?? null;
 	
 
-$property = new property($class_property);
+$property = new property($class_property ?? null);
 
-$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
+$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel ?? null);
 
 
 ?>
@@ -327,7 +327,7 @@ $(function(){
 			if($indexFP!=0){
 				print("<option value='".$indexFP."'>".$hippo[$indexFP]."</option>");
 			}
-			for($i=0;$i<count($hippo);$i++){
+			for($i=0;$i<count($hippo ?? array());$i++){
 				print("<option value='".$i."'>".$hippo[$i]."</option>");
 			}
 		?>
@@ -351,7 +351,7 @@ $(function(){
 		<!-- ****************  BODY **************** -->
 		<?php 
 			if ($research){
-				$full_search_string = $_SESSION['full_search_string'];
+				$full_search_string = $_SESSION['full_search_string'] ?? null;
 				if ($number_type == 1)
 					print ("<font class='font3'> $number_type Result  [$full_search_string]</font>");
 				else

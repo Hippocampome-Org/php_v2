@@ -130,7 +130,7 @@ $name_markers = array(
 "117"=>"NK1R"
 );
 
-$n_markers = count($name_markers);
+$n_markers = count($name_markers ?? array());
 $n_columns = $n_markers + 3;
 
 function remap_marker_names($old_name) {
@@ -208,7 +208,7 @@ $new_name = '?';
 elseif ($old_name == 'GABAa\gamma 2')
 $new_name = '?';*/
 elseif (strpos($old_name,"'_'") !== false)
-$new_name = str_replace("'_'", "_", $old_name);
+$new_name = str_replace("'_'", "_", ($old_name ?? ''));
 
 return $new_name;
 }
@@ -397,7 +397,7 @@ return ($link);
 function determinePosNegCombosForAllMarkers($name_markers, $hippo_positive, $hippo_negative, $hippo_weak_positive, $hippo_positive_inference, $hippo_negative_inference, $hippo_unknown) {
 // PHP83-FIX by KN on 2026-10-29: start with an empty array
 $hippo_property = array();
-for ($m1=0; $m1<count($name_markers); $m1++) {
+for ($m1=0; $m1<count($name_markers ?? array()); $m1++) {
 $remapped_part = remap_marker_names($name_markers[$m1]);
 $hippo_property[$name_markers[$m1]] = check_positive_negative($remapped_part, $hippo_positive, $hippo_negative, $hippo_weak_positive, $hippo_positive_inference, $hippo_negative_inference, $hippo_unknown);
 }
@@ -573,7 +573,7 @@ $keyProperty = "Id-2";
 elseif($key=="GABAa_delta")
 $keyProperty = "GABAa\delta";
 elseif(strpos($key,"'\'") !== false)
-$keyProperty = str_replace("'\'", "_", $key);
+$keyProperty = str_replace("'\'", "_", ($key ?? ''));
 else
 $keyProperty = $key;
 

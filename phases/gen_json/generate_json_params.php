@@ -42,7 +42,7 @@
 
 	$json_template_file = $path_to_files."json_new_line.json";
 	$json_new_line = file($json_template_file);
-	$json_new_line = $json_new_line[0];
+	$json_new_line = $json_new_line[0] ?? null;
 
 	$json_output_file = $path_to_files."json_files/phases.json";
 
@@ -50,7 +50,7 @@
 		$page = '';
 	}
 	if (isset($_GET['page'])) {
-		$page = $_GET['page'];
+		$page = $_GET['page'] ?? null;
 	}
 	//echo "<br><br><br><br><br><br><br><br><br>"."page: ".$page;
 	$write_output = array();
@@ -72,7 +72,7 @@
 	$checkbox_values = array("rats","mice","adult","young adult","age not reported","male","female","unknown","sharp pipette","whole-cell patch clamp","juxtacellular","optotagging","silicon probe","tetrode","freely moving","head-fixed awake","sleep","urethane","urethane plus supplemental doses of ketamine and xylazine","ketamine and xylazine","ketamine, xylazine, and acepromazine","head fixed running");
 	function value2cbox($value, $checkbox_values, $checkbox_group) {
 		$checkbox = "";
-		for ($i = 0; $i < count($checkbox_values); $i++) {
+		for ($i = 0; $i < count($checkbox_values ?? array()); $i++) {
 			if ($value == $checkbox_values[$i]) {
 				$checkbox = $checkbox_group[$i];
 			}

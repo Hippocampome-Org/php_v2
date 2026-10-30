@@ -34,19 +34,19 @@
   process_additions($cog_conn,$art_num,'article_has_subject','subject_id',$sel_sbj,$subjects,$cog_database); 
   // details
   if ($_POST['details']!='') {
-    $det_lvl=$_POST['details'];
+    $det_lvl= $_POST['details'] ?? null;
     process_deletions($cog_conn,$art_num,'article_has_detail','detail_id',$sel_det,$det_lvl,$cog_database);
     process_additions($cog_conn,$art_num,'article_has_detail','detail_id',$sel_det,$det_lvl,$cog_database); 
   }
   // implementations
   if ($_POST['implementations']!='') {
-    $impl_lvl=$_POST['implementations'];
+    $impl_lvl= $_POST['implementations'] ?? null;
     process_deletions($cog_conn,$art_num,'article_has_implmnt','level_id',$sel_ipl,$impl_lvl,$cog_database);
     process_additions($cog_conn,$art_num,'article_has_implmnt','level_id',$sel_ipl,$impl_lvl,$cog_database);       
   }
   // scales
   if ($_POST['network_scales']!='') {
-    $network_scale_update=$_POST['network_scales'];
+    $network_scale_update= $_POST['network_scales'] ?? null;
     process_deletions($cog_conn,$art_num,'article_has_scale','scale_id',$sel_scl,$network_scale_update,$cog_database);
     process_additions($cog_conn,$art_num,'article_has_scale','scale_id',$sel_scl,$network_scale_update,$cog_database);       
   }  

@@ -339,7 +339,7 @@ class evidencepropertyyperel_counts
 		$query = "SELECT DISTINCT Article_id FROM $table WHERE Property_id = '$Property_id' AND Type_id = '$type_id' AND Evidence_id = '$evidence_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$row = mysqli_fetch_row($rs);
-		$article_id = $row[0];
+		$article_id = $row[0] ?? null;
 		return $article_id;
 	}	
 

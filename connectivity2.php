@@ -8,13 +8,13 @@ require_once('class/class.evidencepropertyyperel.php');
 require_once('class/class.epdataevidencerel.php');
 require_once('class/class.epdata.php');
 
-$type = new type($class_type);
+$type = new type($class_type ?? null);
 $type -> retrive_id();
 $number_type = $type->getNumber_type();
 
-$property = new property($class_property);
+$property = new property($class_property ?? null);
 
-$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
+$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel ?? null);
 
 $column = '170px';
 
@@ -60,7 +60,7 @@ popup = window.open(url,'remote',windowprops);
 			$type -> retrive_by_id($id_type);
 			$nickname_type = $type->getNickname();
 			
-			$nickname_type = str_replace('_', ' ', $nickname_type);
+			$nickname_type = str_replace('_', ' ', ($nickname_type ?? ''));
 		
 			print ("<td width='$column' bgcolor='#E0FFFF' align='center'>");
 			print ("<font class='font5'>$nickname_type</font>");	
@@ -166,7 +166,7 @@ popup = window.open(url,'remote',windowprops);
 	$type -> retrive_by_id($id_type);
 	$nickname_type = $type->getNickname();
 
-	$nickname_type2 = str_replace('_', ' ', $nickname_type);
+	$nickname_type2 = str_replace('_', ' ', ($nickname_type ?? ''));
 		
 		print ("
 			<tr>

@@ -67,19 +67,19 @@ function retrieve_evidences($show1, $type_for_display, $fragment, $conn, $id1_ne
 		$attachment_type = $attachment_obj -> getType();
 		//$attachment_type="synpro_figure";
 		$link_figure="";									
-		$attachment_jpg = $attachment;//str_replace('jpg', 'jpeg', $attachment);
+		$attachment_jpg = $attachment;//str_replace('jpg', 'jpeg', ($attachment ?? ''));
 		// original article attachment
 		$attachment_obj2 = new attachment_synpro($class_attachment ?? null); // this clears prior attachment results
 		$attachment_obj2 -> retrive_by_props($id_original, $id1_neuron, 'Original');
 		$art_orig_attachment = $attachment_obj2 -> getName();
 		$art_orig_attachment_type = $attachment_obj2 -> getType();
-		$art_orig_attachment_jpg = $art_orig_attachment;//str_replace('jpg', 'jpeg', $art_orig_attachment);
+		$art_orig_attachment_jpg = $art_orig_attachment;//str_replace('jpg', 'jpeg', ($art_orig_attachment ?? ''));
 
 		if($attachment_type=="synpro_figure"){
 			$link_figure = "attachment/neurites/".$attachment_jpg;
 			$art_orig_link_figure = "attachment/neurites/".$art_orig_attachment_jpg;
 		}								
-		$attachment_pdf = str_replace('jpg', 'pdf', $attachment);
+		$attachment_pdf = str_replace('jpg', 'pdf', ($attachment ?? ''));
 		$link_figure_pdf = "figure_pdf/".$attachment_pdf;
 		
 		// get protocol age species and interpretation
@@ -154,12 +154,12 @@ function retrieve_evidences($show1, $type_for_display, $fragment, $conn, $id1_ne
 		$attachment = $attachment_obj -> getName();
 		$attachment_type = $attachment_obj -> getType();
 		//$attachment_type="synpro_figure";								
-		$attachment_jpg = $attachment;//str_replace('jpg', 'jpeg', $attachment);
+		$attachment_jpg = $attachment;//str_replace('jpg', 'jpeg', ($attachment ?? ''));
 		$link_figure = "attachment/neurites/".$attachment_jpg;
 		$download_icon='images/download_PNG.png';
 		$att_desc="Figure segmentation evidence for ".$neurite_ref.":";
 		$att_link=$link_figure;
-		/*$values_count=$somatic_distances[2];
+		/*$values_count= $somatic_distances[2] ?? null;
 		if ($values_count>1) {
 			if ($color1=='red') {
 				print ("Somatic distances of axons: mean ".$somatic_distances[1]." ± standard deviation ".$somatic_distances[0]." (n = ".$somatic_distances[2]."; min = ".$somatic_distances[3]."; max = ".$somatic_distances[4].")");
@@ -189,7 +189,7 @@ function retrieve_evidences($show1, $type_for_display, $fragment, $conn, $id1_ne
 			<tr>
 			<td width='70%' class='table_neuron_page2' align='left'>");
 			$neurite_lengths=$fragment->getNeuriteLengths($neuron_id,$nq_neurite_name,$refID);
-			$values_count=$neurite_lengths[2];
+			$values_count= $neurite_lengths[2] ?? null;
 			if ($values_count>1) {
 				if ($color1=='red') {
 					print ("Axonal lengths: mean ".$neurite_lengths[1]." ± standard deviation ".$neurite_lengths[0]." (n = ".$neurite_lengths[2]."; min = ".$neurite_lengths[3]."; max = ".$neurite_lengths[4].")");

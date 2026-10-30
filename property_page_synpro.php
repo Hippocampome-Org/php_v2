@@ -139,46 +139,46 @@ function insert_temporary($table, $id_fragment, $id_original, $quote, $authors, 
 	$rs2 = mysqli_query($GLOBALS['conn'],$query_i);					
  }
 // set property of synapse probability page
-$page = $_REQUEST['page'];
-$sub_show_only = $_SESSION['synpro_sub_show_only']; 
-$name_show_only_article = $_SESSION['synpro_name_show_only_article'];
+$page = $_REQUEST['page'] ?? null;
+$sub_show_only = $_SESSION['synpro_sub_show_only'] ?? null; 
+$name_show_only_article = $_SESSION['synpro_name_show_only_article'] ?? null;
 
-$see_all = $_REQUEST['see_all']; 
+$see_all = $_REQUEST['see_all'] ?? null; 
 // open all evidences
 if ($see_all == 'Open All Evidence')
 {
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['synpro_name_temporary_table'];
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
+	$name_temporary_table = $_SESSION['synpro_name_temporary_table'] ?? null;
 	$query = "UPDATE $name_temporary_table SET show1 =  '1'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);		
 }
 // close all evidences
 if ($see_all == 'Close All Evidence')
 {
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['synpro_name_temporary_table'];
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
+	$name_temporary_table = $_SESSION['synpro_name_temporary_table'] ?? null;
 	$query = "UPDATE $name_temporary_table SET show1 =  '0'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);		
 }
 // Change the show coloums in the temporary table: 
-if ($_REQUEST['show_1']) //  ==> ON
+if (!empty($_REQUEST['show_1'])) //  ==> ON
 {
-	$name_temporary_table = $_SESSION['synpro_name_temporary_table'];
-	$title_paper = $_REQUEST['title'];
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
+	$name_temporary_table = $_SESSION['synpro_name_temporary_table'] ?? null;
+	$title_paper = $_REQUEST['title'] ?? null;
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
 	$query = "UPDATE $name_temporary_table SET show1 =  '1' WHERE title = '$title_paper'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);	
 }
 
-if ($_REQUEST['show_0']) //  ==> OFF
+if (!empty($_REQUEST['show_0'])) //  ==> OFF
 {
-	$name_temporary_table = $_SESSION['synpro_name_temporary_table'];
-	$title_paper = $_REQUEST['title'];
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
+	$name_temporary_table = $_SESSION['synpro_name_temporary_table'] ?? null;
+	$title_paper = $_REQUEST['title'] ?? null;
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
 	$query = "UPDATE $name_temporary_table SET show1 =  '0' WHERE title = '$title_paper'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);	
 }
@@ -193,20 +193,20 @@ if ($page)
 	$name_show_only_journal = 'all';	
 	$name_show_only_authors = 'all';
 
-	$id_neuron = $_REQUEST['id_neuron'];
-	$val_property = $_REQUEST['val_property'];
-	$color = $_REQUEST['color'];
+	$id_neuron = $_REQUEST['id_neuron'] ?? null;
+	$val_property = $_REQUEST['val_property'] ?? null;
+	$color = $_REQUEST['color'] ?? null;
 	
-	$ip_address = $_SERVER['REMOTE_ADDR'];
-	$ip_address = str_replace(array('.', ':'), '_', $ip_address);
-	$ip_address = str_replace(':', '_', $ip_address);
+	$ip_address = $_SERVER['REMOTE_ADDR'] ?? null;
+	$ip_address = str_replace(array('.', ':'), '_', ($ip_address ?? ''));
+	$ip_address = str_replace(':', '_', ($ip_address ?? ''));
 	$time_t = time();
 	$name_temporary_table ='temp_'.$ip_address.'_'.$id_neuron.$color.'__'.$time_t;
 	//echo "name_temporary_table: ".$name_temporary_table;
 	$_SESSION['synpro_name_temporary_table'] = $name_temporary_table;
 	create_temp_table($name_temporary_table);	
 	
-	$val_property = str_replace('_', ':', $val_property);
+	$val_property = str_replace('_', ':', ($val_property ?? ''));
 	$_SESSION['id_neuron'] = $id_neuron;
 	$_SESSION['val_property'] = $val_property;	
 	$_SESSION['color'] = $color;
@@ -230,16 +230,16 @@ if ($page)
 }
 else
 {
-	$name_show_only = $_SESSION['synpro_name_show_only'];
+	$name_show_only = $_SESSION['synpro_name_show_only'] ?? null;
 	$_SESSION['synpro_name_show_only'] = $name_show_only;
-	$name_show_only_journal = $_SESSION['synpro_name_show_only_journal'];
-	$name_show_only_authors = $_SESSION['synpro_name_show_only_authors'];
-	$name_show_only_article = $_SESSION['synpro_name_show_only_article'];
+	$name_show_only_journal = $_SESSION['synpro_name_show_only_journal'] ?? null;
+	$name_show_only_authors = $_SESSION['synpro_name_show_only_authors'] ?? null;
+	$name_show_only_article = $_SESSION['synpro_name_show_only_article'] ?? null;
 
-	$order_ok = $_REQUEST['order_ok'];
+	$order_ok = $_REQUEST['order_ok'] ?? null;
 	if ($order_ok == 'GO')             // Was clicked the Order By options
 	{
-		$order_by = $_REQUEST['order'];
+		$order_by = $_REQUEST['order'] ?? null;
 		$_SESSION['order_by'] = $order_by;
 		
 		if ($order_by == 'year')
@@ -254,34 +254,34 @@ else
 	}
 	else    // Was clicked the paginations
 	{
-		$order_by = $_SESSION['order_by'];
-		$type_order = $_SESSION['type_order'];
-		if ($_REQUEST['up'])
+		$order_by = $_SESSION['order_by'] ?? null;
+		$type_order = $_SESSION['type_order'] ?? null;
+		if (!empty($_REQUEST['up']))
 		{
-			$page_in = $_REQUEST['start'];
+			$page_in = $_REQUEST['start'] ?? null;
 			$page_end = $page_in+10;		
 		}
-		if ($_REQUEST['down'])
+		if (!empty($_REQUEST['down']))
 		{
-			$page_in = $_REQUEST['start'];
+			$page_in = $_REQUEST['start'] ?? null;
 			$page_end = $page_in+10;		
 		}	
-		if ($_REQUEST['last_page'])
+		if (!empty($_REQUEST['last_page']))
 		{
-			$value_last_page = $_REQUEST['value_last_page'];
+			$value_last_page = $_REQUEST['value_last_page'] ?? null;
 			$page_in = $value_last_page;
-			$page_end = $_REQUEST['value_last_page_final'];
+			$page_end = $_REQUEST['value_last_page_final'] ?? null;
 		}
-		if ($_REQUEST['first_page'])
+		if (!empty($_REQUEST['first_page']))
 		{
 			$page_in = 0;
 			$page_end = 10;
 		}
 	}
-	$flag = $_REQUEST['flag'];
-	$id_neuron = $_SESSION['id_neuron'];
-	$val_property = $_SESSION['val_property'];
-	$color = $_SESSION['color'];
+	$flag = $_REQUEST['flag'] ?? null;
+	$id_neuron = $_SESSION['id_neuron'] ?? null;
+	$val_property = $_SESSION['val_property'] ?? null;
+	$color = $_SESSION['color'] ?? null;
 	if(!$_SESSION['synpro_neuron_show_only_value']){
 		$neuron_show_only_value="";
 		if(strstr(checkNeuronProperty($color),"axons"))
@@ -293,23 +293,23 @@ else
 		$_SESSION['synpro_neuron_show_only_value']=$neuron_show_only_value;
 	}
 	else{
-		$neuron_show_only_value=$_SESSION['synpro_neuron_show_only_value'];
+		$neuron_show_only_value= $_SESSION['synpro_neuron_show_only_value'] ?? null;
 	}
-	$name_temporary_table = $_SESSION['synpro_name_temporary_table'];
+	$name_temporary_table = $_SESSION['synpro_name_temporary_table'] ?? null;
 	
 }
 // SHOW ONLY 
-$name_show_only_var = $_REQUEST['name_show_only_var'];
+$name_show_only_var = $_REQUEST['name_show_only_var'] ?? null;
 
 if ($name_show_only_var)
 {
 	
-	$name_show_only = $_REQUEST['name_show_only'];
+	$name_show_only = $_REQUEST['name_show_only'] ?? null;
 	$_SESSION['synpro_name_show_only'] = $name_show_only;
 
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['synpro_name_temporary_table'];
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
+	$name_temporary_table = $_SESSION['synpro_name_temporary_table'] ?? null;
 	// Option: All:
 	if ($name_show_only == 'all')
 	{
@@ -350,17 +350,17 @@ if ($name_show_only_var)
 	}
 } 
 // ARTICLE - BOOK OPTION
-$name_show_only_article_var = $_REQUEST['name_show_only_article_var'];
+$name_show_only_article_var = $_REQUEST['name_show_only_article_var'] ?? null;
 if ($name_show_only_article_var)
 {
-	$name_show_only_article = $_REQUEST['name_show_only_article'];
+	$name_show_only_article = $_REQUEST['name_show_only_article'] ?? null;
 	$_SESSION['synpro_name_show_only_article'] = $name_show_only_article;
 	$_SESSION['synpro_name_show_only_journal'] = 'all';
 	$_SESSION['synpro_name_show_only_authors'] = 'all';
-	$name_show_only = $_SESSION['synpro_name_show_only'];
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['synpro_name_temporary_table'];
+	$name_show_only = $_SESSION['synpro_name_show_only'] ?? null;
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
+	$name_temporary_table = $_SESSION['synpro_name_temporary_table'] ?? null;
 	$query = "UPDATE $name_temporary_table SET show_only =  '1'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);	
 	$query ="SELECT id, PMID FROM $name_temporary_table";
@@ -384,17 +384,17 @@ if ($name_show_only_article_var)
 	}
 } 
 // JOURNAL OPTION
-$name_show_only_journal_var = $_REQUEST['name_show_only_journal_var'];
+$name_show_only_journal_var = $_REQUEST['name_show_only_journal_var'] ?? null;
 if ($name_show_only_journal_var)
 {
-	$name_show_only_journal = $_REQUEST['name_show_only_journal'];
+	$name_show_only_journal = $_REQUEST['name_show_only_journal'] ?? null;
 	$_SESSION['synpro_name_show_only_journal'] = $name_show_only_journal;
 	$_SESSION['synpro_name_show_only_article'] = 'all';
 	$_SESSION['synpro_name_show_only_authors'] = 'all';
-	$name_show_only = $_SESSION['synpro_name_show_only'];
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['synpro_name_temporary_table'];
+	$name_show_only = $_SESSION['synpro_name_show_only'] ?? null;
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
+	$name_temporary_table = $_SESSION['synpro_name_temporary_table'] ?? null;
 	$query = "UPDATE $name_temporary_table SET show_only =  '1'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);	
 	if ($name_show_only_journal == 'all')
@@ -405,17 +405,17 @@ if ($name_show_only_journal_var)
 
 } 
 // AUTHORS OPTION
-$name_show_only_authors_var  = $_REQUEST['name_show_only_authors_var'];
+$name_show_only_authors_var  = $_REQUEST['name_show_only_authors_var'] ?? null;
 if ($name_show_only_authors_var)
 {
-	$name_show_only_authors = $_REQUEST['name_show_only_authors'];
+	$name_show_only_authors = $_REQUEST['name_show_only_authors'] ?? null;
 	$_SESSION['synpro_name_show_only_authors'] = $name_show_only_authors;
 	$_SESSION['synpro_name_show_only_article'] = 'all';
 	$_SESSION['synpro_name_show_only_journal'] = 'all';
-	$name_show_only = $_SESSION['synpro_name_show_only'];
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['synpro_name_temporary_table'];
+	$name_show_only = $_SESSION['synpro_name_show_only'] ?? null;
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
+	$name_temporary_table = $_SESSION['synpro_name_temporary_table'] ?? null;
 	if ($name_show_only_authors == 'all')
 	{
 		$query = "UPDATE $name_temporary_table SET show_only =  '1'";
@@ -435,36 +435,36 @@ if ($name_show_only_authors_var)
 	}
 } 
 // axon, dedrite/soma checkbox checked or unchecked
-$neuron_show_only = $_REQUEST['neuron_show_only'];
+$neuron_show_only = $_REQUEST['neuron_show_only'] ?? null;
 if ($neuron_show_only){
-	$neuron_show_only_value = $_REQUEST['neuron_show_only_value'];
+	$neuron_show_only_value = $_REQUEST['neuron_show_only_value'] ?? null;
 	$_SESSION['synpro_neuron_show_only_value'] = $neuron_show_only_value;
-	$name_show_only = $_SESSION['synpro_name_show_only'];
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['synpro_name_temporary_table'];
+	$name_show_only = $_SESSION['synpro_name_show_only'] ?? null;
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
+	$name_temporary_table = $_SESSION['synpro_name_temporary_table'] ?? null;
 
 }
 $part=checkNeuronProperty($color);
 
-$type = new type($class_type);
+$type = new type($class_type ?? null);
 $type -> retrive_by_id($id_neuron);
-$property = new property($class_property);
+$property = new property($class_property ?? null);
 //$fragment = new fragment($class_fragment);
 $class_fragment='SynproFragment';
-$fragment = new fragment_synpro($class_fragment);
+$fragment = new fragment_synpro($class_fragment ?? null);
 $attachment_obj = new attachment_synpro($class_attachment ?? null);
 //$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
 $class_evidence_property_type_rel = 'SynproEvidencePropertyTypeRel';
-$evidencepropertyyperel = new evidencepropertyyperel_synpro($class_evidence_property_type_rel);
+$evidencepropertyyperel = new evidencepropertyyperel_synpro($class_evidence_property_type_rel ?? null);
 $class_evidencefragmentrel='SynproEvidenceFragmentRel';
-$evidencefragmentrel = new evidencefragmentrel($class_evidencefragmentrel);
+$evidencefragmentrel = new evidencefragmentrel($class_evidencefragmentrel ?? null);
 //$articleevidencerel = new articleevidencerel($class_articleevidencerel);
 $class_articleevidencerel='SynproArticleEvidenceRel';
-$articleevidencerel = new articleevidencerel_synpro($class_articleevidencerel);
-$article = new article($class_article);
-$articleauthorrel = new articleauthorrel($class_articleauthorrel);
-$author = new author($class_author);
+$articleevidencerel = new articleevidencerel_synpro($class_articleevidencerel ?? null);
+$article = new article($class_article ?? null);
+$articleauthorrel = new articleauthorrel($class_articleauthorrel ?? null);
+$author = new author($class_author ?? null);
 ?>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -566,8 +566,8 @@ function hide_element(entry_name) {
 <div class='title_area' style="width:1200px">
 	<font class='font1'>
 <?php
-	if (isset($_REQUEST['color'])) {$color = $_REQUEST['color'];}
-	if (isset($_REQUEST['sp_page'])) {$sp_page=$_REQUEST['sp_page'];}
+	if (isset($_REQUEST['color'])) {$color = $_REQUEST['color'] ?? null;}
+	if (isset($_REQUEST['sp_page'])) {$sp_page= $_REQUEST['sp_page'] ?? null;}
 	if ($sp_page=='dal') {
 		if ($color=='red') {
 			echo "Synapse Probabilities - Axonal Lengths Evidence Page";
@@ -866,10 +866,10 @@ function hide_element(entry_name) {
 				
 					// get number of quotes pairwise
 					if ($order_by == '-'){
-						$query = "SELECT DISTINCT title FROM $name_temporary_table WHERE show_only = 1 ORDER BY type ASC LIMIT $page_in , 10";
+						$query = "SELECT DISTINCT title FROM $name_temporary_table WHERE show_only = 1 ORDER BY type ASC LIMIT ".(int)$page_in." , 10";
 					}
 					else{
-						$query = "SELECT DISTINCT title, $order_by FROM $name_temporary_table WHERE show_only = 1 ORDER BY $order_by $type_order LIMIT $page_in , 10";
+						$query = "SELECT DISTINCT title, $order_by FROM $name_temporary_table WHERE show_only = 1 ORDER BY $order_by $type_order LIMIT ".(int)$page_in." , 10";
 					}
 					$rs = mysqli_query($GLOBALS['conn'],$query);					
 					$n_id = 0;
@@ -887,7 +887,7 @@ function hide_element(entry_name) {
 						<form action="property_page_synpro.php" method="post" style="display:inline">
 						<?php
 							if (isset($_REQUEST['sp_page'])) {
-								$sp_page=$_REQUEST['sp_page'];
+								$sp_page= $_REQUEST['sp_page'] ?? null;
 								echo "<input type='hidden' name='sp_page' value='$sp_page'>";
 							}
 						?>
@@ -898,7 +898,7 @@ function hide_element(entry_name) {
 						<?php print ("<input type='hidden' name='name_show_only' value='$name_show_only'>"); ?>
 						<?php print ("<input type='hidden' name='val_property' value='$val_property'>"); 
 						if (isset($_REQUEST['sp_page'])) {
-							$sp_page=$_REQUEST['sp_page'];
+							$sp_page= $_REQUEST['sp_page'] ?? null;
 							print ("<input type='hidden' name='sp_page' value='$sp_page'>");
 						}
 						?>
@@ -1026,7 +1026,7 @@ function hide_element(entry_name) {
 							$single_aut=explode(',', $author_string);
 							$index=0;
 							$unique_authors=array();
-							for ($cnt=0; $cnt<count($single_aut); $cnt++)
+							for ($cnt=0; $cnt<count($single_aut ?? array()); $cnt++)
 							{
 
 								if($single_aut[$cnt]){
@@ -1045,7 +1045,7 @@ function hide_element(entry_name) {
 							}
 							print ("<OPTION VALUE='all'> All </OPTION>");
 							
-							for ($i1=0; $i1<count($unique_authors); $i1++)
+							for ($i1=0; $i1<count($unique_authors ?? array()); $i1++)
 							{	
 								// retrieve the number of articles for this publication:
 								$aut= mysqli_real_escape_string($GLOBALS['conn'],$unique_authors[$i1]);
@@ -1088,7 +1088,7 @@ function hide_element(entry_name) {
 								<?php print ("<input type='hidden' name='val_property' value='$val_property'>"); ?>
 								<?php
 								if (isset($_REQUEST['sp_page'])) {
-									$sp_page=$_REQUEST['sp_page'];
+									$sp_page= $_REQUEST['sp_page'] ?? null;
 									echo "<input type='hidden' name='sp_page' value='$sp_page'>";
 								}
 								?>
@@ -1135,7 +1135,7 @@ function hide_element(entry_name) {
 						{
 							$f_auth=substr(trim($auth[$x]),0,1);
 							$auth_final=trim($auth[$x]);
-							$auth_final=preg_replace("/'/", "&#39;", $auth_final);
+							$auth_final=preg_replace("/'/", "&#39;", ($auth_final ?? ''));
 							if($x!=sizeof($auth)-1)
 								$authors2.=" <a href='find_author.php?name_author=$auth_final&first_author=$f_auth&new=1&see_result=1'>$auth[$x]</a>,";	
 							else 
@@ -1182,7 +1182,7 @@ function hide_element(entry_name) {
 							print ("<input type='hidden' name='name_show_only' value='$name_show_only'>");
 							print ("<input type='hidden' name='val_property' value='$val_property'>");
 							if (isset($_REQUEST['sp_page'])) {
-								$sp_page=$_REQUEST['sp_page'];
+								$sp_page= $_REQUEST['sp_page'] ?? null;
 								print ("<input type='hidden' name='sp_page' value='$sp_page'>");
 							}
 							print ("</form>");
@@ -1197,7 +1197,7 @@ function hide_element(entry_name) {
 							print ("<input type='hidden' name='name_show_only' value='$name_show_only'>");
 							print ("<input type='hidden' name='val_property' value='$val_property'>");
 							if (isset($_REQUEST['sp_page'])) {
-								$sp_page=$_REQUEST['sp_page'];
+								$sp_page= $_REQUEST['sp_page'] ?? null;
 								print ("<input type='hidden' name='sp_page' value='$sp_page'>");
 							}
 							print ("</form>");
@@ -1239,7 +1239,7 @@ function hide_element(entry_name) {
 						// Logic to form dynamic query to retrive evidences(axon,dendrite,soma ) depending on checkbox selection 
 						$subquery=" and ( ";
 						$property_array=explode(",",$neuron_show_only_value);
-						for($index=0;$index<count($property_array);$index++){
+						for($index=0;$index<count($property_array ?? array());$index++){
 							if($property_array[$index]){
 								$subquery=$subquery."type like '".$property_array[$index]."' or ";
 							}
@@ -1324,19 +1324,19 @@ function hide_element(entry_name) {
 									$attachment_type = $attachment_obj -> getType();
 									//$attachment_type="synpro_figure";
 									$link_figure="";									
-									$attachment_jpg = $attachment;//str_replace('jpg', 'jpeg', $attachment);
+									$attachment_jpg = $attachment;//str_replace('jpg', 'jpeg', ($attachment ?? ''));
 									// original article attachment
 									$attachment_obj2 = new attachment_synpro($class_attachment ?? null); // this clears prior attachment results
 									$attachment_obj2 -> retrive_by_props($id_original, $id_neuron, 'Original');
 									$art_orig_attachment = $attachment_obj2 -> getName();
 									$art_orig_attachment_type = $attachment_obj2 -> getType();
-									$art_orig_attachment_jpg = $art_orig_attachment;//str_replace('jpg', 'jpeg', $art_orig_attachment);
+									$art_orig_attachment_jpg = $art_orig_attachment;//str_replace('jpg', 'jpeg', ($art_orig_attachment ?? ''));
 
 									if($attachment_type=="synpro_figure"){
 										$link_figure = "attachment/neurites/".$attachment_jpg;
 										$art_orig_link_figure = "attachment/neurites/".$art_orig_attachment_jpg;
 									}								
-									$attachment_pdf = str_replace('jpg', 'pdf', $attachment);
+									$attachment_pdf = str_replace('jpg', 'pdf', ($attachment ?? ''));
 									$link_figure_pdf = "figure_pdf/".$attachment_pdf;
 									
 
@@ -1397,7 +1397,7 @@ function hide_element(entry_name) {
 										$download_icon='images/download_PNG.png';
 										$att_desc="Figure segmentation evidence for ".$neurite_ref.":";
 										$att_link=$link_figure;
-										$values_count=$neurite_lengths[2];
+										$values_count= $neurite_lengths[2] ?? null;
 										if ($values_count>1) {
 											if ($color=='red') {
 												print ("Axonal lengths: mean ".$neurite_lengths[1]." ± standard deviation ".$neurite_lengths[0]." (n = ".$neurite_lengths[2]."; min = ".$neurite_lengths[3]."; max = ".$neurite_lengths[4].")");
@@ -1428,7 +1428,7 @@ function hide_element(entry_name) {
 										$download_icon='images/download_RAR.png';
 										$att_desc="RAR compressed somatic-distance paths for ".$neurite_ref.":";
 										$att_link='attachment/neurites_rar/'.$fragment->getRarFile($neuron_id,$nq_neurite_name,$refID);
-										$values_count=$somatic_distances[2];
+										$values_count= $somatic_distances[2] ?? null;
 										if ($values_count>1) {
 											if ($color=='red') {
 												print ("Somatic distances of axons: mean ".$somatic_distances[1]." ± standard deviation ".$somatic_distances[0]." (n = ".$somatic_distances[2]."; min = ".$somatic_distances[3]."; max = ".$somatic_distances[4].")");
@@ -1586,7 +1586,7 @@ function hide_element(entry_name) {
 									print ("<input type='submit' name='down' value=' < ' class='botton1'/>");
 									print ("<input type='hidden' name='val_property' value='$val_property'>");
 									if (isset($_REQUEST['sp_page'])) {
-										$sp_page=$_REQUEST['sp_page'];
+										$sp_page= $_REQUEST['sp_page'] ?? null;
 										print ("<input type='hidden' name='sp_page' value='$sp_page'>");
 									}
 								}
@@ -1605,7 +1605,7 @@ function hide_element(entry_name) {
 									print ("<input type='submit' name='last_page' value=' >> ' class='botton1'/>");
 									print ("<input type='hidden' name='val_property' value='$val_property'>");
 									if (isset($_REQUEST['sp_page'])) {
-										$sp_page=$_REQUEST['sp_page'];
+										$sp_page= $_REQUEST['sp_page'] ?? null;
 										print ("<input type='hidden' name='sp_page' value='$sp_page'>");
 									}
 								}

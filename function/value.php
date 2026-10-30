@@ -148,7 +148,7 @@ function getIndexOfParameter($parameter){
 	$query_to_get_firing_pattern_parameter = "SELECT * FROM FiringPattern fp WHERE id=1";
 	$rs_firing_pattern_parameter = mysqli_query($GLOBALS['conn'],$query_to_get_firing_pattern_parameter);	
 	$firing_pattern=mysqli_fetch_array($rs_firing_pattern_parameter, MYSQLI_NUM);
-	for($ind=0;$ind<(count($firing_pattern)) ;$ind++ ){	
+	for($ind=0;$ind<(count($firing_pattern ?? array())) ;$ind++ ){	
 		if($parameter==$firing_pattern[$ind])
 			return $ind;
 	}	
@@ -158,7 +158,7 @@ function getUnitOfParameter($parameter_index){
 	$query_to_get_firing_pattern_parameter_unit = "SELECT * FROM FiringPattern fp WHERE id=4";
 	$rs_firing_pattern_parameter_unit = mysqli_query($GLOBALS['conn'],$query_to_get_firing_pattern_parameter_unit);	
 	$firing_pattern_param_unit=mysqli_fetch_array($rs_firing_pattern_parameter_unit, MYSQLI_NUM);
-	if($parameter_index>=0 and $parameter_index<count($firing_pattern_param_unit))
+	if($parameter_index>=0 and $parameter_index<count($firing_pattern_param_unit ?? array()))
 		return $firing_pattern_param_unit[$parameter_index];
 	return "";			
 }
@@ -166,7 +166,7 @@ function getDigitOfParameter($parameter_index){
 	$query_to_get_firing_pattern_parameter_digit = "SELECT * FROM FiringPattern fp WHERE id=5";
 	$rs_firing_pattern_parameter_digit = mysqli_query($GLOBALS['conn'],$query_to_get_firing_pattern_parameter_digit);	
 	$firing_pattern_param_digit=mysqli_fetch_array($rs_firing_pattern_parameter_digit, MYSQLI_NUM);
-	if($parameter_index>=0 and $parameter_index<count($firing_pattern_param_digit))
+	if($parameter_index>=0 and $parameter_index<count($firing_pattern_param_digit ?? array()))
 		return $firing_pattern_param_digit[$parameter_index];
 	return "0";			
 }

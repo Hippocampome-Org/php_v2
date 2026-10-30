@@ -27,8 +27,8 @@
   include('mysql_connect.php');
   $sub_success='true';   
 
-  $art_num=$_POST['new_art_numb'];
-  $art_off_id=$_POST['art_off_id'];
+  $art_num= $_POST['new_art_numb'] ?? null;
+  $art_off_id= $_POST['art_off_id'] ?? null;
   $art_mod_id=$art_num;
   $art_info_change=false;
   

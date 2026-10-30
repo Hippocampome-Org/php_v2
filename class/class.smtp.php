@@ -54,6 +54,7 @@ class SMTP
      * @access public
      * @return void
      */
+    function __construct() { $this->SMTP(); } // PHP83-FIX by KN on 2026-10-30: PHP 8 no longer calls the old-style constructor
     function SMTP() {
         $this->smtp_conn = 0;
         $this->error = null;
@@ -308,8 +309,8 @@ class SMTP
         # line. NOTE: this does not count towards are limit.
 
         # normalize the line breaks so we know the explode works
-        $msg_data = str_replace("\r\n","\n",$msg_data);
-        $msg_data = str_replace("\r","\n",$msg_data);
+        $msg_data = str_replace("\r\n","\n", ($msg_data ?? ''));
+        $msg_data = str_replace("\r","\n", ($msg_data ?? ''));
         $lines = explode("\n",$msg_data);
 
         # we need to find a good way to determine is headers are

@@ -91,7 +91,7 @@
 	";
 	$rResultFilterTotal = mysql_query( $sQuery, $gaSql['link'] ) or fatal_error( 'MySQL Error: ' . mysql_errno() );
 	$aResultFilterTotal = mysql_fetch_array($rResultFilterTotal);
-	$iFilteredTotal = $aResultFilterTotal[0];
+	$iFilteredTotal = $aResultFilterTotal[0] ?? null;
 	
 	$sQuery = "
 		SELECT COUNT(id)
@@ -99,7 +99,7 @@
 	";
 	$rResultTotal = mysql_query( $sQuery, $gaSql['link'] ) or fatal_error( 'MySQL Error: ' . mysql_errno() );
 	$aResultTotal = mysql_fetch_array($rResultTotal);
-	$iTotal = $aResultTotal[0];
+	$iTotal = $aResultTotal[0] ?? null;
 	
 	$sOutput = '{';
 	$sOutput .= '"sEcho": '.intval($_GET['sEcho']).', ';
@@ -109,14 +109,14 @@
 	while ( $aRow = mysql_fetch_array( $rResult ) )
 	{
 		$sOutput .= "[";
-		$sOutput .= '"'.str_replace('"', '\"', $aRow['engine']).'",';
-		$sOutput .= '"'.str_replace('"', '\"', $aRow['browser']).'",';
-		$sOutput .= '"'.str_replace('"', '\"', $aRow['platform']).'",';
+		$sOutput .= '"'.str_replace('"', '\"', ($aRow['engine'] ?? '')).'",';
+		$sOutput .= '"'.str_replace('"', '\"', ($aRow['browser'] ?? '')).'",';
+		$sOutput .= '"'.str_replace('"', '\"', ($aRow['platform'] ?? '')).'",';
 		if ( $aRow['version'] == "0" )
 			$sOutput .= '"-",';
 		else
-			$sOutput .= '"'.str_replace('"', '\"', $aRow['version']).'",';
-		$sOutput .= '"'.str_replace('"', '\"', $aRow['grade']).'"';
+			$sOutput .= '"'.str_replace('"', '\"', ($aRow['version'] ?? '')).'",';
+		$sOutput .= '"'.str_replace('"', '\"', ($aRow['grade'] ?? '')).'"';
 		$sOutput .= "],";
 	}
 	$sOutput = substr_replace( $sOutput, "", -1 );

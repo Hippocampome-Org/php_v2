@@ -9,21 +9,21 @@ require_once('class/class.evidencepropertyyperel.php');
 require_once('class/class.firingpattern.php');
 require_once('class/class.firingpatternrel.php');
 
-$parameter=$_GET['pattern'];
-$fp_id=$_GET['fp_id'];
-$name=$_GET['neuron'];
+$parameter= $_GET['pattern'] ?? null;
+$fp_id= $_GET['fp_id'] ?? null;
+$name= $_GET['neuron'] ?? null;
 $title = $parameter;
 $array_for_use = array($parameter);
 
-$type = new type($class_type);
+$type = new type($class_type ?? null);
 $type -> retrive_by_id($id);
 
-$property = new property($class_property);
-$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
-$firingpattern = new firingpattern($class_firing_pattern);
-$firingpatternrel = new firingpatternrel($class_firing_pattern_rel);
+$property = new property($class_property ?? null);
+$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel ?? null);
+$firingpattern = new firingpattern($class_firing_pattern ?? null);
+$firingpatternrel = new firingpatternrel($class_firing_pattern_rel ?? null);
 
-$firingpatternrel = new firingpatternrel($class_firing_pattern_rel);
+$firingpatternrel = new firingpatternrel($class_firing_pattern_rel ?? null);
 
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml">

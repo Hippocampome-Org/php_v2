@@ -13,7 +13,7 @@ $devur2 = 0;
 $query = "SELECT permission FROM user WHERE password=\"dev2\""; // id=2 is anonymous user
 $rs = mysqli_query($conn,$query);
 list($devur2) = mysqli_fetch_row($rs);
-session_start();
+if (session_status() === PHP_SESSION_NONE) session_start();
 ?>
 </head>
 

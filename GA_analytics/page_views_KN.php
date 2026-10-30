@@ -10,7 +10,7 @@ function get_neuron_ids($conn){
         }
 	while($row = mysqli_fetch_row($rs))
 	{
-		$neuron_ids[$row[0]]=$row[1];
+		$neuron_ids[$row[0]]= $row[1] ?? null;
 	}
 	return $neuron_ids;	
 }
@@ -100,7 +100,7 @@ function format_table_synpro($conn, $query, $table_string, $csv_tablename, $csv_
 	//echo $query;
         $rs = mysqli_query($conn,$query);
 	$table_string1 = '';
-	$rows = count($csv_headers);
+	$rows = count($csv_headers ?? array());
 	//For Phases page to replciate the string we show
 	$phase_evidences=['all_other'=>'Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau,
   AP threshold, fAHP, or APpeak trough.', 'theta'=>'Theta', 'swr_ratio'=>'SWR ratio','firingRate'=>'Firing rate'];
@@ -214,7 +214,7 @@ function format_table_synpro($conn, $query, $table_string, $csv_tablename, $csv_
 		return $csv_data[$csv_tablename];
 	}	
 	else{
-		$table_string1 .= "<tr><td colspan='".(count($csv_headers)-1)."'><b>Total Count</b></td><td>".$count."</td></tr>";	
+		$table_string1 .= "<tr><td colspan='".(count($csv_headers ?? array())-1)."'><b>Total Count</b></td><td>".$count."</td></tr>";	
 		return $table_string1;
 	}
 }
@@ -225,7 +225,7 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 	$csv_rows = [];
         $rs = mysqli_query($conn,$query);
 	$table_string1 = '';
-	$rows = count($csv_headers);
+	$rows = count($csv_headers ?? array());
 	//For Phases page to replciate the string we show
 	$phase_evidences=['all_other'=>'Any values of DS ratio, Ripple, Gamma, Run stop ratio, Epsilon, Firing rate non-baseline, Vrest, Tau,
   AP threshold, fAHP, or APpeak trough.', 'theta'=>'Theta', 'swr_ratio'=>'SWR ratio','firingRate'=>'Firing rate'];
@@ -304,7 +304,7 @@ function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $wri
     $csv_rows = [];
     $rs = mysqli_query($conn, $query);
     $table_string = '';
-    $rows = count($csv_headers);
+    $rows = count($csv_headers ?? array());
     if (!$rs || mysqli_num_rows($rs) < 1) {
         return "<tr><td colspan='{$rows}'> No Data is available </td></tr>";
     }
@@ -365,7 +365,7 @@ function flattenArray($array) {
     return $result;
 }
 
-function bg_wg($colors, $count, $neuronal_segments = NULL, $k)
+function bg_wg($colors, $count, $neuronal_segments, $k) // PHP83-FIX by KN on 2026-10-30: default removed (it was before a required parameter)
 {
     $table_string2 = '';
     foreach ($colors as $colorKey => $value) {
@@ -387,7 +387,7 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
     $csv_rows = [];
     $rs = mysqli_query($conn, $query);
     $table_string1 = '';
-    $rows = count($csv_headers);
+    $rows = count($csv_headers ?? array());
     if (!$rs || $rs->num_rows < 1) {
         $table_string1 .= "<tr><td> No Data is available </td></tr>";
         return $table_string1;
@@ -420,10 +420,10 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
     // Construct table string
     foreach ($array_subs as $groupKey => $subgroups) {
         $groupBgClass = ($i % 2 == 0) ? 'lightgreen-bg' : 'green-bg';
-        $table_string1 .= "<tr><td class='$groupBgClass' rowspan='" . count($subgroups) . "'>$groupKey</td>";
+        $table_string1 .= "<tr><td class='$groupBgClass' rowspan='" . count($subgroups ?? array()) . "'>$groupKey</td>";
         foreach ($subgroups as $subgroupKey => $colors) {
             $subgroupBgClass = ($i % 2 == 0) ? 'white-bg' : 'blue-bg';
-            $table_string1 .= "<td class='$subgroupBgClass' rowspan='" . count($colors) . "'>$subgroupKey</td>";
+            $table_string1 .= "<td class='$subgroupBgClass' rowspan='" . count($colors ?? array()) . "'>$subgroupKey</td>";
             foreach ($colors as $color => $value) {
                 $colorBgClass = ($i % 2 == 0) ? 'white-bg' : 'blue-bg';
                 $table_string1 .= "<td class='$colorBgClass'>$color</td>";
@@ -472,9 +472,9 @@ function format_table_connectivity($conn, $query, $table_string, $csv_tablename,
 	$csv_rows=[];
         $rs = mysqli_query($conn,$query);
         $table_string1 = '';
-	$rows = count($csv_headers);
+	$rows = count($csv_headers ?? array());
 	
-	$rows = count($csv_headers);
+	$rows = count($csv_headers ?? array());
 	
 	if(!$rs || ($rs->num_rows < 1)){
                 $table_string1 .= "<tr><td> No Data is available </td></tr>";
@@ -628,7 +628,7 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 	$csv_rows=[];
         $rs = mysqli_query($conn,$query);
         $table_string1 = '';
-	$rows = count($csv_headers);
+	$rows = count($csv_headers ?? array());
 	$color_segments = ['red'=>'Axon Locations','blue'=>'Dendrite Locations','somata'=>'Soma Locations','violet'=>'Axon-Dendrite Locations','redSoma'=>'Axon-Somata Locations',
 			   'blueSoma'=>'Dendrite-Somata Locations', 'violetSoma'=>'Axon-Dendrite-Somata Locations',
 			   'reddal'=>'Axon Lengths', 'bluedal'=>'Dendrite Lengths', 'redsd'=>'Somatic Distances of Axons', 'bluesd'=>'Somatic Distances of Dendrites', 
@@ -644,7 +644,7 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 			      'CA1_SLM'=>'CA1:SLM','CA1_SR'=>'CA1:SR','CA1_SP'=>'CA1:SP','CA1_SO'=>'CA1:SO',
 			      'SUB_SM'=>'Sub:SM','SUB_SP'=>'Sub:SP','SUB_PL'=>'Sub:PL',
 			      'EC_I'=>'EC:I','EC_II'=>'EC:II','EC_III'=>'EC:III','EC_IV'=>'EC:IV','EC_V'=>'EC:V','EC_VI'=>'EC:VI',''=>'Unknown'];
-	$rows = count($csv_headers);
+	$rows = count($csv_headers ?? array());
 
 	if(!$rs || ($rs->num_rows < 1)){
                 $table_string1 .= "<tr><td> No Data is available </td></tr>";
@@ -719,14 +719,14 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 	$table_string2 = '';
 	foreach ($array_subs as $type => $subtypes) {
 
-		$keyCounts = count($subtypes);
+		$keyCounts = count($subtypes ?? array());
 
 		// Flag to track if the type cell has been added
 		$typeCellAdded = false;
 
 		foreach ($subtypes as $subtype => $values) {
 			// Count the number of properties for the current subtype
-			$keyCounts2 = count($values)+1;//Added this 1 as count is giving 6 but then one row is showing as seperate Added on April 25 2024
+			$keyCounts2 = count($values ?? array())+1;//Added this 1 as count is giving 6 but then one row is showing as seperate Added on April 25 2024
 			$subtyperowspan = $keyCounts2;
 
 			// Calculate typerowspan as the product of keyCounts and keyCounts2
@@ -787,7 +787,7 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 	$csv_rows=[];
         $rs = mysqli_query($conn,$query);
         $table_string1 = '';
-	$rows = count($csv_headers);
+	$rows = count($csv_headers ?? array());
 
 	$neuronal_segments = ["CB"=>"CB", "CR"=>"CR", "PV"=>"PV", "5HT-3"=>"5HT-3", "CB1"=>"CB1", "Gaba-a-alpha"=>"GABAa_alfa", "mGluR1a"=>"mGluR1a", "Mus2R"=>"Mus2R", "NPY"=>"NPY", "nNOS"=>"nNOS", 
 				"AChE"=>"AChE", "AMIGO2"=>"AMIGO2", "Astn2"=>"Astn2", "Caln"=>"Caln", "CaMKII_alpha"=>"CaMKII_alpha", "ChAT"=>"ChAT", "Chrna2"=>"Chrna2", "CRF"=>"CRF", "Ctip2"=>"Ctip2", 
@@ -914,14 +914,14 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 	$table_string2 = '';
 	foreach ($array_subs as $type => $subtypes) {
 
-		$keyCounts = count($subtypes);
+		$keyCounts = count($subtypes ?? array());
 
 		// Flag to track if the type cell has been added
 		$typeCellAdded = false;
 
 		foreach ($subtypes as $subtype => $values) {
 			// Count the number of properties for the current subtype
-			$keyCounts2 = count($values)+1;//Added this 1 as count is giving 6 but then one row is showing as seperate Added on April 25 2024
+			$keyCounts2 = count($values ?? array())+1;//Added this 1 as count is giving 6 but then one row is showing as seperate Added on April 25 2024
 			$subtyperowspan = $keyCounts2;
 
 			// Calculate typerowspan as the product of keyCounts and keyCounts2
@@ -992,7 +992,7 @@ function format_table_biophysics($conn, $query, $table_string, $csv_tablename, $
 	$csv_rows=[];
         $rs = mysqli_query($conn,$query);
         $table_string1 = '';
-	$rows = count($csv_headers);
+	$rows = count($csv_headers ?? array());
 	$neuronal_segments = ['Vrest'=>'Vrest (mV)', 'Rin'=>'Rin (MW)', 'tm'=>'tm (ms)', 'Vthresh'=>'Vthresh(mV)','fast_AHP'=>'Fast AHP (mV)',
 		'AP_ampl'=>'APampl (mV)','AP_width'=>'APwidth (ms)', 'max_fr'=>'Max F.R. (Hz)','slow_AHP'=>'Slow AHP (mV)','sag_ratio'=>'Sag Ratio',''=>'Unknown'];
 
@@ -1081,7 +1081,7 @@ function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_
 	//echo $query;
         $rs = mysqli_query($conn,$query);
         $table_string1 = '';
-	$rows = count($csv_headers);
+	$rows = count($csv_headers ?? array());
 	//For Phases page to replciate the string we show
 	$neuronal_segments = [
 		'theta'=>'Theta (deg)', 'swr_ratio'=>'SWR Ratio','firingRate'=>'In Vivo Firing Rate (Hz)', 'gamma' => 'Gamma (deg)', 'DS_ratio' => 'DS Ratio', 

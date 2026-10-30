@@ -3,11 +3,11 @@
 	$gmdatetimenice = gmdate('Y-m-d H:i');
 	$gmdatetimestamp = gmdate('YmdHi');
 
-	$subject_send   = $_REQUEST['subject_send'];
-	$name_send      = $_REQUEST['name_send'];
-	$institute_send = $_REQUEST['institute_send'];
-	$email_send     = $_REQUEST['email_send'];
-	$message_send   = $_REQUEST['message_send'];
+	$subject_send   = $_REQUEST['subject_send'] ?? null;
+	$name_send      = $_REQUEST['name_send'] ?? null;
+	$institute_send = $_REQUEST['institute_send'] ?? null;
+	$email_send     = $_REQUEST['email_send'] ?? null;
+	$message_send   = $_REQUEST['message_send'] ?? null;
 
 	// Check if the user email is valid:
 	$pos = strpos($email_send, '@');

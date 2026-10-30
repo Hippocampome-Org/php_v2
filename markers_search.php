@@ -11,16 +11,16 @@ require_once('class/class.temporary_result_neurons.php');
 $width1='25%';
 $width2='2%';
 
-$type = new type($class_type);
+$type = new type($class_type ?? null);
 $type -> retrive_id();
 $nTypes = $type->getNumber_type();
 
 $research = "";
 $table_result = "";
 if(isset($_REQUEST['research']))
-	$research = $_REQUEST['research'];
+	$research = $_REQUEST['research'] ?? null;
 if(isset($_REQUEST['table_result']))
-	$table_result = $_REQUEST['table_result'];
+	$table_result = $_REQUEST['table_result'] ?? null;
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>

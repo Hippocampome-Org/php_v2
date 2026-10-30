@@ -27,9 +27,9 @@ class MorphologyPage
         $matchingNeuron=$allNeuron;
         $value=explode(Operator::COLON,$propertyValue);
         #print("cojn:$propertyValue".count($value));
-        if(count($value)==2) {
-            $ppl = $value[0];
-            $pplValues=$value[1];
+        if(count($value ?? array())==2) {
+            $ppl = $value[0] ?? null;
+            $pplValues= $value[1] ?? null;
             #print(strlen($pplValues));
             if(strlen($pplValues)==$this->subregionsCount[$ppl]){
                 for ($ind = 0; $ind < strlen($pplValues); $ind++) {
@@ -49,9 +49,9 @@ class MorphologyPage
 
                     }
                     // print("<pre>".print_r($neuronFound,true)."</pre>");
-                    if(count($neuronFound)>0){
+                    if(count($neuronFound ?? array())>0){
                         $matchingNeuron=array_intersect($matchingNeuron,$neuronFound);
-                    }else if (count($neuronFound)==0 && $matchingNeuron==$allNeuron && $pplValues[$ind]!=Operator::WILDCARD ) {
+                    }else if (count($neuronFound ?? array())==0 && $matchingNeuron==$allNeuron && $pplValues[$ind]!=Operator::WILDCARD ) {
                             return $neuronFound;
                         }
                     }

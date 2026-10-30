@@ -35,7 +35,7 @@ class temporary_author
         $query_to_get_authors_name=" SELECT name FROM Author where name LIKE '".$letter."%' ORDER BY name";
         $author_records = mysqli_query($GLOBALS['conn'],$query_to_get_authors_name);
         if (!$author_records) {
-            die("<p>Error in Listing Author Records.:" . mysql_error() . "</p>");
+            die("<p>Error in Listing Author Records.:" . mysqli_error($GLOBALS['conn']) . "</p>");
         }
         while($rows=mysqli_fetch_array($author_records, MYSQLI_ASSOC))
         {
@@ -51,7 +51,7 @@ class temporary_author
         $query_to_get_authors_name=" SELECT id,letter,author FROM $table";
         $author_records = mysqli_query($GLOBALS['conn'],$query_to_get_authors_name);
         if (!$author_records) {
-            die("<p>Error in Listing Author Records.:" . mysql_error() . "</p>");
+            die("<p>Error in Listing Author Records.:" . mysqli_error($GLOBALS['conn']) . "</p>");
         }
         while($rows=mysqli_fetch_array($author_records, MYSQLI_ASSOC))
         {

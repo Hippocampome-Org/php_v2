@@ -580,7 +580,7 @@ foreach ($items as $key=>$value) {
 	if (strpos(strtolower($key), $q) !== false) {
 		array_push($result, array("id"=>$value, "label"=>$key, "value" => strip_tags($key)));
 	}
-	if (count($result) > 11)
+	if (count($result ?? array()) > 11)
 		break;
 }
 

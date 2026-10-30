@@ -30,7 +30,7 @@ class Page
         } else if (stripos($morphCond, Keyword::MORP_SOMA) !== false) {
             $cond=Keyword::MORP_SOMA;
         }
-        $condValue=trim(str_ireplace($cond.Operator::COLON,"", $morphCond));
+        $condValue=trim(str_ireplace($cond.Operator::COLON,"", ($morphCond ?? '')));
         #print($condValue.$cond.$morphCond.stripos($morphCond, Keyword::MORP_SOMA));
         $morphPage=new MorphologyPage();
         return $morphPage->getMorphNeuron($cond,$condValue);
@@ -43,7 +43,7 @@ class Page
         if($operator!="") {
             $values = explode($operator, $markerCond);
             //print_r($values);
-            if (count($values) == 2) {
+            if (count($values ?? array()) == 2) {
                 $property=trim($values[0]);
                 if(strtolower($property)==Keyword::MK_DIR_POS ){
                     $operator="positive";
@@ -77,9 +77,9 @@ class Page
         if($operator!="") {
             $values = explode($operator, $ephysCond);
             //print("<pre>" . print_r($values, true) . "</pre>");
-            if (count($values) == 2) {
+            if (count($values ?? array()) == 2) {
                 $property=trim($values[0]);
-                $property=str_replace(Operator::COLON,"",$property);
+                $property=str_replace(Operator::COLON,"", ($property ?? ''));
                 $propertyValue=trim($values[1],',');
                 
                 //print("<pre>property value" . print($propertyValue) . "</pre>");
@@ -106,7 +106,7 @@ class Page
         $operator=$this->getOperator($fpCond);
         if($operator!="") {
             $values = explode($operator, $fpCond);
-            if (count($values) == 2) {
+            if (count($values ?? array()) == 2) {
                 $property=trim($values[0]);
                 if(strtolower($property)==Keyword::FP_DIR_POS )
                     $operator=">";
@@ -128,9 +128,9 @@ class Page
         $operator=$this->getOperator($fppCond);
         if($operator!="") {
             $values = explode($operator, $fppCond);
-            if (count($values) == 2) {
+            if (count($values ?? array()) == 2) {
                 $property=trim($values[0]);
-                $property=str_replace(Operator::COLON,"",$property);
+                $property=str_replace(Operator::COLON,"", ($property ?? ''));
                 $propertyValue=trim($values[1]);
                 $roundDigit=0;
                 $queryUtil = new QueryUtil();

@@ -20,7 +20,7 @@
 
 	/* articles */
 	// clear files
-	for ($i = 0; $i < count($all_files); $i++) {
+	for ($i = 0; $i < count($all_files ?? array()); $i++) {
 		$file = fopen($all_files[$i], 'w') or die("Can't open file.");
 		fclose($file);
 	}
@@ -37,7 +37,7 @@
 	$out_subevi = fopen($subevi_file, 'a') or die("Can't open file.");
 	$out_thr = fopen($thr_file, 'a') or die("Can't open file.");
 
-	for ($i = 0; $i < count($ids_for_removal); $i++) {
+	for ($i = 0; $i < count($ids_for_removal ?? array()); $i++) {
 		$id = $ids_for_removal[$i];
 
 		$line = "DELETE FROM `$cog_core_db`.`articles` WHERE (`id` = '$id');\n";

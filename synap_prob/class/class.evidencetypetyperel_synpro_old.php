@@ -285,7 +285,7 @@ class evidencetypetyperel_synpro
 		$query = "SELECT DISTINCT Article_id FROM $table WHERE presynaptic_cell_id = '$presynaptic_cell_id' AND postsynaptic_cell_id = '$postsynaptic_cell_id' AND Evidence_id = '$evidence_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$row = mysqli_fetch_row($rs);
-		$article_id = $row[0];
+		$article_id = $row[0] ?? null;
 		return $article_id;
 	}	
 

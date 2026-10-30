@@ -35,7 +35,7 @@ $.ajax({
 
 <?php
 
-$morphology_connection_information= $_SESSION['morphology'];
+$morphology_connection_information= $_SESSION['morphology'] ?? null;
 $array_decoded = json_decode($morphology_connection_information, true);
 $potential_conn_display_array = $array_decoded['potential_array'];
 $potn_conn_neuron_pcl_array=$array_decoded['potn_conn_neuron_pcl_array'];
@@ -94,7 +94,7 @@ function check_color($type, $unvetted) //$type --> whether axons/dendrites or bo
 }
 // check for link
 
-function getUrlForLink($id_type_row,$id_type_col,$link_parameter,$img,$know_unknow_flag=0,$special_neuron_id_axo_axonic,$special_neuron_id_basket) 
+function getUrlForLink($id_type_row,$id_type_col,$link_parameter,$img,$know_unknow_flag,$special_neuron_id_axo_axonic,$special_neuron_id_basket) 
 {
 	$url = '';
 	if($img!='')
@@ -119,33 +119,33 @@ function getUrlForLink($id_type_row,$id_type_col,$link_parameter,$img,$know_unkn
 	return ($url);	
 }
 
-$type = new type($class_type);
+$type = new type($class_type ?? null);
 $type ->retrive_id();
 
 $number_type = $type ->getNumber_type();
 $total_neurons=$number_type;
 
 if(!isset($_GET['page'])) $page=1;
-else $page = $_GET['page'];
+else $page = $_GET['page'] ?? null;
 //page=1&rows=5&sidx=1&sord=asc
 // get how many rows we want to have into the grid - rowNum parameter in the grid
 //if(!isset($_GET['rows'])) $limit=175;
 if(!isset($_GET['rows'])) $limit=$total_neurons;
-else $limit = $_GET['rows'];
+else $limit = $_GET['rows'] ?? null;
 
 // get index row - i.e. user click to sort. At first time sortname parameter -
 // after that the index from colModel
 if(!isset($_GET['sidx'])) $sidx=1;
-else $sidx = $_GET['sidx'];
+else $sidx = $_GET['sidx'] ?? null;
 
 // sorting order - at first time sortorder
 if(!isset($_GET['sord'])) $sord="asc";
-else $sord = $_GET['sord'];
+else $sord = $_GET['sord'] ?? null;
 
 // if we not pass at first time index use the first column for the index or what you want
 if(!$sidx) $sidx =1;
 
-$research = $_REQUEST['research'];
+$research = $_REQUEST['research'] ?? null;
 
 $type -> retrieve_id_by_subregion('DG');
 $nDG = $type->getNumber_subregion_type();
@@ -160,10 +160,10 @@ $nSub = $type->getNumber_subregion_type();
 $type -> retrieve_id_by_subregion('EC');
 $nEC = $type->getNumber_subregion_type();
 
-$research = $_REQUEST['research'];
+$research = $_REQUEST['research'] ?? null;
 if (isset($research)) // From page of search; retrieve the id from search_table (temporary) -----------------------
 {
-	$table_result = $_REQUEST['table_result'];
+	$table_result = $_REQUEST['table_result'] ?? null;
 	$temporary_result_neurons = new temporary_result_neurons();
 	$temporary_result_neurons -> setName_table($table_result);
 	
@@ -192,9 +192,9 @@ if (isset($research)) // From page of search; retrieve the id from search_table 
 	// sort($id_search);
 
 }
-$property = new property($class_property);
+$property = new property($class_property ?? null);
 
-$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
+$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel ?? null);
 
 //$hippo_select = $_SESSION['hippo_select'];
 $count = $number_type;
@@ -237,7 +237,7 @@ $sources      = result_set_to_array($result, 'nickname');
 $id_query     = "SELECT DISTINCT id from Type order by position asc";
 $result_id    = mysqli_query($GLOBALS['conn'], $id_query);
 $id_array     = result_set_to_array($result_id, 'id');
-for($index_neuron=0;$index_neuron<count($id_array);$index_neuron++){
+for($index_neuron=0;$index_neuron<count($id_array ?? array());$index_neuron++){
 	$key=$id_array[$index_neuron];
 	$neuron_map[$key]=$index_neuron;
 }
@@ -299,14 +299,14 @@ for ($r = 0; $r < $total_neurons; $r++) {
     $result_nontarget = result_set_to_array($explicit_nontarget_result, "Type2_id");
 
     for ($c = 0; $c < $total_neurons; $c++) {
-        for ($k = 0; $k < count($result_target); $k++) {
+        for ($k = 0; $k < count($result_target ?? array()); $k++) {
             if ($result_target[$k] == $id_array[$c]) {
                 $count_known++;
                 $known_matrix_array[$r][$c] = KNOWN_CONNECTION; //known _connection
                 break;
             }
         }
-        for ($m = 0; $m < count($result_nontarget); $m++) {
+        for ($m = 0; $m < count($result_nontarget ?? array()); $m++) {
             if ($result_nontarget[$m] == $id_array[$c]) {
                 $count_known_non++;
                 $known_matrix_array[$r][$c] = KNOWN_NON_CONNECTION; // known non-connection
@@ -384,7 +384,7 @@ for ($row=0; $row<$number_type; $row++) {
 	$subregion = $type -> getSubregion(); // Retrieve the sub region 
 	$excit_inhib =$type-> getExcit_Inhib();
 	
-	$nickname_type_row = str_replace('_', ' ', $nickname_type_row);
+	$nickname_type_row = str_replace('_', ' ', ($nickname_type_row ?? ''));
 	$subregion_nickname_type_row = $subregion_type_row . ":" . $nickname_type_row;
 	$position_row = $type->getPosition();
 
@@ -401,7 +401,7 @@ for ($row=0; $row<$number_type; $row++) {
 		$nickname_type_col = $type->getNickname();
 		$subregion_type_col = $type->getSubregion();
 	
-		$nickname_type_col = str_replace('_', ' ', $nickname_type_col);
+		$nickname_type_col = str_replace('_', ' ', ($nickname_type_col ?? ''));
 		$subregion_nickname_type = $subregion_type_col . " " . $nickname_type_col;
 		$position_col = $type->getPosition();
 

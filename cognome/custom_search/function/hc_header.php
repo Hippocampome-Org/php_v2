@@ -25,7 +25,7 @@ else{
 }
 //-------------------------------------------
 //$_SESSION['perm'] = 0;
-$permission1 = $_SESSION['perm'];
+$permission1 = $_SESSION['perm'] ?? null;
 if ($_SESSION['perm'] == 0) {
   if (array_key_exists('password', $_REQUEST)) {
     $query = "SELECT permission FROM user WHERE password = '{$_REQUEST['password']}'";
@@ -101,10 +101,10 @@ include("../../function/icon.html");
 
   if (isset($_SESSION['active_db']) || isset($_REQUEST['active_db'])) {
       if (isset($_REQUEST['active_db'])) {
-        $active_db = $_REQUEST['active_db'];
+        $active_db = $_REQUEST['active_db'] ?? null;
     }
     else if (isset($_SESSION['active_db'])) {
-        $active_db = $_SESSION['active_db'];
+        $active_db = $_SESSION['active_db'] ?? null;
         $_SESSION['active_db'] = $active_db; // keep session variable alive (avoid timeout) by setting it here.
     }
 

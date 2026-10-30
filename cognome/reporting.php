@@ -57,10 +57,10 @@
   $article_count = $result->fetch_assoc();
   echo "<br><form name='db_selection' action='#' method='POST'><div class='article_details'>Total number of articles: ".$article_count["COUNT(*)"];
   if (isset($_REQUEST['active_db'])) {
-    $active_db = $_REQUEST['active_db'];
+    $active_db = $_REQUEST['active_db'] ?? null;
   }
   else if (isset($_SESSION['active_db'])) {
-    $active_db = $_SESSION['active_db'];
+    $active_db = $_SESSION['active_db'] ?? null;
   }
   else {
     $active_db = "core";
@@ -329,7 +329,7 @@
   echo "<br><font style='font-size:20px;'>Neuron Types by Subregion</font><table width='500px' class='reporting_table'>";
   echo "<tr width='150px' style='width:150px;padding:5px;'><th class='reporting_table_head'>Subregion</th><th class='reporting_table_head' style='padding:5px;'>Count (normal + fuzzy)</th></tr>";
 
-  for ($i = 0; $i < count($subregions); $i++) {
+  for ($i = 0; $i < count($subregions ?? array()); $i++) {
     if ($i == 6) {
       // EC LII
       $or_cond = " OR neuron_id=115 OR neuron_id=116 OR neuron_id=117";

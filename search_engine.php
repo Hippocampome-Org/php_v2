@@ -4,7 +4,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <?php
 //include ("access_db.php");
-session_start();
+if (session_status() === PHP_SESSION_NONE) session_start();
 require_once('class/class.type.php');
 require_once('class/class.property.php');
 require_once('class/class.evidencepropertyyperel.php');
@@ -18,14 +18,14 @@ include ("function/name_ephys.php");
 include ("function/stm_lib.php");
 include ("function/value.php");
 
-$type = new type($class_type);
+$type = new type($class_type ?? null);
 $type -> retrive_id();
 $number_type = $type->getNumber_type();
-$property_1 = new property($class_property);
-$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
-$evidenceevidencerel = new evidenceevidencerel($class_evidenceevidencerel);
-$epdataevidencerel = new epdataevidencerel($class_epdataevidencerel);
-$epdata = new epdata($class_epdata);
+$property_1 = new property($class_property ?? null);
+$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel ?? null);
+$evidenceevidencerel = new evidenceevidencerel($class_evidenceevidencerel ?? null);
+$epdataevidencerel = new epdataevidencerel($class_epdataevidencerel ?? null);
+$epdata = new epdata($class_epdata ?? null);
 $typetyperel = new typetyperel();
 
 $morphology_properties_query =
@@ -120,7 +120,7 @@ function get_UItable($id, $subject, $conflict, $type, $name_temporary_table_resu
 	foreach($idVals as $id){
 		if (strpos($id, '0_') == 1)
 		{
-			$id = str_replace('10_', '', $id);
+			$id = str_replace('10_', '', ($id ?? ''));
 			$type -> retrieve_by_id($id);
 			$status = $type -> getStatus();	
 								
@@ -139,7 +139,7 @@ function get_UItable($id, $subject, $conflict, $type, $name_temporary_table_resu
 				if($pos!==false)
 				{
 							
-					$name_type_unknown[$n_result_tot_unknown]=str_replace($subregion_type_unknown[$n_result_tot_unknown],"", $name_type_unknown[$n_result_tot_unknown]);
+					$name_type_unknown[$n_result_tot_unknown]=str_replace($subregion_type_unknown[$n_result_tot_unknown],"", ($name_type_unknown[$n_result_tot_unknown] ?? ''));
 					//substr_replace($subregion_type_unknown[$n_result_tot_unknown],"",$pos);		
 				}
 				$n_result_tot_unknown = $n_result_tot_unknown +1;
@@ -153,8 +153,8 @@ function get_UItable($id, $subject, $conflict, $type, $name_temporary_table_resu
 				$old_id=$id;
 				$id=substr($id,1,strlen($id));
 				$conflictArr=explode("_", $id);
-				$id=$conflictArr[0];
-				$conflictNote=$conflictArr[1];
+				$id= $conflictArr[0] ?? null;
+				$conflictNote= $conflictArr[1] ?? null;
 				$inference_array[$id]=$conflictNote;
 				$up_temp ="UPDATE $name_temporary_table_result SET id_type='$id' WHERE id_type='$old_id'";
 				$query = mysqli_query($GLOBALS['conn'],$up_temp);
@@ -175,7 +175,7 @@ function get_UItable($id, $subject, $conflict, $type, $name_temporary_table_resu
 							
 				if($pos!== false)
 				{
-					$name_type[$n_result_tot]= str_replace($subregion_type[$n_result_tot],"", $name_type[$n_result_tot]);
+					$name_type[$n_result_tot]= str_replace($subregion_type[$n_result_tot],"", ($name_type[$n_result_tot] ?? ''));
 					//print(substr_replace($subregion_type[$n_result_tot_unknown],"",$pos));
 				}
 				if($conflictNote){
@@ -185,7 +185,7 @@ function get_UItable($id, $subject, $conflict, $type, $name_temporary_table_resu
 			}
 		}
 	}//End For
-	if(count($id_t) >0  && count($name_type) > 0 && count($subregion_type) > 0 && count($position_type) > 0 && 
+	if(count($id_t ?? array()) >0  && count($name_type ?? array()) > 0 && count($subregion_type ?? array()) > 0 && count($position_type ?? array()) > 0 && 
 	$n_result_tot > 0){
 	return array($id_t, $name_type, $subregion_type, $position_type, $n_result_tot);
 	}else{
@@ -215,7 +215,7 @@ function create_result_table_result ($name_temporary_table)
 function insert_result_table_result($table, $id_type, $n_type_id, $markers = NULL)
 {
 	if(isset($markers)){
-		for ($i=0; $i<count($id_type); $i++){
+		for ($i=0; $i<count($id_type ?? array()); $i++){
 			$subject = $id_type[$i][0];
 			$id = $id_type[$i][1];
 			$conflict = $id_type[$i][2];
@@ -427,7 +427,7 @@ function markers_search($evidencepropertyyperel, $property_1, $type, $subject, $
 				$type_id[$n_tot] = $evidencepropertyyperel -> getType_id_array($i1);
 				$id_array = $evidencepropertyyperel -> getConflict_subject_typeid_array($subject."1");
 
-				for ($i1=0; $i1<count($id_array); $i1++){
+				for ($i1=0; $i1<count($id_array ?? array()); $i1++){
 					list($conflict, $subject) = explode(", ",$id_array[$i1][1]);
 					$id = $id_array[$i1][0];
 					array_push($type_id_latest, array($subject, $id, $conflict));
@@ -439,7 +439,7 @@ function markers_search($evidencepropertyyperel, $property_1, $type, $subject, $
 				$type_id[$n_tot] = "10_".$type_r;
 				//$id_array = $evidencepropertyyperel -> getConflict_subject_typeid_array($i1+1);
 				$id_array = $evidencepropertyyperel -> getConflict_subject_typeid_array($subject."2");
-				for ($i1=0; $i1<count($id_array); $i1++){
+				for ($i1=0; $i1<count($id_array ?? array()); $i1++){
 					list($conflict, $subject) = explode(", ",$id_array[$i1][1]);
 					$id = "10_".$id_array[$i1][0];
 					array_push($type_id_latest, array($subject, $id, $conflict));
@@ -528,7 +528,7 @@ function ephys_search($evidencepropertyyperel, $property_1, $type, $subject, $pr
       		//$value_1 = str_replace(' ms', '', $value1);
       		//$value_1 = str_replace(' Hz', '', $value1);
       		//$value_1 = str_replace(' mOm', '', $value1);
-      		$value_1 = preg_replace('/[^\d\.\-]/', '', $value);
+      		$value_1 = preg_replace('/[^\d\.\-]/', '', ($value ?? ''));
 			
 			$epdata -> retrive_all_information($id_epdata);
 			$epdata_value1 = $epdata -> getValue1();
@@ -589,7 +589,7 @@ function ephys_search($evidencepropertyyperel, $property_1, $type, $subject, $pr
 	} // END $i1
 	
 	$n_tot = 0;
-	for ($i1=0; $i1<count($id_epdata_result); $i1++)
+	for ($i1=0; $i1<count($id_epdata_result ?? array()); $i1++)
 	{
 		$evidencepropertyyperel -> retrive_type_id_by_evidence($id_evidence_result[$i1]);
 	
@@ -631,7 +631,7 @@ function fp_search($subject, $predicate,$value)
 			$query_get_type_id=$query_get_type_id." HAVING ";
 		if($subject!="All")
 			if(strpos($subject,"Element") !== false){
-				$subject=str_replace(" Element", "", $subject);
+				$subject=str_replace(" Element", "", ($subject ?? ''));
 				$query_get_type_id=$query_get_type_id." sub.def_overall_fp like '%$subject%' ";
 			}
 			else
@@ -656,7 +656,7 @@ function fp_search($subject, $predicate,$value)
 function fp_parameter_search($subject, $predicate,$value,$fp_name){
 	// retrieve neuron id:
 	$values=explode(" ", $value);
-	$value=$values[0];
+	$value= $values[0] ?? null;
 	$index_of_parameter=getIndexOfParameter($subject);
 	if($index_of_parameter!=-1 and $predicate!="" and $value!="" ){
 		$precision=getDigitOfParameter($index_of_parameter);
@@ -759,7 +759,7 @@ function connectivity_search ($evidencepropertyyperel, $property_1, $type, $part
 	}
 	
 	$n_tot = 0;
-	for ($i2=0; $i2<count($conn_search_result_array); $i2++) {
+	for ($i2=0; $i2<count($conn_search_result_array ?? array()); $i2++) {
 		$type_id[$n_tot] = $conn_search_result_array[$i2]['id'];//$evidencepropertyyperel -> getType_id_array($i2);
 		$n_tot = $n_tot + 1;
 	} // END for $i2
@@ -783,7 +783,7 @@ $time1 = microtime_float();
 // ***********************************************************************************************************************
 
 // 1) Retrive the number of search line from temporary table:
-$name_temporary_table_search = $_REQUEST['name_table'];
+$name_temporary_table_search = $_REQUEST['name_table'] ?? null;
 //MY DELETE
 //print("...name_temporary_table_search:-".$name_temporary_table_search);
 //MyDelete ends
@@ -827,8 +827,8 @@ for ($i=0; $i<$n_line; $i++)
 // The research +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 // Creates $a table to insert the results for each AND:
-$ip_address = $_SERVER['REMOTE_ADDR'];
-$ip_address = str_replace(array('.', ':'), '_', $ip_address);
+$ip_address = $_SERVER['REMOTE_ADDR'] ?? null;
+$ip_address = str_replace(array('.', ':'), '_', ($ip_address ?? ''));
 $time_t = time();
 
 $name_temporary_table_result = "search_result_table_".$ip_address."__".$time_t;
@@ -848,7 +848,7 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 	$id_type_res = array(); // Arrays where will be inserted the results of ID TYPE
 	// Added on Oct 22 2022 
 	$id_type_res_latest = array(); // Arrays where will be inserted the results of ID TYPE
-	$n_b = count($id_res[$i]);
+	$n_b = count($id_res[$i] ?? array());
 	//MY DELETE
 //print("...n_b:-".$n_b);
 //MyDelete ends
@@ -863,10 +863,10 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 		// Retrieve the information from temporary table:
 		$varr = information_by_id($name_temporary_table_search, $id_res[$i][$i1]);
 		
-		$property = $varr[0];
-		$part = $varr[1];
-		$relation = $varr[2];
-		$value = $varr[3];
+		$property = $varr[0] ?? null;
+		$part = $varr[1] ?? null;
+		$relation = $varr[2] ?? null;
+		$value = $varr[3] ?? null;
 
 		if ($relation == 'is found in')
 			$predicate = 'in';			
@@ -1034,12 +1034,12 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 	// The program do the AND in the temporary table (in $n_b)
 	$markers_search_temp = NULL;
 	$id_result = array();
-	if(isset($id_type_res_latest) && (count($id_type_res_latest) > 0)){
+	if(isset($id_type_res_latest) && (count($id_type_res_latest ?? array()) > 0)){
 		$markers_search_temp = 'true';
-		$n_res1 = count($id_type_res_latest);
+		$n_res1 = count($id_type_res_latest ?? array());
 		$id_result = $id_type_res_latest;
 	}else{
-		$n1 = count($id_type_res);
+		$n1 = count($id_type_res ?? array());
 
 		for ($q=0; $q<$n1; $q++)
 		{
@@ -1131,7 +1131,7 @@ include ("function/icon.html");
 				}else{
 					$cn = $conflict_note;
 				}
-				$cn  = str_replace(' ', '_', $cn);
+				$cn  = str_replace(' ', '_', ($cn ?? ''));
 
 				$conflict_tables[$conflict_note] = array();
 			}
@@ -1153,14 +1153,14 @@ include ("function/icon.html");
 
 				//call the function and everything in the for loop has to be done there, send the table name also
 				$subj_arr = explode(', ', $subject);
-				$conflict_note  = str_replace(' ', '_', $conflict);
+				$conflict_note  = str_replace(' ', '_', ($conflict ?? ''));
 				if($conflict == 'positive'){
 					$result_subject = "Expressed ".$conflict." in ".$subject;
 					list($id_t, $name_type, $subregion_type, $position_type, $n_result_tot) = get_UItable($id, $subject, $conflict, $type, $name_temporary_table_result);
 					//array_walk($name_type, function(&$value, $key)  use ($conflict) { $value = $value." (".$conflict.")"; } );
 					$conflict_tables[$conflict_note] = update_arrayHash($conflict_tables, $conflict_note, $result_subject, $id_t, $name_type, $subregion_type, $position_type, $n_result_tot, NULL);
 				}
-				else if($conflict == 'negative'){//&& ($subject_count == count($id_res[1]))){ 
+				else if($conflict == 'negative'){//&& ($subject_count == count($id_res[1] ?? array()))){ 
 					$result_subject = "Expressed $conflict in $subject";
 					list($id_t, $name_type, $subregion_type, $position_type, $n_result_tot)= get_UItable($id, $subject, $conflict, $type, $name_temporary_table_result);
 					//array_walk($name_type, function(&$value, $key)  use ($conflict) { $value = $value." (".$conflict.")"; } );
@@ -1196,7 +1196,7 @@ include ("function/icon.html");
 						list($id_t, $name_type, $subregion_type, $position_type, $n_result_tot)= get_UItable($id, $subject, $conflict, $type, $name_temporary_table_result, $conflict);
 						//array_walk($name_type, function(&$value, $key)  use ($conflict) { $value = $value." (".$conflict.")"; } );
 					}
-					else if(isset($conflict_tables[$conflict_note]) && (count($conflict_tables[$conflict_note]) > 0)){
+					else if(isset($conflict_tables[$conflict_note]) && (count($conflict_tables[$conflict_note] ?? array()) > 0)){
 						//need to append so get the existing ones
 						$id_t = $conflict_tables[$conflict_note]['id_t'];
 						$name_type = $conflict_tables[$conflict_note]['name_type'];
@@ -1245,9 +1245,9 @@ include ("function/icon.html");
 
 		}//end of else
 			
-			$full_search_string = $_SESSION['full_search_string'];
-			$full_search_string_to_print = str_replace('OR', '<br>OR', $full_search_string);
-			$full_search_string_to_print = str_replace('AND', '<br>AND', $full_search_string_to_print);
+			$full_search_string = $_SESSION['full_search_string'] ?? null;
+			$full_search_string_to_print = str_replace('OR', '<br>OR', ($full_search_string ?? ''));
+			$full_search_string_to_print = str_replace('AND', '<br>AND', ($full_search_string_to_print ?? ''));
 			//$full_search_string_to_print .= " Table is: ".$name_temporary_table_result;
 			print ("" . $full_search_string_to_print . "<br>");
 		?>
@@ -1255,7 +1255,7 @@ include ("function/icon.html");
 		<?php
 		foreach($conflict_tables as $key=>$conflict_table){
 
-			if($conflict_table && (count($conflict_table) > 0 )){
+			if($conflict_table && (count($conflict_table ?? array()) > 0 )){
 				if($markers_search_temp){
 					print ("
 						<table border='0' cellspacing='3' cellpadding='0' class='table_result'>

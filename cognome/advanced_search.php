@@ -40,7 +40,7 @@
   $prop_value = ''; $row_name = ''; $tbl_name = '';
   $second_filter = 'no filter';
   if (isset($_REQUEST['second_filter'])) {
-    $second_filter = $_REQUEST['second_filter'];
+    $second_filter = $_REQUEST['second_filter'] ?? null;
   }
 
   include('search_option.php');    

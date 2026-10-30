@@ -67,7 +67,7 @@
     echo "&nbsp&nbsp<input type='button' value='  Remove  ' onclick='javascript:toggle_vis(\"remove_".$property."\")' style='height:30px;font-size:22px;position:relative;top:-2px;'>
     <span style='display:none;' id='remove_".$property."'><font style='font-size:.9em;'>Remove ".$property.":</font><br><select name='remove_".$property."' size='1' class='select-css' style='min-width:400px;max-width:70%;position:relative;top:-7px;'>";
     echo "<option value='' ></option>";
-    for ($i=0;$i<count($property_group);$i++) {
+    for ($i=0;$i<count($property_group ?? array());$i++) {
       echo "<option value='".$property_group[$i]."' >".substr($property_group[$i],0,110)."</option>";
     }
     echo "</select>&nbsp&nbsp&nbsp<input type='submit' value='  Remove  ' style='height:28px;font-size:20px;position:relative;top:-7px;'></input></span>";
@@ -93,7 +93,7 @@
   */
   $art_mod_id = "";
   if (isset($_GET['art_mod_id'])) {
-    $art_mod_id = $_GET['art_mod_id'];
+    $art_mod_id = $_GET['art_mod_id'] ?? null;
     list($title, $year, $journal, $citation, $url, $abstract, $theory, $mod_meth, $cur_notes, $inc_qual, $authors, $art_off_id) = setArtDetails($art_mod_id,$cog_conn,$cog_database);
   }
 
@@ -142,7 +142,7 @@
   <br><br>Submission Status:<iframe style='display:block;height:250px;width:600px;border-top:1px solid rgb(190,190,190);border-left:1px solid rgb(190,190,190);' name='iframe-form' scrolling='auto' src='no_sub.php'></iframe>";
   echo "</center></div><br><div class='article_details'>";
   if (isset($_POST['pubmed_id'])) {
-    $pubmed_id=$_POST['pubmed_id'];
+    $pubmed_id= $_POST['pubmed_id'] ?? null;
     $pubmed_html=file_get_contents('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id='.$pubmed_id.'retmode=json&rettype=abstract');
   }
 
@@ -152,7 +152,7 @@
     $pattern='~.*ArticleTitle\>(.+)\<.*~';
     if ($pubmed_html != '') {
       $result = preg_match($pattern, ($pubmed_html ?? ''), $match);
-      $title = $match[1];
+      $title = $match[1] ?? null;
     }
   }
   // year
@@ -160,7 +160,7 @@
     $pattern='~.*PubDate\W+Year\>(.+)\<.*~';
     if ($pubmed_html != '') {
       $result = preg_match($pattern, ($pubmed_html ?? ''), $match);
-      $year = $match[1];
+      $year = $match[1] ?? null;
     }
   }
   // journal
@@ -168,7 +168,7 @@
     $pattern='~.*JournalIssue\W+Title>(.+)\<.*~';
     if ($pubmed_html != '') {
       $result = preg_match($pattern, ($pubmed_html ?? ''), $match);
-      $journal = $match[1];
+      $journal = $match[1] ?? null;
     }
   }
   // citation data
@@ -190,7 +190,7 @@
     $pattern='~.*JournalIssue\W+Volume>(.+)\<.*~';
     if ($pubmed_html != '') {
       $result = preg_match($pattern, ($pubmed_html ?? ''), $match);
-      $volume = $match[1];  
+      $volume = $match[1] ?? null;  
     }
   }
   // issue
@@ -198,7 +198,7 @@
     $pattern='~.*JournalIssue\W+Issue>(.+)\<.*~';
     if ($pubmed_html != '') {
       $result = preg_match($pattern, ($pubmed_html ?? ''), $match);
-      $issue = $match[1];   
+      $issue = $match[1] ?? null;   
     }
   }
   // pages
@@ -206,7 +206,7 @@
     $pattern='~.*Pagination\W+MedlinePgn>(.+)\<.*~';
     if ($pubmed_html != '') {
       $result = preg_match($pattern, ($pubmed_html ?? ''), $match);
-      $pages = $match[1]; 
+      $pages = $match[1] ?? null; 
     }
   }
   // combine for citation 
@@ -232,7 +232,7 @@
     $pattern='~.*AbstractText>(.+)\<.*~';
     if ($pubmed_html != '') {
       $result = preg_match($pattern, ($pubmed_html ?? ''), $match);
-      $abstract = $match[1];  
+      $abstract = $match[1] ?? null;  
     }
   }
   // official id
@@ -247,9 +247,9 @@
   $fixed_chr = array("-", "'", "-", "'", ""); // fixed charactor
 
   function remove_special_chr($string,$remove_tag,$allowed_chr,$spec_chr,$fixed_chr) {
-    $string=preg_replace('/'.$remove_tag.'/', '', $string);
-    $string=preg_replace('/'.$allowed_chr.'/', '', $string);
-    $string=str_replace($spec_chr, $fixed_chr, $string);    
+    $string=preg_replace('/'.$remove_tag.'/', '', ($string ?? ''));
+    $string=preg_replace('/'.$allowed_chr.'/', '', ($string ?? ''));
+    $string=str_replace($spec_chr, $fixed_chr, ($string ?? ''));    
     return $string;
   }
   
@@ -281,7 +281,7 @@
   <tr><td style='max-width:".$det_lbl_wth.";'>Journal:</td><td><textarea name='journal' style='min-width:100%;min-height:25px;font-size:22px;'>".$journal."</textarea></td></tr>
   <tr><td style='max-width:".$det_lbl_wth.";'>Citation:</td><td><textarea name='citation' style='min-width:100%;min-height:125px;font-size:22px;'>".$citation."</textarea></td></tr>
   <tr><td style='max-width:".$det_lbl_wth.";'>Url:</td><td><textarea name='url' style='min-width:100%;min-height:25px;font-size:22px;' id='url'>".$url."</textarea><br>&nbsp;&nbsp;&nbsp;&nbsp;<a href='".find_pdf($dir, $art_mod_id)."' target='_blank'>Pdf</a>";
-  echo "&nbsp;&nbsp;&nbsp;&nbsp;<a href='https://scholar.google.com/scholar?hl=en&as_sdt=0%2C47&q=".str_replace(" ", "+", $title)."' target='_blank' id='scholar_link'>Google Scholar</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='?art_mod_id=".($_GET['art_mod_id']+1)."#scholar_link'>Next</a></td></tr>
+  echo "&nbsp;&nbsp;&nbsp;&nbsp;<a href='https://scholar.google.com/scholar?hl=en&as_sdt=0%2C47&q=".str_replace(" ", "+", ($title ?? ''))."' target='_blank' id='scholar_link'>Google Scholar</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='?art_mod_id=".($_GET['art_mod_id']+1)."#scholar_link'>Next</a></td></tr>
   <tr><td style='max-width:".$det_lbl_wth.";'>Authors:</td><td><textarea name='authors' style='min-width:100%;min-height:25px;font-size:22px;' id='url'>".$authors."</textarea></td></tr> 
   <tr><td style='max-width:".$det_lbl_wth.";'>Abstract:</td><td><textarea name='abstract' style='min-width:100%;min-height:200px;font-size:22px;'>".$abstract."</textarea></td></tr>
   <tr><td style='max-width:".$det_lbl_wth.";'>Theory Notes:</td><td><textarea name='theory' style='min-width:100%;min-height:50px;font-size:22px;'>".$theory."</textarea></td></tr>
@@ -338,7 +338,7 @@
     <span style='display:none;' id='add_".$property."'><font style='font-size:.7em;'>Add ".$property.":</font><br><textarea name='add_".$property."' style='min-width:70%;max-height:25px;font-size:22px;'></textarea>&nbsp&nbsp&nbsp<input type='submit' value='  Add  ' style='height:28px;font-size:20px;position:relative;top:-7px;'></input></span>
     <span style='display:none;' id='remove_".$property."'><font style='font-size:.7em;'>Remove ".$property.":</font><br><select name='remove_".$property."' size='1' class='select-css' style='min-width:400px;position:relative;top:-7px;'>";
     echo "<option value='' ></option>";
-    for ($i=0;$i<count($property_group);$i++) {
+    for ($i=0;$i<count($property_group ?? array());$i++) {
       echo "<option value='".$property_group[$i]."' >".$property_group[$i]."</option>";
     }
     echo "</select>&nbsp&nbsp&nbsp<input type='submit' value='  Remove  ' style='height:28px;font-size:20px;position:relative;top:-7px;'></input></span>";
@@ -397,8 +397,8 @@
   function display_property($cog_conn, $prop_desc, $but_desc, $tbl, $col, $select_group, $multi_sel) {
     echo "<tr><td style='min-width:350px;'>".$prop_desc."</td><td>";
     if ($but_desc == "Neuron") {
-      $sel_nrn = $select_group[0];
-      $sel_nrnfzy = $select_group[1];
+      $sel_nrn = $select_group[0] ?? null;
+      $sel_nrnfzy = $select_group[1] ?? null;
       echo "<div style='width:400px;height:150px;overflow-y:scroll;line-height:20px;float:left;border:1px solid black;'><font style='font-size:18px;'><table>";
       $sql = "SELECT ".$col." FROM ".$tbl;
       $result = $cog_conn->query($sql);

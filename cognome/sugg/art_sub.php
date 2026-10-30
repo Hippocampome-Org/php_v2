@@ -33,8 +33,8 @@ if (!isset($_SESSION['user_login']) || $_SESSION['user_login'] == '') {
   include('mysql_connect.php');
   $sub_success='true';   
 
-  $art_num=$_POST['new_art_numb'];
-  $art_off_id=$_POST['art_off_id'];
+  $art_num= $_POST['new_art_numb'] ?? null;
+  $art_off_id= $_POST['art_off_id'] ?? null;
   $art_mod_id=$art_num;
 
   function record_username($cog_conn, $tbl, $username) {
@@ -186,7 +186,7 @@ if (!isset($_SESSION['user_login']) || $_SESSION['user_login'] == '') {
     */
     $verbose_comments=false;
 
-    for ($i=0; $i<count($old_entry); $i++)
+    for ($i=0; $i<count($old_entry ?? array()); $i++)
     { 
       if ($verbose_comments) {echo "<br>".$tbl." ".$col.": ".$old_entry[$i]."<br>";}
       if (!in_array($old_entry[$i],$new_entry)) {
@@ -215,7 +215,7 @@ if (!isset($_SESSION['user_login']) || $_SESSION['user_login'] == '') {
     */
     $verbose_comments=false;
 
-    for ($i=0; $i<count($new_entry); $i++)
+    for ($i=0; $i<count($new_entry ?? array()); $i++)
     {
       if ($verbose_comments) {echo "<br>".$tbl." ".$col.": ".$new_entry[$i]."<br>";}
       if (!in_array($new_entry[$i],$old_entry)) {
@@ -249,8 +249,8 @@ if (!isset($_SESSION['user_login']) || $_SESSION['user_login'] == '') {
 
       // submit research properties
       if ($_POST['subjects']!='') {
-        $subjects = $_POST['subjects'];
-        for ($i=0; $i<count($subjects); $i++)
+        $subjects = $_POST['subjects'] ?? null;
+        for ($i=0; $i<count($subjects ?? array()); $i++)
         {
           $sql = "INSERT INTO `natemsut_cog_sug`.`article_has_subject` (`subject_id`, `article_id`) VALUES ('".$subjects[$i]."', '".$_POST['new_art_numb']."');";
           $result = $cog_conn->query($sql);
@@ -258,20 +258,20 @@ if (!isset($_SESSION['user_login']) || $_SESSION['user_login'] == '') {
         }    
       }
       if ($_POST['details']!='') {
-        $details = $_POST['details'];
+        $details = $_POST['details'] ?? null;
         $sql = "INSERT INTO `natemsut_cog_sug`.`article_has_detail` (`detail_id`, `article_id`) VALUES ('".$details[0]."', '".$_POST['new_art_numb']."');";
         $result = $cog_conn->query($sql);
         record_username($cog_conn, 'article_has_detail', $_SESSION['user_login']);
       }
       if ($_POST['implmnts']!='') {
-        $implmnts = $_POST['implmnts'];
+        $implmnts = $_POST['implmnts'] ?? null;
         $sql = "INSERT INTO `natemsut_cog_sug`.`article_has_implmnt` (`level_id`, `article_id`) VALUES ('".$implmnts[0]."', '".$_POST['new_art_numb']."');";
         $result = $cog_conn->query($sql);
         record_username($cog_conn, 'article_has_implmnt', $_SESSION['user_login']);
       }
       if ($_POST['theories']!='') {
-        $theories = $_POST['theories'];
-        for ($i=0; $i<count($theories); $i++)
+        $theories = $_POST['theories'] ?? null;
+        for ($i=0; $i<count($theories ?? array()); $i++)
         {
           $sql = "INSERT INTO `natemsut_cog_sug`.`article_has_theory` (`theory_id`, `article_id`) VALUES ('".$theories[$i]."', '".$_POST['new_art_numb']."');";
           $result = $cog_conn->query($sql);
@@ -279,8 +279,8 @@ if (!isset($_SESSION['user_login']) || $_SESSION['user_login'] == '') {
         }    
       }
       if ($_POST['keywords']!='') {
-        $keywords = $_POST['keywords'];
-        for ($i=0; $i<count($keywords); $i++)
+        $keywords = $_POST['keywords'] ?? null;
+        for ($i=0; $i<count($keywords ?? array()); $i++)
         {
           $sql = "INSERT INTO `natemsut_cog_sug`.`article_has_keyword` (`keyword_id`, `article_id`) VALUES ('".$keywords[$i]."', '".$_POST['new_art_numb']."');";
           $result = $cog_conn->query($sql);
@@ -311,27 +311,27 @@ if (!isset($_SESSION['user_login']) || $_SESSION['user_login'] == '') {
     
     // submit research properties
     if ($_POST['subjects']!='') {
-      $subjects = $_POST['subjects'];
+      $subjects = $_POST['subjects'] ?? null;
       process_deletions($cog_conn,$art_num,'article_has_subject','subject_id',$sel_sbj,$subjects);
       process_additions($cog_conn,$art_num,'article_has_subject','subject_id',$sel_sbj,$subjects);  
     }
     if ($_POST['details']!='') {
-      $det_lvl=$_POST['details'];
+      $det_lvl= $_POST['details'] ?? null;
       process_deletions($cog_conn,$art_num,'article_has_detail','detail_id',$sel_det,$det_lvl);
       process_additions($cog_conn,$art_num,'article_has_detail','detail_id',$sel_det,$det_lvl); 
     }
     if ($_POST['implmnts']!='') {
-      $impl_lvl=$_POST['implmnts'];
+      $impl_lvl= $_POST['implmnts'] ?? null;
       process_deletions($cog_conn,$art_num,'article_has_implmnt','level_id',$sel_ipl,$impl_lvl);
       process_additions($cog_conn,$art_num,'article_has_implmnt','level_id',$sel_ipl,$impl_lvl);       
     }
     if ($_POST['theories']!='') {
-      $theories = $_POST['theories'];  
+      $theories = $_POST['theories'] ?? null;  
       process_deletions($cog_conn,$art_num,'article_has_theory','theory_id',$sel_thy,$theories);
       process_additions($cog_conn,$art_num,'article_has_theory','theory_id',$sel_thy,$theories);       
     }
     if ($_POST['keywords']!='') {
-      $keywords = $_POST['keywords'];   
+      $keywords = $_POST['keywords'] ?? null;   
       process_deletions($cog_conn,$art_num,'article_has_keyword','keyword_id',$sel_kwd,$keywords);
       process_additions($cog_conn,$art_num,'article_has_keyword','keyword_id',$sel_kwd,$keywords);        
     }

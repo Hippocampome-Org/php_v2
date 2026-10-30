@@ -4,9 +4,9 @@
   $property = 1;
   $prop_ent_desc = "";
   if ($_POST['form_submitted']=='1') {
-    $subject = $_POST['subject'];
-    $dimension = $_POST['dimension'];
-    $property = $_POST['property'];
+    $subject = $_POST['subject'] ?? null;
+    $dimension = $_POST['dimension'] ?? null;
+    $property = $_POST['property'] ?? null;
   }
   $dim_id = '';
   $dim_desc = '';

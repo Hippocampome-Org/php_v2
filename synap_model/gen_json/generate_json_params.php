@@ -43,11 +43,11 @@
 
         $json_template_file = $path_to_files."json_new_line.json";
         $json_new_line = file($json_template_file);
-        $json_new_line = $json_new_line[0];
+        $json_new_line = $json_new_line[0] ?? null;
 
         $page = '';
         if (isset($_GET['page'])) {
-                $page = $_GET['page'];
+                $page = $_GET['page'] ?? null;
 }
 
         $neuron_group = array();
@@ -112,7 +112,7 @@
                 }
         }
 
-        for ($i = 0; $i < count($parcel_group); $i++) {
+        for ($i = 0; $i < count($parcel_group ?? array()); $i++) {
                 $parcel_delim = explode(':', $parcel_group[$i]);
                 array_push($parcel_region, $parcel_delim[0]);
                 array_push($parcel_layers, $parcel_delim[1]);

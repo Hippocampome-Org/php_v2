@@ -13,11 +13,11 @@
 	require_once('class/class.temporary_result_neurons.php');
 
 	$color_selected ='#EBF283';
-	$type = new type($class_type);
-	$research = $_REQUEST['research'];
-	$property = new property($class_property);
-	$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
-	$hippo_select = $_SESSION['hippo_select'];
+	$type = new type($class_type ?? null);
+	$research = $_REQUEST['research'] ?? null;
+	$property = new property($class_property ?? null);
+	$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel ?? null);
+	$hippo_select = $_SESSION['hippo_select'] ?? null;
 
 if ($_SESSION['perm'] == NULL)
 {

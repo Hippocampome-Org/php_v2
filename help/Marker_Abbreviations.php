@@ -1,7 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) session_start();
 
-$perm = $_SESSION['perm'];
+$perm = $_SESSION['perm'] ?? null;
 if ($perm == NULL)
 	header("Location:error1.html");
 

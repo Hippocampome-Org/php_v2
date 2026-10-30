@@ -16,7 +16,7 @@ Class QueryUtil{
            echo("<p>Error in Listing Neuron Type </p>");
        }
        while($row=mysqli_fetch_array($rs_type, MYSQLI_NUM)){
-           $row_type[$index++]=$row[0];
+           $row_type[$index++]= $row[0] ?? null;
        }
        return $row_type;
    }
@@ -29,7 +29,7 @@ Class QueryUtil{
            echo("<p>Error in Listing Neuron Type For Neurotransmitter </p>");
        }
        while($row=mysqli_fetch_array($rs_type, MYSQLI_NUM)){
-           $row_type[$index++]=$row[0];
+           $row_type[$index++]= $row[0] ?? null;
        }
        return $row_type;
    }
@@ -43,7 +43,7 @@ Class QueryUtil{
             echo("<p>Error in Listing Neuron Type For Name </p>");
         }
         while($row=mysqli_fetch_array($rs_type, MYSQLI_NUM)){
-            $row_type[$index++]=$row[0];
+            $row_type[$index++]= $row[0] ?? null;
         }
         return $row_type;
     }
@@ -57,7 +57,7 @@ Class QueryUtil{
             echo("<p>Error in Listing Neuron Type For Name </p>");
         }
         while($row=mysqli_fetch_array($rs_type, MYSQLI_NUM)){
-            $row_type[$index++]=$row[0];
+            $row_type[$index++]= $row[0] ?? null;
         }
         return $row_type;
     }
@@ -77,7 +77,7 @@ Class QueryUtil{
             echo("<p>Error in Listing Neuron Type For Morphology </p>");
         }
         while($row=mysqli_fetch_array($rs_type, MYSQLI_NUM)){
-            $row_type[$index++]=$row[0];
+            $row_type[$index++]= $row[0] ?? null;
         }
         #echo("Total Type Found:".count($row_type));
         return $row_type;
@@ -99,7 +99,7 @@ Class QueryUtil{
             echo("<p>Error in Listing Neuron Type For Marker </p>");
         }
         while($row=mysqli_fetch_array($rs_type, MYSQLI_NUM)){
-            $row_type[$index++]=$row[0];
+            $row_type[$index++]= $row[0] ?? null;
         }
         }else{
         $row_type = array();
@@ -117,7 +117,7 @@ Class QueryUtil{
             echo("<p>Error in Listing Neuron Type For Marker </p>");
         }
         while($row=mysqli_fetch_array($rs_type, MYSQLI_NUM)){
-            $row_type[$index++]=$row[0];
+            $row_type[$index++]= $row[0] ?? null;
         }
     }
         return $row_type;
@@ -138,7 +138,7 @@ Class QueryUtil{
             echo("<p>Error in Listing Neuron Type For Electrophysiology</p>");
         }
         while($row=mysqli_fetch_array($rs_type, MYSQLI_NUM)){
-            $row_type[$index++]=$row[0];
+            $row_type[$index++]= $row[0] ?? null;
         }
         #echo("Total Type Found:".count($row_type));
         return $row_type;
@@ -162,7 +162,7 @@ Class QueryUtil{
             echo("<p>Error in Listing Neuron Type For Firing Pattern </p>");
         }
         while($row=mysqli_fetch_array($rs_type, MYSQLI_NUM)){
-            $row_type[$index++]=$row[0];
+            $row_type[$index++]= $row[0] ?? null;
         }
         #echo("Total Type Found:".count($row_type));
         return $row_type;
@@ -189,7 +189,7 @@ Class QueryUtil{
             echo("<p>Error in Listing Neuron Type For Firing Pattern Parameter</p>");
         }
         while($row=mysqli_fetch_array($rs_type, MYSQLI_NUM)){
-            $row_type[$index++]=$row[0];
+            $row_type[$index++]= $row[0] ?? null;
         }
         #echo("Total Type Found:".count($row_type));
         return $row_type;

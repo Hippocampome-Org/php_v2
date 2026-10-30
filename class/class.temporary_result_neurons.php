@@ -1,6 +1,8 @@
 <?php
 class temporary_result_neurons
 {
+	// PHP83-FIX by KN on 2026-10-30: declared (PHP 8.2+ warns about undeclared properties)
+	public $_name_table;
 	private $_id;
 	private $_id_type;	
 	private $_id_array = [];

@@ -77,7 +77,7 @@ if (!isset($_SESSION['user_login']) || $_SESSION['user_login'] == '') {
     /*echo "<select name='remove_".$property."' size='1' class='select-css' style='min-width:400px;max-width:70%;position:relative;top:-7px;'>";*/
     echo "<select name='deactivated' size='1' class='select-css' style='min-width:400px;max-width:70%;position:relative;top:-7px;'>";
     echo "<option value='' ></option>";
-    for ($i=0;$i<count($property_group);$i++) {
+    for ($i=0;$i<count($property_group ?? array());$i++) {
       echo "<option value='".$property_group[$i]."' >".substr($property_group[$i],0,110)."</option>";
     }
     echo "</select>&nbsp&nbsp&nbsp<input type='submit' value='  Remove  ' style='height:28px;font-size:20px;position:relative;top:-7px;'></input></span>";
@@ -102,7 +102,7 @@ if (!isset($_SESSION['user_login']) || $_SESSION['user_login'] == '') {
     Check for prior collected article details
   */
   if (isset($_GET['art_mod_id'])) {
-    $art_mod_id = $_GET['art_mod_id'];
+    $art_mod_id = $_GET['art_mod_id'] ?? null;
     list($title, $year, $journal, $citation, $url, $abstract, $theory, $mod_meth, $cur_notes, $inc_qual, $authors, $art_off_id) = setArtDetails($art_mod_id,$servername,$username,$password,$dbname);
   }
 
@@ -147,7 +147,7 @@ if (!isset($_SESSION['user_login']) || $_SESSION['user_login'] == '') {
   <form action='art_sub.php' method='POST'>
   <span style='font-size:1em;'>Submit the Article to the Database: <input type='submit' value='  Submit  ' style='height:30px;font-size:22px;position:relative;top:-2px;'></input></span></center></div>";
   echo "<br><div class='article_details'>";
-  $pubmed_id=$_POST['pubmed_id'];
+  $pubmed_id= $_POST['pubmed_id'] ?? null;
   $pubmed_html=file_get_contents('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id='.$pubmed_id.'retmode=json&rettype=abstract');
 
   /* populate article data */
@@ -155,19 +155,19 @@ if (!isset($_SESSION['user_login']) || $_SESSION['user_login'] == '') {
   if ($title=='') {
   $pattern='~.*ArticleTitle\>(.+)\<.*~';
   $result = preg_match($pattern, ($pubmed_html ?? ''), $match);
-  $title = $match[1];
+  $title = $match[1] ?? null;
   }
   // year
   if ($year=='') {
   $pattern='~.*PubDate\W+Year\>(.+)\<.*~';
   $result = preg_match($pattern, ($pubmed_html ?? ''), $match);
-  $year = $match[1];
+  $year = $match[1] ?? null;
   }
   // journal
   if ($journal=='') {
   $pattern='~.*JournalIssue\W+Title>(.+)\<.*~';
   $result = preg_match($pattern, ($pubmed_html ?? ''), $match);
-  $journal = $match[1];
+  $journal = $match[1] ?? null;
   }
   // citation data
   // authors
@@ -185,19 +185,19 @@ if (!isset($_SESSION['user_login']) || $_SESSION['user_login'] == '') {
   if ($volume=='') {
     $pattern='~.*JournalIssue\W+Volume>(.+)\<.*~';
     $result = preg_match($pattern, ($pubmed_html ?? ''), $match);
-    $volume = $match[1];  
+    $volume = $match[1] ?? null;  
   }
   // issue
   if ($issue=='') {  
     $pattern='~.*JournalIssue\W+Issue>(.+)\<.*~';
     $result = preg_match($pattern, ($pubmed_html ?? ''), $match);
-    $issue = $match[1];   
+    $issue = $match[1] ?? null;   
   }
   // pages
   if ($pages=='') {  
     $pattern='~.*Pagination\W+MedlinePgn>(.+)\<.*~';
     $result = preg_match($pattern, ($pubmed_html ?? ''), $match);
-    $pages = $match[1]; 
+    $pages = $match[1] ?? null; 
   }
   // combine for citation 
   if ($citation=='') {
@@ -221,7 +221,7 @@ if (!isset($_SESSION['user_login']) || $_SESSION['user_login'] == '') {
   if ($abstract=='') {  
     $pattern='~.*AbstractText>(.+)\<.*~';
     $result = preg_match($pattern, ($pubmed_html ?? ''), $match);
-    $abstract = $match[1];  
+    $abstract = $match[1] ?? null;  
   }
   // official id
   if ($pubmed_id != '') {
@@ -235,9 +235,9 @@ if (!isset($_SESSION['user_login']) || $_SESSION['user_login'] == '') {
   $fixed_chr = array("-", "'", "-", "'", ""); // fixed charactor
 
   function remove_special_chr($string,$remove_tag,$allowed_chr,$spec_chr,$fixed_chr) {
-    $string=preg_replace('/'.$remove_tag.'/', '', $string);
-    $string=preg_replace('/'.$allowed_chr.'/', '', $string);
-    $string=str_replace($spec_chr, $fixed_chr, $string);    
+    $string=preg_replace('/'.$remove_tag.'/', '', ($string ?? ''));
+    $string=preg_replace('/'.$allowed_chr.'/', '', ($string ?? ''));
+    $string=str_replace($spec_chr, $fixed_chr, ($string ?? ''));    
     return $string;
   }
   
@@ -326,7 +326,7 @@ if (!isset($_SESSION['user_login']) || $_SESSION['user_login'] == '') {
     echo "<select name='deactivated_3' 
      size='1' class='select-css' style='min-width:400px;position:relative;top:-7px;'>";
     echo "<option value='' ></option>";
-    for ($i=0;$i<count($property_group);$i++) {
+    for ($i=0;$i<count($property_group ?? array());$i++) {
       echo "<option value='".$property_group[$i]."' >".$property_group[$i]."</option>";
     }
     echo "</select>&nbsp&nbsp&nbsp<input type='submit' value='  Remove  ' style='height:28px;font-size:20px;position:relative;top:-7px;'></input></span>";

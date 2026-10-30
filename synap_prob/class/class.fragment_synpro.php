@@ -481,7 +481,7 @@ class fragment_synpro
 
 		$artid = '';
     	$artids = array();
-    	for ($i = 0; $i < count($eids); $i++) {
+    	for ($i = 0; $i < count($eids ?? array()); $i++) {
 	    	$query = "SELECT Article_id FROM SynproArticleEvidenceRel where Evidence_id = '$eids[$i]';";
 			//echo $query."<br>";
 			$rs = mysqli_query($GLOBALS['conn'],$query);

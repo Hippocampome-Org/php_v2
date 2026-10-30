@@ -41,9 +41,9 @@ $base_dir = "query_results/final_selection/";
 $filename = "";
 $queryfile = "";
 if (isset($_REQUEST['file']) && isset($_REQUEST['query'])) {
-	$file=$_REQUEST['file'];
+	$file= $_REQUEST['file'] ?? null;
 	$filename = $base_dir.$file;	
-	$query=$_REQUEST['query'];
+	$query= $_REQUEST['query'] ?? null;
 	$queryfile = $base_dir.$query;
 }
 else {
@@ -56,16 +56,16 @@ echo '<br><center><font style="font-size:22px">'.file_get_contents($queryfile).'
 	$end = 10;
 	if (isset($_REQUEST['start'])) {
 		if ($_REQUEST['start'] >= 0) {
-			$start = $_REQUEST['start'];
+			$start = $_REQUEST['start'] ?? null;
 		}
 	}
 	if (isset($_REQUEST['end'])) {
 		if ($_REQUEST['end'] >= 0) {
-			$end = $_REQUEST['end'];
+			$end = $_REQUEST['end'] ?? null;
 		}
 	}
 	if (isset($_REQUEST['custom_page'])) {
-		$custom_page = $_REQUEST['custom_page'];
+		$custom_page = $_REQUEST['custom_page'] ?? null;
 		$start = ($custom_page*10)-9;
 		$end = $custom_page*10;
 	}
@@ -107,12 +107,12 @@ function msleep($time)
 function article_info($title, $gs_authors)
 {
 	// insert html code
-	$title_adj=str_replace(' ', '%20', $title);
+	$title_adj=str_replace(' ', '%20', ($title ?? ''));
 
 	$pm_api_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&retmode=json&term=$title_adj%5Btitle%5D";
 	// gs authors //
 	foreach ($gs_authors as $author) {
-		$author = str_replace(',', '', $author);
+		$author = str_replace(',', '', ($author ?? ''));
 		if (strlen($author) > 3) {
 			$pm_api_url = $pm_api_url."%20".$author."%20%5Bauthor%5D";
 		}
@@ -122,14 +122,14 @@ function article_info($title, $gs_authors)
 	// id //
 	$pattern='~.*idlist\"\:\[\"(\d+)\"\].*~';
 	$result = preg_match($pattern, ($html ?? ''), $match);
-	$id = $match[1];
+	$id = $match[1] ?? null;
 
 	// abstract //
 	$pm_url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id='.$id.'retmode=json&rettype=abstract';
 	$pubmed_html=file_get_contents($pm_url);
 	$pattern='~.*AbstractText>(.+)\<.*~';
 	$result = preg_match($pattern, ($pubmed_html ?? ''), $match);
-	$abstract = $match[1];
+	$abstract = $match[1] ?? null;
 
 	// authors //
 	$authors='';
@@ -144,18 +144,18 @@ function article_info($title, $gs_authors)
     // title //
 	$pattern='~.*ArticleTitle\>(.+)\<.*~';
 	$result = preg_match($pattern, ($pubmed_html ?? ''), $match);
-	$pm_title = $match[1];
-	$pm_title = str_replace('"', '\'', $pm_title);
+	$pm_title = $match[1] ?? null;
+	$pm_title = str_replace('"', '\'', ($pm_title ?? ''));
 
 	// year //
 	$pattern='~.*PubDate\W+Year\>(.+)\<.*~';
 	$result = preg_match($pattern, ($pubmed_html ?? ''), $match);
-	$year = $match[1];
+	$year = $match[1] ?? null;
 
 	// journal //
 	$pattern='~.*JournalIssue\W+Title>(.+)\<.*~';
 	$result = preg_match($pattern, ($pubmed_html ?? ''), $match);
-	$journal = $match[1];
+	$journal = $match[1] ?? null;
 	
 	return array($id, $abstract, $pm_title, $pm_api_url, $authors, $year, $journal, $pm_url);
 }
@@ -169,10 +169,10 @@ if (($h = fopen($filename, "r")) !== FALSE)
   while (($data = fgetcsv($h, 10000, ",")) !== FALSE) 
   {		
   	if ($i >= $start && $i <= $end) {
-  		$title = $data[2];
+  		$title = $data[2] ?? null;
   		//$url = $data[6];
   		$url_orig = "https://scholar.google.com/scholar?q=".$title."&hl=en";
-  		$url = str_replace(" ", "+", $url_orig);
+  		$url = str_replace(" ", "+", ($url_orig ?? ''));
 
   		$search_results = $search_results."<tr><td style='width:50px;overflow-wrap: anywhere;'>GS #$i<br>Citations</td><td style='width:20px;overflow-wrap: anywhere;'>GS<br>Citations by Year</td><td>Title,&nbsp;&nbsp;Sources: ".$data[24]."</td><td style='width:20px;overflow-wrap: anywhere;'>GS<br>Year</td><td style='width:50px;overflow-wrap: anywhere;'>GS<br>Journal</td></tr>";
 	    // Read the data from a single line
@@ -181,46 +181,46 @@ if (($h = fopen($filename, "r")) !== FALSE)
 
 		$search_results = $search_results."<tr><td>PM<br>ID</td><td>PM<br>Link</td><td>PM<br>Abstract and Title</td><td>PM<br>Year</td><td style='width:50px;overflow-wrap: anywhere;'>PM<br>Journal</td></tr>";
 
-		$gs_authors = str_replace(',', '', $gs_authors);
+		$gs_authors = str_replace(',', '', ($gs_authors ?? ''));
 		$gs_authors = explode(" ", $data[1]);
 	    $article_details = article_info($title, $gs_authors);
-	    $pm_id = $article_details[0];
+	    $pm_id = $article_details[0] ?? null;
 	    if ($pm_id=='') {
 	    	$pm_id = 'N/A';
 	    }
-	    $pm_abstract = $article_details[1];
+	    $pm_abstract = $article_details[1] ?? null;
 	    if ($pm_abstract=='') {
 	    	$pm_abstract = $data[23]."<br>";
 	    	//if (strlen(file_get_contents($url))>100) {
-	    	$article_url = str_replace(" ", "+", $title);
+	    	$article_url = str_replace(" ", "+", ($title ?? ''));
 	    	$pm_abstract = $pm_abstract."<object data=\"article_page.php?article_url=".$article_url."\" style=\"width:100%;height:500px\"><embed src=\"article_page.php?article_url=".$article_url."\" style=\"width:100%;height:500px\"> </embed>Error: Embedded data could not be displayed.</object>";
 
 			//}
 	    }	    
-	    $pm_title = $article_details[2];
+	    $pm_title = $article_details[2] ?? null;
 	    if ($pm_title=='') {
 	    	//$pm_title = 'N/A';
 	    }
-	    $pm_api_url = $article_details[3];
-	    $pm_authors = $article_details[4];
+	    $pm_api_url = $article_details[3] ?? null;
+	    $pm_authors = $article_details[4] ?? null;
 	    if ($pm_authors=='') {
 	    	$pm_authors = 'N/A';
 	    }
-	    $pm_year = $article_details[5];
+	    $pm_year = $article_details[5] ?? null;
 	    if ($pm_year=='') {
 	    	$pm_year = 'N/A';
 	    }
-	    $pm_journal = $article_details[6];
+	    $pm_journal = $article_details[6] ?? null;
 	    if ($pm_journal=='') {
 	    	$pm_journal = 'N/A';
 	    }
-	    $pm_url = $article_details[7];
+	    $pm_url = $article_details[7] ?? null;
 
 	    if (substr($url, 0, 24)=='https://books.google.com') {
 	    	// format query for book search
 	    	$query_html = file_get_contents($queryfile);
-	    	$query_html2 = str_replace('Query: ', '', $query_html);
-	    	$query_html3 = str_replace(" ", "+", $query_html2);
+	    	$query_html2 = str_replace('Query: ', '', ($query_html ?? ''));
+	    	$query_html3 = str_replace(" ", "+", ($query_html2 ?? ''));
 	    	//$query_html4 = str_replace("AND", "", $query_html3);
 	    	//$query_html4 = str_replace("AND", "", $query_html3);
 	    	$search_phrase = '&q='.$query_html3;//.'&f=false';

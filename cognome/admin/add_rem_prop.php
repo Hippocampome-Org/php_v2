@@ -56,7 +56,7 @@
     */
     $verbose_comments=false;
 
-    for ($i=0; $i<count($old_entry); $i++)
+    for ($i=0; $i<count($old_entry ?? array()); $i++)
     { 
       if ($verbose_comments) {echo "<br>".$tbl." ".$col.": ".$old_entry[$i]."<br>";}
       if (!in_array($old_entry[$i],$new_entry)) {
@@ -84,7 +84,7 @@
     */      
     $verbose_comments=false;
 
-    for ($i=0; $i<count($new_entry); $i++)
+    for ($i=0; $i<count($new_entry ?? array()); $i++)
     {
       if ($verbose_comments) {echo "<br>".$tbl." ".$col.": ".$new_entry[$i]."<br>";}
       if (!in_array($new_entry[$i],$old_entry)) {

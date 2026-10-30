@@ -18,7 +18,7 @@ class utils_neuron_search{
         $query_to_get_searched_neuron="SELECT id,type_id,letter,neuron FROM $temp_table";
         $rs = mysqli_query($GLOBALS['conn'],$query_to_get_searched_neuron);
         if (!$rs) {
-            die("<p>Error in Listing Neuron Tables." . mysql_error() . "</p>");
+            die("<p>Error in Listing Neuron Tables." . mysqli_error($GLOBALS['conn']) . "</p>");
         }
         while($row=mysqli_fetch_array($rs, MYSQLI_ASSOC))
         {
@@ -42,7 +42,7 @@ class utils_neuron_search{
         $query_to_get_searched_neuron="SELECT id,type_id,neuron FROM $temp_table";
         $rs = mysqli_query($GLOBALS['conn'],$query_to_get_searched_neuron);
         if (!$rs) {
-            die("<p>Error in Listing Neuron Tables." . mysql_error() . "</p>");
+            die("<p>Error in Listing Neuron Tables." . mysqli_error($GLOBALS['conn']) . "</p>");
         }
         while($row=mysqli_fetch_array($rs, MYSQLI_ASSOC))
         {

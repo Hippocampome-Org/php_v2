@@ -69,7 +69,7 @@
 				$aFiles = array();
 				fnReadDir( $aFiles, "tests" );
 				
-				for ( $i=0 ; $i<count($aFiles) ; $i++ )
+				for ( $i=0 ; $i<count($aFiles ?? array()) ; $i++ )
 				{
 					$sTemplate;
 					$fp = fopen( $aFiles[$i], "r" );

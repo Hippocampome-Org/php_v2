@@ -64,7 +64,7 @@ jQuery(document).ready(function() {
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <?php
 //include ("access_db.php");
-$jsonStr = $_SESSION['ephys'];
+$jsonStr = $_SESSION['ephys'] ?? null;
 //include ("getEphys.php");
 include ("function/ephys_unit_table.php");
 include ("function/ephys_num_decimals_table.php");
@@ -76,26 +76,26 @@ require_once('class/class.epdata.php');
 require_once('class/class.temporary_result_neurons.php');
 
 
-$type = new type($class_type);
+$type = new type($class_type ?? null);
 $type -> retrive_id();
 $nTypes = $type->getNumber_type();
 
 $research = "";
 if(isset($_REQUEST['research']))
-	$research = $_REQUEST['research'];
+	$research = $_REQUEST['research'] ?? null;
 
 $table_result ="";
 if(isset($_REQUEST['table_result']))
-	$table_result = $_REQUEST['table_result'];
+	$table_result = $_REQUEST['table_result'] ?? null;
 	
 
-$property = new property($class_property);
+$property = new property($class_property ?? null);
 
-$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
+$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel ?? null);
 
-$epdataevidencerel = new epdataevidencerel($class_epdataevidencerel);
+$epdataevidencerel = new epdataevidencerel($class_epdataevidencerel ?? null);
 
-$epdata = new epdata($class_epdata);
+$epdata = new epdata($class_epdata ?? null);
 
 ?>
 
@@ -470,7 +470,7 @@ error_reporting(E_ALL);
 		<!-- ****************  BODY **************** -->
 		<?php 
 			if ($research){
-				$full_search_string = $_SESSION['full_search_string'];
+				$full_search_string = $_SESSION['full_search_string'] ?? null;
 				if ($number_type == 1)
 					print ("<font class='font3'> $number_type Result  [$full_search_string]</font>");
 				else

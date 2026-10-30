@@ -3,9 +3,9 @@
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <?php
-$type_post = $_REQUEST['type_post'];
-$main = $_REQUEST['main'];
-$connection = $_REQUEST['connection'];
+$type_post = $_REQUEST['type_post'] ?? null;
+$main = $_REQUEST['main'] ?? null;
+$connection = $_REQUEST['connection'] ?? null;
 // type_post=E&main=$nickname_type&connection=$nickname_type1
 
 if ($type_post == 'E')

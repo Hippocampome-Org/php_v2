@@ -28,10 +28,10 @@ require_once('class/class.articleauthorrel.php');
 require_once('class/class.parcel.php');
 
 //$id = $_REQUEST['id'];
-$subregionForSelection = $_REQUEST['subregion'];
-$selectionType = $_REQUEST['type'];
+$subregionForSelection = $_REQUEST['subregion'] ?? null;
+$selectionType = $_REQUEST['type'] ?? null;
 
-$parcelForSelection = $_REQUEST['parcel'];
+$parcelForSelection = $_REQUEST['parcel'] ?? null;
 $title = $subregionForSelection;
 
 if($selectionType=="parcel")
@@ -54,36 +54,36 @@ else
 		$array_for_use = array("I","II","III","IV","V","VI");
 }
 
-$type = new type($class_type);
+$type = new type($class_type ?? null);
 $type -> retrive_by_id($id);
 
-$synonym = new synonym($class_synonym);
+$synonym = new synonym($class_synonym ?? null);
 
-$property = new property($class_property);
+$property = new property($class_property ?? null);
 
-$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
+$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel ?? null);
 
-$epdataevidencerel = new epdataevidencerel($class_epdataevidencerel);
+$epdataevidencerel = new epdataevidencerel($class_epdataevidencerel ?? null);
 
-$epdata = new epdata($class_epdata);
+$epdata = new epdata($class_epdata ?? null);
 
 $synonymtyperel = new synonymtyperel('SynonymTypeRel');
 
 $fragmenttyperel = new fragmenttyperel();
 
-$fragment = new fragment($class_fragment);
+$fragment = new fragment($class_fragment ?? null);
 
-$evidencefragmentrel = new evidencefragmentrel($class_evidencefragmentrel);
+$evidencefragmentrel = new evidencefragmentrel($class_evidencefragmentrel ?? null);
 
 $typetyperel = new typetyperel();
 
-$articleevidencerel = new articleevidencerel($class_articleevidencerel);
+$articleevidencerel = new articleevidencerel($class_articleevidencerel ?? null);
 
-$article = new article($class_article);
+$article = new article($class_article ?? null);
 
-$articleauthorrel = new articleauthorrel($class_articleauthorrel);
+$articleauthorrel = new articleauthorrel($class_articleauthorrel ?? null);
 
-$author = new author($class_author);
+$author = new author($class_author ?? null);
 
 $parcel = new parcel();
 
@@ -257,7 +257,7 @@ include ("function/icon.html");
       }
 	
 		function name_row($inputList,$outputList) {
-		$itrCount = max(count($inputList),count($outputList));
+		$itrCount = max(count($inputList ?? array()),count($outputList ?? array()));
 	
 		$html ="";
 		for($var=0;$var<$itrCount;$var++)
@@ -321,7 +321,7 @@ include ("function/icon.html");
 		
 		
 <?php 
- for($ivar=0;$ivar < count($array_for_use);$ivar++)
+ for($ivar=0;$ivar < count($array_for_use ?? array());$ivar++)
  {
 ?>
 <table width="80%" border="0" cellspacing="2" cellpadding="0">
@@ -384,7 +384,7 @@ include ("function/icon.html");
       	$explicit_sources[] = $parcelEntry->getType1Id();
       }
        
-      if(count($explicit_sources) >= 1) {
+      if(count($explicit_sources ?? array()) >= 1) {
       	$list_explicit_sources = array_unique($explicit_sources);
       	$list_explicit_sources = get_sorted_records($list_explicit_sources);
       }
@@ -399,7 +399,7 @@ include ("function/icon.html");
       	$explicit_nonsources[] = $parcelEntry->getType1Id();
       }
       
-      if (count($explicit_nonsources) >= 1) {
+      if (count($explicit_nonsources ?? array()) >= 1) {
       	$list_explicit_nonsources = array_unique($explicit_nonsources);
       	$list_explicit_nonsources = get_sorted_records($list_explicit_nonsources);
       }
@@ -422,7 +422,7 @@ include ("function/icon.html");
       	$explicit_targets[] = $parcelEntry->getType2Id();
       }
       
-	  if (count($explicit_targets) >= 1) {
+	  if (count($explicit_targets ?? array()) >= 1) {
 			$list_explicit_targets = array_unique($explicit_targets);
 			$list_explicit_targets = get_sorted_records($list_explicit_targets);
 	  }
@@ -439,7 +439,7 @@ include ("function/icon.html");
 	  }
 	  
 	  $list_explicit_nontargets = Array();
-	  if (count($explicit_nontargets) >= 1) {
+	  if (count($explicit_nontargets ?? array()) >= 1) {
 			$list_explicit_nontargets = array_unique($explicit_nontargets);
 			$list_explicit_nontargets = get_sorted_records($list_explicit_nontargets);
 	  }
@@ -453,7 +453,7 @@ include ("function/icon.html");
       // Start R 2C connectivity changes
       // print it out
       print connection_table_head("Known Connections",$subregionForSelection,$array_for_use[$ivar]);
-      if ((count($list_explicit_targets) < 1) && (count($list_explicit_sources) < 1)) // the list of targets or sources is empty
+      if ((count($list_explicit_targets ?? array()) < 1) && (count($list_explicit_sources ?? array()) < 1)) // the list of targets or sources is empty
 			print name_row_none("none known");
 	  else
 	  { 
@@ -462,7 +462,7 @@ include ("function/icon.html");
 	  print connection_table_foot();
 	  
 	  print connection_table_head("Potential Connections",$subregionForSelection,$array_for_use[$ivar]);
-	  if ((count($list_potential_targets) < 1) && (count($list_potential_sources) < 1)) // the list of targets or sources is empty
+	  if ((count($list_potential_targets ?? array()) < 1) && (count($list_potential_sources ?? array()) < 1)) // the list of targets or sources is empty
 	  	print name_row_none("none known");
 	  else
 	  {

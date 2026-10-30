@@ -1,6 +1,8 @@
 <?php
 class article
 {
+	// PHP83-FIX by KN on 2026-10-30: declared (PHP 8.2+ warns about undeclared properties)
+	public $_pmicid;
 	private $_name_table;
 	private $_id;
 	private $_pmid_isbn;

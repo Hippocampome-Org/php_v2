@@ -22,8 +22,8 @@ define('AXONS_SOMA_PRESENT',14);
 define('DENDRITES_SOMA_PRESENT',24);
 define('AXONS_DENDRITES_SOMA_PRESENT',34);
   
-$research = $_REQUEST['research'];
-$table = $_REQUEST['table_result'];
+$research = $_REQUEST['research'] ?? null;
+$table = $_REQUEST['table_result'] ?? null;
 // $h = fopen('log_test.txt', 'a');
 // fwrite($h, 'In getmorphology.php \n');
 // fclose($h);
@@ -203,31 +203,31 @@ function getUrlForLink($id,$img,$key,$color1)
 	return ($url);	
 }
 if(!isset($_GET['page'])) $page=1;
-else $page = $_GET['page'];
+else $page = $_GET['page'] ?? null;
 //page=1&rows=5&sidx=1&sord=asc
 // get how many rows we want to have into the grid - rowNum parameter in the grid
 if(!isset($_GET['rows'])) $limit=176;
-else $limit = $_GET['rows'];
+else $limit = $_GET['rows'] ?? null;
 
 // get index row - i.e. user click to sort. At first time sortname parameter -
 // after that the index from colModel
 if(!isset($_GET['sidx'])) $sidx=1;
-else $sidx = $_GET['sidx'];
+else $sidx = $_GET['sidx'] ?? null;
 
 // sorting order - at first time sortorder
 if(!isset($_GET['sord'])) $sord="asc";
-else $sord = $_GET['sord'];
+else $sord = $_GET['sord'] ?? null;
 
 // if we not pass at first time index use the first column for the index or what you want
 if(!$sidx) $sidx =1;
 
-$type = new type($class_type);
+$type = new type($class_type ?? null);
 //$research = 0;
 /* if(isset($research)
-	$research = $_GET['researchVar']; */
+	$research = $_GET['researchVar'] ?? null; */
 if (isset($research)) // From page of search; retrieve the id from search_table (temporary) -----------------------
 {
-	$table_result = $_REQUEST['table_result'];
+	$table_result = $_REQUEST['table_result'] ?? null;
 	$temporary_result_neurons = new temporary_result_neurons();
 	$temporary_result_neurons -> setName_table($table_result);
 	
@@ -274,9 +274,9 @@ else // not from search page --------------
 		}
 }
 
-$property = new property($class_property);
+$property = new property($class_property ?? null);
 
-$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
+$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel ?? null);
 
 //$hippo_select = $_SESSION['hippo_select'];
 $count = $number_type;
@@ -397,7 +397,7 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
 		{		
 			$val_array=explode(':', $val[$ii]); // Check the object from the property index
 			// DG +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-			if(count($val_array) > 1) // To check if the explode has returned both the postfix value and the prefix value
+			if(count($val_array ?? array()) > 1) // To check if the explode has returned both the postfix value and the prefix value
 			{
 				$unvetted = check_unvetted1($id, $id_p[$ii], $evidencepropertyyperel); // Checks if a particular property is vetted or unvetted
 				$neuronType = ''; // Whether neuron present is Axon,Dendrite or Both
@@ -406,7 +406,7 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
 				{
 					$neuronType ='both';
 					/* $img = check_color('both', $unvetted);
-					$hippo[$val[$ii]] = $img[0]; */
+					$hippo[$val[$ii]] = $img[0] ?? null; */
 				}
 				else{
 					if ($part[$ii] == 'axons')
@@ -417,20 +417,20 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
 						//$hippo[$val[$ii]] ='<img src=images/morphology/dendrites_present.png>';
 				}
 				 $img = check_color($id,$neuronType, $unvetted,$val[$ii],$part[$ii]);
-				 $hippo[$val[$ii]] = $img[0];
-				 $hippo_color[$val[$ii]] = $img[1];
-				 $hippo_color_copy[$val[$ii]]=$img[1]; 
+				 $hippo[$val[$ii]] = $img[0] ?? null;
+				 $hippo_color[$val[$ii]] = $img[1] ?? null;
+				 $hippo_color_copy[$val[$ii]]= $img[1] ?? null; 
 			} 
 		}
 		if($part[$ii]=='somata'){	
 			$val_array=explode(':', $val[$ii]);
-			if(count($val_array) > 1) // To check if the explode has returned both the postfix value and the prefix value
+			if(count($val_array ?? array()) > 1) // To check if the explode has returned both the postfix value and the prefix value
 			{
 				$unvetted = check_unvetted1($id, $id_p[$ii], $evidencepropertyyperel); // Checks if a particular property is vetted or unvetted
 				$neuronType ='somata';
 				$img_somata = check_color_somata($id, $neuronType, $unvetted, $val[$ii], $part[$ii]);
 				if($img_somata!=''){
-				 	$hippo[$val[$ii]] = $img_somata[0];
+				 	$hippo[$val[$ii]] = $img_somata[0] ?? null;
           //$hippo_color[$val[$ii]] = $img_somata[1];	
           $hippo_color_copy[$val[$ii]] = 'pcl_soma';
 	        if($val[$ii]=='DG:SG' || $val[$ii]=='CA3:SP' || $val[$ii]=='CA2:SP' || $val[$ii]=='CA1:SP' || $val[$ii]=='SUB:SP')
@@ -528,7 +528,7 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
 */
 // array to hold parcels
 $col_array=array("DG:SMo","DG:SMi","DG:SG","DG:H","CA3:SLM","CA3:SR","CA3:SL","CA3:SP","CA3:SO","CA2:SLM","CA2:SR","CA2:SP","CA2:SO","CA1:SLM","CA1:SR","CA1:SP","CA1:SO","SUB:SM","SUB:SP","SUB:PL","EC:I","EC:II","EC:III","EC:IV","EC:V","EC:VI");
-$layer_col_count=count($col_array);
+$layer_col_count=count($col_array ?? array());
 
 // find type of property present for each type in parcels
 for ($i=0; $i < $number_type ; $i++) {
@@ -649,8 +649,8 @@ for ($i = 0; $i < $number_type; $i++) {
 						if ($excit_inhib == "i" && $pon_conn_display_array[$i][$k]==0) {
 						    $pon_conn_display_array[$i][$k] = P_INHIBITORY_CONN; //gray
 						    // Link code
-						    $data=$type->getID_array($i).",".str_replace(":","_",$col_array[$j]).",".$color_map[$pot_conn_array[$i][$j]].",".
-						    $type->getID_array($k).",".str_replace(":","_",$col_array[$j]).",".$color_map[$pot_conn_array[$k][$src_column]].",".
+						    $data=$type->getID_array($i).",".str_replace(":","_", ($col_array[$j] ?? '')).",".$color_map[$pot_conn_array[$i][$j]].",".
+						    $type->getID_array($k).",".str_replace(":","_", ($col_array[$j] ?? '')).",".$color_map[$pot_conn_array[$k][$src_column]].",".
 						    P_INHIBITORY_CONN;
 						    $potn_conn_neuron_pcl[$i][$k]=$data;
 						    
@@ -658,8 +658,8 @@ for ($i = 0; $i < $number_type; $i++) {
 							$pon_conn_display_array[$i][$k] = P_EXCITATORY_CONN; //black
 
 							// Link code
-						    $data=$type->getID_array($i).",".str_replace(":","_",$col_array[$j]).",".$color_map[$pot_conn_array[$i][$j]].",".
-						    $type->getID_array($k).",".str_replace(":","_",$col_array[$j]).",".$color_map[$pot_conn_array[$k][$src_column]].",".
+						    $data=$type->getID_array($i).",".str_replace(":","_", ($col_array[$j] ?? '')).",".$color_map[$pot_conn_array[$i][$j]].",".
+						    $type->getID_array($k).",".str_replace(":","_", ($col_array[$j] ?? '')).",".$color_map[$pot_conn_array[$k][$src_column]].",".
 						    P_EXCITATORY_CONN;
 						    $potn_conn_neuron_pcl[$i][$k]=$data;
 						} // if ($excit_inhib == "i"
@@ -680,7 +680,7 @@ for ($i = 0; $i < $number_type; $i++) {
 						  $pon_conn_display_array[$i][$k] = P_INHIBITORY_CONN; //gray								
 
 					  	// Link code
-					    $data=$type->getID_array($i).",".str_replace(":","_",$col_array[$j]).",".$color_map[$pot_conn_array[$i][$j]].",".$type->getID_array($k).",".str_replace(":","_",$col_array[$j]).",".$color_map[$pot_conn_array[$k][$src_column]].",".P_INHIBITORY_CONN;
+					    $data=$type->getID_array($i).",".str_replace(":","_", ($col_array[$j] ?? '')).",".$color_map[$pot_conn_array[$i][$j]].",".$type->getID_array($k).",".str_replace(":","_", ($col_array[$j] ?? '')).",".$color_map[$pot_conn_array[$k][$src_column]].",".P_INHIBITORY_CONN;
 					    $potn_conn_neuron_pcl[$i][$k]=$data;
 						}
 		      }

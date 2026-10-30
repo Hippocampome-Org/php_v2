@@ -427,7 +427,7 @@ class fragment_counts
     public function neuron_id_to_array_index($neuron_id, $neuron_ids) 
     {
     	$array_index=0;
-		for ($i = 0; $i < count($neuron_ids); $i++) {
+		for ($i = 0; $i < count($neuron_ids ?? array()); $i++) {
 			if ($neuron_id == $neuron_ids[$i]) {
 				$array_index = $i;
 			}
@@ -465,7 +465,7 @@ class fragment_counts
 
 		$pmid = '';
     	$pmids = array();
-    	for ($i = 0; $i < count($eids); $i++) {
+    	for ($i = 0; $i < count($eids ?? array()); $i++) {
 	    	$query = "SELECT pmid FROM counts_fragment where id = '$eids[$i]';";
 			//echo $query."<br>";
 			$rs = mysqli_query($GLOBALS['conn'],$query);
@@ -477,7 +477,7 @@ class fragment_counts
 
 		$artid = '';
     	$artids = array();
-    	for ($i = 0; $i < count($pmids); $i++) {
+    	for ($i = 0; $i < count($pmids ?? array()); $i++) {
 	    	$query = "SELECT id FROM Article where pmid_isbn='$pmids[$i]';";
 			//echo $query."<br>";
 			$rs = mysqli_query($GLOBALS['conn'],$query);

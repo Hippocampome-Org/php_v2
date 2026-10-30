@@ -17,13 +17,13 @@ function mmmr($array, $output = 'mean'){
     }else{ 
         switch($output){ 
             case 'mean': 
-                $count = count($array); 
+                $count = count($array ?? array()); 
                 $sum = array_sum($array); 
                 $total = $sum / $count; 
             break; 
             case 'median': 
                 rsort($array); 
-                $middle = round(count($array) / 2); 
+                $middle = round(count($array ?? array()) / 2); 
                 $total = $array[$middle-1]; 
             break; 
             case 'minimum': 
@@ -66,8 +66,8 @@ function get_connection_probability($row, $synprocptotal_data, $type_details, $s
 {
     $connection_probability = 1;
     $carlsim_default = 'Y';
-    $source_id = $row[2];
-    $target_id = $row[5];
+    $source_id = $row[2] ?? null;
+    $target_id = $row[5] ?? null;
     $source_id_type = $type_details[$source_id]['excit_inhib'];
     $target_id_type = $type_details[$target_id]['excit_inhib'];
     $source_ei_vals = $target_ei_vals =array();
@@ -120,7 +120,7 @@ function create_conn_params_query_string($neurons)
         return $post_neuron;
 }
 
-function get_default_synaptome_details($conn_synaptome, $table_name = NULL, $synprocptotal_data, $type_details, $synaptic, $neurons_default = NULL){
+function get_default_synaptome_details($conn_synaptome, $table_name, $synprocptotal_data, $type_details, $synaptic, $neurons_default = NULL){
     if($table_name == NULL){$table_name ='tm_cond16';}
     $select_default_synaptome_query = "SELECT 
     left(pre,LOCATE(' ',pre) - 1) as source_subregion, 
@@ -155,7 +155,7 @@ function get_default_synaptome_details($conn_synaptome, $table_name = NULL, $syn
         array_walk($neurons, 'neuron_alter', '');
         $result_default_synaptome_array = array();
  
-        for ($i = 0; $i < count($neurons); $i++){
+        for ($i = 0; $i < count($neurons ?? array()); $i++){
             $neuron = $neurons[$i];
 
             if($i != 0){

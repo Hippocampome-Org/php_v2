@@ -1,6 +1,13 @@
 <?php 
 class simulation_param
 {
+	// PHP83-FIX by KN on 2026-10-30: declared (PHP 8.2+ warns about undeclared properties)
+	public $_a_id;
+	public $_cell_id;
+	public $_a_original_id;
+	public $_name;
+	public $_protocol_tag;
+	public $_a_type;
 	private $_name_table;
 	
 	function __construct ($name)

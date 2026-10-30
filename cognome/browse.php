@@ -61,7 +61,7 @@
     $expand_art_list='checked';
     $show_art_prop='display:none';
     if (isset($_GET['art_id'])) {
-      $art_mod_id = $_GET['art_id'];
+      $art_mod_id = $_GET['art_id'] ?? null;
       //list($title, $year, $journal, $citation, $url, $abstract, $theory, $mod_meth, $cur_notes, $inc_qual, $authors, $art_off_id) = getArtDetails($art_mod_id,$servername,$username,$password,$dbname);
       list($title, $year, $journal, $citation, $url, $abstract, $theory, $mod_meth, $cur_notes, $inc_qual, $authors, $art_off_id) = getArtDetails($art_mod_id, $cog_conn, $cog_database);
       list($sub_evid_loc, $sub_evid_des, $det_evid_loc, $det_evid_des, $scl_evid_loc, $scl_evid_des, $impl_evid_loc, $impl_evid_des, $rgn_evid_loc, $rgn_evid_des, $thy_evid_loc, $thy_evid_des, $nrn_evid_loc, $nrn_evid_des, $kwd_evid_loc, $kwd_evid_des) = getResProperties($art_mod_id, $cog_conn, $cog_database);
@@ -300,7 +300,7 @@
     }       
 
     function show_evidence($id, $desc, $e_loc, $e_des) {
-      $table = "<table style='min-width:100%;'><tr><td style='min-width:200px;'>Location:&nbsp;&nbsp;&nbsp;&nbsp;</td><td class='browse_table'><label name='title' style='min-width:100%;min-height:50px;font-size:22px;'>".$e_loc."</label></td></tr><tr><td style='min-width:200px;'>Description:</td><td class='browse_table'><label name='title' style='min-width:100%;min-height:50px;font-size:22px;'>".str_replace("\n", "<br>", $e_des)."</label></td></tr></table>";
+      $table = "<table style='min-width:100%;'><tr><td style='min-width:200px;'>Location:&nbsp;&nbsp;&nbsp;&nbsp;</td><td class='browse_table'><label name='title' style='min-width:100%;min-height:50px;font-size:22px;'>".$e_loc."</label></td></tr><tr><td style='min-width:200px;'>Description:</td><td class='browse_table'><label name='title' style='min-width:100%;min-height:50px;font-size:22px;'>".str_replace("\n", "<br>", ($e_des ?? ''))."</label></td></tr></table>";
       echo "<tr><td></td><td class='browse_table_2'><div class='wrap-collabsible' id='evid_collap_".$id."'><input id='evid_".$id."' class='toggle' type='checkbox'><label for='evid_".$id."' class='lbl-toggle'>Evidence of ".$desc."</label><div class='collapsible-content'><div class='content-inner' style='font-size:22px;'>".$table."</div></div></input></div></td></tr>";      
     }
 

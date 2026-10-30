@@ -6,7 +6,7 @@ header('Content-Disposition: attachment; filename=ISI_Spike_Data.csv');
 
 // create a file pointer connected to the output stream
 $output = fopen('php://output', 'w');
-$fp_id = $_REQUEST['id'];
+$fp_id = $_REQUEST['id'] ?? null;
 // output the column headings
 fputcsv($output, array('Spike Data'));
 

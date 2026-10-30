@@ -25,7 +25,7 @@ else{
 }
 //-------------------------------------------
 //$_SESSION['perm'] = 0;
-$permission1 = $_SESSION['perm'];
+$permission1 = $_SESSION['perm'] ?? null;
 if ($_SESSION['perm'] == 0) {
   if (array_key_exists('password', $_REQUEST)) {
     $query = "SELECT permission FROM user WHERE password = '{$_REQUEST['password']}'";

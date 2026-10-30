@@ -8,7 +8,7 @@ if (file_exists($session_matrix_cache_file))
 {
   
 	error_log("If");
-  session_start();
+  if (session_status() === PHP_SESSION_NONE) session_start();
   include ("access_db.php");
  	include ("permission_check.php");
   $_SESSION[$matrix_type] = file_get_contents($session_matrix_cache_file);

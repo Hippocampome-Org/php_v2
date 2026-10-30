@@ -51,8 +51,8 @@ function toPrecision($value, $digits)
 
     // remove tailing zeros
     /*preg_match('/(\d+)\.(\d+)/', ($answer ?? ''), $answer_matches);	
-    $whole_number = $answer_matches[1];
-    $fraction = $answer_matches[2];
+    $whole_number = $answer_matches[1] ?? null;
+    $fraction = $answer_matches[2] ?? null;
 	$answer_digits = strlen($fraction);
 	if ($answer_digits > $digits) {
 		$answer_trimmed_digits = substr($fraction,0,($digits+1));
@@ -70,15 +70,15 @@ function adjPrecision($old_val,$new_val,$digits)
 	$adj_old_val = toPrecision($old_val,$digits);
 
 	preg_match('/(\d+)\.(\d+)/', ($adj_old_val ?? ''), $adj_old_val_matches);
-	$old_val_whole = $adj_old_val_matches[1];
-	$old_val_fraction = $adj_old_val_matches[2];
+	$old_val_whole = $adj_old_val_matches[1] ?? null;
+	$old_val_fraction = $adj_old_val_matches[2] ?? null;
 	$adj_old_val_digits = strlen($adj_old_val_matches[2]);
 
 	$adj_new_val = toPrecision($new_val,$digits);		
 
 	preg_match('/(\d+)\.(\d+)/', ($adj_new_val ?? ''), $adj_new_val_matches);	
-	$new_val_whole = $adj_new_val_matches[1];
-	$new_val_fraction = $adj_new_val_matches[2];
+	$new_val_whole = $adj_new_val_matches[1] ?? null;
+	$new_val_fraction = $adj_new_val_matches[2] ?? null;
 	$adj_new_val_digits = strlen($adj_new_val_matches[2]);
 
 	if ($adj_old_val_digits < $adj_new_val_digits) {
@@ -96,20 +96,20 @@ function adjPrecision($old_val,$new_val,$digits)
 }
 
 // set properties
-$page = $_REQUEST['page'];
-$nm_page = $_REQUEST['nm_page'];
-$flag = $_REQUEST['flag'];
-$id_neuron = $_SESSION['id_neuron'];
-$val_property = $_SESSION['val_property'];
+$page = $_REQUEST['page'] ?? null;
+$nm_page = $_REQUEST['nm_page'] ?? null;
+$flag = $_REQUEST['flag'] ?? null;
+$id_neuron = $_SESSION['id_neuron'] ?? null;
+$val_property = $_SESSION['val_property'] ?? null;
 //$color = $_SESSION['color'];
-$color = $_REQUEST['color'];
-$type_source = new type($class_type);
-$source_id = $_REQUEST['id_neuron_source'];
+$color = $_REQUEST['color'] ?? null;
+$type_source = new type($class_type ?? null);
+$source_id = $_REQUEST['id_neuron_source'] ?? null;
 $type_source -> retrive_by_id($source_id);
-$type_target = new type($class_type);
-$target_id = $_REQUEST['id_neuron_target'];
+$type_target = new type($class_type ?? null);
+$target_id = $_REQUEST['id_neuron_target'] ?? null;
 $type_target -> retrive_by_id($target_id);
-$property = new property($class_property);
+$property = new property($class_property ?? null);
 $pre_id=$type_source->getId();
 $pre_name=$type_source->getName();
 $post_id=$type_target->getId();
@@ -269,8 +269,8 @@ $post_name=$type_target->getName();
 			$decimal_places='DECIMAL(10,2)';
 		}
 		preg_match('/(\w+):(\w+):\w+/', ($parcel ?? ''), $parcel_matches);
-		$subregion_name = $parcel_matches[1];
-		$parcel_name = $parcel_matches[2];
+		$subregion_name = $parcel_matches[1] ?? null;
+		$parcel_name = $parcel_matches[2] ?? null;
 		$query = "
 		SELECT source_ID, target_ID, subregion, parcel, AVG($prop)
 		FROM $table
@@ -305,8 +305,8 @@ $post_name=$type_target->getName();
 	function return_stats($source_id, $target_id, $par_grp_conv, $nm_page, $all_value_result) {
 		//echo "par_grp_conv: ".$par_grp_conv;
 		preg_match('/(.*)_(.*)/', ($par_grp_conv ?? ''), $output_array);
-		$subregion = $output_array[1];
-		$parcel = $output_array[2];
+		$subregion = $output_array[1] ?? null;
+		$parcel = $output_array[2] ?? null;
 		//$subregion = explode("_", $par_grp_conv)[0];
 		//$parcel = explode("_", $par_grp_conv)[1];
 		$stat_results = array();
@@ -368,24 +368,24 @@ $post_name=$type_target->getName();
 	<br></font>";
 	echo "<table cellspacing='2' cellpadding='5' padding-top='5' class='table_neuron_page2' style='font-size:12px;bottom:5px;position:relative;background-color:white;'>
 	<tr style='text-align:center'>";
-	for ($pg_i=0;$pg_i<count($parcel_group_short);$pg_i++) {
+	for ($pg_i=0;$pg_i<count($parcel_group_short ?? array());$pg_i++) {
 		echo "<td style='width:$cell_width;height:$cell_height;'><strong>";
 		echo $parcel_group_short[$pg_i]." ";
 		echo "</strong></td>";
 	}
 	echo "</tr><tr style='text-align:center'>";
 
-	for ($pg_i=0;$pg_i<count($parcel_group);$pg_i++) {
-		$last_index = count($parcel_group)-1;
+	for ($pg_i=0;$pg_i<count($parcel_group ?? array());$pg_i++) {
+		$last_index = count($parcel_group ?? array())-1;
 		$results = query_value($source_id, $target_id, $parcel_group[$pg_i], $prop, $table, $nm_page, $totals_col, $totals_table);
-		$value_result = $results[0];
-		$all_value_result = $results[1];
-		$par_grp_conv = str_replace(':', '_', $parcel_group[$pg_i]);
-		$par_grp_conv = str_replace('_Both', '', $par_grp_conv);
+		$value_result = $results[0] ?? null;
+		$all_value_result = $results[1] ?? null;
+		$par_grp_conv = str_replace(':', '_', ($parcel_group[$pg_i] ?? ''));
+		$par_grp_conv = str_replace('_Both', '', ($par_grp_conv ?? ''));
 
 		$stat_results = return_stats($source_id, $target_id, $par_grp_conv, $nm_page, $all_value_result);
-		$stat_mean = $stat_results[0];
-		$stat_std = $stat_results[1];	
+		$stat_mean = $stat_results[0] ?? null;
+		$stat_std = $stat_results[1] ?? null;	
 		if (!($stat_std > 0)) {
 			$stat_std = "N/A";
 		}	
@@ -403,8 +403,8 @@ $post_name=$type_target->getName();
 			// parcel-specific value
 			$par_grp_conv_adj = $par_grp_conv;
 			// preg replace included to adjust text for evidence page description matching
-			$par_grp_conv_adj = preg_replace('/^MEC/', 'EC', $par_grp_conv_adj);
-			$par_grp_conv_adj = preg_replace('/^LEC/', 'EC', $par_grp_conv_adj);
+			$par_grp_conv_adj = preg_replace('/^MEC/', 'EC', ($par_grp_conv_adj ?? ''));
+			$par_grp_conv_adj = preg_replace('/^LEC/', 'EC', ($par_grp_conv_adj ?? ''));
 			//echo "<br><br><br>".$par_grp_conv_adj;
 			echo "<td style='width:$cell_width;border:$cell_border;height:$cell_height;'><a href='property_page_synpro_nm.php?id1_neuron=".$source_id."&val1_property=".$par_grp_conv_adj."&color1=red&id2_neuron=".$target_id."&val2_property=".$par_grp_conv_adj."&color2=blue&connection_type=".$E_or_I_val."&known_conn_flag=1&axonic_basket_flag=0&page=1&nm_page=".$nm_page."' target='_blank' style='text-decoration:none' title='mean: $stat_mean\nstd: $stat_std'>";
 			if ($nm_page=='noc') {

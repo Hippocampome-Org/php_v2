@@ -157,11 +157,11 @@ $(document).ready(function(){
 	$connheaderStr = $connectivityHeader->getHeaderStr();
 	
 	
-	$type = new type($class_type);
+	$type = new type($class_type ?? null);
     $type -> retrive_id();
     $nTypes = $type->getNumber_type();
 	
-	$research = $_REQUEST['research'];
+	$research = $_REQUEST['research'] ?? null;
 	
 	if(isset($research))
 	{
@@ -170,12 +170,12 @@ $(document).ready(function(){
 
 	}
 	else
-		$jsonStr = $_SESSION['connectivity'];
+		$jsonStr = $_SESSION['connectivity'] ?? null;
 
 
 	
 	/* if ($research) { // From page of search; retrieve the id from search_table (temporary) -----------------------	
-		$table_result = $_REQUEST['table_result'];
+		$table_result = $_REQUEST['table_result'] ?? null;
 	
 		$temporary_result_neurons = new temporary_result_neurons();
 		$temporary_result_neurons -> setName_table($table_result);
@@ -810,7 +810,7 @@ $(function(){
 	<font class="font1">Browse connectivity matrix</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	<?php
 			if ($research){
-				$full_search_string = $_SESSION['full_search_string'];
+				$full_search_string = $_SESSION['full_search_string'] ?? null;
 				if ($number_type == 1)
 					print ("<font class='font3'> $number_type Result  [$full_search_string]</font>");
 				else

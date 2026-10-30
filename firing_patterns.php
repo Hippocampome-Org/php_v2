@@ -66,8 +66,8 @@ jQuery(document).ready(function()
 </script>
 <?php
 //$jsonStr = $_SESSION['firing'];
-$jsonStr = $_SESSION['firingpattern'];
-$jsonStrPar = $_SESSION['firingpatternparameter'];
+$jsonStr = $_SESSION['firingpattern'] ?? null;
+$jsonStrPar = $_SESSION['firingpatternparameter'] ?? null;
 if($_SESSION['check']=="no_reload")
 	$_SESSION['check']='reload';
 require_once('class/class.type.php');
@@ -77,22 +77,22 @@ require_once('class/class.temporary_result_neurons.php');
 $width1='25%';
 $width2='2%';
 
-$type = new type($class_type);
+$type = new type($class_type ?? null);
 $type -> retrive_id();
 $nTypes = $type->getNumber_type();
 
 $research = "";
 if(isset($_REQUEST['research']))
-	$research = $_REQUEST['research'];
+	$research = $_REQUEST['research'] ?? null;
 $table_result ="";
 if(isset($_REQUEST['table_result']))
-	$table_result = $_REQUEST['table_result'];
+	$table_result = $_REQUEST['table_result'] ?? null;
 include ("function/icon.html");
 
 // fp
 // view firing pattern matrix for selected dropdown
-if($_REQUEST['show_only'])
-	$indexFP = $_REQUEST['show_only'];
+if (!empty($_REQUEST['show_only']))
+	$indexFP = $_REQUEST['show_only'] ?? null;
 else
 	$indexFP = 0;
 //fp ende
@@ -571,7 +571,7 @@ include ("function/menu_main.php");
 			if($indexFP!=0){
 				print("<option value='".$indexFP."'>".$hippo[$indexFP]."</option>");
 			}
-			for($i=0;$i<count($hippo);$i++){
+			for($i=0;$i<count($hippo ?? array());$i++){
 				print("<option value='".$i."'>".$hippo[$i]."</option>");
 			}
 		?>

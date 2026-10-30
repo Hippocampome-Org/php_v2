@@ -94,7 +94,7 @@ function get_default_neuron_params_details($conn, $neurons_default=NULL){
             array_walk($neurons, 'neuron_alter', '');
             $select_default_neuron_params_query .= " WHERE Type.nickname in (";
     
-            for ($i = 0; $i < count($neurons); $i++){
+            for ($i = 0; $i < count($neurons ?? array()); $i++){
                 $neuron = $neurons[$i];
                 $select_default_neuron_params_query .= " '".trim($neuron)."', ";
             }
@@ -135,11 +135,11 @@ function get_default_neuron_params_details($conn, $neurons_default=NULL){
         array_push($result_default_neuron_params_array, $arrVal);
     }
     $missing_neurons = array_diff($neurons, $neurons_db);
-    /*echo "count of neurons: ";echo count($neurons);
+    /*echo "count of neurons: ";echo count($neurons ?? array());
     echo "neurons: ";var_dump($neurons);
     echo "neurons_db: ";var_dump($neurons_db);
     echo "missing neurons: ";var_dump($missing_neurons);*/
-    if(isset($missing_neurons) && count($missing_neurons) > 0){
+    if(isset($missing_neurons) && count($missing_neurons ?? array()) > 0){
         $result_default_neuron_params_array = update_neurons_withmissing($result_default_neuron_params_array, $defualt_neuron_calculations, $missing_neurons, $columns);
     }
     array_unshift($result_default_neuron_params_array, $columns);

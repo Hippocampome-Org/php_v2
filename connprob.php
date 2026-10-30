@@ -2,7 +2,7 @@
   include ("permission_check.php");
 ?>
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) session_start();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -433,42 +433,42 @@ include("function/menu_main.php");
             // find relevant layers
             if (subregions[si]==='DG') {
                 <?php
-                    for ($i = 0; $i < count($dg_group_short); $i++) {
+                    for ($i = 0; $i < count($dg_group_short ?? array()); $i++) {
                         echo "cname.push(\"".$dg_group_short[$i]."\");";
                     }
                 ?>                
             };
             if (subregions[si]==='CA3') {
                 <?php
-                    for ($i = 0; $i < count($ca3_group_short); $i++) {
+                    for ($i = 0; $i < count($ca3_group_short ?? array()); $i++) {
                         echo "cname.push(\"".$ca3_group_short[$i]."\");";
                     }
                 ?> 
             }
             if (subregions[si]==='CA2') {
                 <?php
-                    for ($i = 0; $i < count($ca2_group_short); $i++) {
+                    for ($i = 0; $i < count($ca2_group_short ?? array()); $i++) {
                         echo "cname.push(\"".$ca2_group_short[$i]."\");";
                     }
                 ?> 
             }
             if (subregions[si]==='CA1') {
                 <?php
-                    for ($i = 0; $i < count($ca1_group_short); $i++) {
+                    for ($i = 0; $i < count($ca1_group_short ?? array()); $i++) {
                         echo "cname.push(\"".$ca1_group_short[$i]."\");";
                     }
                 ?> 
             }
             if (subregions[si]==='SUB') {
                 <?php
-                    for ($i = 0; $i < count($sub_group_short); $i++) {
+                    for ($i = 0; $i < count($sub_group_short ?? array()); $i++) {
                         echo "cname.push(\"".$sub_group_short[$i]."\");";
                     }
                 ?> 
             }
             if (subregions[si]==='EC'||subregions[si]==='LEC'||subregions[si]==='MEC') {
                 <?php
-                    for ($i = 0; $i < count($ec_group_short); $i++) {
+                    for ($i = 0; $i < count($ec_group_short ?? array()); $i++) {
                         echo "cname.push(\"".$ec_group_short[$i]."\");";
                     }
                 ?> 
@@ -570,10 +570,10 @@ include("function/menu_main.php");
         <?php
             function get_volumes($filename) {
                 $csv_file = array_map('str_getcsv', file($filename));
-                for ($i = 0; $i < count($csv_file); $i++) {
-                    if (count($csv_file[$i])>0) {
+                for ($i = 0; $i < count($csv_file ?? array()); $i++) {
+                    if (count($csv_file[$i] ?? array())>0) {
                         $line = $csv_file[$i][0];
-                        for ($j = 1; $j < count($csv_file[$i]); $j++) {
+                        for ($j = 1; $j < count($csv_file[$i] ?? array()); $j++) {
                             $line = $line.",".$csv_file[$i][$j];
                         }
                         echo "volume_data.push(\"".$line."\");";

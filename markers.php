@@ -1,5 +1,5 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) session_start();
 include ("permission_check.php");
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -73,7 +73,7 @@ jQuery(document).ready(function()
 });
 </script>
 <?php
-$jsonStr = $_SESSION['markers'];
+$jsonStr = $_SESSION['markers'] ?? null;
 if($_SESSION['check']=="no_reload")
 	$_SESSION['check']='reload';
 require_once('class/class.type.php');
@@ -84,16 +84,16 @@ include("function/markers/marker_helper.php");
 $width1='25%';
 $width2='2%';
 
-$type = new type($class_type);
+$type = new type($class_type ?? null);
 $type -> retrive_id();
 $nTypes = $type->getNumber_type();
 
 $research = "";
 if(isset($_REQUEST['research']))
-	$research = $_REQUEST['research'];
+	$research = $_REQUEST['research'] ?? null;
 $table_result ="";
 if(isset($_REQUEST['table_result']))
-	$table_result = $_REQUEST['table_result'];
+	$table_result = $_REQUEST['table_result'] ?? null;
 include ("function/icon.html");
 ?>
 <title>Molecular Markers Matrix</title>
@@ -941,7 +941,7 @@ include ("function/menu_main.php");
 			<?php
 			if ($research)
 			{
-				$full_search_string = $_SESSION['full_search_string'];
+				$full_search_string = $_SESSION['full_search_string'] ?? null;
 				if ($number_type == 1)
 					print ("<font class='font3'> $number_type Result  [$full_search_string]</font>");
 				else

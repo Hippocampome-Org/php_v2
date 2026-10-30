@@ -33,9 +33,9 @@ img{
 	<?php
 	$image="";
 	print("<div>");
-	if ($_REQUEST['image'])
+	if (!empty($_REQUEST['image']))
 	{
-		$image=$_REQUEST['image'];
+		$image= $_REQUEST['image'] ?? null;
 		print("<img title='$image' src='attachment/fp/$image' alt='Image Missing' /><p>");
 		$query_to_get_types = "SELECT t.id,t.name,t.nickname FROM FiringPatternRel fpr, Type t
 			WHERE SUBSTR(fpr.original_id,5,length(fpr.original_id))=(

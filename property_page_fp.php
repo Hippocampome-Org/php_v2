@@ -93,7 +93,7 @@ function create_temp_table_ephysprotocol ($name_temporary_table)
 
 function insert_temporary($table,$fp_id, $id_fragment, $id_original, $quote, $authors, 
 	$title, $publication, $year, $PMID, $pages, $page_location, $protocol, $id_evidence, $show1,  $pmcid, $nihmsid, $doi, 
-	$open_access, $citation_count,  $volume, $issue,$id_neuron_fp=NULL,
+	$open_access, $citation_count,  $volume, $issue,$id_neuron_fp,
 	$interpretation,$interpretation_notes,$linking_pmid_isbn,$linking_pmid_isbn_page,$linking_quote,$linking_page_location,$istim,$tstim,  $rep_value, $fp_original_name)
 {
 	
@@ -212,7 +212,7 @@ function insert_temporary_ephysprotocol($table,$PMID, $protocol, $rep_value)
 
 function expand_protocol_text($protocol)
 {
-	$protocol = str_replace(' ', '', $protocol);
+	$protocol = str_replace(' ', '', ($protocol ?? ''));
 	$prot_pieces = explode("|", $protocol);
 	
 	if ($prot_pieces[0] == "r")
@@ -264,10 +264,10 @@ $name_show_temperature = $_SESSION['name_show_temperature'] ?? '';
 $see_all = $_REQUEST['see_all'] ?? ''; 
 if ($see_all == 'Open All Evidence')
 {
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['fp_name_temporary_table'];
-	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'];
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
+	$name_temporary_table = $_SESSION['fp_name_temporary_table'] ?? null;
+	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'] ?? null;
 	$query = "UPDATE $name_temporary_table SET show1 =  '1'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);	
 
@@ -323,10 +323,10 @@ if ($see_all == 'Open All Evidence')
 
 if ($see_all == 'Close All Evidence')
 {
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['fp_name_temporary_table'];	
-	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'];
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
+	$name_temporary_table = $_SESSION['fp_name_temporary_table'] ?? null;	
+	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'] ?? null;
 	$query = "UPDATE $name_temporary_table SET show1 =  '0'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);		
 }
@@ -335,22 +335,22 @@ if ($see_all == 'Close All Evidence')
 // PHP83-FIX by KN on OCt 29 2026
 if (!empty($_REQUEST['show_1'])) //  ==> ON
 {
-	$name_temporary_table = $_SESSION['fp_name_temporary_table'];
-	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'];
-	$title_paper = $_REQUEST['title'];
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
+	$name_temporary_table = $_SESSION['fp_name_temporary_table'] ?? null;
+	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'] ?? null;
+	$title_paper = $_REQUEST['title'] ?? null;
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
 	$query = "UPDATE $name_temporary_table SET show1 =  '1' WHERE title = '$title_paper'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);	
 }
 // PHP83-FIX by KN on OCt 29 2026
 if (!empty($_REQUEST['show_0'])) //  ==> OFF
 {
-	$name_temporary_table = $_SESSION['fp_name_temporary_table'];
-	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'];
-	$title_paper = $_REQUEST['title'];
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
+	$name_temporary_table = $_SESSION['fp_name_temporary_table'] ?? null;
+	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'] ?? null;
+	$title_paper = $_REQUEST['title'] ?? null;
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
 	$query = "UPDATE $name_temporary_table SET show1 =  '0' WHERE title = '$title_paper'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);	
 }
@@ -377,23 +377,23 @@ if ($page)
 	$name_show_only_journal = 'all';
 	$name_show_only_authors = 'all';	
 	
-	$id_neuron = $_REQUEST['id_neuron'];
-	$parameter = $_REQUEST['parameter'];
+	$id_neuron = $_REQUEST['id_neuron'] ?? null;
+	$parameter = $_REQUEST['parameter'] ?? null;
 	$par="".$parameter;
 	
 	// get connection properties
-	$fp_count=$_REQUEST['count'];
+	$fp_count= $_REQUEST['count'] ?? null;
 	// create temporary table
-	$ip_address = $_SERVER['REMOTE_ADDR'];
-	$ip_address = str_replace(array('.', ':'), '_', $ip_address);
+	$ip_address = $_SERVER['REMOTE_ADDR'] ?? null;
+	$ip_address = str_replace(array('.', ':'), '_', ($ip_address ?? ''));
 	$time_t = time();
 	if($parameter=="-"){
 		$name_temporary_table ='temp_'.$ip_address.'_'.$id_neuron."_".'__'.$time_t;
 		$name_temporary_table_ephys ='temp_ep_'.$ip_address.'_'.$id_neuron."_".'__'.$time_t;
 	}
 	else{
-		$name_temporary_table ='temp_'.$ip_address.'_'.$id_neuron.str_replace(".", "", $parameter).'__'.$time_t;
-		$name_temporary_table_ephys ='temp_ep_'.$ip_address.'_'.$id_neuron.str_replace(".", "", $parameter).'__'.$time_t;
+		$name_temporary_table ='temp_'.$ip_address.'_'.$id_neuron.str_replace(".", "", ($parameter ?? '')).'__'.$time_t;
+		$name_temporary_table_ephys ='temp_ep_'.$ip_address.'_'.$id_neuron.str_replace(".", "", ($parameter ?? '')).'__'.$time_t;
 	}
 	$_SESSION['fp_name_temporary_table'] = $name_temporary_table;
 	$_SESSION['fp_name_temporary_table_ephys'] = $name_temporary_table_ephys;
@@ -417,7 +417,7 @@ if ($page)
 }
 else
 {
-	$name_show_only = $_SESSION['fp_name_show_only'];
+	$name_show_only = $_SESSION['fp_name_show_only'] ?? null;
 	$_SESSION['fp_name_show_only'] = $name_show_only;
 	$name_show_only_journal = $_SESSION['fp_name_show_only_journal'] ?? '';
 	$name_show_only_authors = $_SESSION['fp_name_show_only_authors'] ?? '';
@@ -426,7 +426,7 @@ else
 	// clicked the Order By options
 	if ($order_ok == 'GO')             
 	{
-		$order_by = $_REQUEST['order'];
+		$order_by = $_REQUEST['order'] ?? null;
 		$_SESSION['order_by'] = $order_by;
 		if ($order_by == 'year')
 			$type_order = 'DESC';
@@ -439,23 +439,23 @@ else
 	// clicked the paginations
 	else    
 	{
-		$order_by = $_SESSION['order_by'];
-		$type_order = $_SESSION['type_order'];
+		$order_by = $_SESSION['order_by'] ?? null;
+		$type_order = $_SESSION['type_order'] ?? null;
 		if (!empty($_REQUEST['up']))
 		{
-			$page_in = $_REQUEST['start'];
+			$page_in = $_REQUEST['start'] ?? null;
 			$page_end = $page_in+10;		
 		}
 		if (!empty($_REQUEST['down']))
 		{
-			$page_in = $_REQUEST['start'];
+			$page_in = $_REQUEST['start'] ?? null;
 			$page_end = $page_in+10;		
 		}	
 		if (!empty($_REQUEST['last_page']))
 		{
-			$value_last_page = $_REQUEST['value_last_page'];
+			$value_last_page = $_REQUEST['value_last_page'] ?? null;
 			$page_in = $value_last_page;
-			$page_end = $_REQUEST['value_last_page_final'];
+			$page_end = $_REQUEST['value_last_page_final'] ?? null;
 		}
 		if (!empty($_REQUEST['first_page']))
 		{
@@ -484,13 +484,13 @@ $name_show_only_var = $_REQUEST['name_show_only_var'] ?? '';
 
 if ($name_show_only_var)
 {
-	$name_show_only = $_REQUEST['name_show_only'];
+	$name_show_only = $_REQUEST['name_show_only'] ?? null;
 	$_SESSION['fp_name_show_only'] = $name_show_only;
 	
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['fp_name_temporary_table'];
-	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'];
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
+	$name_temporary_table = $_SESSION['fp_name_temporary_table'] ?? null;
+	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'] ?? null;
 
 	// Option: All:
 	if ($name_show_only == 'all')
@@ -533,15 +533,15 @@ if ($name_show_only_var)
 $name_show_only_article_var = $_REQUEST['name_show_only_article_var'] ?? '';
 if ($name_show_only_article_var)
 {
-	$name_show_only_article = $_REQUEST['name_show_only_article'];
+	$name_show_only_article = $_REQUEST['name_show_only_article'] ?? null;
 	$_SESSION['fp_name_show_only_article'] = $name_show_only_article;
 	$_SESSION['fp_name_show_only_journal'] = 'all';
 	$_SESSION['fp_name_show_only_authors'] = 'all';
-	$name_show_only = $_SESSION['fp_name_show_only'];
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['fp_name_temporary_table'];
-	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'];
+	$name_show_only = $_SESSION['fp_name_show_only'] ?? null;
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
+	$name_temporary_table = $_SESSION['fp_name_temporary_table'] ?? null;
+	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'] ?? null;
 
 	$query = "UPDATE $name_temporary_table SET show_only =  '1'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);	
@@ -571,15 +571,15 @@ if ($name_show_only_article_var)
 $name_show_only_journal_var = $_REQUEST['name_show_only_journal_var'] ?? '';
 if ($name_show_only_journal_var)
 {
-	$name_show_only_journal = $_REQUEST['name_show_only_journal'];
+	$name_show_only_journal = $_REQUEST['name_show_only_journal'] ?? null;
 	$_SESSION['fp_name_show_only_journal'] = $name_show_only_journal;
 	$_SESSION['fp_name_show_only_article'] = 'all';
 	$_SESSION['fp_name_show_only_authors'] = 'all';
-	$name_show_only = $_SESSION['fp_name_show_only'];
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['fp_name_temporary_table'];
-	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'];
+	$name_show_only = $_SESSION['fp_name_show_only'] ?? null;
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
+	$name_temporary_table = $_SESSION['fp_name_temporary_table'] ?? null;
+	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'] ?? null;
 
 	$query = "UPDATE $name_temporary_table SET show_only =  '1'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);	
@@ -596,15 +596,15 @@ if ($name_show_only_journal_var)
 $name_show_only_authors_var  = $_REQUEST['name_show_only_authors_var'] ?? '';
 if ($name_show_only_authors_var)
 {	
-	$name_show_only_authors = $_REQUEST['name_show_only_authors'];
+	$name_show_only_authors = $_REQUEST['name_show_only_authors'] ?? null;
 	$_SESSION['fp_name_show_only_authors'] = $name_show_only_authors;
 	$_SESSION['fp_name_show_only_article'] = 'all';
 	$_SESSION['fp_name_show_only_journal'] = 'all';
-	$name_show_only = $_SESSION['fp_name_show_only'];
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['fp_name_temporary_table'];
-	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'];
+	$name_show_only = $_SESSION['fp_name_show_only'] ?? null;
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
+	$name_temporary_table = $_SESSION['fp_name_temporary_table'] ?? null;
+	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'] ?? null;
 
 	if ($name_show_only_authors == 'all')
 	{
@@ -633,13 +633,13 @@ if ($name_show_animal_var)
 {
 	$query = "UPDATE $name_temporary_table SET show1 = '0'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);
-	$name_show_animal = $_REQUEST['name_show_animal'];
+	$name_show_animal = $_REQUEST['name_show_animal'] ?? null;
 	$_SESSION['name_show_animal'] = $name_show_animal;
 	
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['fp_name_temporary_table'];
-	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'];
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
+	$name_temporary_table = $_SESSION['fp_name_temporary_table'] ?? null;
+	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'] ?? null;
 
 	// Option: Mice:
 	if ($name_show_animal == 'Mice')
@@ -865,19 +865,19 @@ if ($name_show_animal_var)
 }
 
 //Protocol
-$name_show_protocol_var = $_REQUEST['name_show_protocol_var'];
+$name_show_protocol_var = $_REQUEST['name_show_protocol_var'] ?? null;
 
 if ($name_show_protocol_var)
 {
 	$query = "UPDATE $name_temporary_table SET show1 = '0'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);
-	$name_show_protocol = $_REQUEST['name_show_protocol'];
+	$name_show_protocol = $_REQUEST['name_show_protocol'] ?? null;
 	$_SESSION['name_show_protocol'] = $name_show_protocol;
 	
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['fp_name_temporary_table'];
-	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'];
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
+	$name_temporary_table = $_SESSION['fp_name_temporary_table'] ?? null;
+	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'] ?? null;
 
 	// Option: Patch Clamp:
 	if ($name_show_protocol == 'Patch_Clamp')
@@ -1108,13 +1108,13 @@ if ($name_show_temperature_var)
 {
 	$query = "UPDATE $name_temporary_table SET show1 = '0'";
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);
-	$name_show_temperature = $_REQUEST['name_show_temperature'];
+	$name_show_temperature = $_REQUEST['name_show_temperature'] ?? null;
 	$_SESSION['name_show_temperature'] = $name_show_temperature;
 	
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['fp_name_temporary_table'];
-	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'];
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
+	$name_temporary_table = $_SESSION['fp_name_temporary_table'] ?? null;
+	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'] ?? null;
 
 	// Option: Body:
 	if ($name_show_temperature == 'Body')
@@ -1358,13 +1358,13 @@ if ($name_show_temperature_var)
 // axon, dedrite/soma, known checkbox checked or unchecked
 $neuron_show_only = $_REQUEST['neuron_show_only'] ?? '';
 if ($neuron_show_only){
-	$neuron_show_only_value = $_REQUEST['neuron_show_only_value'];
+	$neuron_show_only_value = $_REQUEST['neuron_show_only_value'] ?? null;
 	$_SESSION['fp_neuron_show_only_value'] = $neuron_show_only_value;
-	$name_show_only = $_SESSION['fp_name_show_only'];
-	$page_in = $_REQUEST['start'];
-	$page_end = $_REQUEST['stop'];
-	$name_temporary_table = $_SESSION['fp_name_temporary_table'];
-	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'];
+	$name_show_only = $_SESSION['fp_name_show_only'] ?? null;
+	$page_in = $_REQUEST['start'] ?? null;
+	$page_end = $_REQUEST['stop'] ?? null;
+	$name_temporary_table = $_SESSION['fp_name_temporary_table'] ?? null;
+	$name_temporary_table_ephys = $_SESSION['fp_name_temporary_table_ephys'] ?? null;
 
 }
 
@@ -1376,24 +1376,24 @@ if ($neuron_show_only){
 // find axon, dendrite or soma property
 
 		
-$type = new type($class_type);
+$type = new type($class_type ?? null);
 $type -> retrive_by_id($id_neuron);
 
-$property = new property($class_property);
-$fragment = new fragment($class_fragment);
+$property = new property($class_property ?? null);
+$fragment = new fragment($class_fragment ?? null);
 
 $attachment_obj = new attachment($class_attachment ?? '');
-$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
-$evidencefragmentrel = new evidencefragmentrel($class_evidencefragmentrel);
+$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel ?? null);
+$evidencefragmentrel = new evidencefragmentrel($class_evidencefragmentrel ?? null);
 
-$epdataevidencerel = new epdataevidencerel($class_epdataevidencerel);
-$epdata = new epdata($class_epdata);
-$evidenceevidencerel = new evidenceevidencerel($class_evidenceevidencerel);
+$epdataevidencerel = new epdataevidencerel($class_epdataevidencerel ?? null);
+$epdata = new epdata($class_epdata ?? null);
+$evidenceevidencerel = new evidenceevidencerel($class_evidenceevidencerel ?? null);
 
-$articleevidencerel = new articleevidencerel($class_articleevidencerel);
-$article = new article($class_article);
-$articleauthorrel = new articleauthorrel($class_articleauthorrel);
-$author = new author($class_author);
+$articleevidencerel = new articleevidencerel($class_articleevidencerel ?? null);
+$article = new article($class_article ?? null);
+$articleauthorrel = new articleauthorrel($class_articleauthorrel ?? null);
+$author = new author($class_author ?? null);
 ?>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -1558,7 +1558,7 @@ function show_only_authors(link, start1, stop1)
 					$query = "SELECT fp_name FROM FiringPattern WHERE overall_fp like '$parameter'";
 					$rs = mysqli_query($GLOBALS['conn'],$query);
 					$row_data = mysqli_fetch_row($rs);
-					$fp_name_val=$row_data[0];
+					$fp_name_val= $row_data[0] ?? null;
 					print("<td align='left' width='80%' class='table_neuron_page2'>&nbsp;&nbsp;Firing Pattern: <a href='neuron_by_pattern.php?pattern=$parameter'>$fp_name_val ($parameter)</a></td>");
 				?>
 				
@@ -1656,10 +1656,10 @@ function show_only_authors(link, start1, stop1)
 					
 					// Extract page_location and protocol
 					$protoc = explode(",", $page_loc);
-					$page_location=$protoc[0];
+					$page_location= $protoc[0] ?? null;
 						
 
-					$locationValue1[$i1] = str_replace(' ', '', $locationValue[$i1]);
+					$locationValue1[$i1] = str_replace(' ', '', ($locationValue[$i1] ?? ''));
 					$location_protoc = explode(",", $locationValue1[$i1]);
 					// PHP83-FIX by KN on OCt 29 2026 OLD:$location_protocol = $location_protoc[1];
 					$location_protocol = $location_protoc[1] ?? null;				
@@ -1667,7 +1667,7 @@ function show_only_authors(link, start1, stop1)
 							
 							
 
-					$protoc[1] = str_replace(' ', '', $protoc[1]);
+					$protoc[1] = str_replace(' ', '', ($protoc[1] ?? ''));
 					$protoc_pieces = explode("|", $protoc[1]);
 					
 					if($location_protocol == 'patchelectrode' && $protoc_pieces[1] != 'p')
@@ -1701,7 +1701,7 @@ function show_only_authors(link, start1, stop1)
 			while(list($fp_id,$fp_fragment_id,$original_id,$fp_dt,$fp_quote,$fp_page_location,$fp_pmid_isbn,$id_article,$title,$publication,$year,$pmid_isbn,$first_page,$last_page,$pmcid,$nihmsid,$doi,$open_access,$citation_count,$volume,$issue,$interpretation,$interpretation_notes,$linking_pmid_isbn,$linking_pmid_isbn_page,$linking_quote,$linking_page_location,$istim,$tstim,$fp_original_name) = mysqli_fetch_row($fp_evidence_rs))	{	
 
 
-				$title = str_replace('.', '', $title);
+				$title = str_replace('.', '', ($title ?? ''));
 				$articleauthorrel -> retrive_author_position($id_article);
 				$n_author = $articleauthorrel -> getN_author_id();
 				for ($ii3=0; $ii3<$n_author; $ii3++)
@@ -1771,10 +1771,10 @@ function show_only_authors(link, start1, stop1)
 					}
 					
 					if ($order_by == '-'){
-						$query = "SELECT DISTINCT title FROM $name_temporary_table WHERE show_only = 1 LIMIT $page_in , 10";
+						$query = "SELECT DISTINCT title FROM $name_temporary_table WHERE show_only = 1 LIMIT ".(int)$page_in." , 10";
 					}
 					else{
-						$query = "SELECT DISTINCT title FROM $name_temporary_table WHERE show_only = 1 ORDER BY $order_by $type_order LIMIT $page_in , 10";
+						$query = "SELECT DISTINCT title FROM $name_temporary_table WHERE show_only = 1 ORDER BY $order_by $type_order LIMIT ".(int)$page_in." , 10";
 					}
 					$rs = mysqli_query($GLOBALS['conn'],$query);					
 					$n_id = 0;
@@ -2000,7 +2000,7 @@ function show_only_authors(link, start1, stop1)
 							$single_aut=explode(',', $author_string);
 							$index=0;
 							$unique_authors=array();
-							for ($cnt=0; $cnt<count($single_aut); $cnt++){
+							for ($cnt=0; $cnt<count($single_aut ?? array()); $cnt++){
 								if($single_aut[$cnt]){
 									if(!in_array(trim($single_aut[$cnt]), $unique_authors)){
 										$unique_authors[$index]=trim($single_aut[$cnt]);
@@ -2017,7 +2017,7 @@ function show_only_authors(link, start1, stop1)
 							}
 							print ("<OPTION VALUE='all'> All </OPTION>");
 							
-							for ($index=0; $index<count($unique_authors); $index++)
+							for ($index=0; $index<count($unique_authors ?? array()); $index++)
 							{
 								// retrieve the number of articles for this publication:
 								if($unique_authors[$index]){
@@ -2099,7 +2099,7 @@ function show_only_authors(link, start1, stop1)
 						{
 							$f_auth=substr(trim($auth[$x]),0,1);
 							$auth_final=trim($auth[$x]);
-							$auth_final=preg_replace("/'/", "&#39;", $auth_final);
+							$auth_final=preg_replace("/'/", "&#39;", ($auth_final ?? ''));
 							if($x!=sizeof($auth)-1)
 								$authors2.=" <a href='find_author.php?name_author=$auth_final&first_author=$f_auth&new=1&see_result=1'>$auth[$x]</a>,";	
 							else 
@@ -2215,7 +2215,7 @@ function show_only_authors(link, start1, stop1)
 									$attachment = $attachment_obj -> getName();
 									$attachment_type = $attachment_obj -> getType();
 									$link_figure="";
-									$attachment_jpg = str_replace('jpg', 'jpeg', $attachment);
+									$attachment_jpg = str_replace('jpg', 'jpeg', ($attachment ?? ''));
 									if($attachment_type=="marker_figure"||$attachment_type=="marker_table"){
 										$link_figure = "attachment/marker/".$attachment_jpg;
 									}
@@ -2228,7 +2228,7 @@ function show_only_authors(link, start1, stop1)
 										$link_figure = "attachment/fp/".$attachment_jpg;
 									}
 									
-									$attachment_pdf = str_replace('jpg', 'pdf', $attachment);
+									$attachment_pdf = str_replace('jpg', 'pdf', ($attachment ?? ''));
 									$link_figure_pdf = "figure_pdf/".$attachment_pdf;
 
 									print ("
@@ -2299,7 +2299,7 @@ function show_only_authors(link, start1, stop1)
 												$row_digits=mysqli_fetch_array($result_digits, MYSQLI_BOTH);
 												$row_name=mysqli_fetch_array($result_name, MYSQLI_BOTH);
 												
-												for($index=3;$index<count($row_name);$index++){
+												for($index=3;$index<count($row_name ?? array());$index++){
 													if($row_view_flag[$index] and $row_view_flag[$index]!='definition' ){
 														$value_of_parameter=$row_values[$index];
 														if(trim($value_of_parameter)!='' and trim($value_of_parameter)!="no value" ){

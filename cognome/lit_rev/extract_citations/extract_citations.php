@@ -66,7 +66,7 @@ function extract_citations($fh, $output_lines) {
 			$year_results = [];
 			$cite_found = true;
 			$extra_line_found = false;		
-			$citations = $cited_by_results[1];
+			$citations = $cited_by_results[1] ?? null;
 			$cited_by_results = [];
 			$title_line_num = 1;
 			$citations_per_year = floatval($citations)/floatval(($current_year + 1 - $year));
@@ -104,7 +104,7 @@ function extract_citations($fh, $output_lines) {
 		}
 		if ($cite_found_counter == ($title_line_num + 1)) {
 			if (sizeof($title_lines) > 1) {
-				$title = $title_lines[1];
+				$title = $title_lines[1] ?? null;
 				$year_line_num = 3;
 			}
 			else if (sizeof($title_lines) > 0) {
@@ -113,7 +113,7 @@ function extract_citations($fh, $output_lines) {
 			}
 		}
 		if ($extra_line_found == true) {
-			$title = preg_replace('/(\[\w+\] )(.*)/', '$2', $line);
+			$title = preg_replace('/(\[\w+\] )(.*)/', '$2', ($line ?? ''));
 		}			
 		preg_match('/Free from Publisher/', ($line ?? ''), $free_pub_results);
 		if (sizeof($free_pub_results) > 0) {
@@ -123,7 +123,7 @@ function extract_citations($fh, $output_lines) {
 		if ($cite_found_counter == ($title_line_num + 2)) {
 			$articles_found++;
 			/*if ($title_line_num == 3) {
-				$title = preg_replace('/(\[\w+\] )(.*)/', '$2', $line);
+				$title = preg_replace('/(\[\w+\] )(.*)/', '$2', ($line ?? ''));
 				echo $title."<br>";
 			}*/
 			if ($title != "Previous\n" && $articles_found < 11) {
@@ -136,7 +136,7 @@ function extract_citations($fh, $output_lines) {
 				preg_match('/.* ([12][09]\d+) .*/', ($line ?? ''), $year_results);
 				if ($year_results[1] != '') {
 					//echo "Year: ".$year_results[1]."\n";
-					$year = $year_results[1];
+					$year = $year_results[1] ?? null;
 				}
 			}
 		}

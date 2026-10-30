@@ -80,7 +80,7 @@
 		$female_flag = false;
 		$sleep_flag = false;
 
-		for ($i = 0; $i < count($condition); $i++) {
+		for ($i = 0; $i < count($condition ?? array()); $i++) {
 			if ($condition[$i]=="male") {
 				$male_flag = true;
 			}
@@ -91,7 +91,7 @@
 				$sleep_flag = true;
 			}
 
-			if (count($condition)==1) {
+			if (count($condition ?? array())==1) {
 				if ($condition[$i] != "sleep") {
 					$entry = $entry." AND $cond_name = \"".$condition[$i]."\"";
 				}
@@ -102,7 +102,7 @@
 			else if ($i==0) {
 				$entry = " AND ($cond_name = \"".$condition[$i]."\"".$entry;
 			}
-			else if ($i==(count($condition)-1)) {
+			else if ($i==(count($condition ?? array())-1)) {
 				if ($male_flag && $female_flag) {
 					$entry = $entry." OR $cond_name = \"male and female\"";
 				}
@@ -116,7 +116,7 @@
 				$entry = $entry." OR $cond_name = \"".$condition[$i]."\"";
 			}
 		}
-		if (count($condition)==0) {
+		if (count($condition ?? array())==0) {
 			$entry = $entry." AND $cond_name = \"\"";
 		}
 

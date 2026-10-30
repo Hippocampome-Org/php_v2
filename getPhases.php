@@ -1,6 +1,6 @@
 <?php
   include ("permission_check.php");
-  $research = $_REQUEST['research'];
+  $research = $_REQUEST['research'] ?? null;
   // Define all the necessary classes needed for the application
   require_once('class/class.type.php');
   require_once('class/class.phases.php');
@@ -20,35 +20,35 @@
  * */
 
 if(!isset($_GET['page'])) $page=1;
-else $page = $_GET['page'];
+else $page = $_GET['page'] ?? null;
 //page=1&rows=5&sidx=1&sord=asc
 // get how many rows we want to have into the grid - rowNum parameter in the grid
 if(!isset($_GET['rows'])) $limit=122;
-else $limit = $_GET['rows'];
+else $limit = $_GET['rows'] ?? null;
 
 // get index row - i.e. user click to sort. At first time sortname parameter -
 // after that the index from colModel
 if(!isset($_GET['sidx'])) $sidx=1;
-else $sidx = $_GET['sidx'];
+else $sidx = $_GET['sidx'] ?? null;
 
 // sorting order - at first time sortorder
 if(!isset($_GET['sord'])) $sord="asc";
-else $sord = $_GET['sord'];
+else $sord = $_GET['sord'] ?? null;
 
 // if we not pass at first time index use the first column for the index or what you want
 if(!$sidx) $sidx =1;
 $number_type = 0;
 
-$type = new type($class_type);
-$phases = new phases($class_phases);
+$type = new type($class_type ?? null);
+$phases = new phases($class_phases ?? null);
 
-$research = $_REQUEST['research'];
-$table = $_REQUEST['table_result'];
+$research = $_REQUEST['research'] ?? null;
+$table = $_REQUEST['table_result'] ?? null;
 
 if (isset($research)) // From page of search; retrieve the id from search_table (temporary) -----------------------
 {
 	echo("<script>console.log('PHP: In ifvich.php');</script>");
-	$table_result = $_REQUEST['table_result'];
+	$table_result = $_REQUEST['table_result'] ?? null;
 	$temporary_result_neurons = new temporary_result_neurons();
 	$temporary_result_neurons -> setName_table($table_result);
 	
@@ -233,7 +233,7 @@ for($i = 0; $i<$number_type; $i++)
 	$rows[$i]['cell'][0] = '<span style="color:'.$neuronColor[$subregion].'"><strong>'.$neuron[$subregion].'</strong></span>';
 	$rows[$i]['cell'][1] = '<a href="neuron_page.php?id='.$id.'" target="blank" title="'.$nickname.'"'.$type->getName().'"><font color="'.$fontColor.'">'.$nickname.'</font></a>';
 
-	for($j = 0; $j<count($phasesArray); $j++)
+	for($j = 0; $j<count($phasesArray ?? array()); $j++)
 	{
 		if($mean[$phasesArray[$j]] == -99999)
 		{

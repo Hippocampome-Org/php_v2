@@ -1,6 +1,8 @@
 <?php
 class temporary_search
 {
+	// PHP83-FIX by KN on 2026-10-30: declared (PHP 8.2+ warns about undeclared properties)
+	public $_n_search;
 	private $_id;
 	private $_N;
 	private $_operator;
@@ -53,7 +55,7 @@ class temporary_search
 		if ($flag == 3)  // Update Relation
 			$query = "UPDATE $name_temporary_table SET relation = '$relation' WHERE id = '$N' ";	
 		if ($flag == 4) { // Update Value 
-			$value = str_replace('( )', '(+)', $value);	// hack to replace plus signs
+			$value = str_replace('( )', '(+)', ($value ?? ''));	// hack to replace plus signs
 			$query = "UPDATE $name_temporary_table SET value = '$value' WHERE id = '$N' ";
 		}			
 		

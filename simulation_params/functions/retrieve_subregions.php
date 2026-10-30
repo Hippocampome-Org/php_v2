@@ -9,7 +9,7 @@ function style_subregionsdynamically($result_array, $div_location, $pathdir){
     }
         
     foreach($result_array as $key => $val_arr){
-        if(count($val_arr) == 0){
+        if(count($val_arr ?? array()) == 0){
             continue;
         }
 
@@ -31,7 +31,7 @@ function style_subregionsdynamically($result_array, $div_location, $pathdir){
             $return_value.="<table style='float:left;width:33%;'>";
         }
         $return_value.="<tr><th class='".$class_name."'>";
-        $return_value.="<strong>".$key." (<span id='".$span_name."' name='".$span_name."'>0</span>/".count($val_arr).")</strong>";
+        $return_value.="<strong>".$key." (<span id='".$span_name."' name='".$span_name."'>0</span>/".count($val_arr ?? array()).")</strong>";
         $return_value.="</th></tr>";
         foreach($val_arr as $vals){
             $td_name=strtolower($key)."_".$vals['id'];

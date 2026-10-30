@@ -69,7 +69,7 @@ jQuery(document).ready(function() {
 //if ($perm == NULL)
 //	header("Location:error1.html");
 //include ("access_db.php");
-$jsonStr = $_SESSION['morphology'];
+$jsonStr = $_SESSION['morphology'] ?? null;
 //include ("getMorphology.php");
 require_once('class/class.type.php');
 require_once('class/class.property.php');
@@ -134,14 +134,14 @@ function check_axon_dendrite($variable, $hippo_axon, $hippo_dendrite)
 } */	
 // ------------------------------------------------------------------------------------------
 $color_selected ='#EBF283';
-$type = new type($class_type);
+$type = new type($class_type ?? null);
 $type -> retrive_id();
 $nTypes = $type->getNumber_type();
 
-$research = $_REQUEST['research'];
+$research = $_REQUEST['research'] ?? null;
 /* if ($research) // From page of search; retrieve the id from search_table (temporary) -----------------------
 {
-	$table_result = $_REQUEST['table_result'];
+	$table_result = $_REQUEST['table_result'] ?? null;
 
 	$temporary_result_neurons = new temporary_result_neurons();
 	$temporary_result_neurons -> setName_table($table_result);
@@ -177,8 +177,8 @@ else // not from search page --------------
 	$number_type = $type->getNumber_type();
 } */
 // -------------------------------------------------------------------------------------------------------------
-$property = new property($class_property);
-$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
+$property = new property($class_property ?? null);
+$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel ?? null);
 //Changed this on Oct 29 2026 by KN
 //$hippo_select = $_SESSION['hippo_select'];
 $hippo_select = $_SESSION['hippo_select'] ?? '';
@@ -750,7 +750,7 @@ $("#nGrid").mouseout(function(e) {
 		<!-- ****************  BODY **************** -->
 		<?php 
 			if ($research){
-				$full_search_string = $_SESSION['full_search_string'];
+				$full_search_string = $_SESSION['full_search_string'] ?? null;
 				if ($number_type == 1)
 					print ("<font class='font3'> $number_type Result  [$full_search_string]</font>");
 				else

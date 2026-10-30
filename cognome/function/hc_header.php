@@ -43,10 +43,10 @@ include("../function/icon.html");
 
 	if (isset($_SESSION['active_db']) || isset($_REQUEST['active_db'])) {
     	if (isset($_REQUEST['active_db'])) {
-		    $active_db = $_REQUEST['active_db'];
+		    $active_db = $_REQUEST['active_db'] ?? null;
 		}
 		else if (isset($_SESSION['active_db'])) {
-		    $active_db = $_SESSION['active_db'];
+		    $active_db = $_SESSION['active_db'] ?? null;
 		    $_SESSION['active_db'] = $active_db; // keep session variable alive (avoid timeout) by setting it here.
 		}
 

@@ -99,7 +99,7 @@
 	if ( isset($_GET['sSearch']) && $_GET['sSearch'] != "" )
 	{
 		$sWhere = "WHERE (";
-		for ( $i=0 ; $i<count($aColumns) ; $i++ )
+		for ( $i=0 ; $i<count($aColumns ?? array()) ; $i++ )
 		{
 			if ( isset($_GET['bSearchable_'.$i]) && $_GET['bSearchable_'.$i] == "true" )
 			{
@@ -111,7 +111,7 @@
 	}
 	
 	/* Individual column filtering */
-	for ( $i=0 ; $i<count($aColumns) ; $i++ )
+	for ( $i=0 ; $i<count($aColumns ?? array()) ; $i++ )
 	{
 		if ( isset($_GET['bSearchable_'.$i]) && $_GET['bSearchable_'.$i] == "true" && $_GET['sSearch_'.$i] != '' )
 		{
@@ -148,7 +148,7 @@
 	";
 	$rResultFilterTotal = mysql_query( $sQuery, $gaSql['link'] ) or fatal_error( 'MySQL Error: ' . mysql_errno() );
 	$aResultFilterTotal = mysql_fetch_array($rResultFilterTotal);
-	$iFilteredTotal = $aResultFilterTotal[0];
+	$iFilteredTotal = $aResultFilterTotal[0] ?? null;
 	
 	/* Total data set length */
 	$sQuery = "
@@ -157,7 +157,7 @@
 	";
 	$rResultTotal = mysql_query( $sQuery, $gaSql['link'] ) or fatal_error( 'MySQL Error: ' . mysql_errno() );
 	$aResultTotal = mysql_fetch_array($rResultTotal);
-	$iTotal = $aResultTotal[0];
+	$iTotal = $aResultTotal[0] ?? null;
 	
 	
 	/*
@@ -173,7 +173,7 @@
 	while ( $aRow = mysql_fetch_array( $rResult ) )
 	{
 		$row = array();
-		for ( $i=0 ; $i<count($aColumns) ; $i++ )
+		for ( $i=0 ; $i<count($aColumns ?? array()) ; $i++ )
 		{
 			if ( $aColumns[$i] == "version" )
 			{

@@ -9,19 +9,19 @@ require_once('class/class.evidencepropertyyperel.php');
 require_once('class/class.firingpattern.php');
 require_once('class/class.firingpatternrel.php');
 
-$parameter=$_GET['pattern'];
+$parameter= $_GET['pattern'] ?? null;
 $title = $parameter;
 $array_for_use = array($parameter);
 
-$type = new type($class_type);
+$type = new type($class_type ?? null);
 $type -> retrive_by_id($id);
 
-$property = new property($class_property);
-$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
-$firingpattern = new firingpattern($class_firing_pattern);
-$firingpatternrel = new firingpatternrel($class_firing_pattern_rel);
+$property = new property($class_property ?? null);
+$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel ?? null);
+$firingpattern = new firingpattern($class_firing_pattern ?? null);
+$firingpatternrel = new firingpatternrel($class_firing_pattern_rel ?? null);
 
-$firingpatternrel = new firingpatternrel($class_firing_pattern_rel);
+$firingpatternrel = new firingpatternrel($class_firing_pattern_rel ?? null);
 
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -179,7 +179,7 @@ $(function(){
 	$query = "SELECT fp_name FROM FiringPattern WHERE overall_fp like '$parameter'";
 	$rs = mysqli_query($GLOBALS['conn'],$query);
 	$row_data = mysqli_fetch_row($rs);
-	$fp_name_val=$row_data[0];
+	$fp_name_val= $row_data[0] ?? null;
 	print("$fp_name_val ($title)");
 	?>
 	[<a href="Help_Principles_of_Classification_of_Firing_Pattern_Elements.php">formal defintion</a>]</font>
@@ -215,7 +215,7 @@ $(function(){
 <td align='right' width='80%' class='table_neuron_page2'>
 <div style="width:100%; background-color:white; height:95px; overflow:scroll;overflow-x: scroll;overflow-y: scroll;">
 	<?php
-	$firing_parameter=$_REQUEST['pattern'];
+	$firing_parameter= $_REQUEST['pattern'] ?? null;
 	$query_to_get_images = "SELECT DISTINCT name FROM Attachment WHERE parameter LIKE '$firing_parameter' group by substr(original_id,5,length(original_id)) order by name";
 	$rs_images = mysqli_query($GLOBALS['conn'],$query_to_get_images);
 	while(list($image) = mysqli_fetch_row($rs_images))			

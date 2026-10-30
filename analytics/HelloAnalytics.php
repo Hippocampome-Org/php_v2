@@ -84,17 +84,17 @@ function printResults($reports) {
     $metricHeaders = $header->getMetricHeader()->getMetricHeaderEntries();
     $rows = $report->getData()->getRows();
 
-    for ( $rowIndex = 0; $rowIndex < count($rows); $rowIndex++) {
+    for ( $rowIndex = 0; $rowIndex < count($rows ?? array()); $rowIndex++) {
       $row = $rows[ $rowIndex ];
       $dimensions = $row->getDimensions();
       $metrics = $row->getMetrics();
-      for ($i = 0; $i < count($dimensionHeaders) && $i < count($dimensions); $i++) {
+      for ($i = 0; $i < count($dimensionHeaders ?? array()) && $i < count($dimensions ?? array()); $i++) {
         print($dimensionHeaders[$i] . ": " . $dimensions[$i] . "\n");
       }
 
-      for ($j = 0; $j < count($metrics); $j++) {
+      for ($j = 0; $j < count($metrics ?? array()); $j++) {
         $values = $metrics[$j]->getValues();
-        for ($k = 0; $k < count($values); $k++) {
+        for ($k = 0; $k < count($values ?? array()); $k++) {
           $entry = $metricHeaders[$k];
           print($entry->getName() . ": " . $values[$k] . "\n");
         }

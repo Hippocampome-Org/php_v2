@@ -3,7 +3,7 @@
 require_once '../vendor/autoload.php';
 
 // Start a session to persist credentials.
-session_start();
+if (session_status() === PHP_SESSION_NONE) session_start();
 
 // Create the client object and set the authorization configuration
 // from the client_secretes.json you downloaded from the developer console.

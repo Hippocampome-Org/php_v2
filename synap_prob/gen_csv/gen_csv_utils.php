@@ -1,7 +1,7 @@
 <?php
 	function neurite_to_neuriteID($prop_parcel_rel, $neurite) {
 		$neurite_id='';
-		for ($i=0;$i<count($prop_parcel_rel);$i++) {
+		for ($i=0;$i<count($prop_parcel_rel ?? array());$i++) {
 			// case insensitive match used here
 			if (strtolower($neurite)==strtolower($prop_parcel_rel[$i][1])) {
 				$neurite_id=$prop_parcel_rel[$i][0];
@@ -13,7 +13,7 @@
 
 	function refID_to_fragID($fragments, $refID) {
 		$found=false; // only return the first result found
-		for ($i=0;$i<count($fragments);$i++) {
+		for ($i=0;$i<count($fragments ?? array());$i++) {
 			$frag_id_temp = $fragments[$i][1];
 			if ($refID==$frag_id_temp && $found==false) {
 				$frag_id=$fragments[$i][0];
@@ -26,7 +26,7 @@
 	}	
 
 	function fragID_to_eviID($evidence, $fragID) {
-		for ($i=0;$i<count($evidence);$i++) {
+		for ($i=0;$i<count($evidence ?? array());$i++) {
 			if ($fragID==$evidence[$i][0]) {
 				$evi_id=$evidence[$i][1];
 			}

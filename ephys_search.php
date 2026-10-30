@@ -14,17 +14,17 @@ require_once('class/class.epdata.php');
 require_once('class/class.temporary_result_neurons.php');
 
 
-$type = new type($class_type);
+$type = new type($class_type ?? null);
 
-$research = $_REQUEST['research'];
+$research = $_REQUEST['research'] ?? null;
 
-$property = new property($class_property);
+$property = new property($class_property ?? null);
 
-$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
+$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel ?? null);
 
-$epdataevidencerel = new epdataevidencerel($class_epdataevidencerel);
+$epdataevidencerel = new epdataevidencerel($class_epdataevidencerel ?? null);
 
-$epdata = new epdata($class_epdata);
+$epdata = new epdata($class_epdata ?? null);
 
 ?>
 

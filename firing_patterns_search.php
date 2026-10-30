@@ -20,7 +20,7 @@ require_once('class/class.type.php');
 require_once('class/class.property.php');
 require_once('class/class.evidencepropertyyperel.php');
 require_once('class/class.temporary_result_neurons.php');
-$research = $_REQUEST['research'];
+$research = $_REQUEST['research'] ?? null;
 $width1='25%';
 $width2='2%';
 include ("function/icon.html");

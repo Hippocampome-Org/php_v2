@@ -1,7 +1,7 @@
 <?php
 include ("../access_db.php");
 include ("access_db.php");
-$perm = $_SESSION['perm'];
+$perm = $_SESSION['perm'] ?? null;
 if ($perm == NULL) {
 	$query = "SELECT permission FROM hippocampome.user WHERE id = '2'";
 	$rs = mysqli_query($GLOBALS['conn'],$query);

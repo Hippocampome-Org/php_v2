@@ -12,9 +12,9 @@ require_once('class/class.articleauthorrel.php');
 require_once('class/class.utils_type.php');	
 require_once('class/class.utils_author_article.php');
 
-$author_1 = new author($class_author);
-$articleauthorrel = new articleauthorrel($class_articleauthorrel);
-$article = new article($class_article);	
+$author_1 = new author($class_author ?? null);
+$articleauthorrel = new articleauthorrel($class_articleauthorrel ?? null);
+$article = new article($class_article ?? null);	
 
 function getSupplemental($sup_id){
 	$types_array=array();
@@ -61,11 +61,11 @@ function getSupplemental($sup_id){
 	return $types_array;
 }
 // Go to the search: --------------------------------------------------------------------------
-if ($_REQUEST['search_pmid'])
+if (!empty($_REQUEST['search_pmid']))
 {
-	$type_search = $_SESSION['type_search'];
+	$type_search = $_SESSION['type_search'] ?? null;
 
-	$n_pmid = $_SESSION['n_pmid'];
+	$n_pmid = $_SESSION['n_pmid'] ?? null;
 	$pmid = trim($_REQUEST['pubmed_id']);
 
 
@@ -101,7 +101,7 @@ if ($_REQUEST['search_pmid'])
 // -----------------------------------------------------------------------------------------------
 else
 {
-	$type_code = $_REQUEST['type_code'];
+	$type_code = $_REQUEST['type_code'] ?? null;
 	if ($type_code)
 	{
 		$type_search = $type_code;
@@ -351,7 +351,7 @@ else
 		else if($pmid!=""){
 			$n_id_article=1;
 			$sup_types=getSupplemental($pmid);
-			if(count($sup_types)!=0){
+			if(count($sup_types ?? array())!=0){
 				print ("<table border='0'  class='table_result' id='tab_res' width='100%'>");
 				print ("<thead><tr>
 						<td align='center' width='20%' class='table_neuron_page1'> <strong>Authors</strong> </td>

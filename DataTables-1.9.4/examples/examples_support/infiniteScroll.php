@@ -74,7 +74,7 @@
 	while ( $aRow = mysql_fetch_array( $rResult ) )
 	{
 		$sOutput .= "[";
-		for ( $i=0 ; $i<count($aColumns) ; $i++ )
+		for ( $i=0 ; $i<count($aColumns ?? array()) ; $i++ )
 		{
 			/* General output */
 			$sOutput .= '"'.str_replace('"', '\"', $aRow[ $aColumns[$i] ]).'",';

@@ -1,6 +1,6 @@
 <?php   
 include ("access_db.php");
-$perm = $_SESSION['perm'];
+$perm = $_SESSION['perm'] ?? null;
 if ($perm == NULL) {
         //Changed from here on Feb 8 2026
         $query = "SELECT permission FROM user WHERE id = '2'";

@@ -1,6 +1,7 @@
 <?php
+mysqli_report(MYSQLI_REPORT_OFF); // PHP83-FIX by KN on 2026-10-30: failed queries return false like PHP 7 instead of stopping the page
 include ("access_db.php");
-$perm = $_SESSION['perm'];
+$perm = $_SESSION['perm'] ?? null;
 if ($perm == NULL) {
 	$query = "SELECT permission FROM user WHERE id = '2'";
 	$rs = mysqli_query($GLOBALS['conn'],$query);

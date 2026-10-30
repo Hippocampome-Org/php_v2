@@ -33,8 +33,8 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
 <body>
 <?php
         include ("generate_json_params.php"); // import parameters for this software
-        $cond_num = $_REQUEST['cond_num'];
-        $param_num = $_REQUEST['param_num'];
+        $cond_num = $_REQUEST['cond_num'] ?? null;
+        $param_num = $_REQUEST['param_num'] ?? null;
         $param = $params[$param_num];
 
         echo "<br><hr><center><h2><a href='generate_json.php' style='color:black;text-decoration:none'>Json Generation Page</a></h2>Note: this page's operations require read and write access to a directory specified<br>in its source code. If that is not availible online this should be run offline to complete its operations.</center><br><hr>";
@@ -106,7 +106,7 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
         }
 
         function retreive_values($conn_synaptome, $conn, $type, $neuron_group, $neuron_group_long, $i, $write_output, $neuron_ids, $cond_num, $param) {
-                for ($j=0;$j<count($neuron_ids);$j++) {
+                for ($j=0;$j<count($neuron_ids ?? array());$j++) {
                 //for ($j=0;$j<3;$j++) {
                         $entry_output = "";
                         if ($type == 'syn_model') {
@@ -147,7 +147,7 @@ $i is row that is a neuron type
         $j is column that is a parcel type
         */
         if ($param_num < sizeof($params)) {
-                for ($i = 0; $i < count($neuron_ids); $i++) {
+                for ($i = 0; $i < count($neuron_ids ?? array()); $i++) {
                         if ($page=='syn_model' || $page=='syn_model_1st') {
                                 $write_output = retreive_values($conn_synaptome, $conn, 'syn_model', $neuron_group_hnc, $neuron_group_long, $i, $write_output, $neuron_ids, $cond_num, $param);
                         }
@@ -183,7 +183,7 @@ $i is row that is a neuron type
 
                         for ($o_i = 0; $o_i<$total_rows; $o_i++) {
                                 if ($o_i==($total_rows-1)) {
-                                        $last_index = count($write_output)-1; // last line
+                                        $last_index = count($write_output ?? array())-1; // last line
                                         fwrite($output_file, "\"".$write_output[$last_index]."\"]}]}");
                                 }
                                 elseif (in_array($o_i, $neuron_group_cols)) {

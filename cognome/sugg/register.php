@@ -108,7 +108,7 @@
     reg_user($cog_conn);
 
     echo "Registration of user: ".$_POST['username']." was successful.<br><br><a href='mod_art.php'>Return to suggest articles page.</a></center><br></div><br>";
-    $_SESSION['user_login'] = $_POST['username'];    
+    $_SESSION['user_login'] = $_POST['username'] ?? null;    
     exit();
   }
 

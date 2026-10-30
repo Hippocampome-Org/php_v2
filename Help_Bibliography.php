@@ -145,7 +145,7 @@ ul
 						while($arows = mysqli_fetch_array($ress, MYSQLI_ASSOC))
 						{
 							$auth_name=$arows['name_auth'];
-							$auth_name=preg_replace("/'/", "&#39;", $auth_name);
+							$auth_name=preg_replace("/'/", "&#39;", ($auth_name ?? ''));
 							if ($g == 0)
 							{
 								print("<b>".$auth_name."</b>");
@@ -160,8 +160,8 @@ ul
 					print(" (<b>".$ye[$ll]."</b>)");
 					print(". ");
 					$article_title=$ttls[$ll];
-					$article_title=preg_replace("/\[/", "", $article_title);
-					$article_title=preg_replace("/\]/", "", $article_title);
+					$article_title=preg_replace("/\[/", "", ($article_title ?? ''));
+					$article_title=preg_replace("/\]/", "", ($article_title ?? ''));
 					print("<i>".$article_title."</i> ");
 					print($publi[$ll].", ");
 					print($volu[$ll]."(");

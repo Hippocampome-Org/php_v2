@@ -5,7 +5,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) session_start();
 
 include ("function/property.php");
 include ("function/part.php");
@@ -21,22 +21,22 @@ require_once('class/class.evidencepropertyyperel.php');
 require_once('class/class.epdataevidencerel.php');
 require_once('class/class.temporary_search.php');
 
-$type = new type($class_type);
+$type = new type($class_type ?? null);
 $number_type = $type->getNumber_type();
-$markerdata = new markerdata($class_markerdata);
-$epdata = new epdata($class_epdata);
-$property_ob = new property($class_property);
-$evidencepropertyyperel =  new evidencepropertyyperel($class_evidence_property_type_rel);
-$epdataevidencerel =  new epdataevidencerel($class_epdataevidencerel);
+$markerdata = new markerdata($class_markerdata ?? null);
+$epdata = new epdata($class_epdata ?? null);
+$property_ob = new property($class_property ?? null);
+$evidencepropertyyperel =  new evidencepropertyyperel($class_evidence_property_type_rel ?? null);
+$epdataevidencerel =  new epdataevidencerel($class_epdataevidencerel ?? null);
 $temporary_search = new temporary_search();
 
 $full_search_string="";
 
 // Comes from INDEX:PHP and in this case the program creates the temporary table:
-if ($_REQUEST['searching'])
+if (!empty($_REQUEST['searching']))
 {
-	$ip_address = $_SERVER['REMOTE_ADDR'];
-	$ip_address = str_replace(array('.', ':'), '_', $ip_address);
+	$ip_address = $_SERVER['REMOTE_ADDR'] ?? null;
+	$ip_address = str_replace(array('.', ':'), '_', ($ip_address ?? ''));
 
 	$time_t = time();
 
@@ -54,7 +54,7 @@ if ($_REQUEST['searching'])
 
 
 
-$N = $_REQUEST['N'];
+$N = $_REQUEST['N'] ?? null;
 
 {
 
@@ -62,13 +62,13 @@ $N = $_REQUEST['N'];
 
 	// Insert the property in the temporary table: --------------------------------------------------------------
 
-	$property = $_REQUEST['property'];
+	$property = $_REQUEST['property'] ?? null;
 
 	if ($property)
 
 	{		
 
-		$name_temporary_table = $_SESSION['name_temporary_table'];
+		$name_temporary_table = $_SESSION['name_temporary_table'] ?? null;
 
 		
 
@@ -82,13 +82,13 @@ $N = $_REQUEST['N'];
 
 	// Insert the part in the temporary table: --------------------------------------------------------------
 
-	$part = $_REQUEST['part'];
+	$part = $_REQUEST['part'] ?? null;
 
 	if ($part)
 
 	{	
 
-		$name_temporary_table = $_SESSION['name_temporary_table'];
+		$name_temporary_table = $_SESSION['name_temporary_table'] ?? null;
 
 	
 
@@ -102,13 +102,13 @@ $N = $_REQUEST['N'];
 
 	// Insert the part in the temporary table: --------------------------------------------------------------
 
-	$relation = $_REQUEST['relation'];
+	$relation = $_REQUEST['relation'] ?? null;
 
 	if ($relation)
 
 	{	
 
-		$name_temporary_table = $_SESSION['name_temporary_table'];
+		$name_temporary_table = $_SESSION['name_temporary_table'] ?? null;
 
 
 
@@ -122,13 +122,13 @@ $N = $_REQUEST['N'];
 
 	// Insert the value in the temporary table: --------------------------------------------------------------
 
-	$value = $_REQUEST['value'];
+	$value = $_REQUEST['value'] ?? null;
 
 	if ($value||$value==0)
 
 	{	
 
-		$name_temporary_table = $_SESSION['name_temporary_table'];
+		$name_temporary_table = $_SESSION['name_temporary_table'] ?? null;
 
 
 
@@ -142,7 +142,7 @@ $N = $_REQUEST['N'];
 
 	// OPERATOR *** creates a new searc line and nue row in the temporary table:
 
-	$operator = $_REQUEST['operator'];
+	$operator = $_REQUEST['operator'] ?? null;
 
 	if ($operator)
 
@@ -150,13 +150,13 @@ $N = $_REQUEST['N'];
 
 		print($name_temporary_table);
 
-		$N = $_REQUEST['N'];
+		$N = $_REQUEST['N'] ?? null;
 
 		$N_old = $N - 1;
 
 	
 
-		$name_temporary_table = $_SESSION['name_temporary_table'];
+		$name_temporary_table = $_SESSION['name_temporary_table'] ?? null;
 
 		$temporary_search -> setName_table($name_temporary_table);
 
@@ -226,13 +226,13 @@ $N = $_REQUEST['N'];
 
 	// Remove a search line:
 
-	$line = $_REQUEST['remove_line'];
+	$line = $_REQUEST['remove_line'] ?? null;
 
 	if ($line)
 
 	{
 
-		$name_temporary_table = $_SESSION['name_temporary_table'];
+		$name_temporary_table = $_SESSION['name_temporary_table'] ?? null;
 
 		$temporary_search -> setName_table($name_temporary_table);
 
@@ -254,11 +254,11 @@ $N = $_REQUEST['N'];
 
 // Clear all ---------------------------------------------
 
-if ($_REQUEST['clear_all'])
+if (!empty($_REQUEST['clear_all']))
 
 {
 
-	$name_temporary_table = $_SESSION['name_temporary_table'];
+	$name_temporary_table = $_SESSION['name_temporary_table'] ?? null;
 
 	$query = "TRUNCATE $name_temporary_table";
 
@@ -686,7 +686,7 @@ include ("function/icon.html");
 
 					$value_part=array_merge($phenotype,$value_part);
 
-					$n_part=count($value_part);
+					$n_part=count($value_part ?? array());
 
 				}
 
@@ -694,7 +694,7 @@ include ("function/icon.html");
 
 					$value_part=partFiringPatternParameter(); 
 
-					$n_part=count($value_part);
+					$n_part=count($value_part ?? array());
 
 				}
 
@@ -739,7 +739,7 @@ include ("function/icon.html");
 				
 				// Store the Untracked markers(part) - untracked markers start from 20th index
 				// and convert into lower case
-				for($j_iter = 20; $j_iter < count($value_part); $j_iter++)
+				for($j_iter = 20; $j_iter < count($value_part ?? array()); $j_iter++)
 				{
 					$value_part_untracked[$j_iter] = $value_part[$j_iter];
 					$lowercase = strtolower($value_part_untracked[$iter]);
@@ -747,7 +747,7 @@ include ("function/icon.html");
 				}
 
 				// Copy all the Part to a temporary arrary
-				for ($c = 0; $c < count($value_part); $c++) {
+				for ($c = 0; $c < count($value_part ?? array()); $c++) {
 						$value_part_temp[$c] = $value_part[$c];
 				}
 
@@ -763,7 +763,7 @@ include ("function/icon.html");
 				// begins from 20th index for further processing
 				$counter = 20;
 
-				for($k_iter = 0; $k_iter < count($value_part_untracked); $k_iter++)
+				for($k_iter = 0; $k_iter < count($value_part_untracked ?? array()); $k_iter++)
 				{
 					$value_part_untracked_temp[$k_iter] = $value_part_untracked[$counter];
 					$counter++;
@@ -773,7 +773,7 @@ include ("function/icon.html");
 
 				$counter = 20;
 
-				for($k_iter = 0; $k_iter < count($value_part_untracked_temp); $k_iter++)
+				for($k_iter = 0; $k_iter < count($value_part_untracked_temp ?? array()); $k_iter++)
 				{
 					$value_part_untracked[$counter] = $value_part_untracked_temp[$k_iter];
 					$counter++;
@@ -782,13 +782,13 @@ include ("function/icon.html");
 				// --------------------------------------------------------
 				// --------------------------------------------------------
 
-				for ($c = 0; $c < count($value_part); $c++) 
+				for ($c = 0; $c < count($value_part ?? array()); $c++) 
 				{
 					// Add a Delimeter after all the tracked markers
 					if($c == 20)
 						print ("<OPTION VALUE='--'>-------------------</OPTION>");
 
-					for($cc=0;$cc<count($value_part_temp);$cc++)
+					for($cc=0;$cc<count($value_part_temp ?? array());$cc++)
 					{
 						if($c < 20)
 						{
@@ -822,7 +822,7 @@ include ("function/icon.html");
 
 				if($property1 !='Firing Pattern Parameter'){
 
-					for ($c = 0; $c < count($value_part); $c++)
+					for ($c = 0; $c < count($value_part ?? array()); $c++)
 
 					{
 
@@ -830,7 +830,7 @@ include ("function/icon.html");
 
 					}
 
-					for ($c = 0; $c < count($value_part); $c++)
+					for ($c = 0; $c < count($value_part ?? array()); $c++)
 
 					{
 
@@ -842,11 +842,11 @@ include ("function/icon.html");
 
 					sort($value_part);
 
-					for ($c = 0; $c < count($value_part); $c++)
+					for ($c = 0; $c < count($value_part ?? array()); $c++)
 
 					{
 
-						for($cc=0;$cc<count($value_part_temp);$cc++)
+						for($cc=0;$cc<count($value_part_temp ?? array());$cc++)
 
 						{
 
@@ -1080,7 +1080,7 @@ include ("function/icon.html");
 
 	            $yy=$n_evidence_id-1;			
 
-	            $min_value1 = $value_1[0];
+	            $min_value1 = $value_1[0] ?? null;
 
 	            $max_value1 = $value_1[$yy]; 
 
@@ -1134,7 +1134,7 @@ include ("function/icon.html");
 
 						
 
-				for($ind=0;$ind<count($valuesOfEphys);$ind++){
+				for($ind=0;$ind<count($valuesOfEphys ?? array());$ind++){
 
 					$valuesOfEphys[$ind]=$valuesOfEphys[$ind]." ".$unit;
 
@@ -1232,7 +1232,7 @@ include ("function/icon.html");
 
 						$index=0;	
 
-						for($ind=0;$ind<count($valuesOf);$ind++){
+						for($ind=0;$ind<count($valuesOf ?? array());$ind++){
 
 							$val=number_format((float)$valuesOf[$ind],$digit_precision, '.', '');
 
@@ -1248,7 +1248,7 @@ include ("function/icon.html");
 
 
 
-						for($ind=0;$ind<count($valuesOfParameter);$ind++){
+						for($ind=0;$ind<count($valuesOfParameter ?? array());$ind++){
 
 							$valuesOfParameter[$ind]=$valuesOfParameter[$ind]." ".$unit;
 
@@ -1294,7 +1294,7 @@ include ("function/icon.html");
 
 			if ($property1 == 'Electrophysiology')
 
-				$n_value = count($valuesOfEphys);
+				$n_value = count($valuesOfEphys ?? array());
 
 			if ($property1 == 'Major Neurotransmitter')
 
@@ -1316,7 +1316,7 @@ include ("function/icon.html");
 
 			if($property1 == 'Firing Pattern Parameter'){
 
-				$n_value = count($valuesOfParameter);
+				$n_value = count($valuesOfParameter ?? array());
 
 			}
 
@@ -1324,7 +1324,7 @@ include ("function/icon.html");
 
 				$valuesOfUniqueIds=partUniqueId();
 
-				$n_value = count($valuesOfUniqueIds);
+				$n_value = count($valuesOfUniqueIds ?? array());
 
 			}
 

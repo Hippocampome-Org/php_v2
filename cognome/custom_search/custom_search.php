@@ -69,7 +69,7 @@
     $dir = "/var/www/html/cognome_articles_renamed/core_collection/txt_ver_rnm/"; // directory of literature in text file format  
 
     if (isset($_GET['fileview'])) {
-      $myFile = $_GET['fileview'];
+      $myFile = $_GET['fileview'] ?? null;
       $fh = fopen($myFile, 'r');
       $theData = fread($fh, filesize($myFile));
       echo "<center>File Contents</center>";
@@ -96,7 +96,7 @@
     }
     echo "</div></input></div></div>";
     echo "<div class='wrap-collabsible' id='kwd_select_dropdown' style='width:550px;'><input id='kwd_select' class='toggle' type='checkbox'><label for='kwd_select' class='lbl-toggle'>Load Keywords</label><div class='collapsible-content'><div class='content-inner' style='font-size:18px;'>";
-    for ($b_i = 0; $b_i < count($kwd_button_ids); $b_i++) {
+    for ($b_i = 0; $b_i < count($kwd_button_ids ?? array()); $b_i++) {
       make_button($kwd_button_ids[$b_i], $kwd_button_values[$b_i]);
     }
     echo "</div></input></div></div>";    
@@ -177,7 +177,7 @@
     echo "<input type='submit' value='search' style='font-size:20px;padding:5px;padding-left:20px;padding-right:20px;position:relative;top:6px;'></center></form></div>";
 
     if (isset($_POST['search_query'])) {
-      $search_query = preg_replace('/[\'\"]/', '', $_POST['search_query']);
+      $search_query = preg_replace('/[\'\"]/', '', ($_POST['search_query'] ?? ''));
       $query = preg_split("/,/i", $search_query);/*explode(' AND ', $search_query);*/
 
       echo "<br><div class='article_details'>
@@ -186,14 +186,14 @@
       include('search.php'); 
 
       if (isset($_POST['max_keyterm_results'])) {
-        $max_matches = $_POST['max_keyterm_results'];
+        $max_matches = $_POST['max_keyterm_results'] ?? null;
       }
       else {
         $max_matches = 10;
       }
 
       if (isset($_POST['articles_to_search'])) {
-        $articles_to_search = $_POST['articles_to_search'];
+        $articles_to_search = $_POST['articles_to_search'] ?? null;
       }
       else {
         $articles_to_search = "all";

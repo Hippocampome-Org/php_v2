@@ -1,6 +1,6 @@
 <?php
   include ("permission_check.php");
-  $research = $_REQUEST['research'];
+  $research = $_REQUEST['research'] ?? null;
   // Define all the necessary classes needed for the application
   require_once('class/class.type.php');
   require_once('class/class.property.php');
@@ -36,32 +36,32 @@ function getUrlForLink($id,$img,$key,$count1)
 }  
   
 if(!isset($_GET['page'])) $page=1;
-else $page = $_GET['page'];
+else $page = $_GET['page'] ?? null;
 //page=1&rows=5&sidx=1&sord=asc
 // get how many rows we want to have into the grid - rowNum parameter in the grid
 if(!isset($_GET['rows'])) $limit=175;
-else $limit = $_GET['rows'];
+else $limit = $_GET['rows'] ?? null;
 
 // get index row - i.e. user click to sort. At first time sortname parameter -
 // after that the index from colModel
 if(!isset($_GET['sidx'])) $sidx=1;
-else $sidx = $_GET['sidx'];
+else $sidx = $_GET['sidx'] ?? null;
 
 // sorting order - at first time sortorder
 if(!isset($_GET['sord'])) $sord="asc";
-else $sord = $_GET['sord'];
+else $sord = $_GET['sord'] ?? null;
 
 // if we not pass at first time index use the first column for the index or what you want
 if(!$sidx) $sidx =1;
 
 
-$type = new type($class_type);
+$type = new type($class_type ?? null);
 
-$research = $_REQUEST['research'];
-$table = $_REQUEST['table_result'];
+$research = $_REQUEST['research'] ?? null;
+$table = $_REQUEST['table_result'] ?? null;
 if (isset($research)) // From page of search; retrieve the id from search_table (temporary) -----------------------
 {
-	$table_result = $_REQUEST['table_result'];
+	$table_result = $_REQUEST['table_result'] ?? null;
 	$temporary_result_neurons = new temporary_result_neurons();
 	$temporary_result_neurons -> setName_table($table_result);
 	
@@ -121,13 +121,13 @@ $nSub = $type->getNumber_subregion_type();
 $type -> retrieve_id_by_subregion('EC');
 $nEC = $type->getNumber_subregion_type();
 
-$property = new property($class_property);
+$property = new property($class_property ?? null);
 
-$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
+$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel ?? null);
 
-$firingpattern = new firingpattern($class_firing_pattern);
+$firingpattern = new firingpattern($class_firing_pattern ?? null);
 
-$firingpatternrel = new firingpatternrel($class_firing_pattern_rel);
+$firingpatternrel = new firingpatternrel($class_firing_pattern_rel ?? null);
 
 //$hippo_select = $_SESSION['hippo_select'];
 $count = $number_type;

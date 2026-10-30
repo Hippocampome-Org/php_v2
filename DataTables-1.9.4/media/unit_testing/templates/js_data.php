@@ -82,7 +82,7 @@
 		</script>
 		<?php
 			$aScripts = explode( ":", $_GET['scripts'] );
-			for ( $i=0 ; $i<count($aScripts) ; $i++ )
+			for ( $i=0 ; $i<count($aScripts ?? array()) ; $i++ )
 			{
 				echo '<script type="text/javascript" language="javascript" src="../'.$aScripts[$i].'?rand='.rand().'"></script>'."\n";
 			}

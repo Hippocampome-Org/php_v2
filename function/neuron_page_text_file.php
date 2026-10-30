@@ -10,7 +10,7 @@ function neuron_page_text_file($id1, $type, $synonymtyperel, $synonym, $evidence
 	$name_cell = $type->getName();
 	$nick_cell= $type->getNickname();
 	
-	$nick_cell = str_replace(':', '_', $nick_cell);
+	$nick_cell = str_replace(':', '_', ($nick_cell ?? ''));
 	
 
 	$name_text = " $name_cell \n---------------------------------------------------\n\n";
@@ -56,7 +56,7 @@ function neuron_page_text_file($id1, $type, $synonymtyperel, $synonym, $evidence
 			$rel = $property -> getRel();
 			$id_somata = $property -> getID();
 			
-			$val1 = str_replace(':', '_', $val);
+			$val1 = str_replace(':', '_', ($val ?? ''));
 			
 			$morph_soma1 = $morph_soma1.$val." (".$rel.")\n";									
 		}	
@@ -75,7 +75,7 @@ function neuron_page_text_file($id1, $type, $synonymtyperel, $synonym, $evidence
 			$val = $property -> getVal();
 			$rel = $property -> getRel();
 			
-			$val1 = str_replace(':', '_', $val);
+			$val1 = str_replace(':', '_', ($val ?? ''));
 			
 			$morph_dend1 = $morph_dend1.$val." (".$rel.")\n";							
 		}
@@ -94,7 +94,7 @@ function neuron_page_text_file($id1, $type, $synonymtyperel, $synonym, $evidence
 			$val = $property -> getVal();
 			$rel = $property -> getRel();
 			
-			$val1 = str_replace(':', '_', $val);
+			$val1 = str_replace(':', '_', ($val ?? ''));
 			
 			$morph_axon1 = $morph_axon1.$val." (".$rel.")\n";							
 		}
@@ -219,7 +219,7 @@ function neuron_page_text_file($id1, $type, $synonymtyperel, $synonym, $evidence
 	for ($i=0; $i<$n; $i++)
 	{
 		// retrieve the name of type from TABLE TYPE:
-		$type_3 = new type($class_type);
+		$type_3 = new type($class_type ?? null);
 		$type_3 -> retrive_by_id($id1);
 		$name1 = $type_3 -> getName();
 				
@@ -281,7 +281,7 @@ function neuron_page_text_file($id1, $type, $synonymtyperel, $synonym, $evidence
 	for ($i=0; $i<$n; $i++)
 	{
 		// retrieve the name of type from TABLE TYPE:
-		$type_3 = new type($class_type);
+		$type_3 = new type($class_type ?? null);
 		$type_3 -> retrive_by_id($id1);
 		$name1 = $type_3 -> getName();
 				

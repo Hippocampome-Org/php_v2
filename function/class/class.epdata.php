@@ -1,6 +1,8 @@
 <?php
 class epdata
 {
+	// PHP83-FIX by KN on 2026-10-30: declared (PHP 8.2+ warns about undeclared properties)
+	public $_name_table;
 	private $_raw;
 	private $_value1;
 	private $_value2;

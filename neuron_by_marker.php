@@ -11,14 +11,14 @@ elseif ($parameter=="Gaba-a-alpha")
 	$title = "GABAa &alpha;1";
 else {
 	$title = $parameter;
-	$title = str_replace("\alpha ", " &alpha;", $title);
-	$title = str_replace("\beta ", " &beta;", $title);
-	$title = str_replace("\delta", " &delta;", $title);
-	$title = str_replace("\gamma ", " &gamma;", $title);
+	$title = str_replace("\alpha ", " &alpha;", ($title ?? ''));
+	$title = str_replace("\beta ", " &beta;", ($title ?? ''));
+	$title = str_replace("\delta", " &delta;", ($title ?? ''));
+	$title = str_replace("\gamma ", " &gamma;", ($title ?? ''));
 }
 
 if (strpos($parameter,'\\') != false) {
-	$parameter = str_replace('\\', '\\\\', $parameter);
+	$parameter = str_replace('\\', '\\\\', ($parameter ?? ''));
 }
 
 
@@ -36,14 +36,14 @@ require_once('class/class.typetyperel.php');
 include ("function/name_ephys.php");
 include ("function/stm_lib.php");
 
-$type = new type($class_type);
+$type = new type($class_type ?? null);
 $type -> retrive_id();
 $number_type = $type->getNumber_type();
-$property_1 = new property($class_property);
-$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
-$evidenceevidencerel = new evidenceevidencerel($class_evidenceevidencerel);
-$epdataevidencerel = new epdataevidencerel($class_epdataevidencerel);
-$epdata = new epdata($class_epdata);
+$property_1 = new property($class_property ?? null);
+$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel ?? null);
+$evidenceevidencerel = new evidenceevidencerel($class_evidenceevidencerel ?? null);
+$epdataevidencerel = new epdataevidencerel($class_epdataevidencerel ?? null);
+$epdata = new epdata($class_epdata ?? null);
 $typetyperel = new typetyperel();
 
 $objArr = $property_1->retrievePropertyIdByName($parameter);
@@ -127,7 +127,7 @@ function markers_search($evidencepropertyyperel, $property_1, $type, $predicate,
 	<?php
 	$markerName=$parameter;
 	if (strpos($parameter,'\\') != false) 
-		$markerName = str_replace('\\', '\\\\', $markerName);
+		$markerName = str_replace('\\', '\\\\', ($markerName ?? ''));
 	$query_to_get_name="SELECT p.object
 						FROM Property p
 						WHERE subject like '$markerName'
@@ -294,7 +294,7 @@ foreach ($predicateArr as $k => $v)
 			$id = $idToConsider;
 			
 			if (strpos($id, '0_') == 1)
-				$id = str_replace('10_', '',$id);
+				$id = str_replace('10_', '', ($id ?? ''));
 		 
 			$type -> retrieve_by_id($id);
 			$status = $type -> getStatus();

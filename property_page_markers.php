@@ -166,8 +166,8 @@ function header_row_special($title, $value) {
               	return $html;
               }              
 
-$page = $_REQUEST['page'];
-$sub_show_only = $_SESSION['conn_sub_show_only']; 
+$page = $_REQUEST['page'] ?? null;
+$sub_show_only = $_SESSION['conn_sub_show_only'] ?? null; 
 $name_show_only_article = $_SESSION['conn_name_show_only_article'] ?? '';
 
 if ($page)
@@ -180,9 +180,9 @@ if ($page)
 	$name_show_only_journal = 'all';
 	$name_show_only_authors = 'all';
 
-	$id_neuron = $_REQUEST['id_neuron'];
-	$val_property = $_REQUEST['val_property'];
-	$color = $_REQUEST['color'];
+	$id_neuron = $_REQUEST['id_neuron'] ?? null;
+	$val_property = $_REQUEST['val_property'] ?? null;
+	$color = $_REQUEST['color'] ?? null;
 	$valTitle = '';
 
 	if ($val_property == 'Sub_P_Rec')
@@ -197,7 +197,7 @@ if ($page)
 		$val_property = 'mGluR2/3';	  		
 	if (strpos($val_property,'\\') != false) {
 		$valTitle = $val_property;
-		$val_property = str_replace('\\', '\\\\', $val_property);
+		$val_property = str_replace('\\', '\\\\', ($val_property ?? ''));
 	}
 
 	$_SESSION['id_neuron'] = $id_neuron;
@@ -207,10 +207,10 @@ if ($page)
 	$color_table = remap_temp_table_names($color);
 	
 	
-	$ip_address = $_SERVER['REMOTE_ADDR'];
-	$ip_address = str_replace(array('.', ':'), '_', $ip_address);
+	$ip_address = $_SERVER['REMOTE_ADDR'] ?? null;
+	$ip_address = str_replace(array('.', ':'), '_', ($ip_address ?? ''));
 	
-	$color_temporary_table = str_replace('-', '', $color_table);	
+	$color_temporary_table = str_replace('-', '', ($color_table ?? ''));	
 	
 	$time_t = time();
 	
@@ -240,7 +240,7 @@ else
 	$order_ok = $_REQUEST['order_ok'] ?? '';
 	if ($order_ok == 'GO')             // Was clicked the Order By options
 	{
-		$order_by = $_REQUEST['order'];
+		$order_by = $_REQUEST['order'] ?? null;
 		$_SESSION['order_by'] = $order_by;
 		
 		if ($order_by == 'year')
@@ -251,8 +251,8 @@ else
 		$_SESSION['type_order'] = $type_order;			
 	}
 	else{
-		$order_by = $_SESSION['order_by'];
-		$type_order = $_SESSION['type_order'];
+		$order_by = $_SESSION['order_by'] ?? null;
+		$type_order = $_SESSION['type_order'] ?? null;
 	}
 
 	$flag = $_REQUEST['flag'] ?? '';
@@ -277,31 +277,31 @@ else
 // -------------------------------------------------------------------------------------------------
 
 
-$type = new type($class_type);
+$type = new type($class_type ?? null);
 $type -> retrive_by_id($id_neuron);
 
 
-$property = new property($class_property);
+$property = new property($class_property ?? null);
 
-$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
+$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel ?? null);
 
-$evidencemarkerdatarel = new evidencemarkerdatarel($class_evidencemarkerdatarel);
+$evidencemarkerdatarel = new evidencemarkerdatarel($class_evidencemarkerdatarel ?? null);
 
-$markerdata = new markerdata($class_markerdata);
+$markerdata = new markerdata($class_markerdata ?? null);
 
-$evidenceevidencerel = new evidenceevidencerel($class_evidenceevidencerel);
+$evidenceevidencerel = new evidenceevidencerel($class_evidenceevidencerel ?? null);
 
-$evidencefragmentrel = new evidencefragmentrel($class_evidencefragmentrel);
+$evidencefragmentrel = new evidencefragmentrel($class_evidencefragmentrel ?? null);
 
-$fragment = new fragment($class_fragment);
+$fragment = new fragment($class_fragment ?? null);
 
-$articleevidencerel = new articleevidencerel($class_articleevidencerel);
+$articleevidencerel = new articleevidencerel($class_articleevidencerel ?? null);
 
-$article = new article($class_article);
+$article = new article($class_article ?? null);
 
-$articleauthorrel = new articleauthorrel($class_articleauthorrel);
+$articleauthorrel = new articleauthorrel($class_articleauthorrel ?? null);
 
-$author = new author($class_author);
+$author = new author($class_author ?? null);
 
 $attachment_obj = new attachment($class_attachment ?? null);
 
@@ -312,12 +312,12 @@ $name_show_only_var = $_REQUEST['name_show_only_var'] ?? '';
 
 if ($name_show_only_var)
 {
-	$color = $_REQUEST['color'];
+	$color = $_REQUEST['color'] ?? null;
 
-	$order_by = $_SESSION['order_by'];
-	$type_order = $_SESSION['type_order'];
+	$order_by = $_SESSION['order_by'] ?? null;
+	$type_order = $_SESSION['type_order'] ?? null;
 
-	$name_show_only = $_REQUEST['name_show_only'];
+	$name_show_only = $_REQUEST['name_show_only'] ?? null;
 	$_SESSION['marker_name_show_only'] = $name_show_only;
 	
 	$page_in = $_REQUEST['start'] ?? '';
@@ -970,7 +970,7 @@ else {
 		              
 		              //$expression_values = explode('-', $_REQUEST['color']);
 		              $expression_values = explode('-', $color);
-		              $object = $expression_values[0];
+		              $object = $expression_values[0] ?? null;
 		              $property -> retrive_ID(2, $subject, $predicate, $object);
 		              $property_id = $property -> getProperty_id(0);
 		              
@@ -1230,7 +1230,7 @@ else {
 
 		<?php
 		$color_1 = explode("-", $color);
-		$number_marker = count($color_1);
+		$number_marker = count($color_1 ?? array());
 		
 		// for on number of marker (number of $color) ++++		
 		for ($m2=0; $m2<$number_marker; $m2++) {			
@@ -1543,7 +1543,7 @@ else {
 					{
 						$aut1=$aut1.", ".$aut;
 					}					
-					$aut1=str_replace(', ', '*', $aut1);
+					$aut1=str_replace(', ', '*', ($aut1 ?? ''));
 					$single_aut=explode('*', $aut1);
 
 					sort($single_aut);
@@ -1551,7 +1551,7 @@ else {
 
 					// Remove the blank from array:
 					$ni=0;
-					for ($i1=0; $i1<count($single_aut2); $i1++)
+					for ($i1=0; $i1<count($single_aut2 ?? array()); $i1++)
 					{		 
 						if ($single_aut2[$i1] == NULL);
 						else
@@ -1570,7 +1570,7 @@ else {
 					}
 					print ("<OPTION VALUE='all'> ALL </OPTION>");
 					
-					for ($i1=0; $i1<count($single_aut3); $i1++)
+					for ($i1=0; $i1<count($single_aut3 ?? array()); $i1++)
 					{
 					
 						// retrieve the number of articles for this publication:
@@ -1743,8 +1743,8 @@ else {
 
 						$expression = $markerdata -> getExpression();	
             			$expression = preg_replace('/[\[\]"]/', '', (string)$expression);
-            			$expression = str_replace("_", " ", $expression);
-            			$expression = str_replace("inference", "(inference)", $expression);
+            			$expression = str_replace("_", " ", ($expression ?? ''));
+            			$expression = str_replace("inference", "(inference)", ($expression ?? ''));
 						$animal = $markerdata -> getAnimal();	
             			$animal = preg_replace('/[\[\]"]/', '', (string)$animal);
 						$protocol = $markerdata -> getProtocol();	
@@ -1777,7 +1777,7 @@ else {
 							
 							// change PFD in JPG:
 							$link_figure="";
-							$attachment_jpg = str_replace('jpg', 'jpeg', $attachment);
+							$attachment_jpg = str_replace('jpg', 'jpeg', ($attachment ?? ''));
 					//	echo "$attachment_jpg";
 							if($attachment_type=="marker_figure"||$attachment_type=="marker_table"){
 								$link_figure = "attachment/marker/".$attachment_jpg;
@@ -1797,7 +1797,7 @@ else {
 							
 							//$link_figure = "figure/".$attachment_jpg;
 							
-							$attachment_pdf = str_replace('jpg', 'pdf', $attachment);
+							$attachment_pdf = str_replace('jpg', 'pdf', ($attachment ?? ''));
 							$link_figure_pdf = "figure_pdf/".$attachment_pdf;
 							// **************************************************************************************							
               // STM Formatting header

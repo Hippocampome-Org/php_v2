@@ -453,7 +453,7 @@ function downloadData() {
 
 try {
 	$currentChosenNeuronName = "";
-	$jsonStr = $_SESSION['Izhikevich_model_json_only'];
+	$jsonStr = $_SESSION['Izhikevich_model_json_only'] ?? null;
 	$output = json_decode($jsonStr, true);
 	//echo '<pre>';
 	/*foreach($output as $key => $value){

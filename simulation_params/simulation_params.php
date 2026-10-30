@@ -64,7 +64,7 @@ $where = " WHERE status = 'active' ";
 $sub = "";
 $sub_synaptome = "";
 $result_synaptome_array = [];
-if(isset($_POST) && (count($_POST) > 0 )){
+if(isset($_POST) && (count($_POST ?? array()) > 0 )){
     foreach($_POST as $key => $postval){
         if($postval == 'v1_neurons'){
             $where .= " and ranks in (1, 2, 3, 4, 5) ";
@@ -106,7 +106,7 @@ while(list($id, $name, $subregion, $nickname, $excit_inhib, $type_subtype, $rank
 {	
     $value=NULL;
     //Get the Synaptome details if exists
-    if($result_synaptome_array && (count($result_synaptome_array) > 0)){
+    if($result_synaptome_array && (count($result_synaptome_array ?? array()) > 0)){
         $results = array();
         foreach($result_synaptome_array as $k=>$v) {
             if(preg_match("/\b$nickname\b/i", ($k ?? ''))) {
@@ -126,7 +126,7 @@ while(list($id, $name, $subregion, $nickname, $excit_inhib, $type_subtype, $rank
     array('id'=>$id,'name'=>$nickname, 'excit_inhib'=>$excit_inhib, 'type_subtype'=>$type_subtype, 'ranks'=>$ranks , 'v2p0'=>$v2p0, 'synaptome_details'=>$value));
     // var_dump($result_array);
 }
-if(isset($_POST) && (count($_POST) > 0 )){ //Once we select the Sub regions
+if(isset($_POST) && (count($_POST ?? array()) > 0 )){ //Once we select the Sub regions
     $sub_count = count(explode(',', $sub));
     $param_count = ($sub_count*25)+$sub_count; //To get the count
     echo json_encode(array($param_count, $result_array, $result_synaptome_array));//Changed on March 30 2023

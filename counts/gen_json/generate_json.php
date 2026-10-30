@@ -145,9 +145,9 @@
 		$val_sep = explode(",", $val);
 		$error_val_sep = explode(",", $error_val);
 		$error_val_n_sep = explode(",", $error_val_n);
-		for ($v_i = 0; $v_i < count($val_sep); $v_i++) {
+		for ($v_i = 0; $v_i < count($val_sep ?? array()); $v_i++) {
 			$separator = ", ";
-			if ($v_i == (count($val_sep) - 1)) {
+			if ($v_i == (count($val_sep ?? array()) - 1)) {
 				$separator = "";
 			}
 			$error_desc = " ± ".$error_val_sep[$v_i];
@@ -226,8 +226,8 @@
 		$error_cols = array("countsError", "SWR_ratioError", "firingRateError", "DS_ratioError", "rippleError", "gammaError", "run_stop_ratioError", "epsilonError", "firingRateErrorNonBaseline", "VrestError", "tauError", "APthreshError", "fAHP_Error", "APpeak_troughError");
 		$error_n_cols = array("countsN", "SWR_ratioN", "firingRateN", "DS_ratioN", "rippleN", "gammaN", "run_stop_ratioN", "epsilonN", "firingRateN_NonBaseline", "VrestN", "tauN", "APthreshN", "fAHP_N", "APpeak_troughN");
 		$error_types = array("countsErrorType", "SWR_ratioErrorType", "firingRateErrorType", "DS_ratioErrorType", "rippleErrorType", "gammaErrorType", "run_stop_ratioErrorType", "epsilonErrorType", "firingRateErrorTypeNonBaseline", "VrestErrorType", "tauErrorType", "APthreshErrorType", "fAHP_ErrorType", "APpeak_troughErrorType");
-		$other_entries = array_fill(0, count($other_all_group), "");
-		$other_cond = array_fill(0, count($other_all_group), "");
+		$other_entries = array_fill(0, count($other_all_group ?? array()), "");
+		$other_cond = array_fill(0, count($other_all_group ?? array()), "");
 		$neuron_id = $neuron_ids[$i];
 		//echo $neuron_ids." i: ".$i."<br>";
 
@@ -240,7 +240,7 @@
 			//echo "<br>$rank_result<br>";
 		}
 		array_push($npage_counts, $results[3]);
-		$all_counts = $results[4];
+		$all_counts = $results[4] ?? null;
 		//echo "<br>".$npage_counts[0][5];		
 
 		// swr ratio
@@ -251,7 +251,7 @@
 			array_push($best_ranks_swr, $rank_result);
 		}
 		array_push($npage_swr, $results[3]);
-		$all_swr = $results[4];
+		$all_swr = $results[4] ?? null;
 		//echo "<br>".$npage_swr[0][5];		
 
 		// firing rate
@@ -262,22 +262,22 @@
 			array_push($best_ranks_firingrate, $rank_result);
 		}
 		array_push($npage_firingrate, $results[3]);
-		$all_fr = $results[4];
+		$all_fr = $results[4] ?? null;
 
 		// other column section
 		$entry_output = "";
 		$npage_entry_cond = "";
-		for ($o_i = 0; $o_i < count($other_all_group); $o_i++) {
+		for ($o_i = 0; $o_i < count($other_all_group ?? array()); $o_i++) {
 			$results = value_collect($conn, $i, $other_all_group[$o_i], $neuron_id, $conditions, $referenceID, $refid_condition, "false", $error_cols[($o_i+3)], $error_types[($o_i+3)], $error_n_cols[($o_i+3)]);
 			$results_nocond = value_collect($conn, $i, $other_all_group[$o_i], $neuron_id, "", $referenceID, $refid_condition, "false", $error_cols[($o_i+3)], $error_types[($o_i+3)], $error_n_cols[($o_i+3)]);
 			$entry_output = $entry_output.$results[0];
 			$val_frag = $results[3][5];
-			$rank_entry = $results[2];
-			$species = $rank_entry[0];
-			$agetype = $rank_entry[1];
-			$gender = $rank_entry[2];
-			$rec = $rank_entry[3];
-			$behav = $rank_entry[4];
+			$rank_entry = $results[2] ?? null;
+			$species = $rank_entry[0] ?? null;
+			$agetype = $rank_entry[1] ?? null;
+			$gender = $rank_entry[2] ?? null;
+			$rec = $rank_entry[3] ?? null;
+			$behav = $rank_entry[4] ?? null;
 			if ($results[4] != "" && ($val_property == $other_all_group[$o_i] || $val_property == "all_other" || $val_property == "")) {
 				$all_other = $all_other.$other_all_group[$o_i].": ".$results[4];
 			}
@@ -291,11 +291,11 @@
 			/* other all toggle checked */
 			if ($other_all == "checked") {
 				if ($val_frag != "") {
-					$protocol_nr = str_replace('<br>', ' ', $results[3][4]);
+					$protocol_nr = str_replace('<br>', ' ', ($results[3][4] ?? ''));
 					$other_frag = $other_frag.$other_all_group[$o_i].": ".$val_frag."; Protocol: ".$protocol_nr;
 				}
 
-				if ($o_i == (count($other_all_group) - 1)) {
+				if ($o_i == (count($other_all_group ?? array()) - 1)) {
 					$entry_output = $entry_output."]},";
 				}
 				else {
@@ -312,7 +312,7 @@
 			$low_rank_cond = "";
 			$o_vals_tot = 0;
 
-			for ($o_i = 0; $o_i < count($other_all_group); $o_i++) {
+			for ($o_i = 0; $o_i < count($other_all_group ?? array()); $o_i++) {
 				if ($val_frag != "") {
 					$other_frag = $other_frag.$other_all_group[$o_i].": ".$val_frag;
 				}				
@@ -320,8 +320,8 @@
 					if ($low_rank_entry == "") {
 						$low_rank_entry = $other_all_group[$o_i];
 						$low_rank_cond = $other_cond[$o_i];
-						$npage_entry_cond = str_replace("Representative selection: ", "", $low_rank_cond);
-						$npage_entry_cond = str_replace("\\n", "<br>", $npage_entry_cond);
+						$npage_entry_cond = str_replace("Representative selection: ", "", ($low_rank_cond ?? ''));
+						$npage_entry_cond = str_replace("\\n", "<br>", ($npage_entry_cond ?? ''));
 						$all_other = $all_other.$low_rank_entry.": ".$other_entries[$o_i];
 					}
 					$o_vals_tot++;
@@ -366,7 +366,7 @@
 	Generate matrices section
 	*/
 	if ($page=="write_file" || $page=="main_page") {
-		for ($i = 0; $i < count($neuron_ids); $i++) {
+		for ($i = 0; $i < count($neuron_ids ?? array()); $i++) {
 			if (!isset($pmid_limit)) {
 				$pmid_limit = '';
 			}
@@ -380,18 +380,18 @@
 				$conditions = '';
 			}
 			$write_output = retrieve_values($conn, $i, $counts_values, $spw_values, $firingrate_values, $other_values, $neuron_ids, $conditions, $best_ranks_counts, $best_ranks_swr, $best_ranks_firingrate, $npage_counts, $npage_swr, $npage_firingrate, $npage_other, $pmid_limit, $referenceID, $other_all, $val_property, $best_ranks_other);
-			$counts_values = $write_output[0];
-			$spw_values = $write_output[1];
-			$firingrate_values = $write_output[2];
-			$other_values = $write_output[3];
-			$best_ranks_counts = $write_output[4];
-			$best_ranks_swr = $write_output[5];
-			$best_ranks_firingrate = $write_output[6];
-			$best_ranks_other = $write_output[12];
-			$npage_counts = $write_output[7];
-			$npage_swr = $write_output[8];
-			$npage_firingrate = $write_output[9];
-			$npage_other = $write_output[10];
+			$counts_values = $write_output[0] ?? null;
+			$spw_values = $write_output[1] ?? null;
+			$firingrate_values = $write_output[2] ?? null;
+			$other_values = $write_output[3] ?? null;
+			$best_ranks_counts = $write_output[4] ?? null;
+			$best_ranks_swr = $write_output[5] ?? null;
+			$best_ranks_firingrate = $write_output[6] ?? null;
+			$best_ranks_other = $write_output[12] ?? null;
+			$npage_counts = $write_output[7] ?? null;
+			$npage_swr = $write_output[8] ?? null;
+			$npage_firingrate = $write_output[9] ?? null;
+			$npage_other = $write_output[10] ?? null;
 		}
 
 		/* 
@@ -490,7 +490,7 @@
 						//fwrite($output_file, "\"\"]}]}".$nl); 
 					}
 					if ($page=='main_page') {
-						$other_val_output = str_replace("\"]},", "\"]}]}", $other_values[$i_o]);
+						$other_val_output = str_replace("\"]},", "\"]}]}", ($other_values[$i_o] ?? ''));
 						$json_output_string = $json_output_string.$other_val_output.$nl;
 					}
 				}

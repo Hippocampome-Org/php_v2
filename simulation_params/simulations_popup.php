@@ -6,7 +6,7 @@ include ("../../access_db.php");
 function display_neuron_details($results){
     
     $neuron = array_keys($results);
-    $neuron = $neuron[0];
+    $neuron = $neuron[0] ?? null;
     $neuron_vals = $results[$neuron];
 
     echo "<table width:'50%;'>";
@@ -26,7 +26,7 @@ function display_neuron_details($results){
     echo "</table>";
 }
 
-function get_default_synaptome_details($conn_synaptome, $table_name = NULL, $neuron){
+function get_default_synaptome_details($conn_synaptome, $table_name, $neuron){
    $columns = array();
    $columns = ['pre'];
    if($table_name == NULL){$table_name ='tm_cond16';}

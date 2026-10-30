@@ -51,7 +51,7 @@ if (isset($_POST['username']) & isset($_POST['password'])) {
   if ($result->num_rows > 0) { 
     $pass_match = $result->fetch_assoc()['password'];
     if ($pass_match == $_POST['password']) {
-      $_SESSION['user_login'] = $_POST['username'];
+      $_SESSION['user_login'] = $_POST['username'] ?? null;
       echo '<br>Registered user found. Redirecting in 3 seconds.<br>';
       sleep(3);
       //header("Location: mod_art.php");

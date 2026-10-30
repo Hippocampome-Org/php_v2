@@ -27,11 +27,11 @@
   $cond_id = 6; // default condition of species='Rat' AND sex='Male' AND age='P14' AND temp='T22' AND rec_mode='Vh=-60'
   // find condition based on parameters
   if (isset($_REQUEST['param_1']) && isset($_REQUEST['param_2']) && isset($_REQUEST['param_3']) && isset($_REQUEST['param_4']) && isset($_REQUEST['param_5'])) {
-	$species = $_REQUEST['param_1'];
-	$sex = $_REQUEST['param_2'];
-	$age = $_REQUEST['param_3'];
-	$temp = $_REQUEST['param_4'];
-	$rec_mode = $_REQUEST['param_5'];
+	$species = $_REQUEST['param_1'] ?? null;
+	$sex = $_REQUEST['param_2'] ?? null;
+	$age = $_REQUEST['param_3'] ?? null;
+	$temp = $_REQUEST['param_4'] ?? null;
+	$rec_mode = $_REQUEST['param_5'] ?? null;
 	$query = "SELECT id FROM conditions WHERE species='$species' AND sex='$sex' AND age='$age' AND temp='$temp' AND rec_mode='$rec_mode'";
 	$rs = mysqli_query($conn2,$query);
 	while(list($cond_num) = mysqli_fetch_row($rs))
@@ -43,7 +43,7 @@
 
   $model_value = 'g';
   if (isset($_REQUEST['value_selection'])) {
-	$model_value = $_REQUEST['value_selection'];
+	$model_value = $_REQUEST['value_selection'] ?? null;
   }
 
   $session_matrix_cache_file = "synap_model/gen_json/json_files/cond".$cond_id."_".$model_value.".json";
@@ -336,9 +336,9 @@ $(function(){
 	datastr: dataStr,
     colNames:['','<div id="frmCntr_2">From</div><div id="toCntr_2" class="rotate">To</div>',
     <?php
-      for ($i = 0; $i < count($neurons_with_links); $i++) {
+      for ($i = 0; $i < count($neurons_with_links ?? array()); $i++) {
         echo '"'.$neurons_with_links[$i].'"';
-        if ($i != count($neurons_with_links)-1) {
+        if ($i != count($neurons_with_links ?? array())-1) {
           echo ", ";
         }
       }
@@ -357,10 +357,10 @@ $(function(){
       //{name:'Supertype', index:'supertype', width:300,sortable:false,hidden: true},
           //,searchoptions: {sopt: ['bw','bn','cn','in','ni','ew','en','nc']}},
       <?php
-        for ($i = 0; $i < count($neuron_IDs); $i++) {
-          $neuron = str_replace(' ', '_', $neuron_IDs[$i]);
+        for ($i = 0; $i < count($neuron_IDs ?? array()); $i++) {
+          $neuron = str_replace(' ', '_', ($neuron_IDs[$i] ?? ''));
           echo "{name:'".$neuron."', index:'".$neuron."', width:head_col_width,search:false,sortable:false}";
-          if ($i != count($neuron_IDs)-1) {
+          if ($i != count($neuron_IDs ?? array())-1) {
             echo ", ";
           }
         }
@@ -428,8 +428,8 @@ $(function(){
 	
   <?php
     /*
-    for ($i = 0; $i < count($neuron_IDs); $i++) {
-      $neuron = str_replace(' ', '_', $neuron_IDs[$i]); //replace spaces
+    for ($i = 0; $i < count($neuron_IDs ?? array()); $i++) {
+      $neuron = str_replace(' ', '_', ($neuron_IDs[$i] ?? '')); //replace spaces
       echo "$('#jqgh_nGrid_".$neuron."').addClass('header_adjust');";
       echo "$('#jqgh_nGrid_".$neuron."').css('height','30');";
     }
@@ -550,7 +550,7 @@ $("#nGrid").mouseout(function(e) {
 echo "</center></td><td><center>";
 //$current_value = '';
 if (isset($_REQUEST['value_selection'])) {
-	$current_value = $_REQUEST['value_selection'];
+	$current_value = $_REQUEST['value_selection'] ?? null;
 }
 if ($current_value == '' || $current_value == 'g') {
     $sel11 = 'selected';
@@ -616,7 +616,7 @@ echo "</select></center></td><td><center>";
 // </nav>";
 echo "</td><td><span style='position:relative;top:-23px;'><font class='font3'><center>Conditions:</center></font></span></td><td><center>";
 if (isset($_REQUEST['param_1'])) {
-	$param1_value = $_REQUEST['param_1'];
+	$param1_value = $_REQUEST['param_1'] ?? null;
 }
 if ($param1_value == '' || $param1_value == 'Rat') {$sel1='selected';}
 else if ($param1_value == 'Mice') {$sel2='selected';}
@@ -625,7 +625,7 @@ echo "<option value='Rat' $sel1>Rat</option>";
 echo "<option value='Mice' $sel2>Mouse</option>";
 echo "</select></center></td><td><center>";
 if (isset($_REQUEST['param_2'])) {
-	$param2_value = $_REQUEST['param_2'];
+	$param2_value = $_REQUEST['param_2'] ?? null;
 }
 if ($param2_value == '' || $param2_value == 'Male') {$sel3='selected';}
 else if ($param2_value == 'Female') {$sel4='selected';}
@@ -634,7 +634,7 @@ echo "<option value='Male' $sel3>Male</option>";
 echo "<option value='Female' $sel4>Female</option>";
 echo "</select></center></td><td><center>";
 if (isset($_REQUEST['param_3'])) {
-	$param3_value = $_REQUEST['param_3'];
+	$param3_value = $_REQUEST['param_3'] ?? null;
 }
 if ($param3_value == '' || $param3_value == 'P14') {$sel5='selected';}
 else if ($param3_value == 'P56') {$sel6='selected';}
@@ -643,7 +643,7 @@ echo "<option value='P14' $sel5>P14</option>";
 echo "<option value='P56' $sel6>P56</option>";
 echo "</select></center></td><td><center>";
 if (isset($_REQUEST['param_4'])) {
-	$param4_value = $_REQUEST['param_4'];
+	$param4_value = $_REQUEST['param_4'] ?? null;
 }
 if ($param4_value == '' || $param4_value == 'T22') {$sel7='selected';}
 else if ($param4_value == 'T32') {$sel8='selected';}
@@ -652,7 +652,7 @@ echo "<option value='T22' $sel7>22 Celsius</option>";
 echo "<option value='T32' $sel8>32 Celsius</option>";
 echo "</select></center></td><td><center>";
 if (isset($_REQUEST['param_5'])) {
-	$param5_value = $_REQUEST['param_5'];
+	$param5_value = $_REQUEST['param_5'] ?? null;
 }
 if ($param5_value == '' || $param5_value == 'Vh=-60') {$sel9='selected';}
 else if ($param5_value == 'Vss=-60') {$sel10='selected';}
@@ -668,7 +668,7 @@ echo "<input type='submit' value='Update' style='height:25px;position:relative;t
 <!-- <?php
 // $current_value = '';
 if (isset($_REQUEST['value_selection'])) {
-  $current_value = $_REQUEST['value_selection'];
+  $current_value = $_REQUEST['value_selection'] ?? null;
 }
 if ($current_value == '' || $current_value == 'g') {$sel1B='selected';}
 else if ($current_value == 'tau_d') {$sel2B='selected';}

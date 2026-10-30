@@ -1,5 +1,5 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) session_start();
 include("permission_check.php");
 ?>
 <!--
@@ -18,10 +18,10 @@ include("permission_check.php");
 <script src="jquery-ui-1.10.2.custom/js/jquery.jqGrid.src-custom.js" type="text/javascript"></script>
 <?php
 //require_once("load_matrix_session_phases.php");
-$jsonStr = $_SESSION['Phases'];
+$jsonStr = $_SESSION['Phases'] ?? null;
 $color_selected ='#EBF283';
-$research = $_REQUEST['research'];
-$hippo_select = $_SESSION['hippo_select'];
+$research = $_REQUEST['research'] ?? null;
+$hippo_select = $_SESSION['hippo_select'] ?? null;
 
 $conditions = "";
 include("phases/update_values.php");
@@ -421,29 +421,29 @@ function HideShowColumns ()
     <?php
     $preferred_conditions = array();
     /* check conditions for each property type */
-    for ($j = 0; $j < count($best_ranks_theta); $j++) {
+    for ($j = 0; $j < count($best_ranks_theta ?? array()); $j++) {
         if (!in_array($best_ranks_theta[$j], $preferred_conditions)) {
           array_push($preferred_conditions, $best_ranks_theta[$j]);
         }
     }
-    for ($j = 0; $j < count($best_ranks_swr); $j++) {
+    for ($j = 0; $j < count($best_ranks_swr ?? array()); $j++) {
         if (!in_array($best_ranks_swr[$j], $preferred_conditions)) {
           array_push($preferred_conditions, $best_ranks_swr[$j]);
         }
     }
-    for ($j = 0; $j < count($best_ranks_firingrate); $j++) {
+    for ($j = 0; $j < count($best_ranks_firingrate ?? array()); $j++) {
         if (!in_array($best_ranks_firingrate[$j], $preferred_conditions)) {
           array_push($preferred_conditions, $best_ranks_firingrate[$j]);
         }
     }
-    for ($j = 0; $j < count($best_ranks_other); $j++) {
+    for ($j = 0; $j < count($best_ranks_other ?? array()); $j++) {
         if (!in_array($best_ranks_other[$j], $preferred_conditions)) {
           array_push($preferred_conditions, $best_ranks_other[$j]);
         }
     }
     /* build link with conditions */
     echo "window.location = \"phases.php?";
-    for ($i = 0; $i < count($preferred_conditions); $i++) {
+    for ($i = 0; $i < count($preferred_conditions ?? array()); $i++) {
       $checkbox = value2cbox($preferred_conditions[$i], $checkbox_values, $checkbox_group);
       echo $checkbox."=checked&";
     }
@@ -633,7 +633,7 @@ function HideShowColumns ()
     echo "<script>";
 
     // collect conditions
-    for ($i = 0; $i < count($best_ranks_theta); $i++) {
+    for ($i = 0; $i < count($best_ranks_theta ?? array()); $i++) {
       array_push($selected_conditions, $best_ranks_theta[$i_r][$i]);
       if ($best_ranks_theta[$i_r][$i] == "male and female") {
         array_push($selected_conditions, "male");
@@ -644,7 +644,7 @@ function HideShowColumns ()
       }
       //echo $best_ranks_theta[$i_r][$i]."<br>\n";
     }
-    for ($i = 0; $i < count($best_ranks_swr); $i++) {
+    for ($i = 0; $i < count($best_ranks_swr ?? array()); $i++) {
       array_push($selected_conditions, $best_ranks_swr[$i_r][$i]);
       if ($best_ranks_swr[$i_r][$i] == "male and female") {
         array_push($selected_conditions, "male");
@@ -658,8 +658,8 @@ function HideShowColumns ()
 
     // check boxes
     $first_found = false;
-    for ($i = 0; $i < count($selected_conditions); $i++) {
-      for ($j = 0; $j < count($checkbox_values); $j++) {
+    for ($i = 0; $i < count($selected_conditions ?? array()); $i++) {
+      for ($j = 0; $j < count($checkbox_values ?? array()); $j++) {
         if ($selected_conditions[$i] == $checkbox_values[$j]) {
           //echo "document.getElementById(\"".$checkbox_group[$j]."\").value=\"checked\";\n";
           //array_push($selected_indices, $j);
@@ -677,7 +677,7 @@ function HideShowColumns ()
     echo "window.location = \"$redirect_page\"";
 
     // uncheck boxes
-    /*for ($i = 0; $i < count($checkbox_values); $i++) {
+    /*for ($i = 0; $i < count($checkbox_values ?? array()); $i++) {
       if (!in_array($i, $selected_indices)) {
         echo "document.getElementById(\"".$checkbox_group[$i]."\").value=\"\";\n";
       }

@@ -27,12 +27,12 @@
         public function getIncludeNeuron($queryArray){
             // condition for include neuron
             $incNeuron=array();
-            for($index=0;$index<count($queryArray);$index++){
+            for($index=0;$index<count($queryArray ?? array());$index++){
                 if(!is_array($queryArray[$index])) {
                     if (stripos($queryArray[$index], Keyword::INC) === 0) {
                         $result=$this->includeNeuron($queryArray,$index);
-                        $index=$result[0];
-                        $incNeuron=$result[1];
+                        $index= $result[0] ?? null;
+                        $incNeuron= $result[1] ?? null;
                         // add include neuron to earlier result
                         return $incNeuron;
                         //print("Neuron included:");
@@ -44,12 +44,12 @@
         public function getExcludeNeuron($queryArray){
             // condition for exclude neuron
             $excNeuron=array();
-            for($index=0;$index<count($queryArray);$index++){
+            for($index=0;$index<count($queryArray ?? array());$index++){
                 if(!is_array($queryArray[$index])) {
                     if (stripos($queryArray[$index], Keyword::EXC) === 0) {
                         $result=$this->excludeNeuron($queryArray,$index);
-                        $index=$result[0];
-                        $excNeuron=$result[1];
+                        $index= $result[0] ?? null;
+                        $excNeuron= $result[1] ?? null;
                         // remove exclude neuron from earlier result
                         return $excNeuron;
                         //print("Neuron excluded:");
@@ -61,43 +61,43 @@
         public function parseSynapticNeuron($queryArray,$ind){
             $mathcingNeruonArray=array();
             //print("<pre>".print_r($queryArray,true)."</pre>");
-            for($index=$ind;$index<count($queryArray);$index++){
+            for($index=$ind;$index<count($queryArray ?? array());$index++){
                 if(!is_array($queryArray[$index])) {
                     if (stripos($queryArray[$index], Name::MORPH) === 0) {
                         $result =$this->matchingNeuronCond($queryArray,$index,Name::MORPH) ;
-                        $index=$result[0];
-                        if(count($result[1])>0)
+                        $index= $result[0] ?? null;
+                        if(count($result[1] ?? array())>0)
                             $mathcingNeruonArray=array_merge($mathcingNeruonArray,$result[1]);
                         //print("<pre>" . print_r($mathcingNeruonArray, true) . "</pre>");
 
                     } else if (stripos($queryArray[$index], Name::MARKER) === 0) {
                         $result =$this->matchingNeuronCond($queryArray,$index,Name::MARKER) ;
-                        $index=$result[0];
-                        if(count($result[1])>0)
+                        $index= $result[0] ?? null;
+                        if(count($result[1] ?? array())>0)
                             $mathcingNeruonArray=array_merge($mathcingNeruonArray,$result[1]);
                     } else if (stripos($queryArray[$index], Name::EPHY) === 0) {
                         $result =$this->matchingNeuronCond($queryArray,$index,Name::EPHY) ;
-                        $index=$result[0];
+                        $index= $result[0] ?? null;
                         //print("<pre>" . print_r($mathcingNeruonArray, true) . "</pre>");
-                        if(count($result[1])>0)
+                        if(count($result[1] ?? array())>0)
                             $mathcingNeruonArray=array_merge($mathcingNeruonArray,$result[1]);
 
                     } else if (stripos($queryArray[$index], Name::FP_PARAMETER) === 0) {
                         $result =$this->matchingNeuronCond($queryArray,$index,Name::FP_PARAMETER) ;
-                        $index=$result[0];
-                        if(count($result[1])>0)
+                        $index= $result[0] ?? null;
+                        if(count($result[1] ?? array())>0)
                             $mathcingNeruonArray=array_merge($mathcingNeruonArray,$result[1]);
 
                     } else if (stripos($queryArray[$index], Name::FP) === 0) {
                         $result =$this->matchingNeuronCond($queryArray,$index,Name::FP) ;
-                        $index=$result[0];
-                        if(count($result[1])>0)
+                        $index= $result[0] ?? null;
+                        if(count($result[1] ?? array())>0)
                             $mathcingNeruonArray=array_merge($mathcingNeruonArray,$result[1]);
 
                     }  else if (stripos($queryArray[$index], Keyword::NEURON_NAME) === 0) {
                         $result =$this->matchingNeuronCond($queryArray,$index,Keyword::NEURON_NAME) ;
-                        $index=$result[0];
-                        if(count($result[1])>0)
+                        $index= $result[0] ?? null;
+                        if(count($result[1] ?? array())>0)
                             $mathcingNeruonArray=array_merge($mathcingNeruonArray,$result[1]);
                         //print("Neuron Name:");
                         //print("<pre>" . print_r($mathcingNeruonArray, true) . "</pre>");
@@ -105,16 +105,16 @@
                     // neurotransmitter condition
                     else if (stripos($queryArray[$index], Keyword::NTR) === 0) {
                         $result =$this->matchingNtrNeuron($queryArray,$index) ;
-                        $index=$result[0];
-                        if(count($result[1])>0)
+                        $index= $result[0] ?? null;
+                        if(count($result[1] ?? array())>0)
                             $mathcingNeruonArray=array_merge($mathcingNeruonArray,$result[1]);
                         //print("Neuron NTR:");
                         //print("<pre>" . print_r($mathcingNeruonArray, true) . "</pre>");
                     }
                     else if (stripos($queryArray[$index], Operator::ANDD) !== false) {
                         $result=$this->parseSynapticNeuron($queryArray,$index+1);
-                        $index=$result[0];
-                        $incNeuron=$result[1];
+                        $index= $result[0] ?? null;
+                        $incNeuron= $result[1] ?? null;
                         //print("<pre>" . print_r($mathcingNeruonArray, true) . "</pre>");
                         //print("<pre>" . print_r($incNeuron, true) . "</pre>");
                         $mathcingNeruonArray=array_intersect($mathcingNeruonArray,$incNeuron);
@@ -123,11 +123,11 @@
 
                     } else if (stripos($queryArray[$index], Operator::ORR) !==false) {
                         $result=$this->parseSynapticNeuron($queryArray,$index+1);
-                        $index=$result[0];
-                        $incNeuron=$result[1];
+                        $index= $result[0] ?? null;
+                        $incNeuron= $result[1] ?? null;
                         //print("<pre>" . print_r($mathcingNeruonArray, true) . "</pre>");
                         //print("<pre>" . print_r($incNeuron, true) . "</pre>");
-                        if(count($incNeuron)>0)
+                        if(count($incNeuron ?? array())>0)
                             $mathcingNeruonArray=array_merge($mathcingNeruonArray,$incNeuron);
                         //print("<pre>" . print_r($mathcingNeruonArray, true) . "</pre>");
                         //print("ANND ORR");
@@ -136,8 +136,8 @@
                         //print("IN Not:");
                         //print($queryArray);
                         $result=$this->parseSynapticNeuron($queryArray,$index+1);
-                        $index=$result[0];
-                        $excNeuron=$result[1];
+                        $index= $result[0] ?? null;
+                        $excNeuron= $result[1] ?? null;
                         //print("<pre>" . print_r($mathcingNeruonArray, true) . "</pre>");
                         //print("<pre>" . print_r($incNeuron, true) . "</pre>");
                         
@@ -157,7 +157,7 @@
             //print("<br>Connection to be found Are:<br>");
             //print("<pre>" . print_r($neuron, true) . "</pre>");
         
-            if(count($neuron)!=0) {
+            if(count($neuron ?? array())!=0) {
                 $neuron = implode(",", $neuron);
                 $index = 0;
                 $query_to_get_type = "SELECT DISTINCT c.Type1_id,t1.name as sourceName,t1.nickname as sourceNickname
@@ -188,7 +188,7 @@
             //print("<pre>" . print_r($preSynNeuron, true) . "</pre>");
             //print("<pre>" . print_r($postSynNeuron, true) . "</pre>");
 
-            if(count($preSynNeuron)!=0 && count($postSynNeuron)!=0) {
+            if(count($preSynNeuron ?? array())!=0 && count($postSynNeuron ?? array())!=0) {
                 $preSynNeuronCond = implode(",", $preSynNeuron);
                 $postSynNeuronCond = implode(",", $postSynNeuron);
                 $index = 0;
@@ -249,7 +249,7 @@
                (strpos($query, 'Morphology:') !== false) ){
                 $nmspl_text = explode('Name:', $query);
                 preg_match('#\((.*?)\)#', ($nmspl_text[1] ?? ''), $match);
-                if(count($match) > 0){
+                if(count($match ?? array()) > 0){
         			$query = $nmspl_text[0]."Name:".$match[1].")";
                 }
             }
@@ -257,34 +257,34 @@
 	    $p = new ParenthesisParser();
             $parsedQuery = $p->parseParenthesis($query);
             //print("<pre>".print_r($parsedQuery,true)."</pre>");
-            if(count($parsedQuery)==$fillLengthConn){
+            if(count($parsedQuery ?? array())==$fillLengthConn){
                 if(stripos($parsedQuery[$connStart],Name::CONN)!==false){
-                    $parsedQueryConn=$parsedQuery[1];
+                    $parsedQueryConn= $parsedQuery[1] ?? null;
                     //print("<pre>".print_r($parsedQueryConn,true)."</pre>");
                     //if connection query proceed
-                    if(count($parsedQueryConn)>=($fillLengthPre+$fillLengthPost) && stripos($parsedQueryConn[$presynStart], Keyword::CONN_PRESYN) !== false && stripos($parsedQueryConn[$postsynStart], Keyword::CONN_POSTSYN) !== false) {
+                    if(count($parsedQueryConn ?? array())>=($fillLengthPre+$fillLengthPost) && stripos($parsedQueryConn[$presynStart], Keyword::CONN_PRESYN) !== false && stripos($parsedQueryConn[$postsynStart], Keyword::CONN_POSTSYN) !== false) {
                         $parsedQueryPreSynap=$parsedQueryConn[$presynStart+1];
                         $parsedQueryPostSynap=$parsedQueryConn[$postsynStart+1];
                         
                         $resultPre=$this->parseSynapticNeuron($parsedQueryPreSynap,0);
                         $resultPost=$this->parseSynapticNeuron($parsedQueryPostSynap,0);
-                        $preSynNeuron=$resultPre[1];
+                        $preSynNeuron= $resultPre[1] ?? null;
                         // include, exclude these neuron
                         $incNeuron=$this->getIncludeNeuron($parsedQueryPreSynap);
                         //print("Include pre syn<pre>".print_r($incNeuron,true)."</pre>");
-                        if($incNeuron && (count($incNeuron))>0)
+                        if($incNeuron && (count($incNeuron ?? array()))>0)
                             $preSynNeuron=array_merge($preSynNeuron,$incNeuron);
                         $excNeuron=$this->getExcludeNeuron($parsedQueryPreSynap);
-                        if($excNeuron && (count($excNeuron))>0)
+                        if($excNeuron && (count($excNeuron ?? array()))>0)
                             $preSynNeuron=array_diff($preSynNeuron,$excNeuron);
                         //print("pre syn<pre>".print_r($preSynNeuron,true)."</pre>");
-                        $postSynNeuron=$resultPost[1];
+                        $postSynNeuron= $resultPost[1] ?? null;
                         // include, exclude these neuron
                         $incNeuron=$this->getIncludeNeuron($parsedQueryPostSynap);
-                        if($incNeuron && (count($incNeuron))>0)
+                        if($incNeuron && (count($incNeuron ?? array()))>0)
                             $postSynNeuron=array_merge($postSynNeuron,$incNeuron);
                         $excNeuron=$this->getExcludeNeuron($parsedQueryPostSynap);
-                        if($excNeuron && (count($excNeuron))>0)
+                        if($excNeuron && (count($excNeuron ?? array()))>0)
                             $postSynNeuron=array_diff($postSynNeuron,$excNeuron);
                         //print("post syn<pre>".print_r($postSynNeuron,true)."</pre>");
                         $neuronConnection=$this->findConnection($preSynNeuron,$postSynNeuron);
@@ -292,14 +292,14 @@
                         return $neuronConnection;
                     }
                 }else if(stripos($parsedQuery[$connStart],"Neuron")!==false){
-                      $parsedQueryPreSynap=$parsedQuery[1];
+                      $parsedQueryPreSynap= $parsedQuery[1] ?? null;
                       $resultPre=$this->parseSynapticNeuron($parsedQueryPreSynap,0);
-                      $preSynNeuron=$resultPre[1];
+                      $preSynNeuron= $resultPre[1] ?? null;
                       $incNeuron=$this->getIncludeNeuron($parsedQueryPreSynap);
-                      if($incNeuron && (count($incNeuron))>0)
+                      if($incNeuron && (count($incNeuron ?? array()))>0)
                          $preSynNeuron=array_merge($preSynNeuron,$incNeuron);
                       $excNeuron=$this->getExcludeNeuron($parsedQueryPreSynap);
-                      if($excNeuron && (count($excNeuron))>0)
+                      if($excNeuron && (count($excNeuron ?? array()))>0)
                          $preSynNeuron=array_diff($preSynNeuron,$excNeuron);
                       $neuroncon = $this->findNeuron($preSynNeuron);
                       return $neuroncon;
@@ -316,7 +316,7 @@
             if (strcasecmp(trim($queryArray[$index]), Keyword::NTR.":") != 0) {
                 $includeCond = $queryArray[$index];
                 $replaceStr=Keyword::NTR.":";
-                $ntrCond = str_ireplace($replaceStr,"", $includeCond);
+                $ntrCond = str_ireplace($replaceStr,"", ($includeCond ?? ''));
             }
             // Neurotransmitter: Inhibitory,
             // Neurotransmitter:Inhibitory,
@@ -356,7 +356,7 @@
             if (strcasecmp(trim($queryArray[$index]), Keyword::NEURON_NAME.":") != 0) {
                 $includeCond = $queryArray[$index];
                 $replaceStr=Keyword::NEURON_NAME.":";
-                $neuronName=trim(str_ireplace($replaceStr,"", $includeCond));
+                $neuronName=trim(str_ireplace($replaceStr,"", ($includeCond ?? '')));
                 array_push($neuronNameArray,$neuronName);
             }
             // Neurotransmitter: Inhibitory,
@@ -373,12 +373,12 @@
                 //if its array
                 else{
                     // iterate over all neuron
-                    for ($ind = 0; $ind < count($neuronIncArray); $ind++) {
+                    for ($ind = 0; $ind < count($neuronIncArray ?? array()); $ind++) {
                         //2000,3000
                         if (strpos($neuronIncArray[$ind], ",") !== false) {
                             $splitArray = explode(",", $neuronIncArray[$ind]);
                             // check for each neuron
-                            for ($i = 0; $i < count($splitArray); $i++) {
+                            for ($i = 0; $i < count($splitArray ?? array()); $i++) {
                                 // if not blank push id
                                 $neuronName = trim($splitArray[$i]);
                                 if ($neuronName !== "") {
@@ -392,7 +392,7 @@
                     }
                 }
             }
-            if(count($neuronNameArray)>0){
+            if(count($neuronNameArray ?? array())>0){
                 $neuronName=implode("','",$neuronNameArray);
                 $neuronName="('$neuronName')";
                 //echo($neuronName);
@@ -407,7 +407,7 @@
                 $replaceStr=$pageType.":";
                 //remove word
                 //print("<br>..1Condition is..............$includeCond<br>");
-                $neuronCond=trim(str_ireplace($replaceStr,"", $includeCond));
+                $neuronCond=trim(str_ireplace($replaceStr,"", ($includeCond ?? '')));
                 //print("<br>..1Condition is...............$neuronCond<br>");
                 $matchingNeuron=$this->executeCondition($pageType,$neuronCond);
                 //print("<pre>" . print_r($matchingNeuron, true) . "</pre>");
@@ -421,7 +421,7 @@
                  #print_r($queryArray);
                 if(is_array($queryArray[$index])) {
                     $result =$this->neuronMatchingInnerCond($queryArray[$index], 0, $pageType);
-                    $matchingNeuron=$result[1];
+                    $matchingNeuron= $result[1] ?? null;
                 }
             }
             return array($index,$matchingNeuron);
@@ -433,7 +433,7 @@
                 //echo("mathcing Include:2000");
                 $includeCond = $queryArray[$index];
                 $replaceStr=Keyword::INC.":";
-                $neuronId = str_ireplace($replaceStr,"", $includeCond);
+                $neuronId = str_ireplace($replaceStr,"", ($includeCond ?? ''));
                 array_push($incNeuron, trim($neuronId));
             } // Include:(4000,2000, 3000,1200 ,3333)
             else {
@@ -449,12 +449,12 @@
                 // its array of ids
                 else{
                     // iterate over all neuron
-                    for ($ind = 0; $ind < count($neuronIncArray); $ind++) {
+                    for ($ind = 0; $ind < count($neuronIncArray ?? array()); $ind++) {
                         //2000,3000
                         if (strpos($neuronIncArray[$ind], ",") !== false) {
                             $splitArray = explode(",", $neuronIncArray[$ind]);
                             // check for each neuron
-                            for ($i = 0; $i < count($splitArray); $i++) {
+                            for ($i = 0; $i < count($splitArray ?? array()); $i++) {
                                 // if not blank push id
                                 $typeId = trim($splitArray[$i]);
                                 if ($typeId !== "") {
@@ -476,7 +476,7 @@
             if (strcasecmp(trim($queryArray[$index]), Keyword::EXC.":") != 0) {
                 $excludeCond = $queryArray[$index];
                 $replaceStr=Keyword::EXC.":";
-                $neuronId = str_ireplace($replaceStr,"", $excludeCond);
+                $neuronId = str_ireplace($replaceStr,"", ($excludeCond ?? ''));
                 array_push($excNeuron, trim($neuronId));
             } // Exclude:(4000,2000, 3000,1200 ,3333)
             else {
@@ -491,12 +491,12 @@
                 // its array of ids
                 else{
                     // iterate over all neuron
-                    for ($ind = 0; $ind < count($neuronExcArray); $ind++) {
+                    for ($ind = 0; $ind < count($neuronExcArray ?? array()); $ind++) {
                         //2000,3000
                         if (strpos($neuronExcArray[$ind], ",") !== false) {
                             $splitArray = explode(",", $neuronExcArray[$ind]);
                             // check for each neuron
-                            for ($i = 0; $i < count($splitArray); $i++) {
+                            for ($i = 0; $i < count($splitArray ?? array()); $i++) {
                                 // if not blank push id
                                 $typeId = trim($splitArray[$i]);
                                 if ($typeId !== "") {
@@ -515,21 +515,21 @@
         }
         public function neuronMatchingInnerCond($queryArray,$ind,$pageType){
             $matchingNeuron=array();
-            for($index=$ind;$index<count($queryArray);$index++) {
+            for($index=$ind;$index<count($queryArray ?? array());$index++) {
                 //print("<br>Index...............$index<br>");
                 $val=$queryArray[$index];
                 $incNeuron = array();
                 if (is_array($val)) {
                     $result=$this->neuronMatchingInnerCond($val,0,$pageType);
-                    $incNeuron=$result[1];
-                    if(count($incNeuron)>0)
+                    $incNeuron= $result[1] ?? null;
+                    if(count($incNeuron ?? array())>0)
                         $matchingNeuron=array_merge($matchingNeuron,$incNeuron);
                 }
                 else if(stripos($val, Operator::ANDD) !== false){
                     $index++;
                     $result=$this->neuronMatchingInnerCond($queryArray,$index,$pageType);
-                    $index=$result[0];
-                    $incNeuron=$result[1];
+                    $index= $result[0] ?? null;
+                    $incNeuron= $result[1] ?? null;
                     //print("<pre>" . print_r($matchingNeuron, true) . "</pre>");
                     //print("<pre>" . print_r($incNeuron, true) . "</pre>");
                     $matchingNeuron=array_intersect($matchingNeuron,$incNeuron);
@@ -540,11 +540,11 @@
                     //print("<br>OR FOUND...............<br>");
                     $index++;
                     $result=$this->neuronMatchingInnerCond($queryArray,$index,$pageType);
-                    $index=$result[0];
-                    $incNeuron=$result[1];
+                    $index= $result[0] ?? null;
+                    $incNeuron= $result[1] ?? null;
                     //print("<pre>" . print_r($matchingNeuron, true) . "</pre>");
                     //print("<pre>" . print_r($incNeuron, true) . "</pre>");
-                    if(count($incNeuron)>0)
+                    if(count($incNeuron ?? array())>0)
                         $matchingNeuron=array_merge($matchingNeuron,$incNeuron);
                     //print("<pre>" . print_r($matchingNeuron, true) . "</pre>");
                     //print("ORR------");
@@ -552,8 +552,8 @@
                 else if(stripos($val, Operator::NOT) !== false){
                     $index++;
                     $result=$this->neuronMatchingInnerCond($queryArray,$index,$pageType);
-                    $index=$result[0];
-                    $incNeuron=$result[1];
+                    $index= $result[0] ?? null;
+                    $incNeuron= $result[1] ?? null;
                     //print("<pre>" . print_r($matchingNeuron, true) . "</pre>");
                     //print("<pre>" . print_r($incNeuron, true) . "</pre>");
                     $matchingNeuron=array_diff($matchingNeuron,$incNeuron);
@@ -563,7 +563,7 @@
                 else {
                     $cond=$val;
                     $incNeuron=$this->executeCondition($pageType,$cond);
-                    if(count($incNeuron)>0)
+                    if(count($incNeuron ?? array())>0)
                         $matchingNeuron=array_merge($matchingNeuron,$incNeuron);
                 }
                //print("<br>INC Inner Type FOund at index:+$index...".count($incNeuron)."<br>");

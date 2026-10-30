@@ -18,32 +18,32 @@ require_once('class/class.article.php');
 require_once('class/class.author.php');
 require_once('class/class.synonymtyperel.php');
 
-$articleevidencerel = new articleevidencerel($class_articleevidencerel);
+$articleevidencerel = new articleevidencerel($class_articleevidencerel ?? null);
 $temporary = new temporary_neuronterm();
-$term = new term($class_term);
-$type_1 = new type($class_type);
-$synonym_1 = new synonym($class_synonym);	
-$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
-$article = new article($class_article);
-$author = new author($class_author);
-$articleauthorrel = new articleauthorrel($class_articleauthorrel);
-$synonymtyperel = new synonymtyperel($class_synonymtyperel);
+$term = new term($class_term ?? null);
+$type_1 = new type($class_type ?? null);
+$synonym_1 = new synonym($class_synonym ?? null);	
+$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel ?? null);
+$article = new article($class_article ?? null);
+$author = new author($class_author ?? null);
+$articleauthorrel = new articleauthorrel($class_articleauthorrel ?? null);
+$synonymtyperel = new synonymtyperel($class_synonymtyperel ?? null);
 $term_last = '';
 
 // Resume searching
-if ($_REQUEST['resume_searching_tab'])
+if (!empty($_REQUEST['resume_searching_tab']))
 {
-	$resume_searching = $_SESSION['resume_searching'];	
+	$resume_searching = $_SESSION['resume_searching'] ?? null;	
 	$name_temporary_table = $resume_searching;
 	$_SESSION['name_temporary_table'] = $name_temporary_table;
 	$temporary->setName_table($name_temporary_table);
 }
 
 // Creates the temporary table for the search 
-if ($_REQUEST['searching'])
+if (!empty($_REQUEST['searching']))
 {
-	$ip_address = $_SERVER['REMOTE_ADDR'];
-	$ip_address = str_replace(array('.', ':'), '_', $ip_address);
+	$ip_address = $_SERVER['REMOTE_ADDR'] ?? null;
+	$ip_address = str_replace(array('.', ':'), '_', ($ip_address ?? ''));
 	$time_t = time();
 	$name_temporary_table ='search1_'.$ip_address."__".$time_t;
 	$_SESSION['name_temporary_table'] = $name_temporary_table;
@@ -54,10 +54,10 @@ if ($_REQUEST['searching'])
 }
 
 // New Request
-if($_REQUEST['new'])
+if (!empty($_REQUEST['new']))
 {
-	$ip_address = $_SERVER['REMOTE_ADDR'];
-	$ip_address = str_replace(array('.', ':'), '_', $ip_address);
+	$ip_address = $_SERVER['REMOTE_ADDR'] ?? null;
+	$ip_address = str_replace(array('.', ':'), '_', ($ip_address ?? ''));
 	$time_t = time();
 	$name_temporary_table ='search1_'.$ip_address."__".$time_t;
 	$_SESSION['name_temporary_table'] = $name_temporary_table;
@@ -68,11 +68,11 @@ if($_REQUEST['new'])
 }
 
 // update the letter in the temporary table: 
-$letter = $_REQUEST['letter'];
+$letter = $_REQUEST['letter'] ?? null;
 if ($letter)
 {
-	$name_temporary_table = $_SESSION['name_temporary_table'];
-	$id_update = $_REQUEST['id'];
+	$name_temporary_table = $_SESSION['name_temporary_table'] ?? null;
+	$id_update = $_REQUEST['id'] ?? null;
 
 	// retrieve all neuron terms
 	$term->retrive_name();
@@ -108,39 +108,39 @@ if ($letter)
 	$temporary_search = 0;
 }
 
-$neuron5 = $_REQUEST['neuron'];
+$neuron5 = $_REQUEST['neuron'] ?? null;
 if ($neuron5)
 {
-	$name_temporary_table = $_SESSION['name_temporary_table'];
-	$id_update = $_REQUEST['id'];
+	$name_temporary_table = $_SESSION['name_temporary_table'] ?? null;
+	$id_update = $_REQUEST['id'] ?? null;
 	$temporary->setName_table($name_temporary_table);
 	$temporary->update_temporary(NULL, $neuron5, 2, $id_update);
 	$temporary_search = 1;
 }
 
 // ADD a new line for a new Author: --------------------------------------------------------------------
-if ($_REQUEST['plus'])
+if (!empty($_REQUEST['plus']))
 {
-	$name_temporary_table = $_SESSION['name_temporary_table'];
+	$name_temporary_table = $_SESSION['name_temporary_table'] ?? null;
 	$temporary->setName_table($name_temporary_table);
 	$temporary->insert_temporary('all', '');
 	$temporary_search = 0;	
 }
 
 // REMOVE line  -----------------------------------------------------------------------------------------
-if ($_REQUEST['remove'])
+if (!empty($_REQUEST['remove']))
 {
-	$name_temporary_table = $_SESSION['name_temporary_table'];
+	$name_temporary_table = $_SESSION['name_temporary_table'] ?? null;
 	$temporary ->setName_table($name_temporary_table);
-	$id_temp = $_REQUEST['id'];
+	$id_temp = $_REQUEST['id'] ?? null;
 	$temporary->remove($id_temp);
 	$temporary_search = 1;
 }
 
 // Show result --------------------------------------------------------------------------------------------
-if ($_REQUEST['see_result'])
+if (!empty($_REQUEST['see_result']))
 {
-	$name_temporary_table = $_SESSION['name_temporary_table'];
+	$name_temporary_table = $_SESSION['name_temporary_table'] ?? null;
 	$temporary->setName_table($name_temporary_table);
 	$temporary_search = 1;
 }
@@ -151,9 +151,9 @@ if ($temporary_search == 1)
 }
 
 // Clear all ---------------------------------------------
-if ($_REQUEST['clear_all'])
+if (!empty($_REQUEST['clear_all']))
 {
-	$name_temporary_table = $_SESSION['name_temporary_table'];
+	$name_temporary_table = $_SESSION['name_temporary_table'] ?? null;
 	$query = "TRUNCATE $name_temporary_table";
 	$rs = mysqli_query($GLOBALS['conn'],$query);
 	// Creates the temporary table:
@@ -398,7 +398,7 @@ $(document).ready(function(){
 	</table>
 
 	<?php
-		if ($_REQUEST['see_result'])
+		if (!empty($_REQUEST['see_result']))
 		{
 			print("<table border='0'  class='table_result' id='tab_res' width='100%'>");
 			print("<thead><tr>
@@ -467,7 +467,7 @@ $(document).ready(function(){
 							}
 						}
 						$allTerms = trim(implode(',',array_unique(explode(',', $allTerms))), ",");
-						$allTerms = 'Synonym(s):\r\n    '.str_replace(",",'\r\n    ',$allTerms);
+						$allTerms = 'Synonym(s):\r\n    '.str_replace(",",'\r\n    ', ($allTerms ?? ''));
 						$parents_concept = $term->retrive_parent_concept($term_concept);
 						$value = '';
 						$allParents = '';
@@ -477,7 +477,7 @@ $(document).ready(function(){
 							}
 						}
 						$allParents = trim(implode(',',array_unique(explode(',', $allParents))), ",");
-						$allParents = 'Term Source(s):\r\n    '.str_replace(",",'\r\n    ',$allParents);
+						$allParents = 'Term Source(s):\r\n    '.str_replace(",",'\r\n    ', ($allParents ?? ''));
 						$concept_title = $allParents.'\r\n'.$allTerms;
 						?>
 						<script language="javascript">

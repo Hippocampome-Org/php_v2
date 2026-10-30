@@ -4,7 +4,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <?php
 if(session_status() === PHP_SESSION_NONE) session_start();
-$perm = $_SESSION['perm'];
+$perm = $_SESSION['perm'] ?? null;
 include ("function/neuron_page_text_file.php");
 include ("function/name_ephys_for_evidence.php");
 include ("function/show_ephys.php");
@@ -34,29 +34,29 @@ require_once('class/class.hc2nmo.php');
 require_once('phases/class/class.fragment.php');
 require_once('synap_prob/class/class.fragment_synpro.php');
 
-$id = $_REQUEST['id'];
-$type = new type($class_type);
+$id = $_REQUEST['id'] ?? null;
+$type = new type($class_type ?? null);
 $type -> retrive_by_id($id);
-$synonym = new synonym($class_synonym);
-$property = new property($class_property);
-$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
-$epdataevidencerel = new epdataevidencerel($class_epdataevidencerel);
-$epdata = new epdata($class_epdata);
+$synonym = new synonym($class_synonym ?? null);
+$property = new property($class_property ?? null);
+$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel ?? null);
+$epdataevidencerel = new epdataevidencerel($class_epdataevidencerel ?? null);
+$epdata = new epdata($class_epdata ?? null);
 $synonymtyperel = new synonymtyperel('SynonymTypeRel');
 $fragmenttyperel = new fragmenttyperel();
-$fragment = new fragment($class_fragment);
-$evidencefragmentrel = new evidencefragmentrel($class_evidencefragmentrel);
+$fragment = new fragment($class_fragment ?? null);
+$evidencefragmentrel = new evidencefragmentrel($class_evidencefragmentrel ?? null);
 $typetyperel = new typetyperel();
-$articleevidencerel = new articleevidencerel($class_articleevidencerel);
-$article = new article($class_article);
-$articleauthorrel = new articleauthorrel($class_articleauthorrel);
-$author = new author($class_author);
+$articleevidencerel = new articleevidencerel($class_articleevidencerel ?? null);
+$article = new article($class_article ?? null);
+$articleauthorrel = new articleauthorrel($class_articleauthorrel ?? null);
+$author = new author($class_author ?? null);
 $attachment_obj = new attachment($class_attachment ?? null);
-$izhmodelsmodelObject = new izhmodelsmodel($class_izhmodels_model);
-$rawizhmodelsmodelObject = new rawizhmodelsmodel($class_izhmodels_model);
+$izhmodelsmodelObject = new izhmodelsmodel($class_izhmodels_model ?? null);
+$rawizhmodelsmodelObject = new rawizhmodelsmodel($class_izhmodels_model ?? null);
 $hc2nmo = new hc2nmo($class_hc2nmo ?? '');
-$phases_fragment = new fragment_phases($class_phases_fragment);
-$synpro_fragment = new fragment_synpro($class_synpro_fragment);
+$phases_fragment = new fragment_phases($class_phases_fragment ?? null);
+$synpro_fragment = new fragment_synpro($class_synpro_fragment ?? null);
 if (!empty($text_file_creation))
 {
 	$name_file = neuron_page_text_file($id, $type, $synonymtyperel, $synonym, $evidencepropertyyperel, $property, $epdataevidencerel, $epdata, $class_type);
@@ -77,7 +77,7 @@ list($permission) = mysqli_fetch_row($rs);
 <?php
  include ("function/icon.html"); 
 // query to get connectivity matrix
-$morphology_connection_information= $_SESSION['morphology'];
+$morphology_connection_information= $_SESSION['morphology'] ?? null;
 $array_decoded = json_decode($morphology_connection_information, true);
 $potential_conn_display_array = $array_decoded['potential_array'];
 $potn_conn_neuron_pcl_array=$array_decoded['potn_conn_neuron_pcl_array'];
@@ -338,7 +338,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 				// add phases project articles
 				$phases_artids = $phases_fragment -> type_id_to_article_ids($id);
 				//echo "test: ".$phases_artids[2];
-				for ($pi = 0; $pi < count($phases_artids); $pi++) {
+				for ($pi = 0; $pi < count($phases_artids ?? array()); $pi++) {
 					array_push($id_article_4, $phases_artids[$pi]);
 					$n_article_3 = $n_article_3 + 1;
 					//echo "<br>new art: ".$phases_artids[$pi];
@@ -346,7 +346,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 				// add synapse probabilities project articles
 				$synpro_artids = $synpro_fragment -> type_id_to_article_ids($id);
 				//echo "test: ".$synpro_artids[0];
-				for ($si = 0; $si < count($synpro_artids); $si++) {
+				for ($si = 0; $si < count($synpro_artids ?? array()); $si++) {
 					array_push($id_article_4, $synpro_artids[$si]);
 					$n_article_3 = $n_article_3 + 1;
 					//echo "<br>new art: ".$synpro_artids[$si];
@@ -390,7 +390,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 				}
 					$g++;
 				}
-				$auth_first_name_final[$i4]=$auth_first_name[0];
+				$auth_first_name_final[$i4]= $auth_first_name[0] ?? null;
 					$art_id[$i4]=$id_article_4_unique[$i4];
 				}
 				array_multisort($auth_first_name_final,$art_id);
@@ -435,7 +435,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 						while($arows = mysqli_fetch_array($ress, MYSQLI_ASSOC))
 						{
 							$auth_name[$g]=$arows['name_auth'];
-							$auth_name[$g]=preg_replace("/'/", "&#39;", $auth_name[$g]);
+							$auth_name[$g]=preg_replace("/'/", "&#39;", ($auth_name[$g] ?? ''));
 							$u++;
 						}	
 						$g++;
@@ -680,7 +680,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 		           if($val!=""){
 		           		if(strpos($val,",")!==false){
 		           			$val_array=explode(",", $val);
-		           			for($ind=0;$ind<count($val_array);$ind++)
+		           			for($ind=0;$ind<count($val_array ?? array());$ind++)
 		           				$array_supp_ids[$index++]=trim($val_array[$ind]);
 		           		}
 		           		else
@@ -706,7 +706,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 								</em>
 								<div id="accordion" align="left"');
 									print("<ul>");
-									for($ind=0;$ind<count($array_supp_ids);$ind++){
+									for($ind=0;$ind<count($array_supp_ids ?? array());$ind++){
 										print("<li>");
 										$sup_pmid_val=$array_supp_ids[$ind];
 										print("<a href='http://www.ncbi.nlm.nih.gov/pubmed?term=PMID: $sup_pmid_val' target='_blank'><font class='font13'>$sup_pmid_val</font></a>");
@@ -866,7 +866,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
     }
     function parcel_row($parcel, $part) {
       global $id;
-      $parcel_for_url = str_replace(':', '_', $parcel);
+      $parcel_for_url = str_replace(':', '_', ($parcel ?? ''));
       $color_table = array("axons" => "red", "dendrites" => "blue", "somata" => "somata");
       $color = $color_table[$part];
       $html = "<tr>
@@ -929,7 +929,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 			$attachment = $attachment_obj -> getName();
 			$attachment_type = $attachment_obj -> getType();
 			$link_figure="";
-			$attachment_jpg = str_replace('jpg', 'jpeg', $attachment);
+			$attachment_jpg = str_replace('jpg', 'jpeg', ($attachment ?? ''));
 			//echo "$attachment_jpg";
 			if($attachment_type=="marker_figure"||$attachment_type=="marker_table"){
 				$link_figure = "attachment/marker/".$attachment_jpg;
@@ -944,7 +944,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 				//echo "ephys:-".$link_figure;
 			}
 			// change PFD in JPG:
-			$attachment_jpg = str_replace('jpg', 'jpeg', $attachment);
+			$attachment_jpg = str_replace('jpg', 'jpeg', ($attachment ?? ''));
 			//$link_figure = "figure/".$attachment_jpg;	
 		//	$link_figure = "attachment/morph/".$attachment_jpg;
 			// -------------------------------------------------------------------------------		
@@ -999,7 +999,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 				$id_author = $articleauthorrel -> getAuthor_id_array(0);
 				$author -> retrive_by_id($id_author);
 				$name_a = $author -> getName_author_array(0);
-				$name_a = preg_replace("/'/", "&#39;", $name_a);
+				$name_a = preg_replace("/'/", "&#39;", ($name_a ?? ''));
 				//$name_b=trim($name_a);
 				$f_auth1=substr($name_a,0,1);
 				$name_b="<a href='find_author.php?name_author=$name_a&first_author=$f_auth1&new=1&see_result=1'>$name_a</a>";
@@ -1186,7 +1186,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 		    $temp_array = array();     
 		    $key_array = array();
 		    $i = 0;
-		    for($z=0; $z<count($mixed_array['part_key']); $z++) {
+		    for($z=0; $z<count($mixed_array['part_key'] ?? array()); $z++) {
 		    	$val = $mixed_array['part_key'][$z];
 		        if (!in_array($val, $key_array)) {
 		            $key_array[$i] = $val;
@@ -1198,7 +1198,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 		        }          
 		    }
 			$mixed_array = $temp_array;
-			$mixed_exp_disp_counter = count($mixed_array);
+			$mixed_exp_disp_counter = count($mixed_array ?? array());
 		}
 		$hippo_property = determinePosNegCombosForAllMarkers($name_markers, $hippo_positive, $hippo_negative, $hippo_weak_positive, $hippo_positive_inference, $hippo_negative_inference, $hippo_unknown);
 		$hippo_color = array();
@@ -1208,11 +1208,11 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 			$conflict_note = $evidencepropertyyperel -> getConflict_note();			
 			$nam_unv1 = check_unvetted1($id, $hippo_property_id[$this_remapped_name] ?? null, $evidencepropertyyperel);			
 			$img = check_color($hippo_property[$name_markers[$f1]], $nam_unv1, $conflict_note, $permission);
-			$hippo[$this_remapped_name] = $img[0];
+			$hippo[$this_remapped_name] = $img[0] ?? null;
 			if ($img[1] == NULL)
-				$hippo[$this_remapped_name] = $img[0];
+				$hippo[$this_remapped_name] = $img[0] ?? null;
 			else
-				$hippo_color[$this_remapped_name] = $img[1];
+				$hippo_color[$this_remapped_name] = $img[1] ?? null;
 			$marker_URLs[$this_remapped_name] = getUrlText($id, $this_remapped_name, $hippo_color[$this_remapped_name] ?? NULL);
 		}
 		?>
@@ -1831,7 +1831,7 @@ WHERE
 			{
 				$izhmodelsmodelArray = $izhmodelsmodelObject->get_all_id($id);
 				$rawizhmodelsmodelArray = $rawizhmodelsmodelObject->get_all_id($id);
-                if(count($izhmodelsmodelArray)>0){
+                if(count($izhmodelsmodelArray ?? array())>0){
 ?>
 <br />
 <table width="80%" border="0" cellspacing="2" cellpadding="0">
@@ -1852,13 +1852,13 @@ WHERE
 		</td>	
 	</tr>
 		<?php
-		for($i = 0; $i< count($izhmodelsmodelArray);$i++)
+		for($i = 0; $i< count($izhmodelsmodelArray ?? array());$i++)
 		{
 			$relative_path = 'attachment/izhikevich/FitFiles/fitfile_'.$izhmodelsmodelArray[$i]->getSub_Id().'.json';
 			$xpprelative_path = 'attachment/izhikevich/xppFiles/'.$izhmodelsmodelArray[$i]->getSub_Id().'.ode';
 			$ensemblerelative_path = 'attachment/izhikevich/Ensembles/'.$izhmodelsmodelArray[$i]->getSub_Id().'_paramset.csv';
             $carlsimrelative = glob('attachment/izhikevich/carl_parms/'.$izhmodelsmodelArray[$i]->getSub_Id().'.*');
-            $carlsimrelative_path = (count($carlsimrelative) > 0 ? $carlsimrelative[0]:"");
+            $carlsimrelative_path = (count($carlsimrelative ?? array()) > 0 ? $carlsimrelative[0]:"");
          
 			echo "<tr><td width='20%' align='right'></td>";
 			if($izhmodelsmodelArray[$i]->getPreferred() == 'N')
@@ -1930,7 +1930,7 @@ WHERE
 			$url[$i] .= "&paramVpeak=".$paramVpeak[$i];
 			$url[$i] .= "&paramVmin=".$paramVmin[$i];
 			$url[$i] .= "&paramG=".$paramG;
-			$url[$i] .= "&modelsCount=".(count($izhmodelsmodelArray));
+			$url[$i] .= "&modelsCount=".(count($izhmodelsmodelArray ?? array()));
 			$url[$i] .= "&currentIndex=".$i;
 			
 			$actual_link[$i] = "";//(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://{$_SERVER['HTTP_HOST']}/Hippocampome/php-izhmodels";
@@ -1957,7 +1957,7 @@ WHERE
 	<?php
     $izhmodelsmodelArray = $izhmodelsmodelObject->get_all_id($id);
     print("<div style='width:100%; background-color:white; height:95px; overflow:scroll;overflow-x: scroll;overflow-y: scroll;''>");
-    for($i = 0; $i< count($izhmodelsmodelArray);$i++){
+    for($i = 0; $i< count($izhmodelsmodelArray ?? array());$i++){
 			$relative_image_path_array = glob('attachment/izhikevich/PyPlots/'.$izhmodelsmodelArray[$i]->getSub_Id().'*');
             foreach($relative_image_path_array as $relative_image_path){
 			if(!file_exists($relative_image_path)){
@@ -2032,7 +2032,7 @@ WHERE
 	//get link
 	function getLinkConnectivity($id_neuron2,$neuron2_name,$font_class,$view_type){
 		global $potn_conn_neuron_pcl_array;
-		$id = $_REQUEST['id'];
+		$id = $_REQUEST['id'] ?? null;
 		if($view_type=="Source"){
 			$source_neuron=$id;
 			$destination_neuron=$id_neuron2;
@@ -2050,7 +2050,7 @@ WHERE
 		$query_to_get_connection="SELECT DISTINCT c.connection_status FROM  Conndata c WHERE c.Type1_id=$source_neuron AND c.Type2_id=$destination_neuron";
 		$result_to_get_connection = mysqli_query($GLOBALS['conn'], $query_to_get_connection);
 		$connection = result_set_to_array($result_to_get_connection, 'connection_status');
-		if(count($connection)==1){
+		if(count($connection ?? array())==1){
 			if($connection[0]=="positive")
 				$know_unknow_flag=1;
 			if($connection[0]=="negative")
@@ -2059,7 +2059,7 @@ WHERE
 		$query_to_get_type="SELECT id FROM Type WHERE status = 'active' ORDER BY position ASC";
 		$result_to_get_type = mysqli_query($GLOBALS['conn'], $query_to_get_type);
 		$type_array = result_set_to_array($result_to_get_type, 'id');
-		for($i=0;$i<count($type_array);$i++){
+		for($i=0;$i<count($type_array ?? array());$i++){
 			if($type_array[$i]==$source_neuron)
 				$index_source=$i;
 			if($type_array[$i]==$destination_neuron)
@@ -2177,14 +2177,14 @@ WHERE
       $list_explicit_targets = null;
       $explicit_targets = result_set_to_array($result, "t2_id");
       //print "<br><br>EXPLICIT TARGETS:<br>"; print_r($explicit_targets);
-	  if (count($explicit_targets) >= 1) {
+	  if (count($explicit_targets ?? array()) >= 1) {
 			$list_explicit_targets = array_unique($explicit_targets);
 			$list_explicit_targets = get_sorted_records($list_explicit_targets);
 	  }
       $result = mysqli_query($GLOBALS['conn'],$explicit_nontarget_query);
       $explicit_nontargets = result_set_to_array($result, "t2_id");
       //print "<br><br>EXPLICIT NONTARGETS:<br>"; print_r($explicit_nontargets);	  
-	  if (count($explicit_nontargets) >= 1) {
+	  if (count($explicit_nontargets ?? array()) >= 1) {
 			$list_explicit_nontargets = array_unique($explicit_nontargets);
 			$list_explicit_nontargets = get_sorted_records($list_explicit_nontargets);
 	  }
@@ -2208,14 +2208,14 @@ WHERE
       $result = mysqli_query($GLOBALS['conn'],$explicit_source_query);
       $explicit_sources = result_set_to_array($result, "t1_id");
       //print "<br><br>EXPLICIT SOURCES:<br>"; print_r($explicit_sources);
-      if (count($explicit_sources) >= 1) {
+      if (count($explicit_sources ?? array()) >= 1) {
       	$list_explicit_sources = array_unique($explicit_sources);
       	$list_explicit_sources = get_sorted_records($list_explicit_sources);
       }
       $result = mysqli_query($GLOBALS['conn'],$explicit_nonsource_query);
       $explicit_nonsources = result_set_to_array($result, "t1_id");
       //print "<br><br>EXPLICIT NONSOURCES:<br>"; print_r($explicit_nonsources);
-      if (count($explicit_nonsources) >= 1) {
+      if (count($explicit_nonsources ?? array()) >= 1) {
       	$list_explicit_nonsources = array_unique($explicit_nonsources);
       	$list_explicit_nonsources = get_sorted_records($list_explicit_nonsources);
       }
@@ -2237,14 +2237,14 @@ WHERE
       $result = mysqli_query($GLOBALS['conn'],$explicit_source_query);
       $explicit_sources = result_set_to_array($result, "t1_id");
       //print "<br><br>EXPLICIT SOURCES:<br>"; print_r($explicit_sources);
-	  if (count($explicit_sources) >= 1) {
+	  if (count($explicit_sources ?? array()) >= 1) {
 			$list_explicit_sources = array_unique($explicit_sources);
 			$list_explicit_sources = get_sorted_records($list_explicit_sources);
 	  }
       $result = mysqli_query($GLOBALS['conn'],$explicit_nonsource_query);
       $explicit_nonsources = result_set_to_array($result, "t1_id");
       //print "<br><br>EXPLICIT NONSOURCES:<br>"; print_r($explicit_nonsources);
-	  if (count($explicit_nonsources) >= 1) {
+	  if (count($explicit_nonsources ?? array()) >= 1) {
 			$list_explicit_nonsources = array_unique($explicit_nonsources);
 			$list_explicit_nonsources = get_sorted_records($list_explicit_nonsources);
 	  }
@@ -2275,7 +2275,7 @@ WHERE
 	  <td width='33%' align='center'>
 	  <?php
       print connection_table_head("Potential sources");
-	  if (count($list_potential_sources) < 1) // the list of targets or sources is empty
+	  if (count($list_potential_sources ?? array()) < 1) // the list of targets or sources is empty
 			print name_row_none("none known");
 	  else
 			foreach($list_potential_sources as $source) { print name_row("Destination",$source); }
@@ -2348,7 +2348,7 @@ WHERE
       	$swr_val = ''; $swr_prop1 = ''; $swr_prop2 = ''; $swr_prop3 = ''; 
       	$firingrate_val = ''; $firingrate_prop1 = ''; $firingrate_prop2 = ''; $firingrate_prop3 = ''; 
       	$other_val = ''; $other_prop = '';
-      	for ($i = 0; $i < count($npage_theta); $i++) {
+      	for ($i = 0; $i < count($npage_theta ?? array()); $i++) {
       		if ($npage_theta[$i][0] == $id) {
 				$theta_val = $npage_theta[$i][1];
 				$theta_prop1 = $npage_theta[$i][2];

@@ -77,7 +77,7 @@ if ($_GET['display'] == "true") {
 	die("<pre>&#60;? include(\"" . dirname(__FILE__) . '/' . basename(__FILE__) . "\"); ?&#62;</pre>");
 } else {
 	//Visit or IP.
-	$uIP = $_SERVER['REMOTE_ADDR'];
+	$uIP = $_SERVER['REMOTE_ADDR'] ?? null;
 
 	//Check for "hits.txt" file.
 	if (file_exists($log_file)) {
@@ -149,9 +149,9 @@ if ($_GET['display'] == "true") {
 
 			//Separate log file into regular hits, unique hits, and IPs.
 			$pieces = explode(";", $log);
-			$allHits = $pieces[0];
-			$uniqueHits = $pieces[1];
-			$IPs = $pieces[2];
+			$allHits = $pieces[0] ?? null;
+			$uniqueHits = $pieces[1] ?? null;
+			$IPs = $pieces[2] ?? null;
 			$IPArray = explode(",", $IPs);
 
 			//Increase regular hits.

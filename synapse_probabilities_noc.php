@@ -212,9 +212,9 @@ $(function(){
 	datastr: dataStr,
     colNames:['','<div id="frmCntr_2">From</div><div id="toCntr_2" class="rotate">To</div>',
     <?php
-      for ($i = 0; $i < count($neurons_with_links); $i++) {
+      for ($i = 0; $i < count($neurons_with_links ?? array()); $i++) {
         echo '"'.$neurons_with_links[$i].'"';
-        if ($i != count($neurons_with_links)-1) {
+        if ($i != count($neurons_with_links ?? array())-1) {
           echo ", ";
         }
       }
@@ -233,10 +233,10 @@ $(function(){
       //{name:'Supertype', index:'supertype', width:300,sortable:false,hidden: true},
           //,searchoptions: {sopt: ['bw','bn','cn','in','ni','ew','en','nc']}},
       <?php
-        for ($i = 0; $i < count($neuron_IDs); $i++) {
-          $neuron = str_replace(' ', '_', $neuron_IDs[$i]);
+        for ($i = 0; $i < count($neuron_IDs ?? array()); $i++) {
+          $neuron = str_replace(' ', '_', ($neuron_IDs[$i] ?? ''));
           echo "{name:'".$neuron."', index:'".$neuron."', width:head_col_width,search:false,sortable:false}";
-          if ($i != count($neuron_IDs)-1) {
+          if ($i != count($neuron_IDs ?? array())-1) {
             echo ", ";
           }
         }
@@ -330,8 +330,8 @@ $(function(){
 	
   <?php
     /*
-    for ($i = 0; $i < count($neuron_IDs); $i++) {
-      $neuron = str_replace(' ', '_', $neuron_IDs[$i]); //replace spaces
+    for ($i = 0; $i < count($neuron_IDs ?? array()); $i++) {
+      $neuron = str_replace(' ', '_', ($neuron_IDs[$i] ?? '')); //replace spaces
       echo "$('#jqgh_nGrid_".$neuron."').addClass('header_adjust');";
       echo "$('#jqgh_nGrid_".$neuron."').css('height','30');";
     }

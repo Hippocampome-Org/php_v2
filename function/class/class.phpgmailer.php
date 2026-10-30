@@ -227,6 +227,7 @@ class PHPGMailer
     // VARIABLE METHODS
     /////////////////////////////////////////////////
 
+	function __construct() { $this->PHPGMailer(); } // PHP83-FIX by KN on 2026-10-30: PHP 8 no longer calls the old-style constructor
 	function PHPGMailer() {
 		$this->PluginDir = dirname(__FILE__).'/';
 	}
@@ -494,9 +495,9 @@ class PHPGMailer
                 $bad_rcpt[] = $this->bcc[$i][0];
         }
 
-        if(count($bad_rcpt) > 0) // Create error message
+        if(count($bad_rcpt ?? array()) > 0) // Create error message
         {
-            for($i = 0; $i < count($bad_rcpt); $i++)
+            for($i = 0; $i < count($bad_rcpt ?? array()); $i++)
             {
                 if($i != 0) { $error .= ", "; }
                 $error .= $bad_rcpt[$i];
@@ -540,7 +541,7 @@ class PHPGMailer
         $connection = ($this->smtp->Connected()); 
 
         // Retry while there is no connection
-        while($index < count($hosts) && $connection == false)
+        while($index < count($hosts ?? array()) && $connection == false)
         {
             ///if(strstr($hosts[$index], ":"))
             //    list($host, $port) = explode(":", $hosts[$index]);
@@ -630,9 +631,9 @@ class PHPGMailer
     function AddrAppend($type, $addr) {
         $addr_str = $type . ": ";
         $addr_str .= $this->AddrFormat($addr[0]);
-        if(count($addr) > 1)
+        if(count($addr ?? array()) > 1)
         {
-            for($i = 1; $i < count($addr); $i++)
+            for($i = 1; $i < count($addr ?? array()); $i++)
                 $addr_str .= ", " . $this->AddrFormat($addr[$i]);
         }
         $addr_str .= $this->LE;
@@ -647,7 +648,7 @@ class PHPGMailer
      */
     function AddrFormat($addr) {
         if(empty($addr[1]))
-            $formatted = $addr[0];
+            $formatted = $addr[0] ?? null;
         else
         {
             $formatted = $this->EncodeHeader($addr[1], 'phrase') . " <" . 
@@ -673,11 +674,11 @@ class PHPGMailer
 
         $line = explode($this->LE, $message);
         $message = "";
-        for ($i=0 ;$i < count($line); $i++)
+        for ($i=0 ;$i < count($line ?? array()); $i++)
         {
           $line_part = explode(" ", $line[$i]);
           $buf = "";
-          for ($e = 0; $e<count($line_part); $e++)
+          for ($e = 0; $e<count($line_part ?? array()); $e++)
           {
               $word = $line_part[$e];
               if ($qp_mode and (strlen($word) > $length))
@@ -1187,8 +1188,8 @@ class PHPGMailer
         $encoded = str_replace("=".$this->LE, "\n", trim($encoded));
       }
 
-      $encoded = preg_replace('/^(.*)$/m', " =?".$this->CharSet."?$encoding?\\1?=", $encoded);
-      $encoded = trim(str_replace("\n", $this->LE, $encoded));
+      $encoded = preg_replace('/^(.*)$/m', " =?".$this->CharSet."?$encoding?\\1?=", ($encoded ?? ''));
+      $encoded = trim(str_replace("\n", $this->LE, ($encoded ?? '')));
       
       return $encoded;
     }
@@ -1223,7 +1224,7 @@ class PHPGMailer
      */
     function EncodeQ ($str, $position = "text") {
         // There should not be any EOL in the string
-        $encoded = preg_replace("[\r\n]", "", $str);
+        $encoded = preg_replace("[\r\n]", "", ($str ?? ''));
 
         switch (strtolower($position)) {
           case "phrase":
@@ -1240,7 +1241,7 @@ class PHPGMailer
         }
         
         // Replace every spaces to _ (more readable than =20)
-        $encoded = str_replace(" ", "_", $encoded);
+        $encoded = str_replace(" ", "_", ($encoded ?? ''));
 
         return $encoded;
     }
@@ -1492,9 +1493,9 @@ class PHPGMailer
      * @return string
      */
     function FixEOL($str) {
-        $str = str_replace("\r\n", "\n", $str);
-        $str = str_replace("\r", "\n", $str);
-        $str = str_replace("\n", $this->LE, $str);
+        $str = str_replace("\r\n", "\n", ($str ?? ''));
+        $str = str_replace("\r", "\n", ($str ?? ''));
+        $str = str_replace("\n", $this->LE, ($str ?? ''));
         return $str;
     }
 

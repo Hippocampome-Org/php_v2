@@ -1,6 +1,6 @@
 <?php
   include ("permission_check.php");
-  $research = $_REQUEST['research'];
+  $research = $_REQUEST['research'] ?? null;
   // Define all the necessary classes needed for the application
   require_once('class/class.type.php');
   require_once('class/class.property.php');
@@ -13,31 +13,31 @@ $rs = mysqli_query($conn,$query);
 list($permission) = mysqli_fetch_row($rs);
 
 if(!isset($_GET['page'])) $page=1;
-else $page = $_GET['page'];
+else $page = $_GET['page'] ?? null;
 //page=1&rows=5&sidx=1&sord=asc
 // get how many rows we want to have into the grid - rowNum parameter in the grid
 if(!isset($_GET['rows'])) $limit=176;
-else $limit = $_GET['rows'];
+else $limit = $_GET['rows'] ?? null;
 
 // get index row - i.e. user click to sort. At first time sortname parameter -
 // after that the index from colModel
 if(!isset($_GET['sidx'])) $sidx=1;
-else $sidx = $_GET['sidx'];
+else $sidx = $_GET['sidx'] ?? null;
 
 // sorting order - at first time sortorder
 if(!isset($_GET['sord'])) $sord="asc";
-else $sord = $_GET['sord'];
+else $sord = $_GET['sord'] ?? null;
 
 // if we not pass at first time index use the first column for the index or what you want
 if(!$sidx) $sidx =1;
 
-$type = new type($class_type);
+$type = new type($class_type ?? null);
 
-$research = $_REQUEST['research'];
-$table = $_REQUEST['table_result'];
+$research = $_REQUEST['research'] ?? null;
+$table = $_REQUEST['table_result'] ?? null;
 if (isset($research)) // From page of search; retrieve the id from search_table (temporary) -----------------------
 {
-	$table_result = $_REQUEST['table_result'];
+	$table_result = $_REQUEST['table_result'] ?? null;
 	$temporary_result_neurons = new temporary_result_neurons();
 	$temporary_result_neurons -> setName_table($table_result);
 	
@@ -84,9 +84,9 @@ else // not from search page --------------
 		}
 }
 
-$property = new property($class_property);
+$property = new property($class_property ?? null);
 
-$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel);
+$evidencepropertyyperel = new evidencepropertyyperel($class_evidence_property_type_rel ?? null);
 
 //$hippo_select = $_SESSION['hippo_select'];
 $count = $number_type;
@@ -275,12 +275,12 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
 	    
 		$img = check_color($hippo_property[$name_markers[$f1]], $nam_unv1, $conflict_note,$permission);
 		
-		$hippo[$name_markers[$f1]] = $img[0];
+		$hippo[$name_markers[$f1]] = $img[0] ?? null;
 		
 		if ($img[1] == NULL)
-			$hippo[$name_markers[$f1]] = $img[0];
+			$hippo[$name_markers[$f1]] = $img[0] ?? null;
 		else	
-			$hippo_color[$name_markers[$f1]] = $img[1];
+			$hippo_color[$name_markers[$f1]] = $img[1] ?? null;
 	}
 		
 	preg_match('!\d+!',substr($type->getName(),strpos($type->getName(), ')')),$matches);
@@ -573,7 +573,7 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
     		$search = array("\\",  "\x00", "\n",  "\r",  "'",  '"', "\x1a");
    			 $replace = array("\\\\","\\0","\\n", "\\r", "\'", '\"', "\\Z");
 
-   			 return str_replace($search, $replace, $value);
+   			 return str_replace($search, $replace, ($value ?? ''));
 		}
 		for($ind=0;$ind<$n_markers;$ind++){
     		$key=$keys[$ind];

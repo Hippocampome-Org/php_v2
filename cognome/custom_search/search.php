@@ -40,14 +40,14 @@ function search_directory($cog_conn, $dir, $articles_to_search, $max_matches, $q
 	if ($range != '') {
 		$range_search=true;
 		$range_parsed = preg_split("/-/i", $range);
-		if (count($range_parsed) == 1) {
+		if (count($range_parsed ?? array()) == 1) {
 			$start_range=$range;
 			$end_range=$range;
 			echo "Article searched: ".$range."<br><br>";
 		}
-		else if (count($range_parsed) == 2) {
-			$start_range=$range_parsed[0];
-			$end_range=$range_parsed[1];
+		else if (count($range_parsed ?? array()) == 2) {
+			$start_range= $range_parsed[0] ?? null;
+			$end_range= $range_parsed[1] ?? null;
 			echo "Range used: ".$start_range." - ".$end_range."<br><br>";
 		}
 	}
@@ -90,21 +90,21 @@ function search_directory($cog_conn, $dir, $articles_to_search, $max_matches, $q
     	$s_i = $s_i + 1;
 	}*/
 
-	for ($i = 0; $i < count($articles_list); $i++) {
+	for ($i = 0; $i < count($articles_list ?? array()); $i++) {
     	if ($articles_to_search == "all" || $articles_searched < $articles_to_search) {
 			$art_file_id=$articles_processed+1;
 			if ($range_search) {
 				#echo "stats: ".$art_file_id." ".$start_range." ".$end_range."<br><br>";
 				if ($art_file_id >= $start_range && $art_file_id <= $end_range) {
 					$results_group = search($cog_conn, $dir.$articles_list[$i], $articles_list[$i], $max_matches, $query, $snippit_size, $art_text_secret_key, $show_snippits, $cog_database);
-					$total_results = $results_group[0];
+					$total_results = $results_group[0] ?? null;
 					array_push($collection_results, $results_group[1]);
 					$articles_searched++;
 				}
 			}
 			else {
     			$results_group = search($cog_conn, $dir.$articles_list[$i], $articles_list[$i], $max_matches, $query, $snippit_size, $art_text_secret_key, $show_snippits, $cog_database);
-    			$total_results = $results_group[0];
+    			$total_results = $results_group[0] ?? null;
     			array_push($collection_results, $results_group[1]);
     			$articles_searched++;
     		}
@@ -161,7 +161,7 @@ function search($cog_conn, $file, $filename, $max_matches, $query, $snippit_size
 	fclose($fh);*/
 	$file_contents = get_article_text($cog_conn, $filename, $art_text_secret_key, $cog_database);
 
-	$file_contents2 = preg_replace('/\n/', '<br>', $file_contents); // remove newlines
+	$file_contents2 = preg_replace('/\n/', '<br>', ($file_contents ?? '')); // remove newlines
 
 	if ($show_snippits == true) {
 		echo "<div class='wrap-collabsible' id='art_select'><input id='collapsible_srch_".$tot_mch."' class='toggle' type='checkbox'><label for='collapsible_srch_".$tot_mch."' class='lbl-toggle'>First lines in the file</label><div class='collapsible-content'><div class='content-inner' style='font-size:18px;'>";
@@ -171,7 +171,7 @@ function search($cog_conn, $file, $filename, $max_matches, $query, $snippit_size
 
 	$tot_mch++;
 
-	$file_contents = preg_replace('/\n/', ' ', $file_contents); // remove newlines	
+	$file_contents = preg_replace('/\n/', ' ', ($file_contents ?? '')); // remove newlines	
 
 	for ($f_i = 0; $f_i < sizeof($query); $f_i++) {
 		// set patterns and remove leading or trailing whitespace type of chars

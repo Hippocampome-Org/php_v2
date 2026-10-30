@@ -8,6 +8,8 @@
  */
 class NeuronConnection
 {
+	// PHP83-FIX by KN on 2026-10-30: declared (PHP 8.2+ warns about undeclared properties)
+	public $destinationNickname;
     private $sourceId;
     private $destinationId;
     private $sourceName;

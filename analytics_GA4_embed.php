@@ -6,11 +6,11 @@
   if ($_SERVER["REQUEST_METHOD"] === "POST" && ( isset($_POST["download_csv"]) || isset($_POST["views_per_month"]) || isset($_POST["views_per_year"]) ) ) {
 	$views_request ="download_csv";
 	if(isset($_POST["views_per_month"])){
-		$_POST['download_csv'] = $_POST["views_per_month"];
+		$_POST['download_csv'] = $_POST["views_per_month"] ?? null;
 		$views_request = "views_per_month";
 	}
 	if(isset($_POST["views_per_year"])){
-		$_POST['download_csv'] = $_POST["views_per_year"];
+		$_POST['download_csv'] = $_POST["views_per_year"] ?? null;
 		$views_request = "views_per_year";
 	}
 	if(isset($_POST["param"])){

@@ -1,5 +1,5 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) session_start();
 include("permission_check.php");
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -80,10 +80,10 @@ jQuery(document).ready(function() {
 
 <?php
 require_once("load_matrix_session_izhikevich_model.php");
-$jsonStr = $_SESSION['Izhikevich_model'];
+$jsonStr = $_SESSION['Izhikevich_model'] ?? null;
 $color_selected ='#EBF283';
-$research = $_REQUEST['research'];
-$hippo_select = $_SESSION['hippo_select'];
+$research = $_REQUEST['research'] ?? null;
+$hippo_select = $_SESSION['hippo_select'] ?? null;
 ?>
 
 <style>
