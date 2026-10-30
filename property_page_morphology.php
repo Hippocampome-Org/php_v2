@@ -1435,6 +1435,14 @@ function show_only_authors(link, start1, stop1)
 								if($neuron_show_only_value&&$n_id_tot!=0){
 										print ("$page_in1 - $page_end1 of $n_id_tot articles ($cnt Quotes)");	
 								}
+								if ($n_id_tot > 0)
+								{
+									$last_page2 = floor(($n_id_tot - 1) / 10) * 10;
+								}
+								else
+								{
+									$last_page2 = 0;
+								}
 								 // Last page:
 								 $last_page1 = $n_id_tot / 10;
 								 $last_array =  explode('.', $last_page1);	
