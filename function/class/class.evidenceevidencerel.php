@@ -45,7 +45,7 @@ class evidenceevidencerel
 	// GET ++++++++++++++++++++++++++++++++++++++	
     public function getEvidence2_id_array($i)
     {
-    	return $this->_evidence2_id_array[$i];
+    	return $this->_evidence2_id_array[$i] ?? null;
     }
 
     public function getN_evidence2()

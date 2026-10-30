@@ -1608,7 +1608,7 @@ function show_only_ephys(link, start1, stop1)
 			
 			{
 			
-				$property -> retrive_ID(3, $ep, NULL, NULL);
+				$property -> retrive_ID(3, $ep ?? null, NULL, NULL); // PHP83-FIX by KN on 2026-10-30: $ep is only set on the first visit
 		
 		
 				$id_property = $property -> getProperty_id(0);
@@ -2257,7 +2257,7 @@ function show_only_ephys(link, start1, stop1)
 							while($i1 >= 0)
 							{
 								$i1--;
-								if($list_original_id[$i1] == $id_original)
+								if(($list_original_id[$i1] ?? null) == $id_original)
 								{
 									$duplicate_count++;
 								}

@@ -1474,7 +1474,7 @@ class PHPGMailer
             $this->SetLanguage("en"); // set the default language
     
         if(isset($this->language[$key]))
-            return $this->language[$key];
+            return $this->language[$key] ?? null;
         else
             return "Language string failed to load: " . $key;
     }

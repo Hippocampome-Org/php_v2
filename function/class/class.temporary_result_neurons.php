@@ -56,7 +56,7 @@ class temporary_result_neurons
 	
  	public function getID_array($i)
     {
-		  return $this->_id_array[$i];
+		  return $this->_id_array[$i] ?? null;
     }		
 	
 	// SET -------------------------------------	

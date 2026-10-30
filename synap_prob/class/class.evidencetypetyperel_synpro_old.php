@@ -372,17 +372,17 @@ class evidencetypetyperel_synpro
 	// GET ++++++++++++++++++++++++++++++++++++++	
 	public function getpostsynaptic_cell_id_array($i)
 	{
-		return $this->_postsynaptic_cell_id_array[$i];
+		return $this->_postsynaptic_cell_id_array[$i] ?? null;
 	}
 
 	public function getpresynaptic_cell_id_array($i)
 	{
-		return $this->_presynaptic_cell_id_array[$i];
+		return $this->_presynaptic_cell_id_array[$i] ?? null;
 	}
 
 	public function getEvidence_id_array($i)
 	{
-		return $this->_evidence_id_array[$i];
+		return $this->_evidence_id_array[$i] ?? null;
 	}
 		
 	public function getN_postsynaptic_cell_id()
@@ -422,12 +422,12 @@ class evidencetypetyperel_synpro
 	
 	public function getLinking_quote_array($i)
 	{
-		return $this->_n_linking_quote_array[$i];
+		return $this->_n_linking_quote_array[$i] ?? null;
 	}	
 
 	public function getInterpretation_notes_array($i)
 	{
-		return $this->_n_interpretation_notes_array[$i];
+		return $this->_n_interpretation_notes_array[$i] ?? null;
 	}
 }
 ?>	

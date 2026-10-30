@@ -159,7 +159,7 @@ class epdata
 
     public function getValue1_array($i)
     {
-        return $this->_value1_array[$i];
+        return $this->_value1_array[$i] ?? null;
     }    
 
     public function getN_value1()

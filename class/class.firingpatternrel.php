@@ -127,27 +127,27 @@ class firingpatternrel
 	
 	public function getType_id_array_count1($i)
     {
-		  return $this->_type_id_array_count1[$i];
+		  return $this->_type_id_array_count1[$i] ?? null;
     }
 	
 	public function getType_id_array_count2($i)
     {
-		  return $this->_type_id_array_count2[$i];
+		  return $this->_type_id_array_count2[$i] ?? null;
     }
 	
 	public function getType_id_array_count3($i)
     {
-		  return $this->_type_id_array_count3[$i];
+		  return $this->_type_id_array_count3[$i] ?? null;
     }
 	
 	public function getType_id_array_count4($i)
     {
-		  return $this->_type_id_array_count4[$i];
+		  return $this->_type_id_array_count4[$i] ?? null;
     }
 	
 	public function getPattern_array($i)
 	{
-		return $this->_pattern_array[$i];
+		return $this->_pattern_array[$i] ?? null;
 	}
 	
 	public function getN_firing_pattern_ID()

@@ -158,12 +158,12 @@ class temporary_author
 
     public function getID_array($i)
     {
-    	return $this->_id_array[$i];
+    	return $this->_id_array[$i] ?? null;
     }
 	
     public function getAuthor_array($i)
     {
-    	return $this->_author_array[$i];
+    	return $this->_author_array[$i] ?? null;
     }	
 	
 }

@@ -162,12 +162,12 @@ class temporary_neuronname
 
     public function getID_array($i)
     {
-    	return $this->_id_array[$i];
+    	return $this->_id_array[$i] ?? null;
     }
 	
     public function getNeuron_array($i)
     {
-    	return $this->_neuron_array[$i];
+    	return $this->_neuron_array[$i] ?? null;
     }	
     
 	

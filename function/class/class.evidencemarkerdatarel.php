@@ -47,7 +47,7 @@ class evidencemarkerdatarel
 	// GET ++++++++++++++++++++++++++++++++++++++	
     public function getMarkerdata_id_array($i)
     {
-    	return $this->_markerdata_id_array[$i];
+    	return $this->_markerdata_id_array[$i] ?? null;
     }
 
     public function getN_markerdata_id()

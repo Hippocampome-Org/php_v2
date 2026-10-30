@@ -61,7 +61,7 @@ class synonymtyperel
 		
     public function getSynonym_id($i)
     {
-    	return $this->_synonym_id[$i];
+    	return $this->_synonym_id[$i] ?? null;
     }			
 	
     public function getType_id()

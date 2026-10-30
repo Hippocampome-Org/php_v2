@@ -214,7 +214,7 @@ class temporary_search
 	
 	public function getID_array($i)
     {
-		  return $this->_id_array[$i];
+		  return $this->_id_array[$i] ?? null;
     }		
 		
 	// SET -------------------------------------	

@@ -93,12 +93,12 @@ class author
 			
     public function getName_author_array($i)
     {
-    	return $this->_name_author_array[$i];
+    	return $this->_name_author_array[$i] ?? null;
     }	
 
     public function getID_array($i)
     {
-    	return $this->_id_array[$i];
+    	return $this->_id_array[$i] ?? null;
     }	
 	
     public function getN_author()

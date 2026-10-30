@@ -91,7 +91,7 @@ class articleevidencerel_synpro
 	// GET ++++++++++++++++++++++++++++++++++++++	
     public function getEvidence_id_array($i)
     {
-    	return $this->_evidence_id_array[$i];
+    	return $this->_evidence_id_array[$i] ?? null;
     }
 		
     public function getN_evidence_id()
@@ -101,7 +101,7 @@ class articleevidencerel_synpro
 
     public function getarticle_id_array($i)
     {
-    	return $this->_article_id_array[$i];
+    	return $this->_article_id_array[$i] ?? null;
     }
 		
     public function getN_article_id()

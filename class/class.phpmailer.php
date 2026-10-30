@@ -2833,7 +2833,7 @@ class PHPMailer
         }
 
         if (isset($this->language[$key])) {
-            return $this->language[$key];
+            return $this->language[$key] ?? null;
         } else {
             return 'Language string failed to load: ' . $key;
         }

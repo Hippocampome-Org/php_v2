@@ -72,7 +72,7 @@ class hc2nmo
 	// GET ++++++++++++++++++++++++++++++++++++++	  
     public function getArchive_array($i)
     {
-    	return $this->_archive_array[$i];
+    	return $this->_archive_array[$i] ?? null;
     }		
 
 	public function getN_archive()
@@ -82,7 +82,7 @@ class hc2nmo
 		
     public function getName_array($i)
     {
-    	return $this->_name_array[$i];
+    	return $this->_name_array[$i] ?? null;
     }		
 
 	public function getN_name()
@@ -92,7 +92,7 @@ class hc2nmo
 		
     public function getReason_for_inclusion_array($i)
     {
-    	return $this->_reason_for_inclusion_array[$i];
+    	return $this->_reason_for_inclusion_array[$i] ?? null;
     }		
 
 }

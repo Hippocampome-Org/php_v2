@@ -87,7 +87,7 @@ public function setID_type_array($var, $n)
 		
     public function getSynonym_id($i)
     {
-    	return $this->_synonym_id[$i];
+    	return $this->_synonym_id[$i] ?? null;
     }			
 	
     public function getType_id()
@@ -106,7 +106,7 @@ public function setID_type_array($var, $n)
     }	
 	public function getID_type_array($i)
     {
-    	return $this->_id_type_array[$i];
+    	return $this->_id_type_array[$i] ?? null;
     }
 	
 	public function getN_id()

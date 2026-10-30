@@ -92,12 +92,12 @@ class articleauthorrel
 	// GET ++++++++++++++++++++++++++++++++++++++	
     public function getAuthor_id_array($i)
     {
-    	return $this->_author_id_array[$i];
+    	return $this->_author_id_array[$i] ?? null;
     }
 
     public function getAuthor_position_array($i)
     {
-    	return $this->_author_position_array[$i];
+    	return $this->_author_position_array[$i] ?? null;
     }
 			
     public function getN_author_id()
@@ -107,7 +107,7 @@ class articleauthorrel
 
     public function getArticle_id_array($i)
     {
-    	return $this->_article_id_array[$i];
+    	return $this->_article_id_array[$i] ?? null;
     }
 		
     public function getArticle_id()

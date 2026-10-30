@@ -128,7 +128,7 @@ class property
     
 	public function getProperty_id($i)
     {
-    	return $this->_Property_id[$i];
+    	return $this->_Property_id[$i] ?? null;
     }	
 
     public function getName_table()

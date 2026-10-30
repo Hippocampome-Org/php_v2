@@ -215,7 +215,7 @@ class term
 	// GET ++++++++++++++++++++++++++++++++++++++		
 	public function getName_neuron_array($i)
 	{
-		return $this->_name_neuron_array[$i];
+		return $this->_name_neuron_array[$i] ?? null;
 	}
 	public function getName_neuron()
 	{
@@ -291,7 +291,7 @@ class term
 	}
 	public function getID_array($i)
 	{
-		return $this->_id_array[$i];
+		return $this->_id_array[$i] ?? null;
 	}
 	public function getN_id()
 	{

@@ -498,7 +498,7 @@ public function retrive_nickname()   // Retrieve all the nicknames in the table 
 	// GET ++++++++++++++++++++++++++++++++++++++	  
     public function getID_array($i)
     {
-    	return $this->_id_array[$i];
+    	return $this->_id_array[$i] ?? null;
     }		
 	
     public function getNumber_type()
@@ -575,12 +575,12 @@ public function retrive_nickname()   // Retrieve all the nicknames in the table 
 	
 	public function getName_neuron_array($i)
     {
-    	return $this->_name_neuron_array[$i];
+    	return $this->_name_neuron_array[$i] ?? null;
     }	
 
 	public function getID_namearray($i)
     {
-    	return $this->_id_namearray[$i];
+    	return $this->_id_namearray[$i] ?? null;
     }	
 
 	public function getName_neuron()
@@ -590,7 +590,7 @@ public function retrive_nickname()   // Retrieve all the nicknames in the table 
 	
 	public function getNickname_neuron_array($i)
     {
-    	return $this->_nickname_neuron_array[$i];
+    	return $this->_nickname_neuron_array[$i] ?? null;
     }
     public function getNickname_neuron()
     {

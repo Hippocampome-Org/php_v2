@@ -396,17 +396,17 @@ class evidencepropertyyperel_synpro
 	// GET ++++++++++++++++++++++++++++++++++++++	
 	public function getType_id_array($i)
 	{
-		return $this->_type_id_array[$i];
+		return $this->_type_id_array[$i] ?? null;
 	}
 
 	public function getProperty_id_array($i)
 	{
-		return $this->_Property_id_array[$i];
+		return $this->_Property_id_array[$i] ?? null;
 	}
 
 	public function getEvidence_id_array($i)
 	{
-		return $this->_evidence_id_array[$i];
+		return $this->_evidence_id_array[$i] ?? null;
 	}
 		
 	public function getN_Type_id()
@@ -446,12 +446,12 @@ class evidencepropertyyperel_synpro
 	
 	public function getLinking_quote_array($i)
 	{
-		return $this->_n_linking_quote_array[$i];
+		return $this->_n_linking_quote_array[$i] ?? null;
 	}	
 
 	public function getInterpretation_notes_array($i)
 	{
-		return $this->_n_interpretation_notes_array[$i];
+		return $this->_n_interpretation_notes_array[$i] ?? null;
 	}
 }
 ?>	

@@ -263,7 +263,7 @@ class fragment_phases
 		
     public function getAttachment_array($n)
     {
-    	return $this->_attachment_array[$n];
+    	return $this->_attachment_array[$n] ?? null;
     }		
 
     public function getAttachment_type_array()

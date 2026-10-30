@@ -54,7 +54,7 @@ class articleevidencerel
 	// GET ++++++++++++++++++++++++++++++++++++++	
     public function getEvidence_id_array($i)
     {
-    	return $this->_evidence_id_array[$i];
+    	return $this->_evidence_id_array[$i] ?? null;
     }
 		
     public function getN_evidence_id()
@@ -64,7 +64,7 @@ class articleevidencerel
 
     public function getarticle_id_array($i)
     {
-    	return $this->_article_id_array[$i];
+    	return $this->_article_id_array[$i] ?? null;
     }
 		
     public function getN_article_id()

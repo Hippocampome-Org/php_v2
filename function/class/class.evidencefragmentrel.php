@@ -72,7 +72,7 @@ class evidencefragmentrel
 	// GET ++++++++++++++++++++++++++++++++++++++	
     public function getEvidence_id_array($i)
     {
-    	return $this->_evidence_id_array[$i];
+    	return $this->_evidence_id_array[$i] ?? null;
     }
 		
     public function getN_evidence_id()
@@ -82,7 +82,7 @@ class evidencefragmentrel
 
     public function getFragment_id_array($i)
     {
-    	return $this->_fragment_id_array[$i];
+    	return $this->_fragment_id_array[$i] ?? null;
     }
 
     public function getFragment_id()

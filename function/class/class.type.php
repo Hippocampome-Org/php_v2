@@ -114,7 +114,7 @@ class type
  	// GET ++++++++++++++++++++++++++++++++++++++	  
     public function getID_array($i)
     {
-    	return $this->_id_array[$i];
+    	return $this->_id_array[$i] ?? null;
     }		
 	
     public function getNumber_type()

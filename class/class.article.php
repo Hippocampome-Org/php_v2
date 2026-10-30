@@ -325,7 +325,7 @@ class article
 
 	public function getID_array($i)
     {
-    	return $this->_id_array[$i];
+    	return $this->_id_array[$i] ?? null;
     }
 	
     public function getIssue()

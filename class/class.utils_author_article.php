@@ -390,7 +390,7 @@ class utils_author_article
  
     public function getType($index)
     {
-		  return $this->_types_array[$index];
+		  return $this->_types_array[$index] ?? null;
     }
     public function addRecipients($var)
 	{

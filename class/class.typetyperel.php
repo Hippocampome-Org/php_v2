@@ -179,22 +179,22 @@ class typetyperel
 		
     public function getType2_id_array($i)
     {
-    	return $this->_type2_id_array[$i];
+    	return $this->_type2_id_array[$i] ?? null;
     }	
 			
     public function getType2_id($i)
     {
-    	return $this->_type2_id[$i];
+    	return $this->_type2_id[$i] ?? null;
     }	
 			
     public function getConnection_status_array($i)
     {
-    	return $this->_connection_status_array[$i];
+    	return $this->_connection_status_array[$i] ?? null;
     }		
 	
     public function getConnection_status($i)
     {
-    	return $this->_connection_status[$i];
+    	return $this->_connection_status[$i] ?? null;
     }		
 	
     public function getN_type_2()
@@ -214,17 +214,17 @@ class typetyperel
 			
     public function getConnection_location($i)
     {
-    	return $this->_connection_location[$i];
+    	return $this->_connection_location[$i] ?? null;
     }	
 
     public function getID_array($i)
     {
-    	return $this->_id_array[$i];
+    	return $this->_id_array[$i] ?? null;
     }
 
     public function getType1_id_array($i)
     {
-    	return $this->_type1_id_array[$i];
+    	return $this->_type1_id_array[$i] ?? null;
     }	
 			
     public function getN_type_1()

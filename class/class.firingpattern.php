@@ -643,7 +643,7 @@ class firingpattern
     }
 	public function getid_array($i)
 	{
-		return $this->_id_array[$i];
+		return $this->_id_array[$i] ?? null;
 	}
 	public function getN_id()
 	{

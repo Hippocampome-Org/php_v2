@@ -130,12 +130,12 @@ class counts
 	// GET ++++++++++++++++++++++++++++++++++++++	  
     public function getMeasurement_eqn($i)
     {
-    	return $this->_measurement_eqn[$i];
+    	return $this->_measurement_eqn[$i] ?? null;
     }			
 	
     public function getInterpretation($i)
     {
-    	return $this->_interpretation[$i];
+    	return $this->_interpretation[$i] ?? null;
     }			
 	
     public function getN_measurement_equations()
@@ -145,7 +145,7 @@ class counts
  
     public function getVariable($i)
     {
-    	return $this->_variable[$i];
+    	return $this->_variable[$i] ?? null;
     }			
 	
     public function getN_variables()
@@ -155,7 +155,7 @@ class counts
  
     public function getCell_type($i)
     {
-    	return $this->_cell_type[$i];
+    	return $this->_cell_type[$i] ?? null;
     }			
 	
 	public function getCounts()
