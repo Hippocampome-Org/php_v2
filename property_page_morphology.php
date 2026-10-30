@@ -350,7 +350,7 @@ else
 }
 // SHOW ONLY 
 $name_show_only_var = $_REQUEST['name_show_only_var'] ?? ''; //Changed on Oct 26 2026 by KN for php83 upgrade
-
+/*
 if ($name_show_only_var)
 {
 	
@@ -399,6 +399,83 @@ if ($name_show_only_var)
 		$rs2 = mysqli_query($GLOBALS['conn'],$query);			
 	}
 } 
+*/
+if ($name_show_only_var)
+{
+        $name_show_only = $_REQUEST['name_show_only'] ?? '';
+        $_SESSION['morph_name_show_only'] = $name_show_only;
+
+        $page_in = $_REQUEST['start'] ?? '';
+        $page_end = $_REQUEST['stop'] ?? '';
+        $name_temporary_table = $_SESSION['morph_name_temporary_table'] ?? '';
+
+        /* Temporary table may not exist (expired session, local DB refresh,
+           server restart, cleanup, etc.). Skip processing gracefully. */
+        if (!empty($name_temporary_table))
+        {
+                $query = "SHOW TABLES LIKE '$name_temporary_table'";
+                $rs = mysqli_query($GLOBALS['conn'], $query);
+
+                if (!$rs || mysqli_num_rows($rs) == 0)
+                {
+                        unset($_SESSION['morph_name_temporary_table']);
+                        return;
+                }
+        }
+        else
+        {
+                return;
+        }
+
+        // Option: All:
+        if ($name_show_only == 'all')
+        {
+                $sub_show_only = 'all';
+                $_SESSION['morph_sub_show_only'] = $sub_show_only;
+
+                $query = "UPDATE $name_temporary_table SET show_only='1'";
+                $rs2 = mysqli_query($GLOBALS['conn'], $query);
+        }
+
+        // Option: Articles / books:
+        if ($name_show_only == 'article_book')
+        {
+                $name_show_only_article = 'all';
+                $_SESSION['morph_name_show_only_article'] = $name_show_only_article;
+
+                $sub_show_only = 'article';
+                $_SESSION['morph_sub_show_only'] = $sub_show_only;
+
+                $query = "UPDATE $name_temporary_table SET show_only='1'";
+                $rs2 = mysqli_query($GLOBALS['conn'], $query);
+        }
+
+        // Option: Publication:
+        if ($name_show_only == 'name_journal')
+        {
+                $name_show_only_journal = 'all';
+                $_SESSION['morph_name_show_only_journal'] = $name_show_only_journal;
+
+                $sub_show_only = 'name_journal';
+                $_SESSION['morph_sub_show_only'] = $sub_show_only;
+
+                $query = "UPDATE $name_temporary_table SET show_only='1'";
+                $rs2 = mysqli_query($GLOBALS['conn'], $query);
+        }
+
+        // Option: Authors:
+        if ($name_show_only == 'authors')
+        {
+                $name_show_only_authors = 'all';
+                $_SESSION['morph_name_show_only_authors'] = $name_show_only_authors;
+
+                $sub_show_only = 'authors';
+                $_SESSION['morph_sub_show_only'] = $sub_show_only;
+
+                $query = "UPDATE $name_temporary_table SET show_only='1'";
+                $rs2 = mysqli_query($GLOBALS['conn'], $query);
+        }
+}
 // ARTICLE - BOOK OPTION
 $name_show_only_article_var = $_REQUEST['name_show_only_article_var'] ?? ''; //changed on Oct 29 2026 by KN for php83 upgrade
 if ($name_show_only_article_var)
