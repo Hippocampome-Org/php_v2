@@ -60,7 +60,7 @@
         }
       }
     }   
-    $author_names_unique=array_unique($author_names);   
+    $author_names_unique=array_unique(($author_names ?? array()));   
 
     /*
       Export results to database

@@ -408,11 +408,11 @@
         while($row = $result->fetch_assoc()) { 
           $i=$i+1;
           $checked='';
-          if (in_array($i,$sel_nrn)) {
+          if (in_array($i,($sel_nrn ?? array()))) {
             $checked='checked';
           }
           $checked_fzy='';
-          if (in_array($i,$sel_nrnfzy)) {
+          if (in_array($i,($sel_nrnfzy ?? array()))) {
             $checked_fzy='checked';
           }
           echo "<tr><td style='width:85px;border-bottom:1px solid black;'>&nbsp;<input type='checkbox' name='neuron_p$i' id='neuron_p$i' style='display: inline;' $checked />&nbsp;proper</td><td style='width:75px;border-bottom:1px solid black;'>&nbsp;<input type='checkbox' name='neuron_f$i' id='neuron_f$i' style='display: inline;' $checked_fzy />&nbsp;fuzzy</td><td style='width:220px;border-bottom:1px solid black;'>&nbsp;".$row[$col]."</td></tr>";
@@ -431,7 +431,7 @@
         while($row = $result->fetch_assoc()) { 
           $i=$i+1;
           $checked='';
-          if (in_array($i,$select_group)) {
+          if (in_array($i,($select_group ?? array()))) {
             $checked='checked';
           }
           echo "<tr><td style='width:25px;border-bottom:1px solid black;'>&nbsp;<input type='checkbox' name='$col$i' id='$col$i' style='display: inline;' $checked /></td><td style='width:375px;border-bottom:1px solid black;'>&nbsp;".$row[$col]."</td></tr>";
@@ -457,7 +457,7 @@
         while($row = $result->fetch_assoc()) { 
           $i=$i+1;
           $selection='';
-          if (in_array($i,$select_group)) {
+          if (in_array($i,($select_group ?? array()))) {
             $selection='selected';
           }
           echo "<option value=".$i." ".$selection.">".$row[$col]."</option>";

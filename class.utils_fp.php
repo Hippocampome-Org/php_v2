@@ -22,7 +22,7 @@ class utils_fp{
         if (!$type_records) {
             die("<p>Error in Listing Searched Neuron Records.</p>");
         }
-        while($rows=mysqli_fetch_array($type_records, MYSQLI_ASSOC))
+        while($rows=($type_records ? mysqli_fetch_array($type_records, MYSQLI_ASSOC) : null))
         {
             $name=$rows['fp_name'];
             $id = $rows['type_id'];

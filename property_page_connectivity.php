@@ -229,9 +229,9 @@ if ($page)
 	// find which checkbox to view out of axon, dendrite, soma and known
 	if(strstr(checkNeuronProperty($conn_color[1]),"dendrites"))
 		$neuron_show_only_value=$neuron_show_only_value.",Dendrites";
-	if(strstr(checkNeuronProperty($conn_color[1]),"somata")&&$axonic_basket_flag!=0)
+	if(strstr(checkNeuronProperty($conn_color[1]),"somata")&&(float)$axonic_basket_flag!=0)
 		$neuron_show_only_value=$neuron_show_only_value.",Somata";
-	if($known_unknown_flag!=0){
+	if((float)$known_unknown_flag!=0){
 		$neuron_show_only_value=$neuron_show_only_value.",Known";	
 	}
 	$_SESSION['conn_neuron_show_only_value']=$neuron_show_only_value;
@@ -316,7 +316,7 @@ else
 		$neuron_show_only_value="Axons";
 		if(strstr(checkNeuronProperty($conn_color[1]),"dendrites"))
 			$neuron_show_only_value=$neuron_show_only_value.",Dendrites";
-		if(strstr(checkNeuronProperty($conn_color[1]),"somata")&&$axonic_basket_flag!=0)
+		if(strstr(checkNeuronProperty($conn_color[1]),"somata")&&(float)$axonic_basket_flag!=0)
 			$neuron_show_only_value=$neuron_show_only_value.",Somata";
 		if($known_unknown_flag==1){
 			$neuron_show_only_value=$neuron_show_only_value.",Known";	
@@ -397,7 +397,7 @@ if ($name_show_only_article_var)
 	
 	$query ="SELECT id, PMID FROM $name_temporary_table";
 	$rs = mysqli_query($GLOBALS['conn'],$query);					
-	while(list($id, $pmid) = mysqli_fetch_row($rs))	
+	while(list($id, $pmid) = ($rs ? mysqli_fetch_row($rs) : null))	
 	{	
 		if ($name_show_only_article == 'article')
 		{
@@ -463,7 +463,7 @@ if ($name_show_only_authors_var)
 		$rs2 = mysqli_query($GLOBALS['conn'],$query);	
 		$query ="SELECT id FROM $name_temporary_table WHERE authors LIKE '%$name_show_only_authors%'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);					
-		while(list($id) = mysqli_fetch_row($rs))		
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))		
 		{
 			$query = "UPDATE $name_temporary_table SET show_only =  '1' WHERE id = '$id'";
 			$rs2 = mysqli_query($GLOBALS['conn'],$query);
@@ -715,7 +715,7 @@ function show_only_authors(link, start1, stop1)
 				{	
 					// Axons or Dendrites
 					// Retrieve property_id from Property by using Type_id
-					if(($conn_cnt==0&&$part=='axons')||($conn_cnt==1&&$part=='dendrites')||($conn_cnt==1&&$part=='somata'&&$axonic_basket_flag!=0)){
+					if(((float)$conn_cnt==0&&$part=='axons')||($conn_cnt==1&&$part=='dendrites')||($conn_cnt==1&&$part=='somata'&&(float)$axonic_basket_flag!=0)){
 						$part1[$tt] = ucfirst($part);
 						$property  -> retrive_ID(1, $part, 'in', $val_property);
 						$n_property_id = $property -> getNumber_type();				
@@ -726,7 +726,7 @@ function show_only_authors(link, start1, stop1)
 					// Axons and Dendrites
 					if($part == 'axons_dendrites')
 					{
-					 if ($tt == 0 && $conn_cnt==0)
+					 if ((float)$tt == 0 && (float)$conn_cnt==0)
 					 {
 						$part1[$tt] = 'Axons';
 						$property  -> retrive_ID(1, 'axons', 'in', $val_property);
@@ -742,13 +742,13 @@ function show_only_authors(link, start1, stop1)
 					}
 					else if($part == 'axons_somata')
 					{
-					 if ($tt == 0 && $conn_cnt==0)
+					 if ((float)$tt == 0 && (float)$conn_cnt==0)
 					 {
 						$part1[$tt] = 'Axons';
 						$property  -> retrive_ID(1, 'axons', 'in', $val_property);
 						$n_property_id = $property -> getNumber_type();										
 					 }
-					 if ($tt == 1 && $conn_cnt==1 && $axonic_basket_flag!=0)
+					 if ($tt == 1 && $conn_cnt==1 && (float)$axonic_basket_flag!=0)
 					 {
 						$part1[$tt] = 'Somata';
 						$property  -> retrive_ID(1, 'somata', 'in', $val_property);
@@ -757,13 +757,13 @@ function show_only_authors(link, start1, stop1)
 					}
                      else
 					 { 
-				     if ($tt == 0 && $conn_cnt==1)
+				     if ((float)$tt == 0 && $conn_cnt==1)
 					 {
 						$part1[$tt] = 'Dendrites';
 						$property  -> retrive_ID(1, 'dendrites', 'in', $val_property);
 						$n_property_id = $property -> getNumber_type();										
 					 }
-					 if ($tt == 1 && $conn_cnt==1 && $axonic_basket_flag!=0)
+					 if ($tt == 1 && $conn_cnt==1 && (float)$axonic_basket_flag!=0)
 					 {
 						$part1[$tt] = 'Somata';
 						$property  -> retrive_ID(1, 'somata', 'in', $val_property);
@@ -774,19 +774,19 @@ function show_only_authors(link, start1, stop1)
 				}
 				else
 				{
-					if ($tt == 0 && $conn_cnt==1 )
+					if ((float)$tt == 0 && $conn_cnt==1 )
 					 {
 						$part1[$tt] = 'Dendrites';
 						$property  -> retrive_ID(1, 'dendrites', 'in', $val_property);
 						$n_property_id = $property -> getNumber_type();										
 					 }
-					 if ($tt == 1 && $conn_cnt==0)
+					 if ($tt == 1 && (float)$conn_cnt==0)
 					 {
 						$part1[$tt] = 'Axons';
 						$property  -> retrive_ID(1, 'axons', 'in', $val_property);
 						$n_property_id = $property -> getNumber_type();	
 					 }
-					  if ($tt == 2 && $conn_cnt==1 && $axonic_basket_flag!=0)
+					  if ($tt == 2 && $conn_cnt==1 && (float)$axonic_basket_flag!=0)
 					 {
 						$part1[$tt] = 'Somata';
 						$property  -> retrive_ID(1, 'somata', 'in', $val_property);
@@ -830,7 +830,7 @@ function show_only_authors(link, start1, stop1)
 					$page_location = $fragment -> getPage_location();
 				
 					//Retreive information from attachment table
-					if ($pmid_isbn_page!=0 && $pmid_isbn_page!= NULL)
+					if ((float)$pmid_isbn_page!=0 && $pmid_isbn_page!= NULL)
 					{
 						$article -> retrive_by_pmid_isbn_and_page_number($pmid_isbn, $pmid_isbn_page);
 						$id_article= $article -> getID();
@@ -913,7 +913,7 @@ function show_only_authors(link, start1, stop1)
 									AND cd.Type1_id=".$conn_id_neuron[0]." AND cd.Type2_id=".$conn_id_neuron[1]." GROUP BY cf.original_id";
 				$conn_evidence_rs = mysqli_query($GLOBALS['conn'],$query_to_get_conn_evidence);
 				// get the article associated with these fragments
-				while(list($conn_fragment_id,$type1_id,$type2_id,$conn_status,$conn_location,$original_id,$conn_dt,$conn_quote,$conn_page_location,$conn_pmid_isbn,$id_article,$title,$publication,$year,$pmid_isbn,$first_page,$last_page,$pmcid,$nihmsid,$doi,$open_access,$citation_count,$volume,$issue) = mysqli_fetch_row($conn_evidence_rs))	{		
+				while(list($conn_fragment_id,$type1_id,$type2_id,$conn_status,$conn_location,$original_id,$conn_dt,$conn_quote,$conn_page_location,$conn_pmid_isbn,$id_article,$title,$publication,$year,$pmid_isbn,$first_page,$last_page,$pmcid,$nihmsid,$doi,$open_access,$citation_count,$volume,$issue) = ($conn_evidence_rs ? mysqli_fetch_row($conn_evidence_rs) : null))	{		
 					if ($title[$ui] == '.')
 						$title[$ui] = '';	
 					$articleauthorrel -> retrive_author_position($id_article);
@@ -961,7 +961,7 @@ function show_only_authors(link, start1, stop1)
 					$query = "SELECT DISTINCT title FROM $name_temporary_table WHERE show_only = 1 $subquery";
 					$rs = mysqli_query($GLOBALS['conn'],$query);
 					$n_id_tot = 0;	 // Total number of articles:
-					while(list($id) = mysqli_fetch_row($rs))			
+					while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))			
 						$n_id_tot = $n_id_tot + 1;
 
 					// find the total number of quotes of type axon: 
@@ -977,7 +977,7 @@ function show_only_authors(link, start1, stop1)
 					$rs = mysqli_query($GLOBALS['conn'],$query);
 					$total_count_all=$number_of_quotes_axon = $number_of_quotes_dendrite=$number_of_quotes_somata=$number_of_quotes_known=0;
 					 // total number of axon quotes
-					while(list($total_count,$axon_count,$dendrite_count,$soma_count,$known_count) = mysqli_fetch_row($rs))	{		
+					while(list($total_count,$axon_count,$dendrite_count,$soma_count,$known_count) = ($rs ? mysqli_fetch_row($rs) : null))	{		
 						$total_count_all=intval($total_count);
 						$number_of_quotes_axon = intval($axon_count);	
 						$number_of_quotes_dendrite = intval($dendrite_count);	
@@ -997,7 +997,7 @@ function show_only_authors(link, start1, stop1)
 					$rs = mysqli_query($GLOBALS['conn'],$query);
 					$show_only_total_count_all=$show_only_number_of_quotes_axon = $show_only_number_of_quotes_dendrite=$show_only_number_of_quotes_somata=$show_only_number_of_quotes_known=0;
 					 // total number of axon quotes
-					while(list($total_count,$axon_count,$dendrite_count,$soma_count,$known_count) = mysqli_fetch_row($rs))	{		
+					while(list($total_count,$axon_count,$dendrite_count,$soma_count,$known_count) = ($rs ? mysqli_fetch_row($rs) : null))	{		
 						$show_only_total_count_all=intval($total_count);
 						$show_only_number_of_quotes_axon = intval($axon_count);	
 						$show_only_number_of_quotes_dendrite = intval($dendrite_count);	
@@ -1013,7 +1013,7 @@ function show_only_authors(link, start1, stop1)
 					}
 					$rs = mysqli_query($GLOBALS['conn'],$query);					
 					$n_id = 0;
-					while(list($title) = mysqli_fetch_row($rs))
+					while(list($title) = ($rs ? mysqli_fetch_row($rs) : null))
 					{
 						$title_temp[$n_id] = $title;											
 						$n_id = $n_id + 1;
@@ -1028,11 +1028,11 @@ function show_only_authors(link, start1, stop1)
 								$property_checked=str_replace(",", "", ($property_checked ?? ''));
 								$property_checked=trim($property_checked);
 								//echo "$property_checked....$neuron_show_only_value";
-								if($show_only_number_of_quotes_axon==0&&$number_of_quotes_axon != 0){
+								if((float)$show_only_number_of_quotes_axon==0&&(float)$number_of_quotes_axon != 0){
 									// don't print checkbox
 									//print("<span style='color:rgb(254,1,2)'  ><input type='checkbox' name='axon' value='axon' id='axoncheck_disabled'  disabled > axon(from) </input></span>");
 								}
-								else if($number_of_quotes_axon != 0){
+								else if((float)$number_of_quotes_axon != 0){
 									if(strstr($neuron_show_only_value,"Axons")){
 										print("<span style='color:rgb(254,1,2)'  ><input type='checkbox' name='axon' value='axon' id='axoncheck' checked ");
 										if($property_checked=="Axons"||(($show_only_number_of_quotes_dendrite+$show_only_number_of_quotes_somata+$show_only_number_of_quotes_known)== 0))
@@ -1042,11 +1042,11 @@ function show_only_authors(link, start1, stop1)
 									else
 										print("<span style='color:rgb(254,1,2)'  ><input type='checkbox' name='axon' value='axon' id='axoncheck' onclick='changeCheckbox($page_in,$page_end)'>axon(from) </input></span>");
 								}
-								if($show_only_number_of_quotes_dendrite==0&&$number_of_quotes_dendrite != 0){
+								if((float)$show_only_number_of_quotes_dendrite==0&&(float)$number_of_quotes_dendrite != 0){
 									// don't print checkbox
 									//print("<span style='color:rgb(1,1,153)' ><input type='checkbox' name='dendrite' value='dendrite' id='dendritecheck_disabled' disabled >dendrite(to) </input></span>");
 								}
-								else if($number_of_quotes_dendrite != 0){
+								else if((float)$number_of_quotes_dendrite != 0){
 									if(strstr($neuron_show_only_value,"Dendrites")){
 										print("<span style='color:rgb(1,1,153)' ><input type='checkbox' name='dendrite' value='dendrite' id='dendritecheck' checked ");
 										if($property_checked=="Dendrites"||(($show_only_number_of_quotes_axon+$show_only_number_of_quotes_somata+$show_only_number_of_quotes_known)== 0))
@@ -1056,11 +1056,11 @@ function show_only_authors(link, start1, stop1)
 									else
 										print("<span style='color:rgb(1,1,153)' ><input type='checkbox' name='dendrite' value='dendrite' id='dendritecheck'  onclick='changeCheckbox($page_in,$page_end)' >dendrite(to) </input></span>");
 								}
-								if($show_only_number_of_quotes_somata==0&&$number_of_quotes_somata != 0){
+								if((float)$show_only_number_of_quotes_somata==0&&(float)$number_of_quotes_somata != 0){
 									// don't print checkbox
 									//print("<span style='color:rgb(84,84,84)' ><input type='checkbox' name='somata' value='somata' id='somatacheck_disabled'  disabled >somata(to) </input></span>");
 								}
-								else if($number_of_quotes_somata != 0){
+								else if((float)$number_of_quotes_somata != 0){
 									if(strstr($neuron_show_only_value,"Somata")){
 										print("<span style='color:rgb(84,84,84)' ><input type='checkbox' name='somata' value='somata' id='somatacheck' checked ");
 										if($property_checked=="Somata"||(($show_only_number_of_quotes_axon+$show_only_number_of_quotes_dendrite+$show_only_number_of_quotes_known)== 0))
@@ -1077,14 +1077,14 @@ function show_only_authors(link, start1, stop1)
 								else if(($number_of_quotes_axon+$number_of_quotes_dendrite+$number_of_quotes_somata)!= 0){
 									if(strstr($neuron_show_only_value,"Axons")||strstr($neuron_show_only_value,"Dendrites")||strstr($neuron_show_only_value,"Somata")){
 										print("<span style='color:rgb(0,0,0)' ><input type='checkbox' name='potential' value='potential' id='potentialcheck' checked ");
-										if(($known_unknown_flag !=0&&(!strstr($neuron_show_only_value,"Known")))||($known_unknown_flag==0)||$show_only_number_of_quotes_known==0)
+										if(((float)$known_unknown_flag !=0&&(!strstr($neuron_show_only_value,"Known")))||((float)$known_unknown_flag==0)||(float)$show_only_number_of_quotes_known==0)
 											print(" disabled  ");
 										print("onclick='changePotentialCheckbox($page_in,$page_end)' >potential </input></span>");
 									}
 									else
 										print("<span style='color:rgb(0,0,0)' ><input type='checkbox' name='potential' value='potential' id='potentialcheck'  onclick='changePotentialCheckbox($page_in,$page_end)' >potential </input></span>");
 								}
-								if($show_only_number_of_quotes_known==0&&$known_unknown_flag ==1){
+								if((float)$show_only_number_of_quotes_known==0&&$known_unknown_flag ==1){
 									// don't print checkbox
 									//print("<span style='color:#339900' ><input type='checkbox' name='known' value='known' id='knowncheck_disabled' disabled>known </input></span>");
 								}
@@ -1098,7 +1098,7 @@ function show_only_authors(link, start1, stop1)
 									else
 										print("<span style='color:#339900' ><input type='checkbox' name='known' value='known' id='knowncheck'  onclick='changeCheckbox($page_in,$page_end)' ><b>Known </b> </input></span>");
 								}
-								if($show_only_number_of_quotes_known==0&&$known_unknown_flag ==-1){
+								if((float)$show_only_number_of_quotes_known==0&&$known_unknown_flag ==-1){
 									// don't print checkbox
 									//print("<span style='color:#339900' ><input type='checkbox' name='known' value='known' id='knowncheck_disabled' disabled>known </input></span>");
 								}
@@ -1168,7 +1168,7 @@ function show_only_authors(link, start1, stop1)
 							$rs = mysqli_query($GLOBALS['conn'],$query);
 							$number_of_articles_1 = 0;
 							$number_of_books_1 = 0;
-							while(list($title, $pmid) = mysqli_fetch_row($rs))		
+							while(list($title, $pmid) = ($rs ? mysqli_fetch_row($rs) : null))		
 							{	
 								if (strlen($pmid) > 10)
 									$number_of_books_1 = $number_of_books_1 + 1;
@@ -1213,14 +1213,14 @@ function show_only_authors(link, start1, stop1)
 							// retrieve the name of journal from temporary table:
 							$query ="SELECT DISTINCT publication FROM $name_temporary_table";
 							$rs = mysqli_query($GLOBALS['conn'],$query);					
-							while(list($pub) = mysqli_fetch_row($rs))	
+							while(list($pub) = ($rs ? mysqli_fetch_row($rs) : null))	
 							{	
 								// retrieve the number of articles for this publication:
 								$pub= mysqli_real_escape_string($GLOBALS['conn'],$pub);
 								$query_pub ="SELECT DISTINCT title FROM $name_temporary_table WHERE publication = '$pub'";
 								$rs_pub = mysqli_query($GLOBALS['conn'],$query_pub);
 								$n_pub1=0;					
-								while(list($id) = mysqli_fetch_row($rs_pub))							
+								while(list($id) = ($rs_pub ? mysqli_fetch_row($rs_pub) : null))							
 									$n_pub1 = $n_pub1 + 1;
 								if ($pub == $name_show_only_journal);
 								else
@@ -1238,7 +1238,7 @@ function show_only_authors(link, start1, stop1)
 							// retrieve the name of authors from temporary table:
 							$query ="SELECT distinct authors FROM $name_temporary_table";
 							$rs = mysqli_query($GLOBALS['conn'],$query);				
-							while(list($allauthors) = mysqli_fetch_row($rs))
+							while(list($allauthors) = ($rs ? mysqli_fetch_row($rs) : null))
 							{
 								if($author_string=="")
 									$author_string=$allauthors;	
@@ -1250,7 +1250,7 @@ function show_only_authors(link, start1, stop1)
 							$unique_authors=array();
 							for ($cnt=0; $cnt<count($single_aut ?? array()); $cnt++){
 								if($single_aut[$cnt]){
-									if(!in_array(trim($single_aut[$cnt]), $unique_authors)){
+									if(!in_array(trim($single_aut[$cnt]), ($unique_authors ?? array()))){
 										$unique_authors[$index]=trim($single_aut[$cnt]);
 										$index++;
 									}
@@ -1273,7 +1273,7 @@ function show_only_authors(link, start1, stop1)
 									$query_author ="SELECT DISTINCT title FROM $name_temporary_table WHERE authors LIKE '%$aut%'";
 									$rs_author = mysqli_query($GLOBALS['conn'],$query_author);
 									$n_auth1=0;					
-									while(list($id) = mysqli_fetch_row($rs_author))	
+									while(list($id) = ($rs_author ? mysqli_fetch_row($rs_author) : null))	
 										$n_auth1 = $n_auth1 + 1;						
 									print ("<OPTION VALUE='".htmlspecialchars($aut,ENT_QUOTES)."'>".stripslashes($unique_authors[$index])." ($n_auth1)</OPTION>");
 								}
@@ -1322,7 +1322,7 @@ function show_only_authors(link, start1, stop1)
 
 			<?php	
 				// There are no results available:
-				if ($n_id == 0)
+				if ((float)$n_id == 0)
 					print ("<br><font class='font12'>There are no results available.</font><br><br>");
 				$quote_count=0;					
 				for ($i=0; $i<$n_id; $i++)
@@ -1333,7 +1333,7 @@ function show_only_authors(link, start1, stop1)
 					$rs = mysqli_query($GLOBALS['conn'],$query);	
 					$auth=array();	
 					//print($query);	
-					while(list($id, $authors, $publication, $year, $PMID, $pages, $page_location, $show, $pmcid, $nihmsid, $doi, $show_only, $volume, $issue) = mysqli_fetch_row($rs))
+					while(list($id, $authors, $publication, $year, $PMID, $pages, $page_location, $show, $pmcid, $nihmsid, $doi, $show_only, $volume, $issue) = ($rs ? mysqli_fetch_row($rs) : null))
 					{	
 						//print($id.":");		
 						$auth=array();
@@ -1341,7 +1341,7 @@ function show_only_authors(link, start1, stop1)
 						$f_auth="";
 						$authors1 = $authors;
 						$temp=explode(",", $authors);
-						$auth=array_merge($auth,$temp);
+						$auth=array_merge(($auth ?? array()),($temp ?? array()));
 						for($x=0;$x<sizeof($auth);$x++)
 						{
 							$f_auth=substr(trim($auth[$x]),0,1);
@@ -1383,7 +1383,7 @@ function show_only_authors(link, start1, stop1)
 						$type_show  = "";
 						$query = "SELECT distinct type FROM $name_temporary_table WHERE title = '$title_temp[$i]' $subquery group by id_fragment ORDER BY FIELD (type,'Known','Axons','Dendrites','Somata') ";	
 						$rs = mysqli_query($GLOBALS['conn'],$query);	
-						while(list($type) = mysqli_fetch_row($rs))
+						while(list($type) = ($rs ? mysqli_fetch_row($rs) : null))
 						{	
 							$type_show  = $type_show . $type;
 						}
@@ -1397,7 +1397,7 @@ function show_only_authors(link, start1, stop1)
 						else{
 							print(" <td width='5%' align='center' class='table_neuron_page2' valign='center'> ");
 						}						
-						if ($show1 == 0)
+						if ((float)$show1 == 0)
 						{
 							print ("<form action='property_page_connectivity.php' method='post' style='display:inline'>");
 							print ("<input type='submit' name='show_1' value=' ' class='show1' title='Show Evidence' alt='Show Evidence'>");
@@ -1459,7 +1459,7 @@ function show_only_authors(link, start1, stop1)
 						try {
 							$query = "SELECT distinct id_fragment, id_original,id_neuron, quote, page_location FROM $name_temporary_table WHERE title = '$title_temp[$i]' $subquery group by id_fragment ORDER BY FIELD (type,'Known','Axons','Dendrites','Somata') ";	
 							$rs = mysqli_query($GLOBALS['conn'],$query);	
-							while(list($id_fragment, $id_original,$id_neuron_conn, $quote, $page_location, $type) = mysqli_fetch_row($rs))
+							while(list($id_fragment, $id_original,$id_neuron_conn, $quote, $page_location, $type) = ($rs ? mysqli_fetch_row($rs) : null))
 							{	
 								$quote_count++;	
 								if ($show1 == 1)
@@ -1467,7 +1467,7 @@ function show_only_authors(link, start1, stop1)
 									$type_show  = "";
 									$query_type = "SELECT distinct type FROM $name_temporary_table WHERE id_fragment = $id_fragment $subquery ORDER BY FIELD (type,'Axons','Dendrites','Somata','Known')";
 									$rs_type = mysqli_query($GLOBALS['conn'],$query_type);	
-									while(list($type) = mysqli_fetch_row($rs_type))
+									while(list($type) = ($rs_type ? mysqli_fetch_row($rs_type) : null))
 									{
 										$type_show  = $type_show . $type;
 									}				
@@ -1618,17 +1618,17 @@ function show_only_authors(link, start1, stop1)
 								else
 									$page_end1 = $page_end;
 								
-								if ($page_in == 0) 
+								if ((float)$page_in == 0) 
 									$no_button_down = 1;
 
 								$cnt=0;
 								$query = "SELECT distinct quote FROM $name_temporary_table WHERE show_only=1 $subquery";
 								$rs = mysqli_query($GLOBALS['conn'],$query);			
-								while(list($quote) = mysqli_fetch_row($rs))
+								while(list($quote) = ($rs ? mysqli_fetch_row($rs) : null))
 								{
 									$cnt++;
 								}
-								if($neuron_show_only_value&&$n_id_tot!=0){
+								if($neuron_show_only_value&&(float)$n_id_tot!=0){
 										print ("$page_in1 - $page_end1 of $n_id_tot articles ($cnt Quotes)");	
 								}
 								 // Last page:

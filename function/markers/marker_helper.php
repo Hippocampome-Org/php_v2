@@ -423,67 +423,67 @@ else
 {
 if (($hippo_positive[$variable]==1) && ($hippo_negative[$variable]==1) && ($hippo_weak_positive[$variable]==1) && ($hippo_positive_inference[$variable]==1 ) && ($hippo_negative_inference[$variable]==1))
 $result = 'positive-negative-weak_positive-positive_inference-negative_inference';
-if (($hippo_positive[$variable]==1) && ($hippo_negative[$variable]==1) && ($hippo_weak_positive[$variable]==1) && ($hippo_positive_inference[$variable]==1 ) && ($hippo_negative_inference[$variable]==0))
+if (($hippo_positive[$variable]==1) && ($hippo_negative[$variable]==1) && ($hippo_weak_positive[$variable]==1) && ($hippo_positive_inference[$variable]==1 ) && ((float)$hippo_negative_inference[$variable]==0))
 $result = 'positive-negative-weak_positive-positive_inference';
-if (($hippo_positive[$variable]==1) && ($hippo_negative[$variable]==1) && ($hippo_weak_positive[$variable]==1) && ($hippo_positive_inference[$variable]==0 ) && ($hippo_negative_inference[$variable]==1))
+if (($hippo_positive[$variable]==1) && ($hippo_negative[$variable]==1) && ($hippo_weak_positive[$variable]==1) && ((float)$hippo_positive_inference[$variable]==0 ) && ($hippo_negative_inference[$variable]==1))
 $result = 'positive-negative-weak_positive-negative_inference';
-if (($hippo_positive[$variable]==1) && ($hippo_negative[$variable]==1) && ($hippo_weak_positive[$variable]==1) && ($hippo_positive_inference[$variable]==0 ) && ($hippo_negative_inference[$variable]==0))
+if (($hippo_positive[$variable]==1) && ($hippo_negative[$variable]==1) && ($hippo_weak_positive[$variable]==1) && ((float)$hippo_positive_inference[$variable]==0 ) && ((float)$hippo_negative_inference[$variable]==0))
 $result = 'positive-negative-weak_positive';
-if (($hippo_positive[$variable]==1) && ($hippo_negative[$variable]==1) && ($hippo_weak_positive[$variable]==0) && ($hippo_positive_inference[$variable]==1 ) && ($hippo_negative_inference[$variable]==1))
+if (($hippo_positive[$variable]==1) && ($hippo_negative[$variable]==1) && ((float)$hippo_weak_positive[$variable]==0) && ($hippo_positive_inference[$variable]==1 ) && ($hippo_negative_inference[$variable]==1))
 $result = 'positive-negative-positive_inference-negative_inference';
-if (($hippo_positive[$variable]==1) && ($hippo_negative[$variable]==1) && ($hippo_weak_positive[$variable]==0) && ($hippo_positive_inference[$variable]==1 ) && ($hippo_negative_inference[$variable]==0))
+if (($hippo_positive[$variable]==1) && ($hippo_negative[$variable]==1) && ((float)$hippo_weak_positive[$variable]==0) && ($hippo_positive_inference[$variable]==1 ) && ((float)$hippo_negative_inference[$variable]==0))
 $result = 'positive-negative-positive_inference';
-if (($hippo_positive[$variable]==1) && ($hippo_negative[$variable]==1) && ($hippo_weak_positive[$variable]==0) && ($hippo_positive_inference[$variable]==0 ) && ($hippo_negative_inference[$variable]==1))
+if (($hippo_positive[$variable]==1) && ($hippo_negative[$variable]==1) && ((float)$hippo_weak_positive[$variable]==0) && ((float)$hippo_positive_inference[$variable]==0 ) && ($hippo_negative_inference[$variable]==1))
 $result = 'positive-negative-negative_inference';
-if (($hippo_positive[$variable]==1) && ($hippo_negative[$variable]==1) && ($hippo_weak_positive[$variable]==0) && ($hippo_positive_inference[$variable]==0 ) && ($hippo_negative_inference[$variable]==0))
+if (($hippo_positive[$variable]==1) && ($hippo_negative[$variable]==1) && ((float)$hippo_weak_positive[$variable]==0) && ((float)$hippo_positive_inference[$variable]==0 ) && ((float)$hippo_negative_inference[$variable]==0))
 $result = 'positive-negative';
-if (($hippo_positive[$variable]==1) && ($hippo_negative[$variable]==0) && ($hippo_weak_positive[$variable]==1) && ($hippo_positive_inference[$variable]==1 ) && ($hippo_negative_inference[$variable]==1))
+if (($hippo_positive[$variable]==1) && ((float)$hippo_negative[$variable]==0) && ($hippo_weak_positive[$variable]==1) && ($hippo_positive_inference[$variable]==1 ) && ($hippo_negative_inference[$variable]==1))
 $result = 'positive-weak_positive-positive_inference-negative_inference';
-if (($hippo_positive[$variable]==1) && ($hippo_negative[$variable]==0) && ($hippo_weak_positive[$variable]==1) && ($hippo_positive_inference[$variable]==1 ) && ($hippo_negative_inference[$variable]==0))
+if (($hippo_positive[$variable]==1) && ((float)$hippo_negative[$variable]==0) && ($hippo_weak_positive[$variable]==1) && ($hippo_positive_inference[$variable]==1 ) && ((float)$hippo_negative_inference[$variable]==0))
 $result = 'positive-weak_positive-positive_inference';
-if (($hippo_positive[$variable]==1) && ($hippo_negative[$variable]==0) && ($hippo_weak_positive[$variable]==1) && ($hippo_positive_inference[$variable]==0 ) && ($hippo_negative_inference[$variable]==1))
+if (($hippo_positive[$variable]==1) && ((float)$hippo_negative[$variable]==0) && ($hippo_weak_positive[$variable]==1) && ((float)$hippo_positive_inference[$variable]==0 ) && ($hippo_negative_inference[$variable]==1))
 $result = 'positive-weak_positive-negative_inference';
-if (($hippo_positive[$variable]==1) && ($hippo_negative[$variable]==0) && ($hippo_weak_positive[$variable]==1) && ($hippo_positive_inference[$variable]==0 ) && ($hippo_negative_inference[$variable]==0))
+if (($hippo_positive[$variable]==1) && ((float)$hippo_negative[$variable]==0) && ($hippo_weak_positive[$variable]==1) && ((float)$hippo_positive_inference[$variable]==0 ) && ((float)$hippo_negative_inference[$variable]==0))
 $result = 'positive-weak_positive';
-if (($hippo_positive[$variable]==1) && ($hippo_negative[$variable]==0) && ($hippo_weak_positive[$variable]==0) && ($hippo_positive_inference[$variable]==1 ) && ($hippo_negative_inference[$variable]==1))
+if (($hippo_positive[$variable]==1) && ((float)$hippo_negative[$variable]==0) && ((float)$hippo_weak_positive[$variable]==0) && ($hippo_positive_inference[$variable]==1 ) && ($hippo_negative_inference[$variable]==1))
 $result = 'positive-positive_inference-negative_inference';
-if (($hippo_positive[$variable]==1) && ($hippo_negative[$variable]==0) && ($hippo_weak_positive[$variable]==0) && ($hippo_positive_inference[$variable]==1 ) && ($hippo_negative_inference[$variable]==0))
+if (($hippo_positive[$variable]==1) && ((float)$hippo_negative[$variable]==0) && ((float)$hippo_weak_positive[$variable]==0) && ($hippo_positive_inference[$variable]==1 ) && ((float)$hippo_negative_inference[$variable]==0))
 $result = 'positive-positive_inference';
-if (($hippo_positive[$variable]==1) && ($hippo_negative[$variable]==0) && ($hippo_weak_positive[$variable]==0) && ($hippo_positive_inference[$variable]==0 ) && ($hippo_negative_inference[$variable]==1))
+if (($hippo_positive[$variable]==1) && ((float)$hippo_negative[$variable]==0) && ((float)$hippo_weak_positive[$variable]==0) && ((float)$hippo_positive_inference[$variable]==0 ) && ($hippo_negative_inference[$variable]==1))
 $result = 'positive-negative_inference';
-if (($hippo_positive[$variable]==1) && ($hippo_negative[$variable]==0) && ($hippo_weak_positive[$variable]==0) && ($hippo_positive_inference[$variable]==0 ) && ($hippo_negative_inference[$variable]==0))
+if (($hippo_positive[$variable]==1) && ((float)$hippo_negative[$variable]==0) && ((float)$hippo_weak_positive[$variable]==0) && ((float)$hippo_positive_inference[$variable]==0 ) && ((float)$hippo_negative_inference[$variable]==0))
 $result = 'positive';
-if (($hippo_positive[$variable]==0) && ($hippo_negative[$variable]==1) && ($hippo_weak_positive[$variable]==1) && ($hippo_positive_inference[$variable]==1 ) && ($hippo_negative_inference[$variable]==1))
+if (((float)$hippo_positive[$variable]==0) && ($hippo_negative[$variable]==1) && ($hippo_weak_positive[$variable]==1) && ($hippo_positive_inference[$variable]==1 ) && ($hippo_negative_inference[$variable]==1))
 $result = 'negative-weak_positive-positive_inference-negative_inference';
-if (($hippo_positive[$variable]==0) && ($hippo_negative[$variable]==1) && ($hippo_weak_positive[$variable]==1) && ($hippo_positive_inference[$variable]==1 ) && ($hippo_negative_inference[$variable]==0))
+if (((float)$hippo_positive[$variable]==0) && ($hippo_negative[$variable]==1) && ($hippo_weak_positive[$variable]==1) && ($hippo_positive_inference[$variable]==1 ) && ((float)$hippo_negative_inference[$variable]==0))
 $result = 'negative-weak_positive-positive_inference';
-if (($hippo_positive[$variable]==0) && ($hippo_negative[$variable]==1) && ($hippo_weak_positive[$variable]==1) && ($hippo_positive_inference[$variable]==0 ) && ($hippo_negative_inference[$variable]==1))
+if (((float)$hippo_positive[$variable]==0) && ($hippo_negative[$variable]==1) && ($hippo_weak_positive[$variable]==1) && ((float)$hippo_positive_inference[$variable]==0 ) && ($hippo_negative_inference[$variable]==1))
 $result = 'negative-weak_positive-negative_inference';
-if (($hippo_positive[$variable]==0) && ($hippo_negative[$variable]==1) && ($hippo_weak_positive[$variable]==1) && ($hippo_positive_inference[$variable]==0 ) && ($hippo_negative_inference[$variable]==0))
+if (((float)$hippo_positive[$variable]==0) && ($hippo_negative[$variable]==1) && ($hippo_weak_positive[$variable]==1) && ((float)$hippo_positive_inference[$variable]==0 ) && ((float)$hippo_negative_inference[$variable]==0))
 $result = 'negative-weak_positive';
-if (($hippo_positive[$variable]==0) && ($hippo_negative[$variable]==1) && ($hippo_weak_positive[$variable]==0) && ($hippo_positive_inference[$variable]==1 ) && ($hippo_negative_inference[$variable]==1))
+if (((float)$hippo_positive[$variable]==0) && ($hippo_negative[$variable]==1) && ((float)$hippo_weak_positive[$variable]==0) && ($hippo_positive_inference[$variable]==1 ) && ($hippo_negative_inference[$variable]==1))
 $result = 'negative-positive_inference-negative_inference';
-if (($hippo_positive[$variable]==0) && ($hippo_negative[$variable]==1) && ($hippo_weak_positive[$variable]==0) && ($hippo_positive_inference[$variable]==1 ) && ($hippo_negative_inference[$variable]==0))
+if (((float)$hippo_positive[$variable]==0) && ($hippo_negative[$variable]==1) && ((float)$hippo_weak_positive[$variable]==0) && ($hippo_positive_inference[$variable]==1 ) && ((float)$hippo_negative_inference[$variable]==0))
 $result = 'negative-positive_inference';
-if (($hippo_positive[$variable]==0) && ($hippo_negative[$variable]==1) && ($hippo_weak_positive[$variable]==0) && ($hippo_positive_inference[$variable]==0 ) && ($hippo_negative_inference[$variable]==1))
+if (((float)$hippo_positive[$variable]==0) && ($hippo_negative[$variable]==1) && ((float)$hippo_weak_positive[$variable]==0) && ((float)$hippo_positive_inference[$variable]==0 ) && ($hippo_negative_inference[$variable]==1))
 $result = 'negative-negative_inference';
-if (($hippo_positive[$variable]==0) && ($hippo_negative[$variable]==1) && ($hippo_weak_positive[$variable]==0) && ($hippo_positive_inference[$variable]==0 ) && ($hippo_negative_inference[$variable]==0))
+if (((float)$hippo_positive[$variable]==0) && ($hippo_negative[$variable]==1) && ((float)$hippo_weak_positive[$variable]==0) && ((float)$hippo_positive_inference[$variable]==0 ) && ((float)$hippo_negative_inference[$variable]==0))
 $result = 'negative';
-if (($hippo_positive[$variable]==0) && ($hippo_negative[$variable]==0) && ($hippo_weak_positive[$variable]==1) && ($hippo_positive_inference[$variable]==1 ) && ($hippo_negative_inference[$variable]==1))
+if (((float)$hippo_positive[$variable]==0) && ((float)$hippo_negative[$variable]==0) && ($hippo_weak_positive[$variable]==1) && ($hippo_positive_inference[$variable]==1 ) && ($hippo_negative_inference[$variable]==1))
 $result = 'weak_positive-positive_inference-negative_inference';
-if (($hippo_positive[$variable]==0) && ($hippo_negative[$variable]==0) && ($hippo_weak_positive[$variable]==1) && ($hippo_positive_inference[$variable]==1 ) && ($hippo_negative_inference[$variable]==0))
+if (((float)$hippo_positive[$variable]==0) && ((float)$hippo_negative[$variable]==0) && ($hippo_weak_positive[$variable]==1) && ($hippo_positive_inference[$variable]==1 ) && ((float)$hippo_negative_inference[$variable]==0))
 $result = 'weak_positive-positive_inference';
-if (($hippo_positive[$variable]==0) && ($hippo_negative[$variable]==0) && ($hippo_weak_positive[$variable]==1) && ($hippo_positive_inference[$variable]==0 ) && ($hippo_negative_inference[$variable]==1))
+if (((float)$hippo_positive[$variable]==0) && ((float)$hippo_negative[$variable]==0) && ($hippo_weak_positive[$variable]==1) && ((float)$hippo_positive_inference[$variable]==0 ) && ($hippo_negative_inference[$variable]==1))
 $result = 'weak_positive-negative_inference';
-if (($hippo_positive[$variable]==0) && ($hippo_negative[$variable]==0) && ($hippo_weak_positive[$variable]==1) && ($hippo_positive_inference[$variable]==0 ) && ($hippo_negative_inference[$variable]==0))
+if (((float)$hippo_positive[$variable]==0) && ((float)$hippo_negative[$variable]==0) && ($hippo_weak_positive[$variable]==1) && ((float)$hippo_positive_inference[$variable]==0 ) && ((float)$hippo_negative_inference[$variable]==0))
 $result = 'weak_positive';
-if (($hippo_positive[$variable]==0) && ($hippo_negative[$variable]==0) && ($hippo_weak_positive[$variable]==0) && ($hippo_positive_inference[$variable]==1 ) && ($hippo_negative_inference[$variable]==1))
+if (((float)$hippo_positive[$variable]==0) && ((float)$hippo_negative[$variable]==0) && ((float)$hippo_weak_positive[$variable]==0) && ($hippo_positive_inference[$variable]==1 ) && ($hippo_negative_inference[$variable]==1))
 $result = 'positive_inference-negative_inference';
-if (($hippo_positive[$variable]==0) && ($hippo_negative[$variable]==0) && ($hippo_weak_positive[$variable]==0) && ($hippo_positive_inference[$variable]==1 ) && ($hippo_negative_inference[$variable]==0))
+if (((float)$hippo_positive[$variable]==0) && ((float)$hippo_negative[$variable]==0) && ((float)$hippo_weak_positive[$variable]==0) && ($hippo_positive_inference[$variable]==1 ) && ((float)$hippo_negative_inference[$variable]==0))
 $result = 'positive_inference';
-if (($hippo_positive[$variable]==0) && ($hippo_negative[$variable]==0) && ($hippo_weak_positive[$variable]==0) && ($hippo_positive_inference[$variable]==0 ) && ($hippo_negative_inference[$variable]==1))
+if (((float)$hippo_positive[$variable]==0) && ((float)$hippo_negative[$variable]==0) && ((float)$hippo_weak_positive[$variable]==0) && ((float)$hippo_positive_inference[$variable]==0 ) && ($hippo_negative_inference[$variable]==1))
 $result = 'negative_inference';
-if (($hippo_positive[$variable]==0) && ($hippo_negative[$variable]==0) && ($hippo_weak_positive[$variable]==0) && ($hippo_positive_inference[$variable]==0 ) && ($hippo_negative_inference[$variable]==0))
+if (((float)$hippo_positive[$variable]==0) && ((float)$hippo_negative[$variable]==0) && ((float)$hippo_weak_positive[$variable]==0) && ((float)$hippo_positive_inference[$variable]==0 ) && ((float)$hippo_negative_inference[$variable]==0))
 $result = 'nothing';
 }
 return ($result);

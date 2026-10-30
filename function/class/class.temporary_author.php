@@ -57,7 +57,7 @@ class temporary_author
 		$query = "SELECT id, author FROM $table";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n = 0;
-		while(list($id, $author) = mysqli_fetch_row($rs))
+		while(list($id, $author) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$this->setID_array($id, $n);
 			$this->setAuthor_array($author, $n);
@@ -72,7 +72,7 @@ class temporary_author
 	
 		$query = "SELECT letter FROM $table WHERE id='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($var) = mysqli_fetch_row($rs))
+		while(list($var) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$this->setLetter($var);
 		}
@@ -84,7 +84,7 @@ class temporary_author
 	
 		$query = "SELECT author FROM $table WHERE id='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($var) = mysqli_fetch_row($rs))
+		while(list($var) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$this->setAuthor($var);
 		}

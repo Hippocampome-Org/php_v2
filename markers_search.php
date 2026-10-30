@@ -33,7 +33,7 @@ if(isset($_REQUEST['table_result']))
 <?php
 $query = "SELECT permission FROM user WHERE id=2"; // id=2 is anonymous user
 $rs = mysqli_query($conn,$query);
-list($permission) = mysqli_fetch_row($rs);
+list($permission) = ($rs ? mysqli_fetch_row($rs) : null);
 ?>
 <style>
 #nGrid_PV,#nGrid_vGluT3,#nGrid_VIP,#nGrid_RLN

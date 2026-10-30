@@ -27,7 +27,7 @@ $excel_neuron_param_data = array();
 function neuron_alter(&$item1, $key, $prefix)
 {
     $neu_vals = explode('_', $item1);
-    $item1 = implode(" ", $neu_vals);
+    $item1 = implode(" ", ($neu_vals ?? array()));
     $item1 = $item1;
 }
 
@@ -98,7 +98,7 @@ if($_POST && isset($_POST['neurons']) && !empty($_POST['neurons']) ){
     foreach($neurons as $neuron){
         //$neu_vals = explode('_', $neuron);//Commented on May 7 2023
         $neu_vals = explode(' ', $neuron);
-        $neuron = implode(" ", $neu_vals);
+        $neuron = implode(" ", ($neu_vals ?? array()));
         //To generate the file name dynamically
         $excel_file_name = generate_file_name($neu_vals, $excel_file_names);
         if($excel_file_name){
@@ -148,7 +148,7 @@ function get_files($folder){
             continue;
         }
         if(is_dir($file)){
-            array_merge($valid_files, get_files($folder . '/' . $file));
+            array_merge(($valid_files ?? array()), get_files($folder . '/' . $file));
         } else {
             //$valid_files[] = $folder . '/' . $file;
             array_push($valid_files, $folder . '/' . $file);

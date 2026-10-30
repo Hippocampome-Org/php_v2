@@ -20,7 +20,7 @@ class author
 		$query = "SELECT DISTINCT name FROM $table WHERE id = '$id' ";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setName_author_array($id, $n);		
 			$n = $n +1;
@@ -35,7 +35,7 @@ class author
 		$query = "SELECT DISTINCT name FROM $table";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setName_author_array($id, $n);		
 			$n = $n +1;
@@ -50,7 +50,7 @@ class author
 		$query = "SELECT DISTINCT id FROM $table WHERE name='$name'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setID_array($id, $n);		
 			$n = $n +1;

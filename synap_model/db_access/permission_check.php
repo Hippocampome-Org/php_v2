@@ -5,7 +5,7 @@ if ($perm == NULL) {
         //Changed from here on Feb 8 2026
         $query = "SELECT permission FROM user WHERE id = '2'";
         $rs = mysqli_query($GLOBALS['conn'],$query);
-        while (list($permission) = mysqli_fetch_row($rs)) {
+        while (list($permission) = ($rs ? mysqli_fetch_row($rs) : null)) {
                 if ($permission == 1) {
                         $anonymous = 1;
                 }
@@ -13,7 +13,7 @@ if ($perm == NULL) {
                         $anonymous = 0;
                 }
         }
-        if ($anonymous == 0) {
+        if ((float)$anonymous == 0) {
                 header("Location:error1.html");
         } 
 }

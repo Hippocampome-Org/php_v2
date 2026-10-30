@@ -580,7 +580,7 @@ if ($name_show_only_article_var)
 	
 	$query ="SELECT id, PMID FROM $name_temporary_table";
 	$rs = mysqli_query($GLOBALS['conn'],$query);					
-	while(list($id, $pmid) = mysqli_fetch_row($rs))	
+	while(list($id, $pmid) = ($rs ? mysqli_fetch_row($rs) : null))	
 	{	
 		if ($name_show_only_article == 'article')
 		{
@@ -653,7 +653,7 @@ if ($name_show_only_authors_var)
 				
 		$query ="SELECT id FROM $name_temporary_table WHERE authors LIKE '%$name_show_only_authors%'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);					
-		while(list($id) = mysqli_fetch_row($rs))		
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))		
 		{
 			$query = "UPDATE $name_temporary_table SET show_only =  '1' WHERE id = '$id'";
 			$rs2 = mysqli_query($GLOBALS['conn'],$query);
@@ -1573,7 +1573,7 @@ function show_only_ephys(link, start1, stop1)
 							<?php
 								if ($complete_name == "") {
 									$ep_msq = mysqli_query($GLOBALS['conn'],"SELECT DISTINCT complete_name, res0 FROM $name_temporary_table");
-									while(list($ep_complete_name, $ep_res0) = mysqli_fetch_row($ep_msq)) {	
+									while(list($ep_complete_name, $ep_res0) = ($ep_msq ? mysqli_fetch_row($ep_msq) : null)) {	
 										if ($ep_res0 == 'Sag ratio') {
 											print ("$ep_complete_name");
 										} else {
@@ -1770,7 +1770,7 @@ function show_only_ephys(link, start1, stop1)
 			$rs = mysqli_query($GLOBALS['conn'],$query);
 			$imp = 0;
 			$n_id_tot = 0;	 // Total number of articles:
-			while(list($id) = mysqli_fetch_row($rs)){
+			while(list($id) = ($rs ? mysqli_fetch_row($rs) : null)){
 				
 				$n_id_tot = $n_id_tot + 1;
 			}
@@ -1783,7 +1783,7 @@ function show_only_ephys(link, start1, stop1)
 			$rs = mysqli_query($GLOBALS['conn'],$query);
 			$n_id = 0;
 	        
-			while(list($title) = mysqli_fetch_row($rs))
+			while(list($title) = ($rs ? mysqli_fetch_row($rs) : null))
 			{
 				$title_temp[$n_id] = $title;
 				$n_id = $n_id + 1;
@@ -1927,7 +1927,7 @@ function show_only_ephys(link, start1, stop1)
 							$rs = mysqli_query($GLOBALS['conn'],$query);
 							$number_of_articles_1 = 0;
 							$number_of_books_1 = 0;
-							while(list($title, $pmid) = mysqli_fetch_row($rs))		
+							while(list($title, $pmid) = ($rs ? mysqli_fetch_row($rs) : null))		
 							{	
 								if (strlen($pmid) > 10)
 									$number_of_books_1 = $number_of_books_1 + 1;
@@ -1976,13 +1976,13 @@ function show_only_ephys(link, start1, stop1)
 							// retrieve the name of journal from temporary table:
 							$query ="SELECT DISTINCT publication FROM $name_temporary_table";
 							$rs = mysqli_query($GLOBALS['conn'],$query);					
-							while(list($pub) = mysqli_fetch_row($rs))	
+							while(list($pub) = ($rs ? mysqli_fetch_row($rs) : null))	
 							{	
 								// retrieve the number of articles for this publication:
 								$query1 ="SELECT DISTINCT title FROM $name_temporary_table WHERE publication = '$pub'";
 								$rs1 = mysqli_query($GLOBALS['conn'],$query1);
 								$n_pub1=0;					
-								while(list($id) = mysqli_fetch_row($rs1))							
+								while(list($id) = ($rs1 ? mysqli_fetch_row($rs1) : null))							
 									$n_pub1 = $n_pub1 + 1;
 							
 								if ($pub == $name_show_only_journal);
@@ -2001,7 +2001,7 @@ function show_only_ephys(link, start1, stop1)
 							$query ="SELECT DISTINCT authors FROM $name_temporary_table";
 							$rs = mysqli_query($GLOBALS['conn'],$query);				
 							
-							while(list($aut) = mysqli_fetch_row($rs))
+							while(list($aut) = ($rs ? mysqli_fetch_row($rs) : null))
 							{
 								$aut1=$aut1.", ".$aut;
 							}					
@@ -2009,7 +2009,7 @@ function show_only_ephys(link, start1, stop1)
 							$single_aut=explode('*', $aut1);
 
 							sort($single_aut);
-							$single_aut2=array_unique($single_aut);
+							$single_aut2=array_unique(($single_aut ?? array()));
 							
 							// Remove the blank from array:
 							$ni=0;
@@ -2040,7 +2040,7 @@ function show_only_ephys(link, start1, stop1)
 								$query1 ="SELECT DISTINCT title FROM $name_temporary_table WHERE authors LIKE '%$single_aut3[$i1]%'";
 								$rs1 = mysqli_query($GLOBALS['conn'],$query1);
 								$n_auth1=0;					
-								while(list($id) = mysqli_fetch_row($rs1))	
+								while(list($id) = ($rs1 ? mysqli_fetch_row($rs1) : null))	
 									$n_auth1 = $n_auth1 + 1;						
 							
 								print ("<OPTION VALUE='$single_aut3[$i1]'>$single_aut3[$i1] ($n_auth1)</OPTION>");
@@ -2099,7 +2099,7 @@ function show_only_ephys(link, start1, stop1)
 			<?php
 			
 			// There are no results available:
-			if ($n_id == 0)
+			if ((float)$n_id == 0)
 				print ("<br><font class='font12'>There are no results available.</font><br><br>");
 			$abbreviations = array();
 			for ($i=0; $i<$n_id; $i++)
@@ -2109,7 +2109,7 @@ function show_only_ephys(link, start1, stop1)
 				$rs = mysqli_query($GLOBALS['conn'],$query);	
 				$auth=array();	
 						
-				while(list($id, $id_original, $authors, $publication, $year, $PMID, $pages, $page_location, $show, $pmcid, $nihmsid, $doi, $show_only, $volume, $issue) = mysqli_fetch_row($rs))
+				while(list($id, $id_original, $authors, $publication, $year, $PMID, $pages, $page_location, $show, $pmcid, $nihmsid, $doi, $show_only, $volume, $issue) = ($rs ? mysqli_fetch_row($rs) : null))
 				{			
 					$auth=array();
 
@@ -2117,7 +2117,7 @@ function show_only_ephys(link, start1, stop1)
 					$f_auth="";
 					$authors1 = $authors;
 					$temp=explode(",", $authors);
-					$auth=array_merge($auth,$temp);
+					$auth=array_merge(($auth ?? array()),($temp ?? array()));
 					for($x=0;$x<sizeof($auth);$x++)
 					{
 						$f_auth=substr(trim($auth[$x]),0,1);
@@ -2159,7 +2159,7 @@ function show_only_ephys(link, start1, stop1)
 						<td width='5%' align='center' class='table_neuron_page2' valign='center'>
 					");
 
-					if ($show1 == 0)
+					if ((float)$show1 == 0)
 					{
 						print ("<form action='property_page_ephys.php' method='post' style='display:inline'>");
 						print ("<input type='submit' name='show_1' value=' ' class='show1' title='Show Evidence' alt='Show Evidence'>");
@@ -2236,7 +2236,7 @@ function show_only_ephys(link, start1, stop1)
 						$location_Value = null;
 						
 						
-						while(list($id_fragment, $id_original, $quote, $page_location, $protocol, $complete_name, $parameter, $interpretation, $interpretation_notes, $linking_pmid_isbn, $linking_pmid_isbn_page, $linking_quote, $linking_page_location, $res0, $res2, $res3, $value1, $value2, $error, $n_measurement, $rep_value, $gt_value, $istim, $std_sem, $time, $locationValue) = mysqli_fetch_row($rs))
+						while(list($id_fragment, $id_original, $quote, $page_location, $protocol, $complete_name, $parameter, $interpretation, $interpretation_notes, $linking_pmid_isbn, $linking_pmid_isbn_page, $linking_quote, $linking_page_location, $res0, $res2, $res3, $value1, $value2, $error, $n_measurement, $rep_value, $gt_value, $istim, $std_sem, $time, $locationValue) = ($rs ? mysqli_fetch_row($rs) : null))
 						{
 							if (($id_fragment == $id_fragment_old));//duplicate  neuron copies
 							print ("<table width='80%' border='0' cellspacing='2' cellpadding='5'>");
@@ -2270,7 +2270,7 @@ function show_only_ephys(link, start1, stop1)
 								$query1 = "SELECT protocol_tag FROM Attachment where original_id='$id_original'";
 								$rs1 = mysqli_query($GLOBALS['conn'],$query1);
 								$result_array = result_set_to_array($rs1,'protocol_tag');
-								$result_array1 = array_reverse($result_array);
+								$result_array1 = array_reverse(($result_array ?? array()));
 								
 								$attachment_obj->retrieve_by_originalId($id_original, $id_neuron);
 								$tag = $attachment_obj->getProtocol_tag();
@@ -2399,8 +2399,8 @@ function show_only_ephys(link, start1, stop1)
 											if ($result_material){
 											if($result_material->num_rows !==0){
 
-											$row_material=mysqli_fetch_array($result_material, MYSQLI_BOTH);
-											$row_description=mysqli_fetch_array($result_description, MYSQLI_BOTH);
+											$row_material=($result_material ? mysqli_fetch_array($result_material, MYSQLI_BOTH) : null);
+											$row_description=($result_description ? mysqli_fetch_array($result_description, MYSQLI_BOTH) : null);
 											$material_method = array("Animal Data"=>8, "Preparation Data"=>13, "ACSF Data"=>16, "Recording Method Data"=>34);
 											$material_method_index = array(8, 13, 16, 34, 62);
 											$start = 0;
@@ -2654,7 +2654,7 @@ function show_only_ephys(link, start1, stop1)
 				 // end FOR $i1		
 
     // Abbreviation Definition Box
-	$abbreviations = array_unique($abbreviations);
+	$abbreviations = array_unique(($abbreviations ?? array()));
 	
 	/* BEGIN DWW commented out section
     if (array_unique($std_sem))   // checks for non-null vals
@@ -2667,7 +2667,7 @@ function show_only_ephys(link, start1, stop1)
       	$definitions = get_abbreviation_definitions($abbreviations);
     // END DWW new code to check abbreviations list
     
-      	$definition_str = implode('; ', $definitions);
+      	$definition_str = implode('; ', ($definitions ?? array()));
 
 		print "<table align='center' width='80%' border='0' cellspacing='2' cellpadding='2'>
         <tr>
@@ -2698,10 +2698,10 @@ function show_only_ephys(link, start1, stop1)
 								else
 									$page_end1 = $page_end;
 								
-								if ($page_in == 0) 
+								if ((float)$page_in == 0) 
 									$no_button_down = 1;
 								
-								if ($n_id_tot != 0){
+								if ((float)$n_id_tot != 0){
 									print ("$page_in1 - $page_end1 of $n_id_tot articles ");	
 								 
 								}

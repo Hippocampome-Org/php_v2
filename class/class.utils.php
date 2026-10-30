@@ -18,7 +18,7 @@ class utils {
 		$query = "select id,subregion,nickname from ".$tableName." where status ='active' order by position";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$str = "'&nbsp;','<div id=\"frmCntr\">FROM</div><div id=\"toCntr\" class=\"rotate\">TO</div>'";
-		while(list($id,$subregion,$nickname) = mysqli_fetch_row($rs))
+		while(list($id,$subregion,$nickname) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$str=$str.","."'<a href=\"neuron_page.php?id=".$id."\" onClick=\"OpenInNewTab(this);\" target=\"_blank\">".$subregion.":".$nickname."</a>'";
 		}

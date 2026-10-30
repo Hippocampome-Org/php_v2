@@ -25,7 +25,7 @@ class typetyperel
 		$query = "SELECT Connection_status FROM $table WHERE Type1_id = '$type1_id' AND connection_location = '$connection_location' ";	
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($Connection_status) = mysqli_fetch_row($rs))
+		while(list($Connection_status) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 //			$this->setConnection_status_array($Connection_status, $n);
 			$this->setConnection_status($Connection_status, $n);
@@ -44,7 +44,7 @@ class typetyperel
 		$query = "SELECT Type2_id FROM $table WHERE Type1_id = '$type1_id' AND connection_location = '$connection_location' ";	
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($Type2_id) = mysqli_fetch_row($rs))
+		while(list($Type2_id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 //			$this->setType2_id_array($Type2_id, $n);
 			$this->setType2_id($Type2_id, $n);
@@ -63,7 +63,7 @@ class typetyperel
 		$query = "SELECT Type1_id FROM $table WHERE Type2_id = '$type2_id' AND connection_location = '$connection_location'  ";	
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($Type1_id) = mysqli_fetch_row($rs))
+		while(list($Type1_id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$this->setType1_id_array($Type1_id, $n);
 			$n = $n + 1;		
@@ -81,7 +81,7 @@ class typetyperel
 		$query = "SELECT DISTINCT connection_location FROM $table WHERE Type1_id = '$id_type'";	
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($connection_location) = mysqli_fetch_row($rs))
+		while(list($connection_location) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$this->setConnection_location($connection_location, $n);
 			$n = $n + 1;		
@@ -99,7 +99,7 @@ class typetyperel
 		$query = "SELECT DISTINCT connection_location FROM $table WHERE Type2_id = '$id_type'";	
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($connection_location) = mysqli_fetch_row($rs))
+		while(list($connection_location) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$this->setConnection_location($connection_location, $n);
 			$n = $n + 1;		

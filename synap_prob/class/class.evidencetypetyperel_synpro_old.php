@@ -34,7 +34,7 @@ class evidencetypetyperel_synpro
 		$query = "SELECT DISTINCT presynaptic_cell_id FROM $table WHERE postsynaptic_cell_id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setpresynaptic_cell_id_array($id, $n);		
 			$n = $n +1;
@@ -49,7 +49,7 @@ class evidencetypetyperel_synpro
 		$query = "SELECT DISTINCT postsynaptic_cell_id FROM $table WHERE presynaptic_cell_id = '$presynaptic_cell_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setpostsynaptic_cell_id_array($id, $n);		
 			$n = $n +1;
@@ -70,7 +70,7 @@ class evidencetypetyperel_synpro
 		//echo "$query";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setpostsynaptic_cell_id_array($id, $n);		
 			$n = $n +1;
@@ -90,9 +90,9 @@ class evidencetypetyperel_synpro
 			and pr.subject = '$Subject' and pr.object != 'unknown'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id,$conflict) = mysqli_fetch_row($rs))
+		while(list($id,$conflict) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
-			if(in_array($conflict, $inferences)){
+			if(in_array($conflict, ($inferences ?? array()))){
 				$type_conflict="_".$id."_".$conflict;
 				$this->setpostsynaptic_cell_id_array($type_conflict, $n);
 			}
@@ -116,7 +116,7 @@ class evidencetypetyperel_synpro
 			
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setpostsynaptic_cell_id_array($id, $n);		
 			$n = $n +1;
@@ -152,7 +152,7 @@ class evidencetypetyperel_synpro
 							WHERE subject = '$part' AND predicate = 'in' AND object like '%$val%')";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setpostsynaptic_cell_id_array($id, $n);		
 			$n = $n +1;
@@ -170,7 +170,7 @@ class evidencetypetyperel_synpro
 		//echo "sql: ".$query."<br>";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id,$linking_quote,$interpretation_notes) = mysqli_fetch_row($rs))
+		while(list($id,$linking_quote,$interpretation_notes) = ($rs ? mysqli_fetch_row($rs) : null))
 		{			
 			$this->setEvidence_id_array($id, $n);
 			$this->setLinking_quote_array($linking_quote, $n);
@@ -188,7 +188,7 @@ class evidencetypetyperel_synpro
 		$query = "SELECT DISTINCT Evidence_id FROM $table WHERE presynaptic_cell_id = '$presynaptic_cell_id' AND Evidence_id>=$min_id AND Evidence_id<=$max_id;";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{			
 			$this->setEvidence_id_array($id, $n);		
 			$n = $n +1;
@@ -204,7 +204,7 @@ class evidencetypetyperel_synpro
 		$query = "SELECT DISTINCT Evidence_id FROM $table WHERE postsynaptic_cell_id = '$postsynaptic_cell_id' AND Evidence_id>=$min_id AND Evidence_id<=$max_id;";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$this->setEvidence_id_array($id, $n);
 			$n = $n +1;
@@ -221,7 +221,7 @@ class evidencetypetyperel_synpro
 		";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id, $linking_quote, $interpretation_notes) = mysqli_fetch_row($rs))
+		while(list($id, $linking_quote, $interpretation_notes) = ($rs ? mysqli_fetch_row($rs) : null))
 		{			
 			$this->setEvidence_id_array($id, $n);		
 			$this->setLinking_quote_array($linking_quote, $n);
@@ -241,7 +241,7 @@ class evidencetypetyperel_synpro
 		";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{			
 			$this->setEvidence_id_array($id, $n);		
 			$n = $n + 1;
@@ -256,7 +256,7 @@ class evidencetypetyperel_synpro
 		$query = "SELECT DISTINCT postsynaptic_cell_id FROM $table WHERE Evidence_id = '$evidence_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{			
 			$this->setpostsynaptic_cell_id_array($id, $n);		
 			$n = $n +1;
@@ -271,7 +271,7 @@ class evidencetypetyperel_synpro
 	
 		$query = "SELECT unvetted FROM $table WHERE postsynaptic_cell_id = '$postsynaptic_cell_id' AND presynaptic_cell_id = '$presynaptic_cell_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($var) = mysqli_fetch_row($rs))
+		while(list($var) = ($rs ? mysqli_fetch_row($rs) : null))
 		{			
 			$this->setUnvetted($var);		
 		}	
@@ -284,7 +284,7 @@ class evidencetypetyperel_synpro
 		$table=$this->getName_table();
 		$query = "SELECT DISTINCT Article_id FROM $table WHERE presynaptic_cell_id = '$presynaptic_cell_id' AND postsynaptic_cell_id = '$postsynaptic_cell_id' AND Evidence_id = '$evidence_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		$row = mysqli_fetch_row($rs);
+		$row = ($rs ? mysqli_fetch_row($rs) : null);
 		$article_id = $row[0] ?? null;
 		return $article_id;
 	}	
@@ -295,7 +295,7 @@ class evidencetypetyperel_synpro
 		$table=$this->getName_table();
 		$query = "SELECT DISTINCT conflict_note FROM $table WHERE presynaptic_cell_id = '$presynaptic_cell_id' AND postsynaptic_cell_id = '$postsynaptic_cell_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($var) = mysqli_fetch_row($rs))
+		while(list($var) = ($rs ? mysqli_fetch_row($rs) : null))
 		{			
 			$this->setConflict_note($var);		
 		}	
@@ -307,7 +307,7 @@ class evidencetypetyperel_synpro
 		$table=$this->getName_table();
 		$query = "SELECT DISTINCT property_type_explanation FROM $table WHERE presynaptic_cell_id = '$presynaptic_cell_id' AND postsynaptic_cell_id = '$postsynaptic_cell_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($var) = mysqli_fetch_row($rs))
+		while(list($var) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$this->setProperty_type_explanation($var);
 		}

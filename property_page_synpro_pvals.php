@@ -36,7 +36,7 @@ function toPrecision($value, $digits)
 	/*
 		Set precision of digits
 	*/
-    if ($value == 0) {
+    if ((float)$value == 0) {
         $decimalPlaces = $digits - 1;
     } elseif ($value < 0) {
         $decimalPlaces = $digits - floor(log10($value * -1)) - 1;
@@ -198,7 +198,7 @@ $post_name=$type_target->getName();
 					echo "&nbsp;&nbsp;Type: <b>";
 					$query = "SELECT distinct source_E_or_I FROM number_of_contacts WHERE source_ID=$source_id and target_ID=$target_id;";
 					$rs = mysqli_query($GLOBALS['conn'],$query);
-					while(list($source_E_or_I) = mysqli_fetch_row($rs))
+					while(list($source_E_or_I) = ($rs ? mysqli_fetch_row($rs) : null))
 					{	
 						if ($source_E_or_I=='E') {
 							echo "Potential Excitatory Connections";
@@ -239,7 +239,7 @@ $post_name=$type_target->getName();
 	FROM SynproCP 
 	WHERE source_id=$source_id and target_id=$target_id;";
 	$rs = mysqli_query($GLOBALS['conn'],$query);
-	while(list($subregion) = mysqli_fetch_row($rs)) {
+	while(list($subregion) = ($rs ? mysqli_fetch_row($rs) : null)) {
 		$pair_subregion=$subregion;
 	}
 
@@ -279,7 +279,7 @@ $post_name=$type_target->getName();
 		";
 		//echo "<br>$query<br>";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($sid, $tid, $subregion, $parcel_section, $val) = mysqli_fetch_row($rs))
+		while(list($sid, $tid, $subregion, $parcel_section, $val) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			//echo $val;
 			$value_result = $val;
@@ -287,7 +287,7 @@ $post_name=$type_target->getName();
 
 		$query = "SELECT $totals_col as val FROM $totals_table as nt, SynproTypeTypeRel as ttr WHERE nt.source_id=$source_id AND nt.target_id=$target_id AND nt.source_id=ttr.type_id";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($val) = mysqli_fetch_row($rs))
+		while(list($val) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			//echo $val;
 			if ($parcel_name == 'All' || $parcel_name == 'ALL' || $parcel_name == 'all') {
@@ -338,7 +338,7 @@ $post_name=$type_target->getName();
 			}
 		}
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($mean_db, $std_db) = mysqli_fetch_row($rs))
+		while(list($mean_db, $std_db) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$mean_result = $mean_db;
 			$std_result = $std_db;
@@ -390,11 +390,11 @@ $post_name=$type_target->getName();
 			$stat_std = "N/A";
 		}	
 
-		if ($value_result == 0 && $nm_page!='noc') {
+		if ((float)$value_result == 0 && $nm_page!='noc') {
 			echo "<td style='width:$cell_width;border:$cell_border;height:$cell_height;'>";
 			echo "</td>";			
 		}
-		else if ($value_result == 0 && $nm_page=='noc') {
+		else if ((float)$value_result == 0 && $nm_page=='noc') {
 			echo "<td style='width:$cell_width;border:$cell_border;height:$cell_height;'>";
 			echo $value_result;
 			echo "</td>";

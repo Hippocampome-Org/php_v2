@@ -33,7 +33,7 @@ class fragment
 		
 		$query = "SELECT id, original_id, quote, page_location, pmid_isbn, pmid_isbn_page, type, attachment, attachment_type, interpretation, interpretation_notes, linking_pmid_isbn, linking_pmid_isbn_page, linking_quote, linking_page_location FROM $table WHERE id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($id, $original_id, $quote, $page_location, $pmid_isbn, $pmid_isbn_page, $type, $attachment, $attachment_type, $interpretation, $interpretation_notes, $linking_pmid_isbn, $linking_pmid_isbn_page, $linking_quote, $linking_page_location) = mysqli_fetch_row($rs))
+		while(list($id, $original_id, $quote, $page_location, $pmid_isbn, $pmid_isbn_page, $type, $attachment, $attachment_type, $interpretation, $interpretation_notes, $linking_pmid_isbn, $linking_pmid_isbn_page, $linking_quote, $linking_page_location) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setID($id);
 			$this->setOriginal_id($original_id);			
@@ -63,7 +63,7 @@ class fragment
 		$query = "SELECT attachment FROM $table WHERE fragment_id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($attachment) = mysqli_fetch_row($rs))
+		while(list($attachment) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setAttachment_array($attachment, $n);	
 			$n = $n + 1;
@@ -78,7 +78,7 @@ class fragment
 		$query = "SELECT attachment_type FROM $table WHERE original_id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($attachment_type) = mysqli_fetch_row($rs))
+		while(list($attachment_type) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setAttachment_type_array($attachment_type, $n);
 			$n = $n + 1;
@@ -92,7 +92,7 @@ class fragment
 		
 		$query = "SELECT attachment, attachment_type FROM $table WHERE original_id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($attachment, $attachment_type) = mysqli_fetch_row($rs))
+		while(list($attachment, $attachment_type) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setAttachment($attachment);	
 			$this->setAttachment_type($attachment_type);	

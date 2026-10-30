@@ -21,7 +21,7 @@ class articleevidencerel
 		$query = "SELECT DISTINCT article_id FROM $table WHERE Evidence_id = '$evidence_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setarticle_id_array($id, $n);		
 			$n = $n +1;

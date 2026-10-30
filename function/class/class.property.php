@@ -22,7 +22,7 @@ class property
 		
 		$query = "SELECT id, subject, predicate, object FROM $table WHERE id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($id, $part, $rel, $val) = mysqli_fetch_row($rs))
+		while(list($id, $part, $rel, $val) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setID($id);
 			$this->setPart($part);
@@ -59,7 +59,7 @@ class property
 		}	
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n6=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{		
 			$this->setProperty_id($id, $n6);
 			$n6 = $n6 + 1;

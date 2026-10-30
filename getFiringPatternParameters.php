@@ -24,9 +24,9 @@ function getFPViewParameters($fp_parameters_array,$fp_pattern,$flag)
 	$result_units = mysqli_query($GLOBALS['conn'],$query_for_units);
 	$result_description = mysqli_query($GLOBALS['conn'],$query_for_description);
 
-	$row_name=mysqli_fetch_array($result_name, MYSQLI_BOTH);
-	$row_units=mysqli_fetch_array($result_units, MYSQLI_BOTH);
-	$row_description=mysqli_fetch_array($result_description, MYSQLI_BOTH);
+	$row_name=($result_name ? mysqli_fetch_array($result_name, MYSQLI_BOTH) : null);
+	$row_units=($result_units ? mysqli_fetch_array($result_units, MYSQLI_BOTH) : null);
+	$row_description=($result_description ? mysqli_fetch_array($result_description, MYSQLI_BOTH) : null);
 	
 	$ind=2;
 	if($flag=="MR"){
@@ -37,7 +37,7 @@ function getFPViewParameters($fp_parameters_array,$fp_pattern,$flag)
 		$fp_view_name_hr[0]="<span title='Duration of stimulation'>Tstim (ms)</span>";
 		$fp_view_name_hr[1]="<span title='Amplitude of stimulation'>Istim (pA)</span>";
 	}
-	while ($row_view_flag =  mysqli_fetch_array($result_view_flag,MYSQLI_BOTH)) {
+	while ($row_view_flag =  ($result_view_flag ? mysqli_fetch_array($result_view_flag,MYSQLI_BOTH) : null)) {
 		for($index=2;$index<count($fp_parameters_array ?? array());$index++){
 			$key=$fp_parameters_array[$index];
 			$key_col=$row_view_flag[$key];
@@ -86,21 +86,21 @@ function getUrlForLink($fp_param_array,$fp_pattern)
 	$result_values = mysqli_query($GLOBALS['conn'],$query_for_values);
 	$result_digits = mysqli_query($GLOBALS['conn'],$query_for_digits);
 	
-	$row_digits=mysqli_fetch_array($result_digits, MYSQLI_BOTH);
+	$row_digits=($result_digits ? mysqli_fetch_array($result_digits, MYSQLI_BOTH) : null);
 	
 	// get the paramters to view for this firing pattern
 	$fp_view_param=getFPViewParameters($fp_param_array,$fp_pattern,"MR"); 
 	
 	// create array to hold firing pattern parameter values
 	$ind=0;
-	while ($row =  mysqli_fetch_array($result_values, MYSQLI_BOTH)) {
+	while ($row =  ($result_values ? mysqli_fetch_array($result_values, MYSQLI_BOTH) : null)) {
 		$type_id=$row["Type_id"];
 		for($index=0;$index<count($fp_param_array ?? array());$index++){
 			$key_col=$fp_param_array[$index];
 			$key_col_value=$row[$key_col];
 			if($key_col_value!="no value"){
 				$key_col_value=number_format((float)$key_col_value,$row_digits[$key_col], '.', '');
-				if(in_array($key_col, $fp_view_param)){
+				if(in_array($key_col, ($fp_view_param ?? array()))){
 					if($fp_values[$type_id][$key_col]){
 						$fp_values[$type_id][$key_col]=$fp_values[$type_id][$key_col].",".$key_col_value;
 					}
@@ -308,7 +308,7 @@ for($fp_count=0;$fp_count<count($firing_pattern_names ?? array());$fp_count++)
 					$min=min($data);
 					$max=max($data);
 					sort($data);
-					$title=implode(", ", $data);
+					$title=implode(", ", ($data ?? array()));
 					$title="[ $title ]";
 					$count=count($data ?? array());
 					$valueParameter="<a href='property_page_fp.php?id_neuron=$id&parameter=$fp_pattern&count=$count&page=1' target='_blank'><span title='$title'>$min to $max</span></a>";

@@ -24,7 +24,7 @@ class evidencepropertyyperel
 		$query = "SELECT DISTINCT Property_id FROM $table WHERE Type_id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setProperty_id_array($id, $n);		
 			$n = $n +1;
@@ -39,7 +39,7 @@ class evidencepropertyyperel
 		$query = "SELECT DISTINCT Type_id FROM $table WHERE Property_id = '$Property_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setType_id_array($id, $n);		
 			$n = $n +1;
@@ -54,7 +54,7 @@ class evidencepropertyyperel
 		$query = "SELECT DISTINCT Evidence_id FROM $table WHERE Property_id = '$Property_id' AND Type_id = '$type_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{			
 			$this->setEvidence_id_array($id, $n);		
 			$n = $n +1;
@@ -69,7 +69,7 @@ class evidencepropertyyperel
 		$query = "SELECT DISTINCT Evidence_id FROM $table WHERE Property_id = '$Property_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{			
 			$this->setEvidence_id_array($id, $n);		
 			$n = $n +1;
@@ -84,7 +84,7 @@ class evidencepropertyyperel
 		$query = "SELECT DISTINCT Evidence_id FROM $table WHERE Type_id = '$type_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{			
 			$this->setEvidence_id_array($id, $n);		
 			$n = $n +1;
@@ -99,7 +99,7 @@ class evidencepropertyyperel
 		$query = "SELECT DISTINCT Type_id FROM $table WHERE Evidence_id = '$evidence_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{			
 			$this->setType_id_array($id, $n);		
 			$n = $n +1;

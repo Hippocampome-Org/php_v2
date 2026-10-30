@@ -21,7 +21,7 @@ class synonymtyperel
 		$query = "SELECT DISTINCT Synonym_id FROM $table WHERE Type_id = '$id_type'";	
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$this->setSynonym_id($id, $n);
 			$n = $n + 1;		

@@ -20,7 +20,7 @@ class utils_neuron_search{
         if (!$rs) {
             die("<p>Error in Listing Neuron Tables." . mysqli_error($GLOBALS['conn']) . "</p>");
         }
-        while($row=mysqli_fetch_array($rs, MYSQLI_ASSOC))
+        while($row=($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null))
         {
             $id = $row['id'];
             $type_id = $row['type_id'];
@@ -44,7 +44,7 @@ class utils_neuron_search{
         if (!$rs) {
             die("<p>Error in Listing Neuron Tables." . mysqli_error($GLOBALS['conn']) . "</p>");
         }
-        while($row=mysqli_fetch_array($rs, MYSQLI_ASSOC))
+        while($row=($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null))
         {
             $id = $row['id'];
             $type_id = $row['type_id'];

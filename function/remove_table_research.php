@@ -10,7 +10,7 @@ function remove_table_by_tyme()  // after 2 hours:
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);		
 	$n_table = 0;
 	//Changed from here on Nov 2 2023 by @KN as we need to handle it dynamically as it will change based on database
-        while ($row = mysqli_fetch_assoc($rs2)) {
+        while ($row = ($rs2 ? mysqli_fetch_assoc($rs2) : null)) {
                 foreach($row as $rowkey => $rowvalue) {
                         if  ((strpos($rowvalue, 'search') === 0) || (strpos($rowvalue, 'temp') === 0) )
                         {

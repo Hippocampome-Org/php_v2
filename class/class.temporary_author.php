@@ -37,7 +37,7 @@ class temporary_author
         if (!$author_records) {
             die("<p>Error in Listing Author Records.:" . mysqli_error($GLOBALS['conn']) . "</p>");
         }
-        while($rows=mysqli_fetch_array($author_records, MYSQLI_ASSOC))
+        while($rows=($author_records ? mysqli_fetch_array($author_records, MYSQLI_ASSOC) : null))
         {
             $authors_array[$index]=$rows['name'];
             $index++;   
@@ -53,7 +53,7 @@ class temporary_author
         if (!$author_records) {
             die("<p>Error in Listing Author Records.:" . mysqli_error($GLOBALS['conn']) . "</p>");
         }
-        while($rows=mysqli_fetch_array($author_records, MYSQLI_ASSOC))
+        while($rows=($author_records ? mysqli_fetch_array($author_records, MYSQLI_ASSOC) : null))
         {
             $id=$rows['id'];
             $letter=$rows['letter'];
@@ -102,7 +102,7 @@ class temporary_author
 		$query = "SELECT id, author FROM $table";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n = 0;
-		while(list($id, $author) = mysqli_fetch_row($rs))
+		while(list($id, $author) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$this->setID_array($id, $n);
 			$this->setAuthor_array($author, $n);
@@ -117,7 +117,7 @@ class temporary_author
 	
 		$query = "SELECT letter FROM $table WHERE id='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($var) = mysqli_fetch_row($rs))
+		while(list($var) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$this->setLetter($var);
 		}
@@ -129,7 +129,7 @@ class temporary_author
 	
 		$query = "SELECT author FROM $table WHERE id='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($var) = mysqli_fetch_row($rs))
+		while(list($var) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$this->setAuthor($var);
 		}
@@ -229,7 +229,7 @@ class temporary_author
 		$query_canonical="SELECT name FROM Author WHERE name LIKE '$author%'"; //Bring all the authors with first name and first initial of the last name same.
 		$rs = mysqli_query($GLOBALS['conn'],$query_canonical);	
 		$i=0;				
-		while(list($author_name) = mysqli_fetch_row($rs))	
+		while(list($author_name) = ($rs ? mysqli_fetch_row($rs) : null))	
 		{	
 			$canonical[$i]=$author_name;
 			$i++;

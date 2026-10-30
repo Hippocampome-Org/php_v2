@@ -18,7 +18,7 @@ class markerdata
 		
 		$query = "SELECT DISTINCT expression, animal, protocol FROM $table WHERE id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($expression, $animal, $protocol) = mysqli_fetch_row($rs))
+		while(list($expression, $animal, $protocol) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setExpression($expression);	
 			$this->setAnimal($animal);				
@@ -31,7 +31,7 @@ class markerdata
 		$query = "SELECT subject FROM Property WHERE predicate = 'has name'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($subject) = mysqli_fetch_row($rs))
+		while(list($subject) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setExpression($subject);
 			$n = $n + 1;

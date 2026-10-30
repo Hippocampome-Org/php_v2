@@ -24,7 +24,7 @@ class attachment
 		
 		$query = "SELECT id, cell_id, original_id, name, type, protocol_tag FROM Attachment WHERE id = '$id' and cell_id = '$id_neuron'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($id,$cell_id, $original_id, $name, $type, $protocol_tag) = mysqli_fetch_row($rs))
+		while(list($id,$cell_id, $original_id, $name, $type, $protocol_tag) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setID($id);
 			$this->setCell_id($cell_id);
@@ -42,7 +42,7 @@ class attachment
 		
 		$query = "SELECT id, cell_id, original_id, name, type, protocol_tag FROM Attachment WHERE original_id = '$original_id' and cell_id = '$id_neuron'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($id,$cell_id, $original_id, $name, $type, $protocol_tag) = mysqli_fetch_row($rs))
+		while(list($id,$cell_id, $original_id, $name, $type, $protocol_tag) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setID($id);
 			$this->setCell_id($cell_id);
@@ -60,7 +60,7 @@ class attachment
 		//print("cell id".$id_neuron);
 		$query = "SELECT name, type FROM Attachment WHERE original_id = '$id' and cell_id = '$id_neuron'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		if(list($attachment, $attachment_type) = mysqli_fetch_row($rs))
+		if(list($attachment, $attachment_type) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 		//	while(list($attachment, $attachment_type) = mysqli_fetch_row($rs))
 		//	{	
@@ -85,7 +85,7 @@ class attachment
 		//print("cell id".$id_neuron);
 		$query = "SELECT name, type FROM Attachment WHERE original_id = '$id' and cell_id = '$id_neuron' and parameter= '$parameter'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		if(list($attachment, $attachment_type) = mysqli_fetch_row($rs))
+		if(list($attachment, $attachment_type) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			//	while(list($attachment, $attachment_type) = mysqli_fetch_row($rs))
 			//	{
@@ -110,7 +110,7 @@ class attachment
 		//print("cell id".$id_neuron);
 		$query = "SELECT name, type FROM Attachment WHERE original_id = '$id' and cell_id = '$id_neuron' and parameter= '$parameter' and protocol_tag LIKE '$protocolTag'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		if(list($attachment, $attachment_type) = mysqli_fetch_row($rs))
+		if(list($attachment, $attachment_type) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			//	while(list($attachment, $attachment_type) = mysqli_fetch_row($rs))
 			//	{

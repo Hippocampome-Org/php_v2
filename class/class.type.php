@@ -35,7 +35,7 @@ class type
 		$query = "SELECT id FROM $table WHERE status = 'active' ORDER BY position ASC";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setID_array($id, $n);
 			$n = $n + 1;
@@ -51,7 +51,7 @@ class type
 		$query = "SELECT id FROM $table WHERE status = 'active' AND subregion = '$subregion'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 //			$this->setID_array($id, $n);
 			$n = $n + 1;
@@ -67,7 +67,7 @@ class type
 		$query = "SELECT id FROM $table WHERE status = 'active' AND subregion = '$subregion' AND v2p0 = '0'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 //			$this->setID_array($id, $n);
 			$n = $n + 1;
@@ -82,7 +82,7 @@ class type
 	
 		$query = "SELECT name FROM $table WHERE nickname = '$nickname'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setName($var);
 		}
@@ -95,7 +95,7 @@ class type
 		
 		$query = "SELECT id, position, dt, name, nickname, excit_inhib, status, subregion FROM $table WHERE id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($id, $position, $dt, $name, $nickname,$excit_inhib, $status, $subregion) = mysqli_fetch_row($rs))
+		while(list($id, $position, $dt, $name, $nickname,$excit_inhib, $status, $subregion) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setId($id);
 			$this->setDt($dt);
@@ -115,7 +115,7 @@ class type
 		$query = "SELECT id, position, dt, name, nickname,excit_inhib, status, subregion FROM $table WHERE id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$this->setStatus('');
-		while(list($id, $position, $dt, $name, $nickname,$excit_inhib, $status, $subregion) = mysqli_fetch_row($rs))
+		while(list($id, $position, $dt, $name, $nickname,$excit_inhib, $status, $subregion) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setId($id);
 			$this->setDt($dt);
@@ -134,7 +134,7 @@ class type
 		
 		$query = "SELECT v2p0 FROM $table WHERE id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($v2p0) = mysqli_fetch_row($rs))
+		while(list($v2p0) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setV2p0($v2p0);
 		}	
@@ -144,7 +144,7 @@ class type
 		$query = "SELECT counts FROM Counts WHERE unique_ID ='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$counts_value="";
-		while($rows=mysqli_fetch_array($rs, MYSQLI_ASSOC))
+		while($rows=($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null))
 		{	
 			$counts_value=$rows['counts'];
 		}
@@ -155,7 +155,7 @@ class type
 		$query = "SELECT lower_bound FROM Counts WHERE unique_ID ='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$lower_bound_value="";
-		while($rows=mysqli_fetch_array($rs, MYSQLI_ASSOC))
+		while($rows=($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null))
 		{	
 			$lower_bound_value=$rows['lower_bound'];
 		}
@@ -166,7 +166,7 @@ class type
 		$query = "SELECT upper_bound FROM Counts WHERE unique_ID ='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$upper_bound_value="";
-		while($rows=mysqli_fetch_array($rs, MYSQLI_ASSOC))
+		while($rows=($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null))
 		{	
 			$upper_bound_value=$rows['upper_bound'];
 		}
@@ -179,7 +179,7 @@ class type
 		$query = "SELECT supertype FROM Type WHERE id ='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$supertype_value="";
-		while($rows=mysqli_fetch_array($rs, MYSQLI_ASSOC))
+		while($rows=($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null))
 		{	
 			$supertype_value=$rows['supertype'];
 		}
@@ -192,7 +192,7 @@ class type
 		$query = "SELECT type_subtype FROM $table WHERE id ='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$type_subtype_value="";
-		while($rows=mysqli_fetch_array($rs, MYSQLI_ASSOC))
+		while($rows=($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null))
 		{	
 			$type_subtype_value=$rows['type_subtype'];
 		}
@@ -205,7 +205,7 @@ class type
 		$query = "SELECT explanatory_notes FROM Type WHERE id ='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$explanatory_notes="";
-		while($rows=mysqli_fetch_array($rs, MYSQLI_ASSOC))
+		while($rows=($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null))
 		{	
 			$explanatory_notes=$rows['explanatory_notes'];
 		}
@@ -219,7 +219,7 @@ class type
 		$query = "SELECT id FROM $table WHERE excit_inhib ='$pred'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setID_array($id, $n);		
 			$n = $n +1;
@@ -233,7 +233,7 @@ class type
 		
 		$query = "SELECT id, position, dt, name, nickname,excit_inhib, status, subregion FROM $table WHERE id = '$id' AND status = 'active'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($id, $position, $dt, $name, $nickname,$excit_inhib, $status, $subregion) = mysqli_fetch_row($rs))
+		while(list($id, $position, $dt, $name, $nickname,$excit_inhib, $status, $subregion) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setId($id);
 			$this->setDt($dt);
@@ -252,7 +252,7 @@ class type
 	
 		$query = "SELECT notes FROM $table WHERE id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($var) = mysqli_fetch_row($rs))
+		while(list($var) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setNotes($var);
 		}
@@ -266,7 +266,7 @@ class type
 		$query = "SELECT DISTINCT name FROM $table";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setName_neuron_array($id, $n);						
 			$n = $n +1;
@@ -282,7 +282,7 @@ public function retrive_nickname()   // Retrieve all the nicknames in the table 
 		$query = "SELECT DISTINCT nickname FROM $table ";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setNickname_neuron_array($id, $n);		
 			$n = $n +1;
@@ -299,7 +299,7 @@ public function retrive_nickname()   // Retrieve all the nicknames in the table 
 		$query = "SELECT DISTINCT id FROM $table WHERE name='$name'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setID_namearray($id, $n);					
 			$n = $n +1;
@@ -317,7 +317,7 @@ public function retrive_nickname()   // Retrieve all the nicknames in the table 
 		$query = "SELECT DISTINCT nickname FROM $table WHERE name='$name'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setNickname_neuron_array($id, $n);		
 			$n = $n +1;
@@ -336,7 +336,7 @@ public function retrive_nickname()   // Retrieve all the nicknames in the table 
 		$query = "SELECT DISTINCT name FROM $table WHERE nickname='$nickname'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setName_neuron_array($id, $n);		
 			$n = $n +1;
@@ -353,7 +353,7 @@ public function retrive_nickname()   // Retrieve all the nicknames in the table 
 		$query = "SELECT DISTINCT id FROM $table WHERE nickname='$nickname'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setID_namearray($id, $n);			
 			$n = $n +1;
@@ -369,7 +369,7 @@ public function retrive_nickname()   // Retrieve all the nicknames in the table 
 		$query = "SELECT id FROM $table ";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setID_array($id, $n);
 			$n = $n + 1;
@@ -386,7 +386,7 @@ public function retrive_nickname()   // Retrieve all the nicknames in the table 
 		$query = "SELECT id, position, dt, name, nickname,excit_inhib, status, subregion FROM $table WHERE name = '$name'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$this->setStatus('');
-		while(list($id, $position, $dt, $name, $nickname,$excit_inhib, $status, $subregion) = mysqli_fetch_row($rs))
+		while(list($id, $position, $dt, $name, $nickname,$excit_inhib, $status, $subregion) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setId($id);
 			$this->setDt($dt);

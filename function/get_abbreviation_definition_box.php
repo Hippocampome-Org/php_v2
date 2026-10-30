@@ -12,7 +12,7 @@ $definition_table = array(
 
 function get_abbreviation_definition_box($abbreviation_list) {
   $definitions = get_abbreviation_definitions($abbreviation_list);
-  $definition_str = implode('; ', $definitions);
+  $definition_str = implode('; ', ($definitions ?? array()));
     //"<table align='center' width='70%' border='0' cellspacing='2' cellpadding='2'>
     //<tr>
     //<td width='20%' align='right' class='table_neuron_page1'>
@@ -37,8 +37,8 @@ function get_abbreviation_definition_box($abbreviation_list) {
 // helper that returns the definitions as a list
 function get_abbreviation_definitions($abbreviation_list) {
   global $definition_table;
-  $present_abbreviations = array_intersect(array_keys($definition_table), $abbreviation_list);
-  $definition_strs = array_values(array_intersect_key($definition_table, array_flip($present_abbreviations)));
+  $present_abbreviations = array_intersect(array_keys(($definition_table ?? array())), ($abbreviation_list ?? array()));
+  $definition_strs = array_values(array_intersect_key(($definition_table ?? array()), array_flip(($present_abbreviations ?? array()))));
   return $definition_strs;
 }
 

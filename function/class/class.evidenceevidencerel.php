@@ -21,7 +21,7 @@ class evidenceevidencerel
 		$query = "SELECT DISTINCT Evidence2_id FROM $table WHERE Evidence1_id = '$evidence1_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setEvidence2_id_array($id, $n);		
 			$n = $n +1;

@@ -49,7 +49,7 @@ function getSupplemental($sup_id){
 	if (!$article_type) {
 		die("<p>Error in Listing Types Table.</p>");
 	}
-	while($rows=mysqli_fetch_array($article_type, MYSQLI_ASSOC))
+	while($rows=($article_type ? mysqli_fetch_array($article_type, MYSQLI_ASSOC) : null))
 	{
 		$types_array[$index]=new utils_type();
 		$types_array[$index]->setName($rows['name']);
@@ -246,7 +246,7 @@ else
 		</form>
 		
 	<?php
-		if ( ($n_id_article != 0) && ($error_pmid == 0) )
+		if ( ((float)$n_id_article != 0) && ((float)$error_pmid == 0) )
 		{
 			print ("<table border='0'  class='table_result' id='tab_res' width='100%'>");
 			print ("<thead><tr>
@@ -337,7 +337,7 @@ else
 					}	
 				}
 				
-				if ($count==0) 
+				if ((float)$count==0) 
 				{
 					print("(to be determined)");
 				}
@@ -390,7 +390,7 @@ else
 					}
 				}
 				
-				if ($count==0) 
+				if ((float)$count==0) 
 				{
 					print("(to be determined)");
 				}
@@ -403,7 +403,7 @@ else
 		
 		// Send an email ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		if ( ($n_id_article == 0) && ($error_pmid == 0) )
+		if ( ((float)$n_id_article == 0) && ((float)$error_pmid == 0) )
 		{
 			print ("<form action='send_email.php' method='post' style='display:inline'>	");
 										

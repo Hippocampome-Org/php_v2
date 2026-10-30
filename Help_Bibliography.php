@@ -115,7 +115,7 @@ ul
 			";
 			$r=mysqli_query($GLOBALS['conn'],$t);
 			$l=0;
-			while($row = mysqli_fetch_array($r, MYSQLI_ASSOC))
+			while($row = ($r ? mysqli_fetch_array($r, MYSQLI_ASSOC) : null))
 			{
 				$ttls[$l]=$row['ttl'];
 				$publi[$l]=$row['pub'];
@@ -137,16 +137,16 @@ ul
 				{
 					print("<br/>");
 					$g=0;
-					while($rows = mysqli_fetch_array($results, MYSQLI_ASSOC))
+					while($rows = ($results ? mysqli_fetch_array($results, MYSQLI_ASSOC) : null))
 					{
 						$auth_id=$rows['auth_id'];
 						$fetch_auth="SELECT DISTINCT c.name AS name_auth FROM Author c WHERE c.id='$auth_id'";
 						$ress=mysqli_query($GLOBALS['conn'],$fetch_auth);
-						while($arows = mysqli_fetch_array($ress, MYSQLI_ASSOC))
+						while($arows = ($ress ? mysqli_fetch_array($ress, MYSQLI_ASSOC) : null))
 						{
 							$auth_name=$arows['name_auth'];
 							$auth_name=preg_replace("/'/", "&#39;", ($auth_name ?? ''));
-							if ($g == 0)
+							if ((float)$g == 0)
 							{
 								print("<b>".$auth_name."</b>");
 							}

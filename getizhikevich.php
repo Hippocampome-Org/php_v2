@@ -242,7 +242,7 @@ for($i = 0; $i<$number_type; $i++)
 	$type -> retrieve_v2p0_by_id($id);
 	$v2p0 = $type -> getV2p0();
 
-	if ($v2p0 == 0)
+	if ((float)$v2p0 == 0)
 	{
 		$ii = $ii + 1;
 		//Code for Json generation starts...

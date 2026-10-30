@@ -39,7 +39,7 @@ class MorphologyPage
                         $predicate=$this->relations[Operator::PRESENT];
                         $object=$this->parcels[$this->subregions[$ppl]+$ind];
                         $neuronFound=$queryUtil->morphMatchingNeuron($subject,$predicate,$object);
-                        $neuronFound=array_diff($allNeuron,$neuronFound);
+                        $neuronFound=array_diff(($allNeuron ?? array()),($neuronFound ?? array()));
                     }
                     else if($pplValues[$ind]!=Operator::WILDCARD){
                         $subject=$this->parts[strtolower($property)];
@@ -50,7 +50,7 @@ class MorphologyPage
                     }
                     // print("<pre>".print_r($neuronFound,true)."</pre>");
                     if(count($neuronFound ?? array())>0){
-                        $matchingNeuron=array_intersect($matchingNeuron,$neuronFound);
+                        $matchingNeuron=array_intersect(($matchingNeuron ?? array()),($neuronFound ?? array()));
                     }else if (count($neuronFound ?? array())==0 && $matchingNeuron==$allNeuron && $pplValues[$ind]!=Operator::WILDCARD ) {
                             return $neuronFound;
                         }

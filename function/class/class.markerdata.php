@@ -17,7 +17,7 @@ class markerdata
 		
 		$query = "SELECT DISTINCT expression, animal, protocol FROM $table WHERE id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($expression, $animal, $protocol) = mysqli_fetch_row($rs))
+		while(list($expression, $animal, $protocol) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setExpression($expression);	
 			$this->setAnimal($animal);				

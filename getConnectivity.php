@@ -100,10 +100,10 @@ function getUrlForLink($id_type_row,$id_type_col,$link_parameter,$img,$know_unkn
 	if($img!='')
 	{
 		$axonic_basket_flag=0;
-		if(in_array($id_type_row, $special_neuron_id_axo_axonic) ){
+		if(in_array($id_type_row, ($special_neuron_id_axo_axonic ?? array())) ){
 			$axonic_basket_flag=1;
 		}
-		elseif(in_array($id_type_row, $special_neuron_id_basket)){
+		elseif(in_array($id_type_row, ($special_neuron_id_basket ?? array()))){
 			$axonic_basket_flag=2;
 		}
 		$url ='<a href="property_page_connectivity.php?id1_neuron='.$id_type_row.'&val1_property='.$link_parameter[1].'&color1='.$link_parameter[2].'&id2_neuron='.$id_type_col.'&val2_property='.$link_parameter[4].'&color2='.$link_parameter[5].'&connection_type='.$link_parameter[6].'&known_conn_flag='.$know_unknow_flag.'&axonic_basket_flag='.$axonic_basket_flag.'&page=1" target="_blank"><img src="images/connectivity/'.$img.'" height="20px" width="20px" border="0"/></a>';
@@ -333,7 +333,7 @@ for ($i=0; $i < $total_neurons; $i++) {
   $excit_inhib =$type-> getExcit_Inhib();
   // add known connection and known non connection data to connectivity matrix
   for ($j=0; $j < $total_neurons; $j++) {
-    if($potential_conn_display_array[$i][$j] == 0)
+    if((float)$potential_conn_display_array[$i][$j] == 0)
     {
       if($known_matrix_array[$i][$j] == KNOWN_CONNECTION)
       {
@@ -454,7 +454,7 @@ for ($row=0; $row<$number_type; $row++) {
 			$url=getUrlForLink($id_type_row,$id_type_col,$link_parameter,"known_connection.png",KNOWN_CONNECTION,$special_neuron_id_axo_axonic,$special_neuron_id_basket);
 			$image = "<div style='background-color:" . $presynaptic_bg_color . ";padding:0 2px;'>".$url."</div>";
 		}
-		elseif ($potential_conn_display_array[$row][$col] != 0) 
+		elseif ((float)$potential_conn_display_array[$row][$col] != 0) 
 		{
 			if ($presynaptic_bg_color==BLACK){
 				$responce->black++;

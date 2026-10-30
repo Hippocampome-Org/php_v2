@@ -24,7 +24,7 @@ class attachment_phases
 		
 		$query = "SELECT id, cell_id, original_id, name, type, protocol_tag FROM attachment_phases WHERE id = '$id' and cell_id = '$id_neuron'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($id,$cell_id, $original_id, $name, $type, $protocol_tag) = mysqli_fetch_row($rs))
+		while(list($id,$cell_id, $original_id, $name, $type, $protocol_tag) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setID($id);
 			$this->setCell_id($cell_id);
@@ -41,7 +41,7 @@ class attachment_phases
 		$table=$this->getName_table();		
 		$query = "SELECT id, cell_identifier, reference_ID, name_of_file_containing_figure, 'phases_figure' AS type, null FROM attachment_phases WHERE reference_ID= '$referenceID'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($id,$cell_id, $original_id, $name, $type, $protocol_tag) = mysqli_fetch_row($rs))
+		while(list($id,$cell_id, $original_id, $name, $type, $protocol_tag) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setID($id);
 			$this->setCell_id($cell_id);
@@ -59,7 +59,7 @@ class attachment_phases
 		//$query = "SELECT id, cell_id, original_id, name, type, protocol_tag FROM $table WHERE id = '$id' and cell_id = '$id_neuron'";
 		$query = "SELECT id, cell_identifier, reference_ID, name_of_file_containing_figure, 'phases_figure' AS type, null AS protocol_tag FROM $table WHERE reference_ID='$ref_id' AND cell_identifier='$id_neuron' AND neurite='$id_neurite'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($id,$cell_id, $original_id, $name, $type, $protocol_tag) = mysqli_fetch_row($rs))
+		while(list($id,$cell_id, $original_id, $name, $type, $protocol_tag) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setID($id);
 			$this->setCell_id($cell_id);
@@ -80,7 +80,7 @@ class attachment_phases
 		$query = "SELECT id, source_id, RefID, Figure, 'phases_figure' AS type, null AS protocol_tag FROM $table WHERE RefID=$ref_id AND source_id=$source_id AND target_id=$target_id";
 		//echo "<br>".$query;
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($id,$cell_id, $original_id, $name, $type, $protocol_tag) = mysqli_fetch_row($rs))
+		while(list($id,$cell_id, $original_id, $name, $type, $protocol_tag) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setID($id);
 			$this->setCell_id($cell_id);
@@ -98,7 +98,7 @@ class attachment_phases
 		
 		$query = "SELECT id, cell_id, original_id, name, type, protocol_tag FROM Attachment WHERE original_id = '$original_id' and cell_id = '$id_neuron'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($id,$cell_id, $original_id, $name, $type, $protocol_tag) = mysqli_fetch_row($rs))
+		while(list($id,$cell_id, $original_id, $name, $type, $protocol_tag) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setID($id);
 			$this->setCell_id($cell_id);
@@ -117,7 +117,7 @@ class attachment_phases
 		$query = "SELECT name, type FROM Attachment WHERE original_id = '$id' and cell_id = '$id_neuron'";
 		//echo "<br>".$query;
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		if(list($attachment, $attachment_type) = mysqli_fetch_row($rs))
+		if(list($attachment, $attachment_type) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 		//	while(list($attachment, $attachment_type) = mysqli_fetch_row($rs))
 		//	{	
@@ -142,7 +142,7 @@ class attachment_phases
 		//print("cell id".$id_neuron);
 		$query = "SELECT name, type FROM Attachment WHERE original_id = '$id' and cell_id = '$id_neuron' and parameter= '$parameter'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		if(list($attachment, $attachment_type) = mysqli_fetch_row($rs))
+		if(list($attachment, $attachment_type) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			//	while(list($attachment, $attachment_type) = mysqli_fetch_row($rs))
 			//	{
@@ -167,7 +167,7 @@ class attachment_phases
 		//print("cell id".$id_neuron);
 		$query = "SELECT name, type FROM Attachment WHERE original_id = '$id' and cell_id = '$id_neuron' and parameter= '$parameter' and protocol_tag LIKE '$protocolTag'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		if(list($attachment, $attachment_type) = mysqli_fetch_row($rs))
+		if(list($attachment, $attachment_type) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			//	while(list($attachment, $attachment_type) = mysqli_fetch_row($rs))
 			//	{

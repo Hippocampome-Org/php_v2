@@ -51,7 +51,7 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
 		/*
 			Set precision of digits
 		*/
-	    if ($value == 0) {
+	    if ((float)$value == 0) {
 	        $decimalPlaces = $digits - 1;
 	    } elseif ($value < 0) {
 	        $decimalPlaces = $digits - floor(log10($value * -1)) - 1;
@@ -124,7 +124,7 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
 		if ($page!='') {echo $i." ";}
 		if ($page=='dal' || $page=='sd') {
 			for ($j=0;$j<count($parcel_group ?? array());$j=$j+2) {
-				if (!in_array($j, $parcels_skip)) {
+				if (!in_array($j, ($parcels_skip ?? array()))) {
 					$entry_output = "\"";
 					$i_adj = $i;
 					$j_adj = $j;
@@ -134,7 +134,7 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
 					else if ($j == 14) {$j_adj = 12;}
 					else if ($j == 16) {$j_adj = 10;}
 					for ($adi=0;$adi<2;$adi++) {
-			            if ($adi == 0) {
+			            if ((float)$adi == 0) {
 		                    $j_adj2 = $j_adj;
 		                    $entry_output = $entry_output."&nbsp;";
 		                }
@@ -149,9 +149,9 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
 			                if ($result->num_rows > 0) {
 			                    while ($row = $result->fetch_assoc()) {
 			                        $avg_trunk = $row['avg_trunk'];
-			                        if ($avg_trunk != '' && $avg_trunk != 0) {
+			                        if ($avg_trunk != '' && (float)$avg_trunk != 0) {
 			                            $entry_output = $entry_output."<a href='property_page_synpro.php?id_neuron=".$neuron_ids[$i_adj]."&val_property=".$parcel_ids[$j_adj2];
-				                            if ($adi == 0){
+				                            if ((float)$adi == 0){
 				                            	$entry_output = $entry_output."&color=red&page=1&sp_page=dal'";}
 				                            else {
 				                            	$entry_output = $entry_output."&color=blue&page=1&sp_page=dal'";	
@@ -172,9 +172,9 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
 	                        if ($result->num_rows > 0) {
 	                            while ($row = $result->fetch_assoc()) {
 	                                $avg_trunk = $row['avg_trunk'];
-	                                if ($avg_trunk != '' && $avg_trunk != 0) {
+	                                if ($avg_trunk != '' && (float)$avg_trunk != 0) {
 			                            $entry_output = $entry_output."<a href='property_page_synpro.php?id_neuron=".$neuron_ids[$i_adj]."&val_property=".$parcel_ids[$j_adj2];
-			                            	if ($adi == 0){
+			                            	if ((float)$adi == 0){
 				                            	$entry_output = $entry_output."&color=red&page=1&sp_page=sd'";}
 				                            else {
 				                            	$entry_output = $entry_output."&color=blue&page=1&sp_page=sd'";	
@@ -194,7 +194,7 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
 			}
 			// find all parcel values
 			for ($adi = 0; $adi < 2; $adi++) {
-		        if ($adi == 0) {
+		        if ((float)$adi == 0) {
 		            $a_or_d = 'Axon: ';
 		            $prcl   = '';
 		            $nl     = "\\n";
@@ -251,7 +251,7 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
 					while($row = $result->fetch_assoc()) {
 						$val = $row['val'];
 						$stdev = $row['stdev'];
-						if ($val != '' && $val != 0) {
+						if ($val != '' && (float)$val != 0) {
 							if ($stdev=="N/A") {
 								$stdev_entry="N/A";
 							}
@@ -270,7 +270,7 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
 					while($row = $result->fetch_assoc()) {
 						$val = $row['val'];
 						$stdev = $row['stdev'];
-						if ($val != '' && $val != 0) {
+						if ($val != '' && (float)$val != 0) {
 							if ($stdev=="N/A") {
 								$stdev_entry="N/A";
 							}
@@ -289,7 +289,7 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
 					while($row = $result->fetch_assoc()) {
 						$val = $row['val'];
 						$stdev = $row['stdev'];
-						if ($val != '' && $val != 0) {
+						if ($val != '' && (float)$val != 0) {
 							if ($stdev=="N/A") {
 								$stdev_entry="N/A";
 							}
@@ -357,12 +357,12 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
 				$last_index = count($write_output ?? array())-1; // last line
 				fwrite($output_file, $write_output[$last_index]."]}]}"); 
 			}
-			elseif (in_array($o_i, $neuron_group_cols)) {
+			elseif (in_array($o_i, ($neuron_group_cols ?? array()))) {
 				//if ($o_i>2) {fwrite($output_file, "\"\"]},{\"cell\":[");}
 				fwrite($output_file, $neuron_groups_ordered[$t_out]);
 				$t_out++;
 			}
-			elseif (in_array($o_i, $neuron_class_cols)) {
+			elseif (in_array($o_i, ($neuron_class_cols ?? array()))) {
 				$line_start = substr($neuron_classes[$n_out], 0, 34);
 				$title = $parcel_output[$n_out];
 				$line_end = substr($neuron_classes[$n_out], 34);
@@ -419,12 +419,12 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
 				$last_index = count($write_output ?? array())-1; // last line
 				fwrite($output_file, "\"".$write_output[$last_index]."\"]}]}"); 
 			}
-			elseif (in_array($o_i, $neuron_group_cols)) {
+			elseif (in_array($o_i, ($neuron_group_cols ?? array()))) {
 				//if ($o_i>2) {fwrite($output_file, "\"\"]},{\"cell\":[");}
 				fwrite($output_file, $neuron_groups_ordered[$t_out]);
 				$t_out++;
 			}
-			elseif (in_array($o_i, $neuron_class_cols)) {
+			elseif (in_array($o_i, ($neuron_class_cols ?? array()))) {
 				fwrite($output_file, $neuron_classes_ordered[$n_out]);
 				$n_out++;
 			}

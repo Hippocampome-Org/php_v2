@@ -1,7 +1,7 @@
 <?php
 function property($n)
 {
-	if ($n == 0)
+	if ((float)$n == 0)
 		$property = 'Morphology';
 	if ($n == 1)	
 		$property = 'Molecular markers';

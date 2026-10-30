@@ -21,7 +21,7 @@ class counts
 		$query = "SELECT DISTINCT measurement_equation, interpretation FROM counts_fragment WHERE cellID = '$cell_id'";	
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($measurement_equation, $interpretation) = mysqli_fetch_row($rs))
+		while(list($measurement_equation, $interpretation) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$this->setMeasurement_eqn($measurement_equation, $n);
 			$this->setInterpretation($interpretation, $n);
@@ -36,7 +36,7 @@ class counts
 		$query = "SELECT DISTINCT variable, cell_type FROM counts_fragment WHERE cellID = '$cell_id' ORDER BY variable";	
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($variable, $cell_type) = mysqli_fetch_row($rs))
+		while(list($variable, $cell_type) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$this->setVariable($variable, $n);
 			$this->setCell_type($cell_type, $n);
@@ -51,7 +51,7 @@ class counts
 		$query = "SELECT DISTINCT counts FROM counts WHERE unique_ID ='$id'";
 
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($counts) = mysqli_fetch_row($rs))
+		while(list($counts) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setCounts($counts);
 		}
@@ -62,7 +62,7 @@ class counts
 		$query = "SELECT DISTINCT counts FROM counts WHERE unique_ID ='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$counts_value="";
-		while($rows=mysqli_fetch_array($rs, MYSQLI_ASSOC))
+		while($rows=($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null))
 		{	
 			$counts_value=$rows['counts'];
 		}
@@ -73,7 +73,7 @@ class counts
 		$query = "SELECT lower_bound FROM counts WHERE unique_ID ='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$lower_bound_value="";
-		while($rows=mysqli_fetch_array($rs, MYSQLI_ASSOC))
+		while($rows=($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null))
 		{	
 			$lower_bound_value=$rows['lower_bound'];
 		}
@@ -84,7 +84,7 @@ class counts
 		$query = "SELECT upper_bound FROM counts WHERE unique_ID ='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$upper_bound_value="";
-		while($rows=mysqli_fetch_array($rs, MYSQLI_ASSOC))
+		while($rows=($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null))
 		{	
 			$upper_bound_value=$rows['upper_bound'];
 		}

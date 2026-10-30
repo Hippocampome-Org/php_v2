@@ -26,7 +26,7 @@ class epdata
         $table=$this->getName_table();
         $query = "SELECT raw, value1, value2, error, std_sem, n, istim, time, location, rep_value, gt_value FROM $table WHERE id = '$id'";
         $rs = mysqli_query($GLOBALS['conn'],$query);
-        while (list($raw, $value1, $value2, $error, $std_sem, $n, $istim, $time, $location, $rep_value, $gt_value) = mysqli_fetch_row($rs))
+        while (list($raw, $value1, $value2, $error, $std_sem, $n, $istim, $time, $location, $rep_value, $gt_value) = ($rs ? mysqli_fetch_row($rs) : null))
         {    
             $this->setRaw($raw);    
             $this->setValue1($value1);
@@ -48,7 +48,7 @@ class epdata
         $query = "SELECT value1 FROM $table WHERE id='$id'";
         $rs = mysqli_query($GLOBALS['conn'],$query);
         $n = 0;
-        while (list($value1) = mysqli_fetch_row($rs))
+        while (list($value1) = ($rs ? mysqli_fetch_row($rs) : null))
         {    
             $this->setValue1_array($n, $value1);
             $n = $n + 1;

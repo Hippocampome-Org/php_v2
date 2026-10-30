@@ -568,7 +568,7 @@ include ("function/menu_main.php");
 		<?php
 			print ("<select  name='check1'  onChange=\"show_only(this)\">");
 			$hippo = array("ASP.", "ASP.ASP.", "ASP.NASP", "ASP.SLN", "D.", "D.ASP.", "D.RASP.NASP", "D.NASP", "D.PSTUT", "D.TSWB.NASP", "RASP.", "RASP.ASP.", "RASP.NASP", "RASP.SLN", "NASP", "PSTUT", "PSWB", "TSTUT.", "TSTUT.ASP.", "TSTUT.NASP", "TSTUT.PSTUT", "TSTUT.SLN", "TSWB.NASP", "TSWB.SLN");
-			if($indexFP!=0){
+			if((float)$indexFP!=0){
 				print("<option value='".$indexFP."'>".$hippo[$indexFP]."</option>");
 			}
 			for($i=0;$i<count($hippo ?? array());$i++){

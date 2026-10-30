@@ -33,7 +33,7 @@ function getSubject_untracked()
 	$rs = mysqli_query($GLOBALS['conn'],$query);
 	$n = 20;
 	$count = 0;
-	while(list($subject) = mysqli_fetch_row($rs))
+	while(list($subject) = ($rs ? mysqli_fetch_row($rs) : null))
 	{
 		// The actual names of these differ in the database
 		// Hence using the name that needs to be displayed
@@ -53,7 +53,7 @@ function getSubject_untracked()
 				break;
 			}
 		}
-		if($flag == 0)
+		if((float)$flag == 0)
 		{
 			// Store only the Untracked Markers
 			$untracked_markers_array[$n] = $subject;
@@ -66,7 +66,7 @@ function part($n, $property)
 {
 	if ($property == 'Morphology')
 	{
-		if ($n == 0)
+		if ((float)$n == 0)
 			$part = 'Soma';
 		if ($n == 1)
 			$part = 'Dendrite';
@@ -88,7 +88,7 @@ function part($n, $property)
 
 	if ($property == 'Electrophysiology')
 	{
-		if ($n == 0)
+		if ((float)$n == 0)
 			$part = 'V rest';
 		if ($n == 1)
 			$part = 'R in';
@@ -112,7 +112,7 @@ function part($n, $property)
 	
 	if ($property == 'Connectivity')
 	{	
-		if ($n == 0)
+		if ((float)$n == 0)
 			$part = 'Pre-synaptic input';
 		if ($n == 1)
 			$part = 'Post-synaptic output';
@@ -120,7 +120,7 @@ function part($n, $property)
 	
 	if ($property == 'Major Neurotransmitter')
 	{
-		if($n == 0)
+		if((float)$n == 0)
 			$part = 'GABA';
 		if($n == 1)
 			$part = 'Glutamate';
@@ -135,7 +135,7 @@ function partFiringPattern()
 	$index=0;
 	$query_to_get_firing_pattern = "SELECT DISTINCT overall_fp FROM FiringPattern WHERE definition_parameter like 'definition'";
 	$rs_firing_pattern = mysqli_query($GLOBALS['conn'],$query_to_get_firing_pattern);	
-	while(list($firing_pattern) = mysqli_fetch_row($rs_firing_pattern))						
+	while(list($firing_pattern) = ($rs_firing_pattern ? mysqli_fetch_row($rs_firing_pattern) : null))						
 		$part[$index++] = $firing_pattern;
 	return $part;
 }
@@ -147,11 +147,11 @@ function partFiringPatternParameter()
 	$index=0;
 	$query_to_get_firing_pattern_parameter = "SELECT *  FROM FiringPattern WHERE id=1";
 	$rs_firing_pattern_parameter = mysqli_query($GLOBALS['conn'],$query_to_get_firing_pattern_parameter);	
-	$firing_pattern_parameter=mysqli_fetch_array($rs_firing_pattern_parameter, MYSQLI_NUM);
+	$firing_pattern_parameter=($rs_firing_pattern_parameter ? mysqli_fetch_array($rs_firing_pattern_parameter, MYSQLI_NUM) : null);
 
 	$query_to_get_firing_pattern = "SELECT * FROM FiringPattern WHERE definition_parameter like 'definition'";
 	$rs_firing_pattern = mysqli_query($GLOBALS['conn'],$query_to_get_firing_pattern);	
-	while($firing_pattern = mysqli_fetch_array($rs_firing_pattern,MYSQLI_NUM)){						
+	while($firing_pattern = ($rs_firing_pattern ? mysqli_fetch_array($rs_firing_pattern,MYSQLI_NUM) : null)){						
 		for($ind=3;$ind<(count($firing_pattern ?? array())-1) ;$ind++ ){	
 			if($firing_pattern[$ind]==1)
 				$part_view[$ind-3] = 1;

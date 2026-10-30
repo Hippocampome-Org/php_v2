@@ -215,7 +215,7 @@ class parcel {
 				." WHERE predicate = 'in' AND object = '".$objectType."' and t.status ='active' AND subject = '".$subject."' ORDER BY t.position";
 		
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($name,$subregion,$nickname,$excit_inhib,$subject,$predicate,$object,$typeId,$propertyId) = mysqli_fetch_row($rs))
+		while(list($name,$subregion,$nickname,$excit_inhib,$subject,$predicate,$object,$typeId,$propertyId) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$parcel = new parcel();
 			$parcel->setName($name);
@@ -247,7 +247,7 @@ class parcel {
 			echo " Query : ".$query; */
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$count = 0;
-		while(list($type1_id,$type1_subregion,$type1_nickname,$type2_id,$type2_subregion,$type2_nickname) = mysqli_fetch_row($rs))
+		while(list($type1_id,$type1_subregion,$type1_nickname,$type2_id,$type2_subregion,$type2_nickname) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$parcel = new parcel();
 			$parcel->setType1Id($type1_id);

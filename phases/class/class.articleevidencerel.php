@@ -37,7 +37,7 @@ class articleevidencerel_phases
 		$query = "SELECT id FROM Article WHERE pmid_isbn=$pmid;";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$id_result = 0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$id_result = $id;
 		}
@@ -55,7 +55,7 @@ class articleevidencerel_phases
 		$query = "SELECT pmid FROM phases_fragment WHERE id='$evidence_id';";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setarticle_id_array($id, $n);		
 			$n = $n +1;
@@ -71,7 +71,7 @@ class articleevidencerel_phases
 		$query = "SELECT DISTINCT reference_ID FROM $table WHERE source = '".$source."' AND target = '".$target."'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while($ref_ID = mysqli_fetch_row($rs))
+		while($ref_ID = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setarticle_id_array($ref_ID, $n);		
 			$n = $n +1;

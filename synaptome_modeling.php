@@ -34,7 +34,7 @@
 	$rec_mode = $_REQUEST['param_5'] ?? null;
 	$query = "SELECT id FROM conditions WHERE species='$species' AND sex='$sex' AND age='$age' AND temp='$temp' AND rec_mode='$rec_mode'";
 	$rs = mysqli_query($conn2,$query);
-	while(list($cond_num) = mysqli_fetch_row($rs))
+	while(list($cond_num) = ($rs ? mysqli_fetch_row($rs) : null))
 	{
 		$cond_id = $cond_num;
 	}

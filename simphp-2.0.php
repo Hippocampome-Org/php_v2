@@ -97,7 +97,7 @@ if ($_GET['display'] == "true") {
 
 				//Create new $toWrite based on CONFIG
 				//Write file according to CONFIG above.
-				if ($type == 0) {
+				if ((float)$type == 0) {
 					$toWrite = "1";
 					$info = $beforeAllText . "1";
 				} else if ($type == 1) {
@@ -116,7 +116,7 @@ if ($_GET['display'] == "true") {
 		$log = file_get_contents($log_file);
 
 		//Get type from CONFIG above.
-		if ($type == 0) {
+		if ((float)$type == 0) {
 
 			//Create info to write to log file and info to show.
 			$toWrite = intval($log) + 1;
@@ -130,7 +130,7 @@ if ($_GET['display'] == "true") {
 			$IPArray = explode(",", $IPs);
 
 			//Check for visitor IP in list of IPs.
-			if (array_search($uIP, $IPArray, true) === false) {
+			if (array_search($uIP, ($IPArray ?? array()), true) === false) {
 				//If doesnt' exist increase hits and include IP.
 				$hits = intval($hits) + 1;
 				$toWrite = $hits . ";" . $IPs . $uIP . ",";
@@ -158,7 +158,7 @@ if ($_GET['display'] == "true") {
 			$allHits = intval($allHits) + 1;
 
 			//Search for visitor IP in list of IPs.
-			if (array_search($uIP, $IPArray, true) === false) {
+			if (array_search($uIP, ($IPArray ?? array()), true) === false) {
 				//Increase ONLY unique hits and append IP.
 				$uniqueHits = intval($uniqueHits) + 1;
 				$toWrite = $allHits . ";" . $uniqueHits . ";" . $IPs . $uIP . ",";
@@ -175,7 +175,7 @@ if ($_GET['display'] == "true") {
 		fclose($fp);
 
 		//Write file according to CONFIG above.
-		if ($type == 0) {
+		if ((float)$type == 0) {
 			$toWrite = "1";
 			$info = $beforeAllText . "1";
 		} else if ($type == 1) {

@@ -37,7 +37,7 @@ class term
 		
 		$query = "SELECT id, dt, parent, concept, term, resource_rank, resource, portal, repository, unique_id, definition_link, definition, protein_gene, human_rat, control FROM $table WHERE id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while (list($id, $dt, $parent, $concept, $term, $resource_rank, $resource, $portal, $repository, $unique_id, $definition_link, $definition, $protein_gene, $human_rat, $control) = mysqli_fetch_row($rs))
+		while (list($id, $dt, $parent, $concept, $term, $resource_rank, $resource, $portal, $repository, $unique_id, $definition_link, $definition, $protein_gene, $human_rat, $control) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setId($id);
 			$this->setDt($dt);
@@ -64,7 +64,7 @@ class term
 		$query = "SELECT DISTINCT term FROM $table ORDER BY term";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setName_neuron_array($id, $n);						
 			$n = $n + 1;
@@ -79,7 +79,7 @@ class term
 		$query = "SELECT DISTINCT term FROM $table WHERE concept='$concept'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
              $_term_concept[] = $id;		
 		}
@@ -94,7 +94,7 @@ class term
 		$query = "SELECT DISTINCT parent FROM $table WHERE concept='$concept'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
              $_parent_concept[] = $id;		
 		}
@@ -112,7 +112,7 @@ class term
 		$termconcept = $name;
 		$query = "SELECT id, concept FROM $table WHERE term = '$name'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($id, $concept) = mysqli_fetch_row($rs))
+		while(list($id, $concept) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$termconcept = $concept;
 			break;
@@ -122,7 +122,7 @@ class term
 		$query = "SELECT id FROM $table WHERE concept = '$termconcept' GROUP BY definition ORDER BY resource_rank";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$this->setID_array($id, $n);
 			$n = $n + 1;

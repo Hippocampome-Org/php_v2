@@ -5,9 +5,9 @@
   $result = mysqli_query($GLOBALS['conn'],$query);
   
   $json_data = array();
-  while ($row = mysqli_fetch_assoc($result)) {
+  while ($row = ($result ? mysqli_fetch_assoc($result) : null)) {
 	 $name_key = $row["name"];
-	 if(!array_key_exists($name_key,$json_data)) {
+	 if(!array_key_exists($name_key,($json_data ?? array()))) {
 		$json_data[$name_key] = array($row);
 	 } else {
 		array_push($json_data[$name_key],$row);

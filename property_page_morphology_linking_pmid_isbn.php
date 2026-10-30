@@ -357,7 +357,7 @@ if ($name_show_only_article_var)
 	
 	$query ="SELECT id, PMID FROM $name_temporary_table";
 	$rs = mysqli_query($GLOBALS['conn'],$query);					
-	while(list($id, $pmid) = mysqli_fetch_row($rs))	
+	while(list($id, $pmid) = ($rs ? mysqli_fetch_row($rs) : null))	
 	{	
 		if ($name_show_only_article == 'article')
 		{
@@ -426,7 +426,7 @@ if ($name_show_only_authors_var)
 				
 		$query ="SELECT id FROM $name_temporary_table WHERE authors LIKE '%$name_show_only_authors%'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);					
-		while(list($id) = mysqli_fetch_row($rs))		
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))		
 		{
 			$query = "UPDATE $name_temporary_table SET show_only =  '1' WHERE id = '$id'";
 			$rs2 = mysqli_query($GLOBALS['conn'],$query);
@@ -823,7 +823,7 @@ function show_only_morphology(link, start1, stop1)
 		else
 		{
 			// Axons and Dendrites
-			if ($tt == 0)
+			if ((float)$tt == 0)
 			{
 				$part1[$tt] = 'Axons';
 				$property  -> retrive_ID(1, 'axons', 'in', $val_property);
@@ -884,7 +884,7 @@ function show_only_morphology(link, start1, stop1)
 			//Retreive information from attachment table
 			//$attachment_obj->retrive_by_id($fragment_id[$i],$id_neuron);
 					
-			if ($pmid_isbn_page!=0 && $pmid_isbn_page!= NULL)
+			if ((float)$pmid_isbn_page!=0 && $pmid_isbn_page!= NULL)
 			{
 				$article -> retrive_by_pmid_isbn_and_page_number($pmid_isbn, $pmid_isbn_page);
 				$id_article= $article -> getID();
@@ -958,7 +958,7 @@ function show_only_morphology(link, start1, stop1)
 	$query = "SELECT DISTINCT title FROM $name_temporary_table WHERE show_only = 1";
 	$rs = mysqli_query($GLOBALS['conn'],$query);
 	$n_id_tot = 0;	 // Total number of articles:
-	while(list($id) = mysqli_fetch_row($rs))			
+	while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))			
 		$n_id_tot = $n_id_tot + 1;
 	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++				
 				
@@ -966,28 +966,28 @@ function show_only_morphology(link, start1, stop1)
 	$query = "SELECT DISTINCT quote FROM $name_temporary_table WHERE show_only = 1";	
 	$rs = mysqli_query($GLOBALS['conn'],$query);
 	$number_of_quotes = 0;  // total number of quotes
-	while(list($id) = mysqli_fetch_row($rs))			
+	while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))			
 		$number_of_quotes = $number_of_quotes + 1;
 						
 	// find the total number of quotes of type axon: ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	$query = "SELECT DISTINCT quote FROM $name_temporary_table WHERE show_only = 1 and type='Axons'";	
 	$rs = mysqli_query($GLOBALS['conn'],$query);
 	$number_of_quotes_axon = 0;  // total number of axon quotes
-	while(list($id) = mysqli_fetch_row($rs))			
+	while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))			
 		$number_of_quotes_axon = $number_of_quotes_axon + 1;	
 					
 	// find the total number of quotes of type dendrite: ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	$query = "SELECT DISTINCT quote FROM $name_temporary_table WHERE show_only = 1 and type='Dendrites'";	
 	$rs = mysqli_query($GLOBALS['conn'],$query);
 	$number_of_quotes_dendrite = 0;  // total number of dendrite quotes
-	while(list($id) = mysqli_fetch_row($rs))			
+	while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))			
 		$number_of_quotes_dendrite = $number_of_quotes_dendrite + 1;
 
 	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++					
 	$query = "SELECT DISTINCT title FROM $name_temporary_table WHERE show_only = 1 ORDER BY $order_by $type_order LIMIT ".(int)$page_in." , 10";
 	$rs = mysqli_query($GLOBALS['conn'],$query);					
 	$n_id = 0;
-	while(list($title) = mysqli_fetch_row($rs))
+	while(list($title) = ($rs ? mysqli_fetch_row($rs) : null))
 	{
 		$title_temp[$n_id] = $title;											
 		$n_id = $n_id + 1;
@@ -1072,7 +1072,7 @@ function show_only_morphology(link, start1, stop1)
 
 			<?php	
 				// There are no results available:
-				if ($n_id == 0)
+				if ((float)$n_id == 0)
 					print ("<br><font class='font12'>There are no results available.</font><br><br>");
 									
 				for ($i=0; $i<$n_id; $i++)
@@ -1083,14 +1083,14 @@ function show_only_morphology(link, start1, stop1)
 					$rs = mysqli_query($GLOBALS['conn'],$query);	
 					$auth=array();	
 							
-					while(list($id, $authors, $publication, $year, $PMID, $pages, $page_location, $show, $pmcid, $nihmsid, $doi, $show_only, $volume, $issue) = mysqli_fetch_row($rs))
+					while(list($id, $authors, $publication, $year, $PMID, $pages, $page_location, $show, $pmcid, $nihmsid, $doi, $show_only, $volume, $issue) = ($rs ? mysqli_fetch_row($rs) : null))
 					{			
 						$auth=array();
 						$authors2="";
 						$f_auth="";
 						$authors1 = $authors;
 						$temp=explode(",", $authors);
-						$auth=array_merge($auth,$temp);
+						$auth=array_merge(($auth ?? array()),($temp ?? array()));
 						for($x=0;$x<sizeof($auth);$x++)
 						{
 							$f_auth=substr(trim($auth[$x]),0,1);
@@ -1132,7 +1132,7 @@ function show_only_morphology(link, start1, stop1)
 							<td width='5%' align='center' class='table_neuron_page2' valign='center'>
 						");							
 						
-						if ($show1 == 0)
+						if ((float)$show1 == 0)
 						{
 							print ("<form action='property_page_morphology_linking_pmid_isbn.php' method='post' style='display:inline'>");
 							print ("<input type='submit' name='show_1' value=' ' class='show1' title='Show Evidence' alt='Show Evidence'>");
@@ -1197,10 +1197,10 @@ function show_only_morphology(link, start1, stop1)
 							$id_fragment_old = NULL;
 							$type_old = NULL;
 							$n5=0;				
-							list($id_fragment_next, $id_original_next, $quote_next, $page_location_next, $type_next) = mysqli_fetch_row($rs_combo);
-							while(list($id_fragment, $id_original, $quote, $page_location, $type) = mysqli_fetch_row($rs))
+							list($id_fragment_next, $id_original_next, $quote_next, $page_location_next, $type_next) = ($rs_combo ? mysqli_fetch_row($rs_combo) : null);
+							while(list($id_fragment, $id_original, $quote, $page_location, $type) = ($rs ? mysqli_fetch_row($rs) : null))
 							{	
-									list($id_fragment_next, $id_original_next, $quote_next, $page_location_next, $type_next) = mysqli_fetch_row($rs_combo);
+									list($id_fragment_next, $id_original_next, $quote_next, $page_location_next, $type_next) = ($rs_combo ? mysqli_fetch_row($rs_combo) : null);
 								
 								
 									if (($id_fragment == $id_fragment_old));//duplicate  neuron copies
@@ -1453,10 +1453,10 @@ function show_only_morphology(link, start1, stop1)
 								else
 									$page_end1 = $page_end;
 								
-								if ($page_in == 0) 
+								if ((float)$page_in == 0) 
 									$no_button_down = 1;
 								
-								if ($n_id_tot != 0){
+								if ((float)$n_id_tot != 0){
 									print ("$page_in1 - $page_end1 of $n_id_tot articles ($number_of_quotes Quotes)");	
 								 
 								}
@@ -1484,10 +1484,10 @@ function show_only_morphology(link, start1, stop1)
 								else
 									$page_end1 = $page_end;
 								
-								if ($page_in == 0) 
+								if ((float)$page_in == 0) 
 									$no_button_down = 1;
 								
-								if ($n_id_tot != 0){
+								if ((float)$n_id_tot != 0){
 									print ("$page_in1 - $page_end1 of $n_id_tot articles ($number_of_quotes_axon Axon Quotes)");	
 										
 								}
@@ -1515,10 +1515,10 @@ function show_only_morphology(link, start1, stop1)
 								else
 									$page_end1 = $page_end;
 								
-								if ($page_in == 0) 
+								if ((float)$page_in == 0) 
 									$no_button_down = 1;
 								
-								if ($n_id_tot != 0){
+								if ((float)$n_id_tot != 0){
 									print ("$page_in1 - $page_end1 of $n_id_tot articles ($number_of_quotes_dendrite Dendrite Quotes)");	
 								}
 								 // Last page:

@@ -42,7 +42,7 @@ class articleevidencerel_synpro
 		$query = "SELECT DISTINCT article_id FROM $table WHERE Evidence_id = '$evidence_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setarticle_id_array($id, $n);		
 			$n = $n +1;
@@ -58,7 +58,7 @@ class articleevidencerel_synpro
 		$query = "SELECT DISTINCT reference_ID FROM $table WHERE source = '".$source."' AND target = '".$target."'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while($ref_ID = mysqli_fetch_row($rs))
+		while($ref_ID = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setarticle_id_array($ref_ID, $n);		
 			$n = $n +1;

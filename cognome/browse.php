@@ -290,7 +290,7 @@
       if ($result->num_rows > 0) { 
         while($row = $result->fetch_assoc()) { 
           $i=$i+1;
-          if (!in_array($i,$sel_list)) {
+          if (!in_array($i,($sel_list ?? array()))) {
             echo "<option value=".$i.">".$row[$col_descript]."</option>";
           }     
         }

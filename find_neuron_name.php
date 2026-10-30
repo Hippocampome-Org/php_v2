@@ -313,7 +313,7 @@ if (!empty($_REQUEST['clear_all']))
 							print("$count)&nbsp;<a href='neuron_page.php?id=$type_id' target='_blank' title='".$type_name."'>$type_nickname</a><br/>");
 						}	
 					}
-					if ($count==0) {
+					if ((float)$count==0) {
 						print("(to be determined)");
 					}
 					print("</td></tr>");	

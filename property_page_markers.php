@@ -409,7 +409,7 @@ if ($name_show_only_article_var)
 	
 	$query ="SELECT id, PMID FROM $name_temporary_table";
 	$rs = mysqli_query($GLOBALS['conn'],$query);					
-	while(list($id, $pmid) = mysqli_fetch_row($rs))	
+	while(list($id, $pmid) = ($rs ? mysqli_fetch_row($rs) : null))	
 	{	
 		if ($name_show_only_article == 'article')
 		{
@@ -496,7 +496,7 @@ if ($name_show_only_authors_var)
 				
 		$query ="SELECT id FROM $name_temporary_table WHERE authors LIKE '%$name_show_only_authors%'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);					
-		while(list($id) = mysqli_fetch_row($rs))		
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))		
 		{
 			$query = "UPDATE $name_temporary_table SET show2 =  '1' WHERE id = '$id'";
 			$rs2 = mysqli_query($GLOBALS['conn'],$query);
@@ -1089,7 +1089,7 @@ else {
 		              // print summary arrays for debugging and vetting
 		              
 		              list($permission) = mysqli_fetch_row(mysqli_query($GLOBALS['conn'],"SELECT permission FROM user WHERE id = '2'"));
-		              if ($permission == 0) { // only enabled for curation, where anonymous user is disabled
+		              if ((float)$permission == 0) { // only enabled for curation, where anonymous user is disabled
 
 						// table containing both table options
 		              	echo "<TABLE> <TR> <TD width='7%'></TD> <TD width='44%'>";
@@ -1360,7 +1360,7 @@ else {
 			// Retrieve MARKERDATA ID from EvidenceMarkerdataRel by using ID EVIDENCE: *****************************
 			$query = "SELECT id_evidence1 FROM $name_temporary_table";
 			$rs = mysqli_query($GLOBALS['conn'],$query);
-			while(list($id_evidence1) = mysqli_fetch_row($rs)) {
+			while(list($id_evidence1) = ($rs ? mysqli_fetch_row($rs) : null)) {
 				$evidencemarkerdatarel -> retrive_Markerdata_id($id_evidence1);
 				$id_markerdata1 = $evidencemarkerdatarel -> getMarkerdata_id_array(0);
 	
@@ -1373,7 +1373,7 @@ else {
 		$query = "SELECT show1 FROM $name_temporary_table";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n_show1=0;
-		while(list($show1) = mysqli_fetch_row($rs)) {
+		while(list($show1) = ($rs ? mysqli_fetch_row($rs) : null)) {
 			if ($show1 == 1)
 				$n_show1 = $n_show1 + 1;
 		}			
@@ -1465,7 +1465,7 @@ else {
 					$rs = mysqli_query($GLOBALS['conn'],$query);
 					$number_of_articles_1 = 0;
 					$number_of_books_1 = 0;
-					while(list($title, $pmid) = mysqli_fetch_row($rs))		
+					while(list($title, $pmid) = ($rs ? mysqli_fetch_row($rs) : null))		
 					{	
 						if (strlen($pmid) > 10)
 							$number_of_books_1 = $number_of_books_1 + 1;
@@ -1514,13 +1514,13 @@ else {
 					// retrieve the name of journal from temporary table:
 					$query ="SELECT DISTINCT publication FROM $name_temporary_table WHERE show1 = '1'";
 					$rs = mysqli_query($GLOBALS['conn'],$query);					
-					while(list($pub) = mysqli_fetch_row($rs))	
+					while(list($pub) = ($rs ? mysqli_fetch_row($rs) : null))	
 					{	
 						// retrieve the number of articles for this publication:
 						$query1 ="SELECT DISTINCT title FROM $name_temporary_table WHERE publication = '$pub'";
 						$rs1 = mysqli_query($GLOBALS['conn'],$query1);
 						$n_pub1=0;					
-						while(list($id) = mysqli_fetch_row($rs1))							
+						while(list($id) = ($rs1 ? mysqli_fetch_row($rs1) : null))							
 							$n_pub1 = $n_pub1 + 1;
 					
 						if ($pub == $name_show_only_journal);
@@ -1539,7 +1539,7 @@ else {
 					$query ="SELECT DISTINCT authors FROM $name_temporary_table WHERE show1 = '1'";
 					$rs = mysqli_query($GLOBALS['conn'],$query);				
 					
-					while(list($aut) = mysqli_fetch_row($rs))
+					while(list($aut) = ($rs ? mysqli_fetch_row($rs) : null))
 					{
 						$aut1=$aut1.", ".$aut;
 					}					
@@ -1547,7 +1547,7 @@ else {
 					$single_aut=explode('*', $aut1);
 
 					sort($single_aut);
-					$single_aut2=array_unique($single_aut);
+					$single_aut2=array_unique(($single_aut ?? array()));
 
 					// Remove the blank from array:
 					$ni=0;
@@ -1577,7 +1577,7 @@ else {
 						$query1 ="SELECT DISTINCT title FROM $name_temporary_table WHERE authors LIKE '%$single_aut3[$i1]%'";
 						$rs1 = mysqli_query($GLOBALS['conn'],$query1);
 						$n_auth1=0;					
-						while(list($id) = mysqli_fetch_row($rs1))	
+						while(list($id) = ($rs1 ? mysqli_fetch_row($rs1) : null))	
 							$n_auth1 = $n_auth1 + 1;	
 
 						print ("<OPTION VALUE='$single_aut3[$i1]'>$single_aut3[$i1] ($n_auth1)</OPTION>");
@@ -1641,7 +1641,7 @@ else {
 		//$query = "SELECT DISTINCT authors, title, publication, year, PMID, pages, pmcid, NIHMSID, doi, citation, show2, show_button, volume, issue, secondary_pmid FROM $name_temporary_table";
 		$rs = mysqli_query($GLOBALS['conn'],$query);	
 		$number_of_article = 0;		
-		while(list($authors, $title, $publication, $year, $PMID, $pages, $pmcid, $NIHMSID, $doi, $citation, $show2, $show_button, $volume, $issue, $secondary_pmid) = mysqli_fetch_row($rs))		
+		while(list($authors, $title, $publication, $year, $PMID, $pages, $pmcid, $NIHMSID, $doi, $citation, $show2, $show_button, $volume, $issue, $secondary_pmid) = ($rs ? mysqli_fetch_row($rs) : null))		
 		{
 			$DOI[$number_of_article]=$doi;
 			
@@ -1731,7 +1731,7 @@ else {
 				$query = "SELECT DISTINCT id_fragment, id_original, quote, interpretation, interpretation_notes, linking_pmid_isbn, linking_pmid_isbn_page, linking_quote, linking_page_location,page_location, id_markerdata, show1, type, type_marker, id_evidence1, id_evidence2, secondary_pmid, PMID FROM $name_temporary_table WHERE title = '$title1[$t3]' ";				
 				$rs = mysqli_query($GLOBALS['conn'],$query);											
 				//while(list($aa, $id_fragment, $id_original, $quote, $interpretation, $interpretation_notes, $linking_pmid_isbn, $linking_pmid_isbn_page, $linking_quote, $linking_page_location, $page_location, $id_markerdata, $show1, $type, $type_marker, $color_see, $id_evidence1, $id_evidence2, $secondary_pmid, $PMID) = mysqli_fetch_row($rs))		
-				while(list($id_fragment, $id_original, $quote, $interpretation, $interpretation_notes, $linking_pmid_isbn, $linking_pmid_isbn_page, $linking_quote, $linking_page_location, $page_location, $id_markerdata, $show1, $type, $type_marker, $id_evidence1, $id_evidence2, $secondary_pmid, $PMID) = mysqli_fetch_row($rs))		
+				while(list($id_fragment, $id_original, $quote, $interpretation, $interpretation_notes, $linking_pmid_isbn, $linking_pmid_isbn_page, $linking_quote, $linking_page_location, $page_location, $id_markerdata, $show1, $type, $type_marker, $id_evidence1, $id_evidence2, $secondary_pmid, $PMID) = ($rs ? mysqli_fetch_row($rs) : null))		
 				{
 					//bhawna
 					//if ($show1 == 1)

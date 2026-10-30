@@ -67,7 +67,7 @@ if (!empty($text_file_creation))
  //to hide Firing Pattern button at the bottom page
 $query = "SELECT permission FROM user WHERE id=2"; // id=2 is anonymous user
 $rs = mysqli_query($conn,$query);
-list($permission) = mysqli_fetch_row($rs);
+list($permission) = ($rs ? mysqli_fetch_row($rs) : null);
 ?>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -377,12 +377,12 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 				$u=0;
 				$auth=array();
 				$auth_first_name=array();
-				while($erows = mysqli_fetch_array($query_results, MYSQLI_ASSOC))
+				while($erows = ($query_results ? mysqli_fetch_array($query_results, MYSQLI_ASSOC) : null))
 				{
 				$auth[$g]=$erows['auth_id'];
 				$fetch_auth_name="SELECT DISTINCT c.name AS name_auth FROM Author c WHERE c.id='$auth[$g]'";
 				$resss=mysqli_query($GLOBALS['conn'],$fetch_auth_name);
-				while($drows = mysqli_fetch_array($resss, MYSQLI_ASSOC))
+				while($drows = ($resss ? mysqli_fetch_array($resss, MYSQLI_ASSOC) : null))
 				{
 				$auth_first_name[$u]=$drows['name_auth'];
 				//asort($auth_first_name);
@@ -408,7 +408,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 					$t="SELECT a.id,a.publication AS pub,a.volume AS vol,a.pmid_isbn AS pmid,a.issue AS iss,a.first_page AS first,a.last_page AS last,a.year AS yea,a.doi AS doi FROM Article AS a WHERE a.title='$article_title[$i1]'";
 					$r=mysqli_query($GLOBALS['conn'],$t);
 					$l=0;
-					while($row = mysqli_fetch_array($r, MYSQLI_ASSOC))
+					while($row = ($r ? mysqli_fetch_array($r, MYSQLI_ASSOC) : null))
 					{
 						$publi=$row['pub'];
 						$pm=$row['pmid'];
@@ -426,13 +426,13 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 					$g=0;
 					$auths=array();
 					$auth_name=array();
-					while($rows = mysqli_fetch_array($results, MYSQLI_ASSOC))
+					while($rows = ($results ? mysqli_fetch_array($results, MYSQLI_ASSOC) : null))
 					{
 						$auths[$g]=$rows['auth_id'];
 						$fetch_auth="SELECT DISTINCT c.name AS name_auth FROM Author c WHERE c.id='$auths[$g]'";
 						$ress=mysqli_query($GLOBALS['conn'],$fetch_auth);
 						$u=0;
-						while($arows = mysqli_fetch_array($ress, MYSQLI_ASSOC))
+						while($arows = ($ress ? mysqli_fetch_array($ress, MYSQLI_ASSOC) : null))
 						{
 							$auth_name[$g]=$arows['name_auth'];
 							$auth_name[$g]=preg_replace("/'/", "&#39;", ($auth_name[$g] ?? ''));
@@ -445,7 +445,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 					$tag_query_morpho = "select * from EvidencePropertyTypeRel where type_id ='$id' and evidence_id in
 								(select evidence_id from ArticleEvidenceRel where article_id = '$article_id')";
 					$results_morpho =  mysqli_query($GLOBALS['conn'],$tag_query_morpho);
-					$num_rows_morpho = mysqli_num_rows($results_morpho);
+					$num_rows_morpho = ($results_morpho ? mysqli_num_rows($results_morpho) : null);
 					if($num_rows_morpho > 0)
 					{ 
 						if($tag == '')
@@ -458,7 +458,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 									(select evidence1_id from EvidenceEvidenceRel where evidence2_id in
 									   (select evidence_id from ArticleEvidenceRel where article_id = '$article_id')))";
 			                $results_marker =  mysqli_query($GLOBALS['conn'],$tag_query_marker);
-					$num_rows_marker = mysqli_num_rows($results_marker);
+					$num_rows_marker = ($results_marker ? mysqli_num_rows($results_marker) : null);
 					if($num_rows_marker > 0)
 					{
 						if($tag == '')
@@ -471,7 +471,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 									(select evidence1_id from EvidenceEvidenceRel where evidence2_id in
 									   (select evidence_id from ArticleEvidenceRel where article_id = '$article_id')))";
 					$results_ephys = mysqli_query($GLOBALS['conn'],$tag_query_ephys);
-					$num_rows_ephys = mysqli_num_rows($results_ephys);
+					$num_rows_ephys = ($results_ephys ? mysqli_num_rows($results_ephys) : null);
 					if($num_rows_ephys > 0)
 					{
 						if ($tag == '')						
@@ -482,7 +482,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 					/* connectivity tag */
 					$tag_query_conn = "SELECT id FROM ConnFragment where pmid_isbn='".$pm."'";
 					$results_conn =  mysqli_query($GLOBALS['conn'],$tag_query_conn);
-					$num_rows_conn = mysqli_num_rows($results_conn);
+					$num_rows_conn = ($results_conn ? mysqli_num_rows($results_conn) : null);
 					if($num_rows_conn > 0)
 					{ 
 						if($tag == '')
@@ -492,7 +492,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 					}
 					$tag_query_fp = "select * from FiringPatternRel where Type_id = '$id' and original_id in (select original_id from Fragment where pmid_isbn = '".$pm."')";
 					$results_fp = mysqli_query($GLOBALS['conn'],$tag_query_fp);
-					$num_rows_fp = mysqli_num_rows($results_fp);
+					$num_rows_fp = ($results_fp ? mysqli_num_rows($results_fp) : null);
 					if($num_rows_fp > 0)
 					{
 						if ($tag == '')						
@@ -503,7 +503,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 					/* phases tag */
 					$tag_query_phases = "SELECT id FROM phases_fragment where pmid='".$pm."'";
 					$results_phases =  mysqli_query($GLOBALS['conn'],$tag_query_phases);
-					$num_rows_phases = mysqli_num_rows($results_phases);
+					$num_rows_phases = ($results_phases ? mysqli_num_rows($results_phases) : null);
 					if($num_rows_phases > 0)
 					{ 
 						if($tag == '')
@@ -514,7 +514,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 					/* synapse probabilities tag */
 					$tag_query_synpro = "SELECT a.id FROM SynproArticleEvidenceRel s, Article as a WHERE a.id = s.Article_id AND a.pmid_isbn='".$pm."'";
 					$results_synpro =  mysqli_query($GLOBALS['conn'],$tag_query_synpro);
-					$num_rows_synpro = mysqli_num_rows($results_synpro);
+					$num_rows_synpro = ($results_synpro ? mysqli_num_rows($results_synpro) : null);
 					if($num_rows_synpro > 0)
 					{ 
 						if($tag == '')
@@ -675,7 +675,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 	           echo("<p>Error in Listing Supplementary PMIDs </p>");
 	       }
 	       else{
-		       while($row=mysqli_fetch_array($rs_supp_ids, MYSQLI_NUM)){
+		       while($row=($rs_supp_ids ? mysqli_fetch_array($rs_supp_ids, MYSQLI_NUM) : null)){
 		           $val=trim($row[0]);
 		           if($val!=""){
 		           		if(strpos($val,",")!==false){
@@ -790,7 +790,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 														<a href='https://neuromorpho.org/neuron_info.jsp?neuron_name=$neuron_name' target='_blank'>
 															<font class='font13'>$neuron_name</font>
 														</a>");
-						if ($jnd == 0){
+						if ((float)$jnd == 0){
 								print("
 														($reason_for_inclusion)
 													</li>");							
@@ -955,7 +955,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 			$pmid_isbn = $fragment -> getPmid_isbn();
 			$pmid_isbn_page= $fragment -> getPmid_isbn_page();
 			//$original_id = $fragment -> getOriginal_id();
-			if ($pmid_isbn_page!=0 && $pmid_isbn_page!= NULL)
+			if ((float)$pmid_isbn_page!=0 && $pmid_isbn_page!= NULL)
 			{
 				$article -> retrive_by_pmid_isbn_and_page_number($pmid_isbn, $pmid_isbn_page);
 				$id_article= $article -> getID();
@@ -1158,7 +1158,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 			}
 			$hippo_property_id[$part] = $this_id;
 		}
-		if ($marker_pos_disp_counter == 0)
+		if ((float)$marker_pos_disp_counter == 0)
 			$pos_array = NULL;
 		else {
 			array_multisort($pos_array['part_key'], SORT_STRING | SORT_FLAG_CASE,
@@ -1167,7 +1167,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 					$pos_array['weak_key'], SORT_STRING | SORT_FLAG_CASE,
 					$pos_array['conflict_key'], SORT_STRING | SORT_FLAG_CASE);
 		}
-		if ($marker_neg_disp_counter == 0)
+		if ((float)$marker_neg_disp_counter == 0)
 			$neg_array = NULL;
 		else {
 			array_multisort($neg_array['part_key'], SORT_STRING | SORT_FLAG_CASE,
@@ -1175,7 +1175,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 					$neg_array['unvetted_key'], SORT_STRING | SORT_FLAG_CASE,
 					$neg_array['conflict_key'], SORT_STRING | SORT_FLAG_CASE);
 		}
-		if ($marker_mixed_disp_counter == 0)
+		if ((float)$marker_mixed_disp_counter == 0)
 			$mixed_array = NULL;
 		else {						
 			array_multisort($mixed_array['part_key'], SORT_STRING | SORT_FLAG_CASE,
@@ -1188,7 +1188,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 		    $i = 0;
 		    for($z=0; $z<count($mixed_array['part_key'] ?? array()); $z++) {
 		    	$val = $mixed_array['part_key'][$z];
-		        if (!in_array($val, $key_array)) {
+		        if (!in_array($val, ($key_array ?? array()))) {
 		            $key_array[$i] = $val;
 		            $temp_array['part_key'][$i] = $mixed_array['part_key'][$z];
 		            $temp_array['disp_name_key'][$i] = $mixed_array['disp_name_key'][$z];
@@ -1228,7 +1228,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 				<td align="left" width="80%" class="table_neuron_page1"></td>
 			</tr>
 			<?php
-				if ($marker_pos_disp_counter == 0) {
+				if ((float)$marker_pos_disp_counter == 0) {
 					print ("
 						<tr>
 						<td width='20%' align='right'></td>
@@ -1313,7 +1313,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 				<td align="left" width="80%" class="table_neuron_page1"></td>				
 			</tr>	
 			<?php
-				if ($marker_neg_disp_counter == 0) {
+				if ((float)$marker_neg_disp_counter == 0) {
 					print ("
 						<tr>
 						<td width='20%' align='right'></td>
@@ -1385,7 +1385,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 				<td align="left" width="80%" class="table_neuron_page1"></td>
 			</tr>
 			<?php								
-				if ($marker_mixed_disp_counter == 0) {
+				if ((float)$marker_mixed_disp_counter == 0) {
 					print ("
 						<tr>
 						<td width='20%' align='right'></td>
@@ -1456,7 +1456,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 					$subject = $property -> getPart(); // ephys parameter
 					$evidencepropertyyperel -> retrive_evidence_id($property_id[$i], $id); // retrieve id_evidence by related property_id and id_type
 					$nn = $evidencepropertyyperel -> getN_evidence_id(); // get number of sources for this EP property
-					if ($nn != 0)
+					if ((float)$nn != 0)
 					{												
 						$val_min = 0;
 						$val_max = 0;
@@ -1479,7 +1479,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 								$epdata -> retrive_all_information($epdata_id);
 								// record min and max values
 								$value1 = $epdata -> getValue1();
-								if ($val_min == 0 && $val_max == 0)
+								if ((float)$val_min == 0 && (float)$val_max == 0)
 								{
 									$val_min = $value1;
 									$val_max = $value1;
@@ -1649,7 +1649,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 							else {
 								$print_str = ">" . $representative_value;
 							}
-							if ($representative_error != 0) {
+							if ((float)$representative_error != 0) {
 								$print_str = $print_str . "&plusmn;" . $max_n_statistics_strng;
 							}
 							$print_str = $print_str . " " . $res[2] . " (" . $representative_n_measurement . "); ";
@@ -1675,7 +1675,7 @@ $special_neuron_id_axo_axonic = result_set_to_array($result_special_case_axo_axo
 					} // end else (if ($nn == 0))
 				} // end if ($predicate == 'is between');
 			} // end for $i
-			if ($ephys_disp_counter == 0) {
+			if ((float)$ephys_disp_counter == 0) {
 				if ($id == '4094') { // Cajal-Retzius
 					print ("
 						<tr>
@@ -1772,13 +1772,13 @@ WHERE
         AND fpr.original_id = a.original_id
         AND fpr.Type_id = $id";
 	$rs_images = mysqli_query($GLOBALS['conn'],$query_to_get_images);
-	$fp_count=mysqli_num_rows($rs_images);
-	if($fp_count==0){
+	$fp_count=($rs_images ? mysqli_num_rows($rs_images) : null);
+	if((float)$fp_count==0){
 		print("No image is associated with this neuron");
 	}
 	else{
 		print("<div style='width:100%; background-color:white; height:95px; overflow:scroll;overflow-x: scroll;overflow-y: scroll;''>");
-		while(list($image) = mysqli_fetch_row($rs_images))	{		
+		while(list($image) = ($rs_images ? mysqli_fetch_row($rs_images) : null))	{		
 			print("<a href='attachment/fp/$image' target='_blank'><img style='float:left;' title='$image' src='attachment/fp/$image' border='1' width='160' height='90' alt='Image Missing' /></a>");
 		}
 		print("</div>");
@@ -1799,8 +1799,8 @@ WHERE
 		FROM FiringPatternRel fpr, FiringPattern fp
 		WHERE fpr.FiringPattern_id = fp.id AND fpr.Type_id = $id GROUP BY fp.overall_fp";
 	$rs_parameter = mysqli_query($GLOBALS['conn'],$query_to_get_parameter);
-	$fp_count=mysqli_num_rows($rs_parameter);
-	if($fp_count==0){
+	$fp_count=($rs_parameter ? mysqli_num_rows($rs_parameter) : null);
+	if((float)$fp_count==0){
 		print("<td align='right' width='80%' class='table_neuron_page1'>
 		</td>
 		</tr>");
@@ -1815,7 +1815,7 @@ WHERE
 			View page
 		</td>
 		</tr>");
-		while(list($parameter,$firing_count) = mysqli_fetch_row($rs_parameter))	{		
+		while(list($parameter,$firing_count) = ($rs_parameter ? mysqli_fetch_row($rs_parameter) : null))	{		
 			print("<tr><td width='20%' align='right'> </td><td align='left' width='60%' class='table_neuron_page2'>");
 			print($parameter);
 			print("</td><td align='center' width='20%' class='table_neuron_page2'>");
@@ -1985,7 +1985,7 @@ WHERE
 		FROM ModelDB_mapping
 		WHERE Unique_ID = $id";
 	$dbmapping_parameter = mysqli_query($GLOBALS['conn'],$query_to_get_db_mapping);
-	if(mysqli_num_rows($dbmapping_parameter)>=0){
+	if(($dbmapping_parameter ? mysqli_num_rows($dbmapping_parameter) : null)>=0){
 ?>
 <table width="80%" border="0" cellspacing="2" cellpadding="0">
 	<tr>
@@ -2004,8 +2004,8 @@ WHERE
 			PubMed ID
 		</td>
 		</tr>");
-		while(list($db_accession,$pmid) = mysqli_fetch_row($dbmapping_parameter))	{		
-			if ($pmid == 0){
+		while(list($db_accession,$pmid) = ($dbmapping_parameter ? mysqli_fetch_row($dbmapping_parameter) : null))	{		
+			if ((float)$pmid == 0){
 				print("<tr>
 					       <td align='center' width='25%' class='table_neuron_page2'>");
 				print("<a align='center' href='http://modeldb.yale.edu/$db_accession' target='_blank'> $db_accession </a>");
@@ -2077,10 +2077,10 @@ WHERE
 		global $special_neuron_id_axo_axonic,$special_neuron_id_basket;
 		$url = '';
 		$axonic_basket_flag=0;
-		if(in_array($id_type_row, $special_neuron_id_axo_axonic) ){
+		if(in_array($id_type_row, ($special_neuron_id_axo_axonic ?? array())) ){
 			$axonic_basket_flag=1;
 		}
-		elseif(in_array($id_type_row, $special_neuron_id_basket)){
+		elseif(in_array($id_type_row, ($special_neuron_id_basket ?? array()))){
 			$axonic_basket_flag=2;
 		}
 		$url ='<a href="property_page_connectivity.php?id1_neuron='.$id_type_row.'&val1_property='.$val1.'&color1='.$color1.
@@ -2178,18 +2178,18 @@ WHERE
       $explicit_targets = result_set_to_array($result, "t2_id");
       //print "<br><br>EXPLICIT TARGETS:<br>"; print_r($explicit_targets);
 	  if (count($explicit_targets ?? array()) >= 1) {
-			$list_explicit_targets = array_unique($explicit_targets);
+			$list_explicit_targets = array_unique(($explicit_targets ?? array()));
 			$list_explicit_targets = get_sorted_records($list_explicit_targets);
 	  }
       $result = mysqli_query($GLOBALS['conn'],$explicit_nontarget_query);
       $explicit_nontargets = result_set_to_array($result, "t2_id");
       //print "<br><br>EXPLICIT NONTARGETS:<br>"; print_r($explicit_nontargets);	  
 	  if (count($explicit_nontargets ?? array()) >= 1) {
-			$list_explicit_nontargets = array_unique($explicit_nontargets);
+			$list_explicit_nontargets = array_unique(($explicit_nontargets ?? array()));
 			$list_explicit_nontargets = get_sorted_records($list_explicit_nontargets);
 	  }
-      $list_potential_targets = array_diff(array_diff($possible_targets, $explicit_nontargets), $explicit_targets);
-      $list_potential_targets = array_unique($list_potential_targets);
+      $list_potential_targets = array_diff(array_diff(($possible_targets ?? array()), ($explicit_nontargets ?? array())), ($explicit_targets ?? array()));
+      $list_potential_targets = array_unique(($list_potential_targets ?? array()));
       if (!empty ($list_potential_targets))
       $list_potential_targets = get_sorted_records($list_potential_targets);
 /*
@@ -2209,18 +2209,18 @@ WHERE
       $explicit_sources = result_set_to_array($result, "t1_id");
       //print "<br><br>EXPLICIT SOURCES:<br>"; print_r($explicit_sources);
       if (count($explicit_sources ?? array()) >= 1) {
-      	$list_explicit_sources = array_unique($explicit_sources);
+      	$list_explicit_sources = array_unique(($explicit_sources ?? array()));
       	$list_explicit_sources = get_sorted_records($list_explicit_sources);
       }
       $result = mysqli_query($GLOBALS['conn'],$explicit_nonsource_query);
       $explicit_nonsources = result_set_to_array($result, "t1_id");
       //print "<br><br>EXPLICIT NONSOURCES:<br>"; print_r($explicit_nonsources);
       if (count($explicit_nonsources ?? array()) >= 1) {
-      	$list_explicit_nonsources = array_unique($explicit_nonsources);
+      	$list_explicit_nonsources = array_unique(($explicit_nonsources ?? array()));
       	$list_explicit_nonsources = get_sorted_records($list_explicit_nonsources);
       }
-      $list_potential_sources = array_diff(array_diff($possible_sources, $explicit_nonsources), $explicit_sources);
-      $list_potential_sources = array_unique($list_potential_sources);
+      $list_potential_sources = array_diff(array_diff(($possible_sources ?? array()), ($explicit_nonsources ?? array())), ($explicit_sources ?? array()));
+      $list_potential_sources = array_unique(($list_potential_sources ?? array()));
       $list_potential_sources = get_sorted_records($list_potential_sources);
       /*
        $net_sources = array_merge(array_diff($possible_sources, $explicit_nonsources), $explicit_sources);
@@ -2238,18 +2238,18 @@ WHERE
       $explicit_sources = result_set_to_array($result, "t1_id");
       //print "<br><br>EXPLICIT SOURCES:<br>"; print_r($explicit_sources);
 	  if (count($explicit_sources ?? array()) >= 1) {
-			$list_explicit_sources = array_unique($explicit_sources);
+			$list_explicit_sources = array_unique(($explicit_sources ?? array()));
 			$list_explicit_sources = get_sorted_records($list_explicit_sources);
 	  }
       $result = mysqli_query($GLOBALS['conn'],$explicit_nonsource_query);
       $explicit_nonsources = result_set_to_array($result, "t1_id");
       //print "<br><br>EXPLICIT NONSOURCES:<br>"; print_r($explicit_nonsources);
 	  if (count($explicit_nonsources ?? array()) >= 1) {
-			$list_explicit_nonsources = array_unique($explicit_nonsources);
+			$list_explicit_nonsources = array_unique(($explicit_nonsources ?? array()));
 			$list_explicit_nonsources = get_sorted_records($list_explicit_nonsources);
 	  }
-      $list_potential_sources = array_diff(array_diff($possible_sources, $explicit_nonsources), $explicit_sources);
-      $list_potential_sources = array_unique($list_potential_sources);
+      $list_potential_sources = array_diff(array_diff(($possible_sources ?? array()), ($explicit_nonsources ?? array())), ($explicit_sources ?? array()));
+      $list_potential_sources = array_unique(($list_potential_sources ?? array()));
       $list_potential_sources = get_sorted_records($list_potential_sources); ?>
        <!--  $net_sources = array_merge(array_diff($possible_sources, $explicit_nonsources), $explicit_sources);
       //print "<br><br>NET SOURCES:<br>"; print_r($list_potential_sources);

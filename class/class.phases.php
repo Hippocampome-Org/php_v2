@@ -41,7 +41,7 @@ class phases
         $phasesReturnArray = array();
         // Check whether every column is mapped to correct variable.
         while(List($temp,$id,$sub_Id,$name,$preferred,$theta,$SWRratio,$other
-            ) =  mysqli_fetch_row($rs))
+            ) =  ($rs ? mysqli_fetch_row($rs) : null))
         {   
             
             $phasesReturnPopulate = new izhmodelsmodel($table);

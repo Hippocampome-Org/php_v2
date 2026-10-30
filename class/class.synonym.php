@@ -21,7 +21,7 @@ class synonym
 		
 		$query = "SELECT id, dt, name FROM $table WHERE id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($id, $dt, $name) = mysqli_fetch_row($rs))
+		while(list($id, $dt, $name) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setId($id);
 			$this->setDt($dt);
@@ -37,7 +37,7 @@ public function retrive_name()
 		$query = "SELECT DISTINCT name FROM $table";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setName_neuron_array($id, $n);						
 			$n = $n +1;
@@ -56,7 +56,7 @@ public function retrive_id_by_name($name) //Retrieve id by the name from table '
 		$query = "SELECT id FROM $table WHERE name = '$name'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setID_array($id, $n);				
 			$n = $n +1;

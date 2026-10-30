@@ -131,7 +131,7 @@ function extract_citations($fh, $output_lines) {
 				$title_final = $title;
 			}
 		}
-		if ($year_line_num != 0) {
+		if ((float)$year_line_num != 0) {
 			if ($cite_found_counter==$year_line_num) {
 				preg_match('/.* ([12][09]\d+) .*/', ($line ?? ''), $year_results);
 				if ($year_results[1] != '') {

@@ -28,7 +28,7 @@ class firingpatternrel
 		$query = "SELECT FiringPattern_id FROM $table WHERE Type_id='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($firingpatternid) = mysqli_fetch_row($rs))
+		while(list($firingpatternid) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$this->setPattern_array($firingpatternid, $n);
 			$n=$n+1;
@@ -42,7 +42,7 @@ class firingpatternrel
 	
 		$query = "SELECT Type_id FROM $table WHERE FiringPattern_id='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($Type_id) = mysqli_fetch_row($rs))
+		while(list($Type_id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 				$this->setTypeId($Type_id);
 		}	

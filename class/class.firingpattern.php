@@ -108,7 +108,7 @@ class firingpattern
 	
 		$query = "SELECT overall_fp FROM $table WHERE id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($fp) = mysqli_fetch_row($rs))
+		while(list($fp) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setOverall_fp($fp);
 		}	
@@ -121,7 +121,7 @@ class firingpattern
 		$query = "SELECT id FROM $table WHERE overall_fp = '$fp' and definition_parameter = 'parameter'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setid_array($id,$n);
 			$n=$n+1;
@@ -138,7 +138,7 @@ class firingpattern
 				intercept3_c, xc2_c, yc2_c, f1_2_c, f1_2crit_c, f2_3_c, f2_3crit_c, f3_4_c, f3_4crit_c, p1_2_c, p2_3_c, p3_4_c, p1_2uv_c, p2_3uv_c, p3_4uv_c
 				FROM $table WHERE overall_fp = '$fp' and definition_parameter = 'parameter' and id='$fp_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($delay_ms, $pfs_ms, $swa_mv, $nisi, $isiav_ms, $sd_ms, $max_isi_ms, $min_isi_ms, $first_isi_ms, $isiav1_2_ms, $isiav1_3_ms, $isiav1_4_ms, $last_isi_ms, $isiavn_n_1_ms, $isiavn_n_2_ms, $isiavn_n_3_ms, $maxisi_minisi, $maxisin_isin_m1, $maxisin_isin_p1, $ai, $rdmax, $df, $sf, $tmax_scaled, $isimax_scaled, $isiav_scaled, $sd_scaled, $slope, $intercept, $slope1, $intercept1, $css_yc1, $xc1, $slope2, $intercept2, $slope3, $intercept3, $xc2, $yc2, $f1_2, $f1_2crit, $f2_3, $f2_3crit, $f3_4, $f3_4crit, $p1_2, $p2_3, $p3_4, $p1_2uv, $p2_3uv, $p3_4uv, $isii_isii_m1, $i, $isiav_i_n_isi1_i_m1, $maxisij_isij_m1, $maxisij_isij_p1, $nisi_c, $isiav_ms_c, $maxisi_ms_c, $minisi_ms_c, $first_isi_ms_c, $tmax_scaled_c, $isimax_scaled_c, $isiav_scaled_c, $sd_scaled_c, $slope_c, $intercept_c, $slope1_c, $intercept1_c, $css_yc1_c, $xc1_c, $slope2_c, $intercept2_c, $slope3_c, $intercept3_c, $xc2_c, $yc2_c, $f1_2_c, $f1_2crit_c, $f2_3_c, $f2_3crit_c, $f3_4_c, $f3_4crit_c, $p1_2_c, $p2_3_c, $p3_4_c, $p1_2uv_c, $p2_3uv_c, $p3_4uv_c) = mysqli_fetch_row($rs))
+		while(list($delay_ms, $pfs_ms, $swa_mv, $nisi, $isiav_ms, $sd_ms, $max_isi_ms, $min_isi_ms, $first_isi_ms, $isiav1_2_ms, $isiav1_3_ms, $isiav1_4_ms, $last_isi_ms, $isiavn_n_1_ms, $isiavn_n_2_ms, $isiavn_n_3_ms, $maxisi_minisi, $maxisin_isin_m1, $maxisin_isin_p1, $ai, $rdmax, $df, $sf, $tmax_scaled, $isimax_scaled, $isiav_scaled, $sd_scaled, $slope, $intercept, $slope1, $intercept1, $css_yc1, $xc1, $slope2, $intercept2, $slope3, $intercept3, $xc2, $yc2, $f1_2, $f1_2crit, $f2_3, $f2_3crit, $f3_4, $f3_4crit, $p1_2, $p2_3, $p3_4, $p1_2uv, $p2_3uv, $p3_4uv, $isii_isii_m1, $i, $isiav_i_n_isi1_i_m1, $maxisij_isij_m1, $maxisij_isij_p1, $nisi_c, $isiav_ms_c, $maxisi_ms_c, $minisi_ms_c, $first_isi_ms_c, $tmax_scaled_c, $isimax_scaled_c, $isiav_scaled_c, $sd_scaled_c, $slope_c, $intercept_c, $slope1_c, $intercept1_c, $css_yc1_c, $xc1_c, $slope2_c, $intercept2_c, $slope3_c, $intercept3_c, $xc2_c, $yc2_c, $f1_2_c, $f1_2crit_c, $f2_3_c, $f2_3crit_c, $f3_4_c, $f3_4crit_c, $p1_2_c, $p2_3_c, $p3_4_c, $p1_2uv_c, $p2_3uv_c, $p3_4uv_c) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$this->set_delay_ms($delay_ms);
 			$this->set_pfs_ms($pfs_ms);
@@ -243,7 +243,7 @@ class firingpattern
 				intercept3_c, xc2_c, yc2_c, f1_2_c, f1_2crit_c, f2_3_c, f2_3crit_c, f3_4_c, f3_4crit_c, p1_2_c, p2_3_c, p3_4_c, p1_2uv_c, p2_3uv_c, p3_4uv_c
 				FROM $table WHERE overall_fp = '$fp' and definition_parameter = 'definition'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($delay_ms, $pfs_ms, $swa_mv, $nisi, $isiav_ms, $sd_ms, $max_isi_ms, $min_isi_ms, $first_isi_ms, $isiav1_2_ms, $isiav1_3_ms, $isiav1_4_ms, $last_isi_ms, $isiavn_n_1_ms, $isiavn_n_2_ms, $isiavn_n_3_ms, $maxisi_minisi, $maxisin_isin_m1, $maxisin_isin_p1, $ai, $rdmax, $df, $sf, $tmax_scaled, $isimax_scaled, $isiav_scaled, $sd_scaled, $slope, $intercept, $slope1, $intercept1, $css_yc1, $xc1, $slope2, $intercept2, $slope3, $intercept3, $xc2, $yc2, $f1_2, $f1_2crit, $f2_3, $f2_3crit, $f3_4, $f3_4crit, $p1_2, $p2_3, $p3_4, $p1_2uv, $p2_3uv, $p3_4uv, $isii_isii_m1, $i, $isiav_i_n_isi1_i_m1, $maxisij_isij_m1, $maxisij_isij_p1, $nisi_c, $isiav_ms_c, $maxisi_ms_c, $minisi_ms_c, $first_isi_ms_c, $tmax_scaled_c, $isimax_scaled_c, $isiav_scaled_c, $sd_scaled_c, $slope_c, $intercept_c, $slope1_c, $intercept1_c, $css_yc1_c, $xc1_c, $slope2_c, $intercept2_c, $slope3_c, $intercept3_c, $xc2_c, $yc2_c, $f1_2_c, $f1_2crit_c, $f2_3_c, $f2_3crit_c, $f3_4_c, $f3_4crit_c, $p1_2_c, $p2_3_c, $p3_4_c, $p1_2uv_c, $p2_3uv_c, $p3_4uv_c) = mysqli_fetch_row($rs))
+		while(list($delay_ms, $pfs_ms, $swa_mv, $nisi, $isiav_ms, $sd_ms, $max_isi_ms, $min_isi_ms, $first_isi_ms, $isiav1_2_ms, $isiav1_3_ms, $isiav1_4_ms, $last_isi_ms, $isiavn_n_1_ms, $isiavn_n_2_ms, $isiavn_n_3_ms, $maxisi_minisi, $maxisin_isin_m1, $maxisin_isin_p1, $ai, $rdmax, $df, $sf, $tmax_scaled, $isimax_scaled, $isiav_scaled, $sd_scaled, $slope, $intercept, $slope1, $intercept1, $css_yc1, $xc1, $slope2, $intercept2, $slope3, $intercept3, $xc2, $yc2, $f1_2, $f1_2crit, $f2_3, $f2_3crit, $f3_4, $f3_4crit, $p1_2, $p2_3, $p3_4, $p1_2uv, $p2_3uv, $p3_4uv, $isii_isii_m1, $i, $isiav_i_n_isi1_i_m1, $maxisij_isij_m1, $maxisij_isij_p1, $nisi_c, $isiav_ms_c, $maxisi_ms_c, $minisi_ms_c, $first_isi_ms_c, $tmax_scaled_c, $isimax_scaled_c, $isiav_scaled_c, $sd_scaled_c, $slope_c, $intercept_c, $slope1_c, $intercept1_c, $css_yc1_c, $xc1_c, $slope2_c, $intercept2_c, $slope3_c, $intercept3_c, $xc2_c, $yc2_c, $f1_2_c, $f1_2crit_c, $f2_3_c, $f2_3crit_c, $f3_4_c, $f3_4crit_c, $p1_2_c, $p2_3_c, $p3_4_c, $p1_2uv_c, $p2_3uv_c, $p3_4uv_c) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$this->set_delay_ms($delay_ms);
 			$this->set_pfs_ms($pfs_ms);

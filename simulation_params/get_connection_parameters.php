@@ -18,7 +18,7 @@ function mmmr($array, $output = 'mean'){
         switch($output){ 
             case 'mean': 
                 $count = count($array ?? array()); 
-                $sum = array_sum($array); 
+                $sum = array_sum(($array ?? array())); 
                 $total = $sum / $count; 
             break; 
             case 'median': 
@@ -158,7 +158,7 @@ function get_default_synaptome_details($conn_synaptome, $table_name, $synprocpto
         for ($i = 0; $i < count($neurons ?? array()); $i++){
             $neuron = $neurons[$i];
 
-            if($i != 0){
+            if((float)$i != 0){
                 $select_default_synaptome_query .= " OR ";
             }
             $select_default_synaptome_query .= " ( pre like '".$neuron."%'  ";
@@ -173,7 +173,7 @@ function get_default_synaptome_details($conn_synaptome, $table_name, $synprocpto
     $columns1 = explode(", ", $column1);
    
    
-    while($row = mysqli_fetch_row($rs))
+    while($row = ($rs ? mysqli_fetch_row($rs) : null))
     {	
         $arrVal = array();  
         $i=0;  

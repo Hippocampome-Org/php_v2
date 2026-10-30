@@ -93,7 +93,7 @@ class izhmodelsmodel
             ,$C0,$Vr0,$Vt0,$Vpeak0,$Vmin0,$k1,$a1,$b1,$d1,$C1,$Vr1,$Vt1,$Vpeak1
             ,$Vmin1,$G0,$P0,$k2,$a2,$b2,$d2,$C2,$Vr2,$Vt2,$Vpeak2,$Vmin2,$G1
             ,$P1,$k3,$a3,$b3,$d3,$C3,$Vr3,$Vt3,$Vpeak3,$Vmin3,$G2,$P2
-            ) =  mysqli_fetch_row($rs))
+            ) =  ($rs ? mysqli_fetch_row($rs) : null))
         {   
             
             $izreturnPopulate = new izhmodelsmodel($table);
@@ -166,8 +166,8 @@ class izhmodelsmodel
         $table = $this->getName_table();
         $query = "SELECT k0 FROM $table where unique_id = '$id' LIMIT  0,1";
         $rs = mysqli_query($GLOBALS['conn'],$query);
-        $row = mysqli_fetch_assoc($rs);
-        if($row["k0"] == 0)
+        $row = ($rs ? mysqli_fetch_assoc($rs) : null);
+        if((float)$row["k0"] == 0)
         {
             return FALSE;
         }

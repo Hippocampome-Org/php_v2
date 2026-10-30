@@ -365,7 +365,7 @@ if ($name_show_only_article_var)
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);	
 	$query ="SELECT id, PMID FROM $name_temporary_table";
 	$rs = mysqli_query($GLOBALS['conn'],$query);					
-	while(list($id, $pmid) = mysqli_fetch_row($rs))	
+	while(list($id, $pmid) = ($rs ? mysqli_fetch_row($rs) : null))	
 	{	
 		if ($name_show_only_article == 'article')
 		{
@@ -427,7 +427,7 @@ if ($name_show_only_authors_var)
 		$rs2 = mysqli_query($GLOBALS['conn'],$query);	
 		$query ="SELECT id FROM $name_temporary_table WHERE authors LIKE '%$name_show_only_authors%'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);					
-		while(list($id) = mysqli_fetch_row($rs))		
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))		
 		{
 			$query = "UPDATE $name_temporary_table SET show_only =  '1' WHERE id = '$id'";
 			$rs2 = mysqli_query($GLOBALS['conn'],$query);
@@ -660,7 +660,7 @@ function hide_element(entry_name) {
 					// Axons and Dendrites
 					if($part == 'axons_dendrites')
 					{
-					 if ($tt == 0)
+					 if ((float)$tt == 0)
 					 {
 						$part1[$tt] = 'Axons';
 						$property  -> retrive_ID(1, 'axons', 'in', $val_property);
@@ -676,7 +676,7 @@ function hide_element(entry_name) {
 					}
 					else if($part == 'axons_somata')
 					{
-					 if ($tt == 0)
+					 if ((float)$tt == 0)
 					 {
 						$part1[$tt] = 'Axons';
 						$property  -> retrive_ID(1, 'axons', 'in', $val_property);
@@ -691,7 +691,7 @@ function hide_element(entry_name) {
 					}
                      else
 					 { 
-				     if ($tt == 0)
+				     if ((float)$tt == 0)
 					 {
 						$part1[$tt] = 'Dendrites';
 						$property  -> retrive_ID(1, 'dendrites', 'in', $val_property);
@@ -708,7 +708,7 @@ function hide_element(entry_name) {
 				}
 				else
 				{
-					if ($tt == 0)
+					if ((float)$tt == 0)
 					 {
 						$part1[$tt] = 'Dendrites';
 						$property  -> retrive_ID(1, 'dendrites', 'in', $val_property);
@@ -762,7 +762,7 @@ function hide_element(entry_name) {
 					$pmid_isbn_page= $fragment -> getPmid_isbn_page();
 					$page_location = $fragment -> getPage_location();
 					//Retreive information from attachment table					
-					if ($pmid_isbn_page!=0 && $pmid_isbn_page!= NULL)
+					if ((float)$pmid_isbn_page!=0 && $pmid_isbn_page!= NULL)
 					{
 						$article -> retrive_by_pmid_isbn_and_page_number($pmid_isbn, $pmid_isbn_page);
 						$id_article= $article -> getID();
@@ -824,7 +824,7 @@ function hide_element(entry_name) {
 					$query = "SELECT DISTINCT title FROM $name_temporary_table WHERE show_only = 1";
 					$rs = mysqli_query($GLOBALS['conn'],$query);
 					$n_id_tot = 0;	 // Total number of articles:
-					while(list($id) = mysqli_fetch_row($rs))			
+					while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))			
 						$n_id_tot = $n_id_tot + 1;
 
 
@@ -839,7 +839,7 @@ function hide_element(entry_name) {
 					$rs = mysqli_query($GLOBALS['conn'],$query);
 					$total_count_all=$number_of_quotes_axon = $number_of_quotes_dendrite=$number_of_quotes_somata=0;
 					 // total number of axon quotes
-					while(list($total_count,$axon_count,$dendrite_count,$soma_count) = mysqli_fetch_row($rs))	{		
+					while(list($total_count,$axon_count,$dendrite_count,$soma_count) = ($rs ? mysqli_fetch_row($rs) : null))	{		
 						$total_count_all=intval($total_count);
 						$number_of_quotes_axon = intval($axon_count);	
 						$number_of_quotes_dendrite = intval($dendrite_count);	
@@ -857,7 +857,7 @@ function hide_element(entry_name) {
 					$rs = mysqli_query($GLOBALS['conn'],$query);
 					$show_only_total_count_all=$show_only_number_of_quotes_axon = $show_only_number_of_quotes_dendrite=$show_only_number_of_quotes_somata=0;
 					 // total number of axon quotes
-					while(list($total_count,$axon_count,$dendrite_count,$soma_count) = mysqli_fetch_row($rs))	{		
+					while(list($total_count,$axon_count,$dendrite_count,$soma_count) = ($rs ? mysqli_fetch_row($rs) : null))	{		
 						$show_only_total_count_all=intval($total_count);
 						$show_only_number_of_quotes_axon = intval($axon_count);	
 						$show_only_number_of_quotes_dendrite = intval($dendrite_count);	
@@ -873,7 +873,7 @@ function hide_element(entry_name) {
 					}
 					$rs = mysqli_query($GLOBALS['conn'],$query);					
 					$n_id = 0;
-					while(list($title) = mysqli_fetch_row($rs))
+					while(list($title) = ($rs ? mysqli_fetch_row($rs) : null))
 					{
 						$title_temp[$n_id] = $title;											
 						$n_id = $n_id + 1;
@@ -948,7 +948,7 @@ function hide_element(entry_name) {
 							$rs = mysqli_query($GLOBALS['conn'],$query);
 							$number_of_articles_1 = 0;
 							$number_of_books_1 = 0;
-							while(list($title, $pmid) = mysqli_fetch_row($rs))		
+							while(list($title, $pmid) = ($rs ? mysqli_fetch_row($rs) : null))		
 							{	
 								if (strlen($pmid) > 10)
 									$number_of_books_1 = $number_of_books_1 + 1;
@@ -991,14 +991,14 @@ function hide_element(entry_name) {
 							// retrieve the name of journal from temporary table:
 							$query ="SELECT DISTINCT publication FROM $name_temporary_table";
 							$rs = mysqli_query($GLOBALS['conn'],$query);					
-							while(list($pub) = mysqli_fetch_row($rs))	
+							while(list($pub) = ($rs ? mysqli_fetch_row($rs) : null))	
 							{	
 								// retrieve the number of articles for this publication:
 								$pub= mysqli_real_escape_string($GLOBALS['conn'],$pub);
 								$query1 ="SELECT DISTINCT title FROM $name_temporary_table WHERE publication = '$pub'";
 								$rs1 = mysqli_query($GLOBALS['conn'],$query1);
 								$n_pub1=0;					
-								while(list($id) = mysqli_fetch_row($rs1))							
+								while(list($id) = ($rs1 ? mysqli_fetch_row($rs1) : null))							
 									$n_pub1 = $n_pub1 + 1;
 							
 								if ($pub == $name_show_only_journal);
@@ -1016,7 +1016,7 @@ function hide_element(entry_name) {
 							print("<font class='font2'>By:</font> ");
 							$query ="SELECT distinct authors FROM $name_temporary_table";
 							$rs = mysqli_query($GLOBALS['conn'],$query);				
-							while(list($allauthors) = mysqli_fetch_row($rs))
+							while(list($allauthors) = ($rs ? mysqli_fetch_row($rs) : null))
 							{
 								if($author_string=="")
 									$author_string=$allauthors;	
@@ -1030,7 +1030,7 @@ function hide_element(entry_name) {
 							{
 
 								if($single_aut[$cnt]){
-									if(!in_array(trim($single_aut[$cnt]), $unique_authors)){
+									if(!in_array(trim($single_aut[$cnt]), ($unique_authors ?? array()))){
 										$unique_authors[$index]=trim($single_aut[$cnt]);
 										$index++;
 									}
@@ -1052,7 +1052,7 @@ function hide_element(entry_name) {
 								$query1 ="SELECT DISTINCT title FROM $name_temporary_table WHERE authors LIKE '%$aut%'";
 								$rs1 = mysqli_query($GLOBALS['conn'],$query1);
 								$n_auth1=0;					
-								while(list($id) = mysqli_fetch_row($rs1))	
+								while(list($id) = ($rs1 ? mysqli_fetch_row($rs1) : null))	
 									$n_auth1 = $n_auth1 + 1;						
 								print ("<OPTION VALUE='".htmlspecialchars($aut,ENT_QUOTES)."'>".stripslashes($unique_authors[$i1])." ($n_auth1)</OPTION>");
 							}
@@ -1113,7 +1113,7 @@ function hide_element(entry_name) {
 				$evi_quotes_nonvals = array(); // entries missing values
 
 				// There are no results available:
-				if ($n_id == 0)
+				if ((float)$n_id == 0)
 					print ("<br><font class='font12'>There are no results available.</font><br><br>");
 
 				for ($i=0; $i<$n_id; $i++)
@@ -1123,14 +1123,14 @@ function hide_element(entry_name) {
 					$rs = mysqli_query($GLOBALS['conn'],$query);	
 					$auth=array();	
 							
-					while(list($id, $authors, $publication, $year, $PMID, $pages, $page_location, $show, $pmcid, $nihmsid, $doi, $show_only, $volume, $issue) = mysqli_fetch_row($rs))
+					while(list($id, $authors, $publication, $year, $PMID, $pages, $page_location, $show, $pmcid, $nihmsid, $doi, $show_only, $volume, $issue) = ($rs ? mysqli_fetch_row($rs) : null))
 					{			
 						$auth=array();
 						$authors2="";
 						$f_auth="";
 						$authors1 = $authors;
 						$temp=explode(",", $authors);
-						$auth=array_merge($auth,$temp);
+						$auth=array_merge(($auth ?? array()),($temp ?? array()));
 						for($x=0;$x<sizeof($auth);$x++)
 						{
 							$f_auth=substr(trim($auth[$x]),0,1);
@@ -1172,7 +1172,7 @@ function hide_element(entry_name) {
 						");				
 						//print("<script>hide_element(\"evi_entry1\");</script>");
 						
-						if ($show1 == 0)
+						if ((float)$show1 == 0)
 						{
 							print ("<form action='property_page_synpro.php' method='post' style='display:inline'>");
 							print ("<input type='submit' name='show_1' value=' ' class='show1' title='Show Evidence' alt='Show Evidence'>");
@@ -1255,7 +1255,7 @@ function hide_element(entry_name) {
 							$avoid_dups = array();		
 							$query = "SELECT distinct id_fragment, id_original, quote, page_location, type FROM $name_temporary_table WHERE title = '$title_temp[$i]' $subquery ORDER BY id_fragment ASC";	//echo $query;
 							$rs = mysqli_query($GLOBALS['conn'],$query);	
-							while(list($id_fragment, $id_original, $quote, $page_location, $type) = mysqli_fetch_row($rs))
+							while(list($id_fragment, $id_original, $quote, $page_location, $type) = ($rs ? mysqli_fetch_row($rs) : null))
 							{	
 								$current_record = $id_original.$quote.$page_location.$type;
 								$type_for_display=$type;
@@ -1265,7 +1265,7 @@ function hide_element(entry_name) {
 									$type_show  = "";
 									$query_type = "SELECT distinct type FROM $name_temporary_table WHERE id_fragment = $id_fragment $subquery ORDER BY type ASC";
 									$rs_type = mysqli_query($GLOBALS['conn'],$query_type);	
-									while(list($type) = mysqli_fetch_row($rs_type))
+									while(list($type) = ($rs_type ? mysqli_fetch_row($rs_type) : null))
 									{
 										$type_show  = $type_show . $type;
 									}				
@@ -1312,10 +1312,10 @@ function hide_element(entry_name) {
 									$dendrite_group = array('Dendrites', 'Somata', 'AxonsSomata', 'AxonsDendrites', 'DendritesSomata', 'AxonsDendritesSomata');
 									$axon_group = array('Axons','Somata','AxonsSomata','AxonsDendrites','AxonsDendritesSomata');
 									$original_id = $fragment -> getOriginal_id();
-									if (in_array($type_for_display,$dendrite_group)) {
+									if (in_array($type_for_display,($dendrite_group ?? array()))) {
 										$neurite_ref = $val_property.":D";
 									}
-									elseif (in_array($type_for_display,$axon_group)) {
+									elseif (in_array($type_for_display,($axon_group ?? array()))) {
 										$neurite_ref = $val_property.":A";	
 									}
 									$attachment_obj = new attachment_synpro($class_attachment ?? null); // this clears prior attachment results
@@ -1346,7 +1346,7 @@ function hide_element(entry_name) {
 									$rs_to_get_info = mysqli_query($GLOBALS['conn'],$query_to_get_info);	
 									$seg_1_text="";
 									$seg_2_text="";
-									while(list($interpretation_notes,$protocol,$age_weight,$species_tag) = mysqli_fetch_row($rs_to_get_info))
+									while(list($interpretation_notes,$protocol,$age_weight,$species_tag) = ($rs_to_get_info ? mysqli_fetch_row($rs_to_get_info) : null))
 									{
 										if ($interpretation_notes=='NULL') {$interpretation_notes='';}
 										if ($protocol=='NULL') {$protocol='';}
@@ -1551,17 +1551,17 @@ function hide_element(entry_name) {
 								else
 									$page_end1 = $page_end;
 								
-								if ($page_in == 0) 
+								if ((float)$page_in == 0) 
 									$no_button_down = 1;
 								
 								$cnt=0;
 								$query = "SELECT distinct quote FROM $name_temporary_table WHERE show_only=1 $subquery";
 								$rs = mysqli_query($GLOBALS['conn'],$query);			
-								while(list($quote) = mysqli_fetch_row($rs))
+								while(list($quote) = ($rs ? mysqli_fetch_row($rs) : null))
 								{
 									$cnt++;
 								}
-								if($neuron_show_only_value&&$n_id_tot!=0){
+								if($neuron_show_only_value&&(float)$n_id_tot!=0){
 										// this needed to be updated to account for hidden articles adn quotes
 										//print ("$page_in1 - $page_end1 of $n_id_tot articles ($cnt Quotes)");	
 										//print ("currently displaying values from ".sizeof(array_unique($evi_articles_vals))." articles (".sizeof(array_unique($evi_quotes_vals))." Quotes)");	

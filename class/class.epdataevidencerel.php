@@ -17,7 +17,7 @@ class epdataevidencerel
 		$query = "SELECT Epdata_id FROM $table WHERE Evidence_id = '$evidence_id'";
 
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setEpdata_id($id);		
 		}	
@@ -30,7 +30,7 @@ class epdataevidencerel
 		$query = "SELECT Evidence_id FROM $table WHERE Epdata_id = '$epdata_id'";
 
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setEvidence_id($id);		
 		}	

@@ -62,14 +62,14 @@ function check_color_somata($id,$type, $unvetted,$val,$part){
 	$result_dendrites = mysqli_query($GLOBALS['conn'],$soma_location_check_dendrites);
 	$axons_dendrites_check=0;
 	
-	while(list($subject,$object) = mysqli_fetch_row($result_axons)){
+	while(list($subject,$object) = ($result_axons ? mysqli_fetch_row($result_axons) : null)){
 		if($subject=='axons' && $object==$val){
 			$axons_dendrites_check=1;
 			break;
 		}
 	}
 	
-	while(list($subject,$object) = mysqli_fetch_row($result_dendrites)){
+	while(list($subject,$object) = ($result_dendrites ? mysqli_fetch_row($result_dendrites) : null)){
 		if($subject=='dendrites' && $object==$val){
 			$axons_dendrites_check=1;
 			break;
@@ -78,7 +78,7 @@ function check_color_somata($id,$type, $unvetted,$val,$part){
 	
 	$flag=0;
 //	if($axons_dendrites_check!=1){
-		while(list($subject,$object) = mysqli_fetch_row($result_somata)){
+		while(list($subject,$object) = ($result_somata ? mysqli_fetch_row($result_somata) : null)){
 			if($subject=='somata' && $object==$val){
 				
 				$flag=1;
@@ -108,7 +108,7 @@ function check_color($id,$type, $unvetted,$val,$part) //$type --> whether axons/
 	$flag=0;
 	#echo $val;
 	#exit;
-	while(list($subject,$object) = mysqli_fetch_row($result)){
+	while(list($subject,$object) = ($result ? mysqli_fetch_row($result) : null)){
 		if($subject=='somata' && $object==$val){
 			$flag=1;
 			break;
@@ -598,7 +598,7 @@ else
 {
 	// store pc and soma pcl flag values for each type in pc_flag and soma_pcl_flag_array.
 	// mec_lec and is flag-related code has been commented out 03/26/2020 DWW
-	while ($row=mysqli_fetch_array($result_pc_and_somapcl_flag, MYSQLI_ASSOC))
+	while ($row=($result_pc_and_somapcl_flag ? mysqli_fetch_array($result_pc_and_somapcl_flag, MYSQLI_ASSOC) : null))
 	{
 	  $pc_flag = $row['pc_flag'];
 	  $soma_pcl_flag=$row['soma_pcl_flag'];
@@ -625,7 +625,7 @@ for ($i=0; $i < $number_type; $i++) {
 
 $connection_status_query = "SELECT Type1_id, Type2_id, connection_status FROM TypeTypeRel;";
 $connection_status_result = mysqli_query($GLOBALS['conn'],$connection_status_query);
-while(list($Type1_id,$Type2_id,$connection_status) = mysqli_fetch_row($connection_status_result)){
+while(list($Type1_id,$Type2_id,$connection_status) = ($connection_status_result ? mysqli_fetch_row($connection_status_result) : null)){
 	$connection_status_array[$Type1_id][$Type2_id] = $connection_status;
 }
 
@@ -640,13 +640,13 @@ for ($i = 0; $i < $number_type; $i++) {
 
   $type->retrive_by_id($id); // Retrieve id
   $excit_inhib = $type->getExcit_Inhib(); //Retrieve the Excit or Inhib
-  if (!(in_array($id, $special_neuron_id_basket) or in_array($id, $special_neuron_id_axo_axonic))){
+  if (!(in_array($id, ($special_neuron_id_basket ?? array())) or in_array($id, ($special_neuron_id_axo_axonic ?? array())))){
 		for ($j = 0; $j < $layer_col_count; $j++) {
 			if ($pot_conn_array[$i][$j] == AXONS_PRESENT || $pot_conn_array[$i][$j] == AXONS_DENDRITES_PRESENT || $pot_conn_array[$i][$j] == AXONS_SOMA_PRESENT || $pot_conn_array[$i][$j] == AXONS_DENDRITES_SOMA_PRESENT) {
 				$src_column = $j;
 				for ($k = 0; $k < $number_type; $k++) {
 					if ($pot_conn_array[$k][$src_column] == DENDRITES_PRESENT || $pot_conn_array[$k][$src_column] == DENDRITES_SOMA_PRESENT || $pot_conn_array[$k][$src_column] == AXONS_DENDRITES_PRESENT || $pot_conn_array[$k][$src_column] == AXONS_DENDRITES_SOMA_PRESENT) {
-						if ($excit_inhib == "i" && $pon_conn_display_array[$i][$k]==0) {
+						if ($excit_inhib == "i" && (float)$pon_conn_display_array[$i][$k]==0) {
 						    $pon_conn_display_array[$i][$k] = P_INHIBITORY_CONN; //gray
 						    // Link code
 						    $data=$type->getID_array($i).",".str_replace(":","_", ($col_array[$j] ?? '')).",".$color_map[$pot_conn_array[$i][$j]].",".
@@ -654,7 +654,7 @@ for ($i = 0; $i < $number_type; $i++) {
 						    P_INHIBITORY_CONN;
 						    $potn_conn_neuron_pcl[$i][$k]=$data;
 						    
-						} elseif($excit_inhib == "e" && $pon_conn_display_array[$i][$k]==0) {
+						} elseif($excit_inhib == "e" && (float)$pon_conn_display_array[$i][$k]==0) {
 							$pon_conn_display_array[$i][$k] = P_EXCITATORY_CONN; //black
 
 							// Link code
@@ -676,7 +676,7 @@ for ($i = 0; $i < $number_type; $i++) {
 	    if ($pot_conn_array[$i][$src_column] == AXONS_PRESENT || $pot_conn_array[$i][$src_column] == AXONS_DENDRITES_PRESENT || $pot_conn_array[$i][$src_column] == AXONS_SOMA_PRESENT || $pot_conn_array[$i][$src_column] == AXONS_DENDRITES_SOMA_PRESENT) { 
         for ($k = 0; $k < $number_type; $k++) {
           if ($pot_conn_array[$k][$src_column] == ONLY_SOMA_PRESENT || $pot_conn_array[$k][$src_column] == DENDRITES_SOMA_PRESENT || $pot_conn_array[$k][$src_column] == AXONS_SOMA_PRESENT || $pot_conn_array[$k][$src_column] == AXONS_DENDRITES_SOMA_PRESENT) {
-						if ($pon_conn_display_array[$i][$k] == 0) {
+						if ((float)$pon_conn_display_array[$i][$k] == 0) {
 						  $pon_conn_display_array[$i][$k] = P_INHIBITORY_CONN; //gray								
 
 					  	// Link code
@@ -697,12 +697,12 @@ for ($row_index = 0; $row_index < $number_type; $row_index++) {
   else
       $id = $type->getID_array($row_index);
 
-  if (in_array($id, $special_neuron_id_basket) or in_array($id, $special_neuron_id_axo_axonic)) {
+  if (in_array($id, ($special_neuron_id_basket ?? array())) or in_array($id, ($special_neuron_id_axo_axonic ?? array()))) {
     for ($col_index = 0; $col_index < $number_type; $col_index++) {
-    	if (in_array($id, $special_neuron_id_basket) and $soma_pcl_flag_array[$col_index]!=1) {
+    	if (in_array($id, ($special_neuron_id_basket ?? array())) and $soma_pcl_flag_array[$col_index]!=1) {
         	$pon_conn_display_array[$row_index][$col_index]=NO_CONNECTION;
 	   	}
-	   	elseif(in_array($id, $special_neuron_id_axo_axonic) and $pc_flag_array[$col_index]!=1) {
+	   	elseif(in_array($id, ($special_neuron_id_axo_axonic ?? array())) and $pc_flag_array[$col_index]!=1) {
 	   		$pon_conn_display_array[$row_index][$col_index]=NO_CONNECTION;
 	   	} 
     } // $col_index
@@ -742,10 +742,10 @@ for ($row_index = 0; $row_index < $number_type; $row_index++) {
     for ($col_index = 0; $col_index < $number_type; $col_index++) {
     	 $source = $type->getID_array($row_index);
     	 $destination = $type->getID_array($col_index);
-    	 if($pon_conn_display_array[$row_index][$col_index]!=0){
+    	 if((float)$pon_conn_display_array[$row_index][$col_index]!=0){
     	 	$query="SELECT * FROM Conndata WHERE Type1_id='$source' AND Type2_id='$destination' AND connection_status='potential'";
 			$result=mysqli_query($GLOBALS['conn'], $query);
-			if(mysqli_num_rows($result)==0){
+			if(($result ? mysqli_num_rows($result) : null)==0){
 			 	#set time zone
 			 	date_default_timezone_set('America/New_York');
 				$date_curr=date('Y-m-d H:i:s');

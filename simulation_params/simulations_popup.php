@@ -5,7 +5,7 @@ include ("../../access_db.php");
 
 function display_neuron_details($results){
     
-    $neuron = array_keys($results);
+    $neuron = array_keys(($results ?? array()));
     $neuron = $neuron[0] ?? null;
     $neuron_vals = $results[$neuron];
 
@@ -56,7 +56,7 @@ function get_default_synaptome_details($conn_synaptome, $table_name, $neuron){
    $column = substr($column, 0, -2);
    $columns += explode(", ", $column);
    $result_default_synaptome_array = array();
-   while($row = mysqli_fetch_row($rs))
+   while($row = ($rs ? mysqli_fetch_row($rs) : null))
    {	
        $arrVal = [];  
        $i=0;          

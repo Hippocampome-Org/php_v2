@@ -59,7 +59,7 @@
     for ($i=0; $i<count($old_entry ?? array()); $i++)
     { 
       if ($verbose_comments) {echo "<br>".$tbl." ".$col.": ".$old_entry[$i]."<br>";}
-      if (!in_array($old_entry[$i],$new_entry)) {
+      if (!in_array($old_entry[$i],($new_entry ?? array()))) {
         $sql = "SELECT id FROM $cog_database.".$tbl." WHERE (`article_id` = '".$art_num."' AND `".$col."` = '".$old_entry[$i]."')";
         $result = $cog_conn->query($sql);
         if ($result->num_rows > 0) { 
@@ -87,7 +87,7 @@
     for ($i=0; $i<count($new_entry ?? array()); $i++)
     {
       if ($verbose_comments) {echo "<br>".$tbl." ".$col.": ".$new_entry[$i]."<br>";}
-      if (!in_array($new_entry[$i],$old_entry)) {
+      if (!in_array($new_entry[$i],($old_entry ?? array()))) {
         $sql = "INSERT INTO `$cog_database`.`".$tbl."` (`".$col."`, `article_id`) VALUES ('".$new_entry[$i]."', '".$art_num."');";
         $result = $cog_conn->query($sql);
         if ($verbose_comments) {echo "<br>added: ".$new_entry[$i]."<br>";}

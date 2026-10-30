@@ -170,7 +170,7 @@ function neuron_page_text_file($id1, $type, $synonymtyperel, $synonym, $evidence
 			$evidencepropertyyperel -> retrive_evidence_id($property_id[$i], $id1);
 			$nn = $evidencepropertyyperel ->getN_evidence_id();	
 				
-			if ($nn == 0);
+			if ((float)$nn == 0);
 			else 
 			{
 				$evidence_id = $evidencepropertyyperel -> getEvidence_id_array(0);

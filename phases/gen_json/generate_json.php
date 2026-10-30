@@ -448,7 +448,7 @@
 		}
 
 		for ($i = 0; $i<$total_rows; $i++) {
-			if (in_array($i, $neuron_group_cols)) {
+			if (in_array($i, ($neuron_group_cols ?? array()))) {
 				if ($page=='write_file') {
 					fwrite($output_file, $neuron_groups[$i]);
 				}
@@ -456,7 +456,7 @@
 					$json_output_string = $json_output_string.$neuron_groups[$i];
 				}
 			}
-			elseif (in_array($i, $theta_cols)) {
+			elseif (in_array($i, ($theta_cols ?? array()))) {
 				if ($page=='write_file') {
 					fwrite($output_file, $theta_values[$i_t].$nl);
 				}
@@ -465,7 +465,7 @@
 				}
 				$i_t++;
 			}
-			elseif (in_array($i, $spw_cols)) {
+			elseif (in_array($i, ($spw_cols ?? array()))) {
 				if ($page=='write_file') {
 					fwrite($output_file, $spw_values[$i_s].$nl);
 				}
@@ -474,7 +474,7 @@
 				}
 				$i_s++;
 			}
-			elseif (in_array($i, $firingrate_cols)) {
+			elseif (in_array($i, ($firingrate_cols ?? array()))) {
 				if ($page=='write_file') {
 					fwrite($output_file, $firingrate_values[$i_f].$nl);
 				}
@@ -483,7 +483,7 @@
 				}
 				$i_f++;
 			}
-			elseif (in_array($i, $other_cols)) {
+			elseif (in_array($i, ($other_cols ?? array()))) {
 				if ($i!=($total_rows-1)) {
 					if ($page=='write_file') {
 						fwrite($output_file, $other_values[$i_o].$nl);

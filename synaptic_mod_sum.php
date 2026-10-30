@@ -54,7 +54,7 @@ td, th {
 
 	function toPrecision($value, $digits)
 	{
-	    if ($value == 0) {
+	    if ((float)$value == 0) {
 	        $decimalPlaces = $digits - 1;
 	    } elseif ($value < 0) {
 	        $decimalPlaces = $digits - floor(log10($value * -1)) - 1;
@@ -78,12 +78,12 @@ td, th {
 	}	
 	$query = "SELECT type_name FROM synprotypetyperel WHERE type_id=$pre_id;";
 	$rs = mysqli_query($conn2,$query);
-	while(list($type_name) = mysqli_fetch_row($rs))
+	while(list($type_name) = ($rs ? mysqli_fetch_row($rs) : null))
 	{$pre_name = $type_name;}
 
 	$query = "SELECT type_name FROM synprotypetyperel WHERE type_id=$post_id;";
 	$rs = mysqli_query($conn2,$query);
-	while(list($type_name) = mysqli_fetch_row($rs))
+	while(list($type_name) = ($rs ? mysqli_fetch_row($rs) : null))
 	{$post_name = $type_name;}
 ?>
 
@@ -115,7 +115,7 @@ td, th {
 		for ($i = 1; $i <= $num_conditions; $i++) {
 			$query = "SELECT species, sex, age, temp, rec_mode FROM conditions WHERE id=$i;";
 			$rs = mysqli_query($conn2,$query);
-			while(list($species, $sex, $age, $temp, $rec_mode) = mysqli_fetch_row($rs))
+			while(list($species, $sex, $age, $temp, $rec_mode) = ($rs ? mysqli_fetch_row($rs) : null))
 			{	
 				echo "<td align='center' class='table_neuron_page2'><font size='2pt'>".$species."</font></td>";
 				echo "<td align='center' class='table_neuron_page2'><font size='2pt'>".$sex."</font></td>";
@@ -127,7 +127,7 @@ td, th {
 			$query = "SELECT means_g, means_tau_d, means_tau_r, means_tau_f, means_u FROM tm_cond$i WHERE pre='$pre_name' AND post='$post_name';";
 
 			$rs = mysqli_query($conn2,$query);
-			while(list($means_g, $means_tau_d, $means_tau_r, $means_tau_f, $means_u) = mysqli_fetch_row($rs))
+			while(list($means_g, $means_tau_d, $means_tau_r, $means_tau_f, $means_u) = ($rs ? mysqli_fetch_row($rs) : null))
 			{	
 				echo "<td align='center' class='table_neuron_page2'><font size='2pt'>".toPrecision($means_g,4)."</font></td>";
 				echo "<td align='center' class='table_neuron_page2'><font size='2pt'>".toPrecision($means_tau_d,4)."</font></td>";
@@ -162,7 +162,7 @@ td, th {
 	for ($i = 1; $i <= $num_conditions; $i++) {
 		$query = "SELECT species, sex, age, temp, rec_mode FROM conditions WHERE id=$i;";
 		$rs = mysqli_query($conn2,$query);
-		while(list($species, $sex, $age, $temp, $rec_mode) = mysqli_fetch_row($rs))
+		while(list($species, $sex, $age, $temp, $rec_mode) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			echo "<td>".$species."</td>";
 			echo "<td>".$sex."</td>";
@@ -174,7 +174,7 @@ td, th {
 		$query = "SELECT means_g, means_tau_d, means_tau_r, means_tau_f, means_u FROM tm_cond$i WHERE pre='$pre_name' AND post='$post_name';";
 
 		$rs = mysqli_query($conn2,$query);
-		while(list($means_g, $means_tau_d, $means_tau_r, $means_tau_f, $means_u) = mysqli_fetch_row($rs))
+		while(list($means_g, $means_tau_d, $means_tau_r, $means_tau_f, $means_u) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			echo "<td>".toPrecision($means_g,4)."</td>";
 			echo "<td>".toPrecision($means_tau_d,4)."</td>";

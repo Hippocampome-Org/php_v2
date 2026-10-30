@@ -10,7 +10,7 @@
   
 $query = "SELECT permission FROM user WHERE id=2"; // id=2 is anonymous user
 $rs = mysqli_query($conn,$query);
-list($permission) = mysqli_fetch_row($rs);
+list($permission) = ($rs ? mysqli_fetch_row($rs) : null);
 
 if(!isset($_GET['page'])) $page=1;
 else $page = $_GET['page'] ?? null;
@@ -287,13 +287,13 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
 	$neurite_pattern=str_split($matches[0]);
 	$neurite_pattern_temp = array();
 	for ($np=0; $np<sizeof($neurite_pattern); $np++){
-		if(in_array($np, $soma_positions)){
+		if(in_array($np, ($soma_positions ?? array()))){
 			array_push($neurite_pattern_temp, "<strong>".intval($neurite_pattern[$np])."</strong>");
 		}else{
 			array_push($neurite_pattern_temp, intval($neurite_pattern[$np]));
 		}
 	}
-	$neurite_pattern_soma_location = implode('',$neurite_pattern_temp);
+	$neurite_pattern_soma_location = implode('',($neurite_pattern_temp ?? array()));
 	if ($excit_inhib == 'e')
 		$fontColor='#339900';
 	elseif ($excit_inhib == 'i')
@@ -565,7 +565,7 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
 //Retrieve header names from database by creating [key,value] pair
 		$headernames= array();
 		
-		$keys=array_keys($hippo_property_id_arr);
+		$keys=array_keys(($hippo_property_id_arr ?? array()));
 
 		//Function as a replacement of mysql_real_escape_string()
 		function real_escape($value)
@@ -584,7 +584,7 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
     		
     		$header_result=mysqli_query($GLOBALS['conn'],$header_query);
      
-    		$rows = mysqli_fetch_array($header_result, MYSQLI_ASSOC);
+    		$rows = ($header_result ? mysqli_fetch_array($header_result, MYSQLI_ASSOC) : null);
     
     		$headernames[$key]=$rows['object'];
     		

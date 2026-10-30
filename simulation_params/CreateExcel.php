@@ -153,7 +153,7 @@ function create_excel_file($filepath, $excel_file_names, $excel_conn_param_data,
 
     header("Pragma: public");//Added in second attempt
     header('Content-Type: application/vnd.ms-excel');
-    $excel_file_name = join('', $excel_file_names);
+    $excel_file_name = join('', ($excel_file_names ?? array()));
     $excel_file_name .= date('m-d-Y_H_i_s').".xlsx"; 
     header('Content-Disposition: attachment;filename="'.$excel_file_name.'"');
 

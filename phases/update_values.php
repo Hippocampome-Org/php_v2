@@ -99,7 +99,7 @@
 					$entry = $entry." AND ($cond_name = \"".$condition[$i]."\" OR $cond_name = \"sleep\")";
 				}
 			}
-			else if ($i==0) {
+			else if ((float)$i==0) {
 				$entry = " AND ($cond_name = \"".$condition[$i]."\"".$entry;
 			}
 			else if ($i==(count($condition ?? array())-1)) {

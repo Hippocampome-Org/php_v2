@@ -61,7 +61,7 @@ class temporary_neuronname
 		$query = "SELECT id, neuron FROM $table";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n = 0;
-		while(list($id, $neuron) = mysqli_fetch_row($rs))
+		while(list($id, $neuron) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$this->setID_array($id, $n);
 			$this->setNeuron_array($neuron, $n);
@@ -76,7 +76,7 @@ class temporary_neuronname
 	
 		$query = "SELECT letter FROM $table WHERE id='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($var) = mysqli_fetch_row($rs))
+		while(list($var) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$this->setLetter($var);
 		}
@@ -88,7 +88,7 @@ class temporary_neuronname
 	
 		$query = "SELECT neuron FROM $table WHERE id='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($var) = mysqli_fetch_row($rs))
+		while(list($var) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$this->setNeuron($var);
 		}

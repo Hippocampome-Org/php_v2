@@ -9,7 +9,7 @@ class fragmenttyperel
     {
 		$query = "SELECT DISTINCT Fragment_id FROM FragmentTypeRel WHERE type_id = '$type_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setFragment_id($id);		
 		}		
@@ -19,7 +19,7 @@ class fragmenttyperel
     {
 		$query = "SELECT DISTINCT Fragment_id FROM FragmentTypeRel WHERE type_id = '$type_id' AND priority = '1'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setFragment_id($id);		
 		}		

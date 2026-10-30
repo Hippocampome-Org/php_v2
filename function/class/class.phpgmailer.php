@@ -409,7 +409,7 @@ class PHPGMailer
         fputs($mail, $body);
         
         $result = pclose($mail) >> 8 & 0xFF;
-        if($result != 0)
+        if((float)$result != 0)
         {
             $this->SetError($this->Lang("execute") . $this->Sendmail);
             return false;
@@ -427,7 +427,7 @@ class PHPGMailer
         $to = "";
         for($i = 0; $i < count($this->to); $i++)
         {
-            if($i != 0) { $to .= ", "; }
+            if((float)$i != 0) { $to .= ", "; }
             $to .= $this->to[$i][0];
         }
 
@@ -499,7 +499,7 @@ class PHPGMailer
         {
             for($i = 0; $i < count($bad_rcpt ?? array()); $i++)
             {
-                if($i != 0) { $error .= ", "; }
+                if((float)$i != 0) { $error .= ", "; }
                 $error .= $bad_rcpt[$i];
             }
             $error = $this->Lang("recipients_failed") . $error;
@@ -684,7 +684,7 @@ class PHPGMailer
               if ($qp_mode and (strlen($word) > $length))
               {
                 $space_left = $length - strlen($buf) - 1;
-                if ($e != 0)
+                if ((float)$e != 0)
                 {
                     if ($space_left > 20)
                     {
@@ -723,7 +723,7 @@ class PHPGMailer
               else
               {
                 $buf_o = $buf;
-                $buf .= ($e == 0) ? $word : (" " . $word); 
+                $buf .= ((float)$e == 0) ? $word : (" " . $word); 
 
                 if (strlen($buf) > $length and $buf_o != "")
                 {
@@ -1083,7 +1083,7 @@ class PHPGMailer
 
         $mime[] = sprintf("--%s--%s", $this->boundary[1], $this->LE);
 
-        return join("", $mime);
+        return join("", ($mime ?? array()));
     }
     
     /**
@@ -1171,7 +1171,7 @@ class PHPGMailer
           break;
       }
 
-      if ($x == 0)
+      if ((float)$x == 0)
         return ($str);
 
       $maxlen = 75 - 7 - strlen($this->CharSet);

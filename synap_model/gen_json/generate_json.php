@@ -48,7 +48,7 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
 			condition that "standard deviations cannot be more accurate than the main values". */
 
 		               // find main value significant digits
-            if ($main_value == 0) {
+            if ((float)$main_value == 0) {
                   $decimalPlaces = $digits - 1;
                 } elseif ($main_value < 0) {
                   $decimalPlaces = $digits - floor(log10($main_value * -1)) - 1;
@@ -127,7 +127,7 @@ https://stackoverflow.com/questions/5149129/how-to-strip-trailing-zeros-in-php
                                                 $cv = $row['cv'];
                                         }
                                 }
-                                if ($val != '' && $val != 0) {
+                                if ($val != '' && (float)$val != 0) {
                                         $entry_output = $entry_output.find_connectivity($neuron_ids[$i], $neuron_ids[$j], $conn, $val)."<center><a href='synaptic_mod_sum.php?pre_id=".$neuron_ids[$i]."&post_id=".$neuron_ids[$j]."' title='".toPrecision($val,4,$val)." ± ".toPrecision($std,4,$val)." (n=100)\\n[".toPrecision($min,4,$val)." to ".toPrecision($max,4,$val)."]\\nCV=".toPrecision($cv,4,$val)."' target='_blank'>".toPrecision($val,4,$val)."</a></center></div>";
                                 }
                                 else {
@@ -186,11 +186,11 @@ $i is row that is a neuron type
                                         $last_index = count($write_output ?? array())-1; // last line
                                         fwrite($output_file, "\"".$write_output[$last_index]."\"]}]}");
                                 }
-                                elseif (in_array($o_i, $neuron_group_cols)) {
+                                elseif (in_array($o_i, ($neuron_group_cols ?? array()))) {
                                         fwrite($output_file, $neuron_groups_ordered[$t_out]);
                                         $t_out++;
                                 }
-                                elseif (in_array($o_i, $neuron_class_cols)) {
+                                elseif (in_array($o_i, ($neuron_class_cols ?? array()))) {
                                         fwrite($output_file, $neuron_classes_ordered[$n_out]);
   					$n_out++;
                                 }

@@ -22,7 +22,7 @@ class articleauthorrel
 		$query = "SELECT DISTINCT author_id FROM $table WHERE Article_id = '$article_id' AND author_pos = '$position'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setAuthor_id_array($id, $n);		
 			$n = $n +1;
@@ -37,7 +37,7 @@ class articleauthorrel
 		$query = "SELECT DISTINCT article_id FROM $table WHERE Author_id = '$author_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setArticle_id_array($id, $n);		
 			$n = $n +1;
@@ -53,7 +53,7 @@ class articleauthorrel
 		$query = "SELECT author_pos FROM $table WHERE Article_id = '$article_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($pos) = mysqli_fetch_row($rs))
+		while(list($pos) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setAuthor_position_array($pos, $n);		
 			$n = $n +1;

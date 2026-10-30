@@ -56,13 +56,13 @@ function print_ephys_value_and_hover($param_str, $i, $number_type, $id_ephys2, $
         else {
                 $gt_str = "";
         }
-        if ($error_ephys2[$param_str] != 0) {
+        if ((float)$error_ephys2[$param_str] != 0) {
                 $error_ephys2[$param_str] = number_format($error_ephys2[$param_str], $num_decimals,".","");
         }
-        if ($value1_ephys2[$param_str] != 0) {
+        if ((float)$value1_ephys2[$param_str] != 0) {
 		$value1_ephys2[$param_str] = number_format($value1_ephys2[$param_str], $num_decimals,".","");
 		}
-        if ($value2_ephys2[$param_str] != 0) {
+        if ((float)$value2_ephys2[$param_str] != 0) {
                 $value2_ephys2[$param_str] = number_format($value2_ephys2[$param_str], $num_decimals,".","");
         }
         if ($param_str == 'sag_ratio') {
@@ -88,7 +88,7 @@ function print_ephys_value_and_hover($param_str, $i, $number_type, $id_ephys2, $
                                 $print_str = ' ' . $units;
                         }
                 }
-                else if ($error_ephys2[$param_str] != 0) {
+                else if ((float)$error_ephys2[$param_str] != 0) {
                         $print_str = '&plusmn;' . $error_ephys2[$param_str] . ' ' . $units;
                 }
                 $print_str = $print_str . ' ' . $protocol_ephys2[$param_str];
@@ -348,7 +348,7 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
                         $evidencepropertyyperel->retrive_evidence_id($property_id, $id); // Retrive evidence ids for a particular property
                         $nn = $evidencepropertyyperel->getN_evidence_id(); // get count of all evidences for a particular property id
                         $nn_rep_value = 0;
-                        if ($nn != 0) // there are more VALUE1:
+                        if ((float)$nn != 0) // there are more VALUE1:
                         {
                                 $max_n_measurement = 0;
 
@@ -556,7 +556,7 @@ for ($i=0; $i<$number_type; $i++) //$number_type // Here he determines the numbe
 	preg_match('!\d+!',substr($type->getName(),strpos($type->getName(), ')')),$matches);
         $neurite_pattern=str_split($matches[0]);
         $new_neurite_pattern = str_replace($neurite_pattern[$soma_position], "<strong>".$neurite_pattern[$soma_position]."</strong>", ($neurite_pattern ?? ''));
-        $neurite_pattern_new = implode('',$new_neurite_pattern);
+        $neurite_pattern_new = implode('',($new_neurite_pattern ?? array()));
         //print_r($neurite_pattern_new);
 
         if ($type->get_type_subtype($id) == 'subtype')

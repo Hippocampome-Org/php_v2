@@ -31,7 +31,7 @@ class evidencepropertyyperel
 		$query = "SELECT DISTINCT Property_id FROM $table WHERE Type_id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setProperty_id_array($id, $n);		
 			$n = $n +1;
@@ -46,7 +46,7 @@ class evidencepropertyyperel
 		$query = "SELECT DISTINCT Type_id FROM $table WHERE Property_id = '$Property_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setType_id_array($id, $n);		
 			$n = $n +1;
@@ -67,7 +67,7 @@ class evidencepropertyyperel
 		//echo "$query";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setType_id_array($id, $n);		
 			$n = $n +1;
@@ -87,9 +87,9 @@ class evidencepropertyyperel
 			and pr.subject = '$Subject' and pr.object != 'unknown'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id,$conflict) = mysqli_fetch_row($rs))
+		while(list($id,$conflict) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
-			if(in_array($conflict, $inferences)){
+			if(in_array($conflict, ($inferences ?? array()))){
 				$type_conflict="_".$id."_".$conflict;
 				$this->setType_id_array($type_conflict, $n);
 			}
@@ -130,12 +130,12 @@ class evidencepropertyyperel
 		$n=0;
 		//Created id, Conflict
 		$id_vals = $conflict_vals = array();
-		while(list($id,$conflict, $subject) = mysqli_fetch_row($rs))
+		while(list($id,$conflict, $subject) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$idArray = explode(', ', $id);
 			$i=0;
 			foreach($idArray as $id){
-				if(in_array($conflict, $inferences)){
+				if(in_array($conflict, ($inferences ?? array()))){
 					$type_conflict="_".$id."_".$conflict;
 					array_push($id_vals, array($type_conflict, $conflict.", ".$Subject));
 				}
@@ -171,7 +171,7 @@ class evidencepropertyyperel
 			
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setType_id_array($id, $n);		
 			$n = $n +1;
@@ -207,7 +207,7 @@ class evidencepropertyyperel
 							WHERE subject = '$part' AND predicate = 'in' AND object like '%$val%')";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setType_id_array($id, $n);		
 			$n = $n +1;
@@ -221,7 +221,7 @@ class evidencepropertyyperel
 		$query = "SELECT DISTINCT Evidence_id,linking_quote,interpretation_notes FROM $table WHERE Property_id = '$Property_id' AND Type_id = '$type_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id,$linking_quote,$interpretation_notes) = mysqli_fetch_row($rs))
+		while(list($id,$linking_quote,$interpretation_notes) = ($rs ? mysqli_fetch_row($rs) : null))
 		{			
 			$this->setEvidence_id_array($id, $n);
 			$this->setLinking_quote_array($linking_quote, $n);
@@ -237,7 +237,7 @@ class evidencepropertyyperel
 		$query = "SELECT DISTINCT Evidence_id FROM $table WHERE Property_id = '$Property_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{			
 			$this->setEvidence_id_array($id, $n);		
 			$n = $n +1;
@@ -251,7 +251,7 @@ class evidencepropertyyperel
 		$query = "SELECT DISTINCT Evidence_id FROM $table WHERE Type_id = '$type_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$this->setEvidence_id_array($id, $n);
 			$n = $n +1;
@@ -268,7 +268,7 @@ class evidencepropertyyperel
 		";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id, $linking_quote, $interpretation_notes) = mysqli_fetch_row($rs))
+		while(list($id, $linking_quote, $interpretation_notes) = ($rs ? mysqli_fetch_row($rs) : null))
 		{			
 			$this->setEvidence_id_array($id, $n);		
 			$this->setLinking_quote_array($linking_quote, $n);
@@ -288,7 +288,7 @@ class evidencepropertyyperel
 		";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{			
 			$this->setEvidence_id_array($id, $n);		
 			$n = $n + 1;
@@ -303,7 +303,7 @@ class evidencepropertyyperel
 		$query = "SELECT DISTINCT Type_id FROM $table WHERE Evidence_id = '$evidence_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($id) = mysqli_fetch_row($rs))
+		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 		{			
 			$this->setType_id_array($id, $n);		
 			$n = $n +1;
@@ -318,7 +318,7 @@ class evidencepropertyyperel
 	
 		$query = "SELECT unvetted FROM $table WHERE Type_id = '$type_id' AND Property_id = '$property_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($var) = mysqli_fetch_row($rs))
+		while(list($var) = ($rs ? mysqli_fetch_row($rs) : null))
 		{			
 			$this->setUnvetted($var);		
 		}	
@@ -331,7 +331,7 @@ class evidencepropertyyperel
 		$table=$this->getName_table();
 		$query = "SELECT DISTINCT Article_id FROM $table WHERE Property_id = '$Property_id' AND Type_id = '$type_id' AND Evidence_id = '$evidence_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		$row = mysqli_fetch_row($rs);
+		$row = ($rs ? mysqli_fetch_row($rs) : null);
 		$article_id = $row[0] ?? null;
 		return $article_id;
 	}	
@@ -342,7 +342,7 @@ class evidencepropertyyperel
 		$table=$this->getName_table();
 		$query = "SELECT DISTINCT conflict_note FROM $table WHERE Property_id = '$property_id' AND Type_id = '$type_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($var) = mysqli_fetch_row($rs))
+		while(list($var) = ($rs ? mysqli_fetch_row($rs) : null))
 		{			
 			$this->setConflict_note($var);		
 		}	
@@ -354,7 +354,7 @@ class evidencepropertyyperel
 		$table=$this->getName_table();
 		$query = "SELECT DISTINCT property_type_explanation FROM $table WHERE Property_id = '$property_id' AND Type_id = '$type_id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($var) = mysqli_fetch_row($rs))
+		while(list($var) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$this->setProperty_type_explanation($var);
 		}

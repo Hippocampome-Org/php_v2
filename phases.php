@@ -422,22 +422,22 @@ function HideShowColumns ()
     $preferred_conditions = array();
     /* check conditions for each property type */
     for ($j = 0; $j < count($best_ranks_theta ?? array()); $j++) {
-        if (!in_array($best_ranks_theta[$j], $preferred_conditions)) {
+        if (!in_array($best_ranks_theta[$j], ($preferred_conditions ?? array()))) {
           array_push($preferred_conditions, $best_ranks_theta[$j]);
         }
     }
     for ($j = 0; $j < count($best_ranks_swr ?? array()); $j++) {
-        if (!in_array($best_ranks_swr[$j], $preferred_conditions)) {
+        if (!in_array($best_ranks_swr[$j], ($preferred_conditions ?? array()))) {
           array_push($preferred_conditions, $best_ranks_swr[$j]);
         }
     }
     for ($j = 0; $j < count($best_ranks_firingrate ?? array()); $j++) {
-        if (!in_array($best_ranks_firingrate[$j], $preferred_conditions)) {
+        if (!in_array($best_ranks_firingrate[$j], ($preferred_conditions ?? array()))) {
           array_push($preferred_conditions, $best_ranks_firingrate[$j]);
         }
     }
     for ($j = 0; $j < count($best_ranks_other ?? array()); $j++) {
-        if (!in_array($best_ranks_other[$j], $preferred_conditions)) {
+        if (!in_array($best_ranks_other[$j], ($preferred_conditions ?? array()))) {
           array_push($preferred_conditions, $best_ranks_other[$j]);
         }
     }

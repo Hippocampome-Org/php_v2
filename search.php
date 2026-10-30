@@ -124,7 +124,7 @@ $N = $_REQUEST['N'] ?? null;
 
 	$value = $_REQUEST['value'] ?? null;
 
-	if ($value||$value==0)
+	if ($value||(float)$value==0)
 
 	{	
 
@@ -302,7 +302,7 @@ $query = "SELECT permission FROM user WHERE id=2"; // id=2 is anonymous user
 
 $rs = mysqli_query($conn,$query);
 
-list($permission) = mysqli_fetch_row($rs);
+list($permission) = ($rs ? mysqli_fetch_row($rs) : null);
 
 ?>
 
@@ -570,7 +570,7 @@ include ("function/icon.html");
 
 			
 
-			if ( ($n_id != 1) || ($i0 != 0) ) {
+			if ( ($n_id != 1) || ((float)$i0 != 0) ) {
 
 				print ("<td align='center' width='4%' class='table_neuron_page1'>
 
@@ -684,7 +684,7 @@ include ("function/icon.html");
 
 					$phenotype=array("ASP Element","D Element","RASP Element","TSTUT Element","TSWB Element","NASP Element","PSTUT Element","PSWB Element","SLN Element");
 
-					$value_part=array_merge($phenotype,$value_part);
+					$value_part=array_merge(($phenotype ?? array()),($value_part ?? array()));
 
 					$n_part=count($value_part ?? array());
 
@@ -1122,7 +1122,7 @@ include ("function/icon.html");
 
 				$rs_ephys = mysqli_query($GLOBALS['conn'],$query_to_get_ephys);	
 
-				while(list($ephys) = mysqli_fetch_row($rs_ephys))						
+				while(list($ephys) = ($rs_ephys ? mysqli_fetch_row($rs_ephys) : null))						
 
 					$valuesOfEphys[$index++] = $ephys;	
 
@@ -1130,7 +1130,7 @@ include ("function/icon.html");
 
 				sort($valuesOfEphys);
 
-				$valuesOfEphys=array_unique($valuesOfEphys);
+				$valuesOfEphys=array_unique(($valuesOfEphys ?? array()));
 
 						
 
@@ -1178,7 +1178,7 @@ include ("function/icon.html");
 
 						$rs_firing_pattern_parameter_value = mysqli_query($GLOBALS['conn'],$query_to_get_firing_pattern_parameter_value);	
 
-						while($firing_pattern = mysqli_fetch_array($rs_firing_pattern_parameter_value,MYSQLI_NUM)){
+						while($firing_pattern = ($rs_firing_pattern_parameter_value ? mysqli_fetch_array($rs_firing_pattern_parameter_value,MYSQLI_NUM) : null)){
 
 							if(is_numeric($firing_pattern[$index_of_param]))
 
@@ -1236,7 +1236,7 @@ include ("function/icon.html");
 
 							$val=number_format((float)$valuesOf[$ind],$digit_precision, '.', '');
 
-							if(!(in_array($val, $valuesOfParameter))){
+							if(!(in_array($val, ($valuesOfParameter ?? array())))){
 
 								$valuesOfParameter[$index++]=$val;
 
@@ -1336,7 +1336,7 @@ include ("function/icon.html");
 
 			
 
-			if ($n_value == 0) ;
+			if ((float)$n_value == 0) ;
 
 			else
 
@@ -1344,7 +1344,7 @@ include ("function/icon.html");
 
 			
 
-			if ($value1||$value1==0)
+			if ($value1||(float)$value1==0)
 
 				print ("<OPTION VALUE='$value1'>$value1</OPTION>");
 
@@ -1412,7 +1412,7 @@ include ("function/icon.html");
 
 			
 
-			while(list($operator) = mysqli_fetch_row($rs))						
+			while(list($operator) = ($rs ? mysqli_fetch_row($rs) : null))						
 
 				$operator1 = $operator;
 
@@ -1478,7 +1478,7 @@ include ("function/icon.html");
 
 			$n9=0;
 
-			while(list($N, $operator, $property, $part, $relation, $value) = mysqli_fetch_row($rs))
+			while(list($N, $operator, $property, $part, $relation, $value) = ($rs ? mysqli_fetch_row($rs) : null))
 
 			{	
 
@@ -1496,7 +1496,7 @@ include ("function/icon.html");
 
 					// It will be implemented for advanced search
 
-					if ($n9 == 0){
+					if ((float)$n9 == 0){
 
 						if ($value == NULL) { // for markers, no value, so no space after relation 
 
@@ -1604,7 +1604,7 @@ include ("function/icon.html");
 
 		$m1 = 0;
 
-		while(list($part, $max, $min, $mean,$property_val) = mysqli_fetch_row($rs))
+		while(list($part, $max, $min, $mean,$property_val) = ($rs ? mysqli_fetch_row($rs) : null))
 
 		{
 

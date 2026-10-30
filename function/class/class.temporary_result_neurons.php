@@ -16,7 +16,7 @@ class temporary_result_neurons
 		$query = "SELECT DISTINCT id_type FROM $name_temporary_table";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n = 0;
-		while(list($id)	= mysqli_fetch_row($rs))		
+		while(list($id)	= ($rs ? mysqli_fetch_row($rs) : null))		
 		{
 			$this->setID_array($id, $n);
 			$n = $n + 1;

@@ -324,7 +324,7 @@ $(function(){
 		<?php
 			print ("<select  name='check1'  onChange=\"show_only(this)\">");
 			$hippo = array("ASP.", "ASP.ASP.", "ASP.NASP", "ASP.SLN", "D.", "D.ASP.", "D.FASP.NASP", "D.NASP.", "D.PSTUT", "D.TSWB.NASP", "FASP.", "FASP.ASP.", "FASP.NASP", "FASP.SLN", "NASP", "PSTUT", "PSWB", "TSTUT.", "TSTUT.ASP.", "TSTUT.NASP", "TSTUT.SLN", "TSWB.NASP", "TSWB.SLN");
-			if($indexFP!=0){
+			if((float)$indexFP!=0){
 				print("<option value='".$indexFP."'>".$hippo[$indexFP]."</option>");
 			}
 			for($i=0;$i<count($hippo ?? array());$i++){

@@ -118,7 +118,7 @@ function get_neuron_ids($conn){
         if(!$rs || ($rs->num_rows < 1)){
                 return $neuron_ids;
         }
-	while($row = mysqli_fetch_row($rs))
+	while($row = ($rs ? mysqli_fetch_row($rs) : null))
 	{
 		$neuron_ids[$row[0]]= $row[1] ?? null;
 	}
@@ -144,7 +144,7 @@ function get_calculated_views_dynamically($conn) {
     }
     $selectQuery = "SELECT @total_views AS total_views;";
     $result = mysqli_query($conn, $selectQuery);
-    if ($result && $row = mysqli_fetch_assoc($result)) {
+    if ($result && $row = ($result ? mysqli_fetch_assoc($result) : null)) {
         $total_views = $row['total_views'];
         if ($total_views > 0) {
             $delta_value = 86523 / $total_views; 
@@ -264,18 +264,18 @@ function download_csvfile($functionName, $conn, $views_request = NULL, $neuron_i
         'get_markers_property_views_report'
     ];
 
-    if (in_array($functionName, $allowedFunctions) && function_exists($functionName)) {
+    if (in_array($functionName, ($allowedFunctions ?? array())) && function_exists($functionName)) {
         if (in_array($functionName, ['get_neurons_views_report', 'get_neuron_types_views_report', 'get_morphology_property_views_report', 'get_markers_property_views_report'])) {
             $csv_data = $functionName($conn, $neuron_ids, $views_request, true);
         } else {
             if (isset($param)) {
-                if (in_array($functionName, $neuron_ids_func)) {
+                if (in_array($functionName, ($neuron_ids_func ?? array()))) {
                     $csv_data = $functionName($conn, $param, $neuron_ids, $views_request, true);
                 } else {
                     $csv_data = $functionName($conn, $param, $views_request, true);
                 }
             } else {
-                if (in_array($functionName, $neuron_ids_func)) {
+                if (in_array($functionName, ($neuron_ids_func ?? array()))) {
                     $csv_data = $functionName($conn, $neuron_ids, $views_request, true);
                 } else {
                     $csv_data = $functionName($conn, $views_request, true);
@@ -307,7 +307,7 @@ function download_csvfile($functionName, $conn, $views_request = NULL, $neuron_i
 }
 
 function processNeuronLink($neuron_id, $neuron_ids_array, $linkText, $write_file=NULL) {
-    $neuron_name = array_search($neuron_id, $neuron_ids_array);
+    $neuron_name = array_search($neuron_id, ($neuron_ids_array ?? array()));
     if ($neuron_name !== false) {
 	    if(isset($write_file)){
 		    $neuron_id=$neuron_name;
@@ -348,13 +348,13 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 		    $csv_rows = [];
 		    do {    
 			    if ($result = mysqli_store_result($conn)) {
-				    if (mysqli_num_rows($result) == 0) {
+				    if (($result ? mysqli_num_rows($result) : null) == 0) {
 					    echo "No data returned from the query.";
 					    return;
 				    }
 				    if (empty($header)) {
-					    $header = array_keys(mysqli_fetch_array($result, MYSQLI_ASSOC));
-					    mysqli_data_seek($result, 0);
+					    $header = array_keys(($result ? mysqli_fetch_array($result, MYSQLI_ASSOC) : null));
+					    ($result ? mysqli_data_seek($result, 0) : null);
 					    $csv_headers = camel_replace($header);
 				    }
 				    // Prepend the "pre-Aug 22, 2019" row with the integer value
@@ -367,7 +367,7 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 					    $column_totals[$primary_header] += 86523;
 				    }
 
-				    while ($rowvalue = mysqli_fetch_assoc($result)) {
+				    while ($rowvalue = ($result ? mysqli_fetch_assoc($result) : null)) {
 					    $validRow = [];
 					    foreach ($rowvalue as $column_name => $column_value) {
 						    $format_column_value = sanitizeValue($column_value);
@@ -379,7 +379,7 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 					    }
 					    $csv_rows[] = $rowvalue;
 				    }
-				    mysqli_free_result($result);
+				    ($result ? mysqli_free_result($result) : null);
 			    }
 		    } while (mysqli_next_result($conn));
 		    $csv_rows[] = generateTotalRow($csv_headers, true, $column_totals);
@@ -426,10 +426,10 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
     if ($rs){
 	    $header=[];
 	    if (empty($header)) {
-		    $header = array_keys(mysqli_fetch_array($rs, MYSQLI_ASSOC));
+		    $header = array_keys(($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null));
 		    $rows = count($header ?? array());
 		    $csv_headers = camel_replace($header);
-		    mysqli_data_seek($rs, 0);
+		    ($rs ? mysqli_data_seek($rs, 0) : null);
 	    }
     }
     foreach ($csv_headers as $header) {
@@ -473,8 +473,8 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 	    $i++;
     }
     // Reset the result set pointer to the first row
-    mysqli_data_seek($rs, 0);
-    while ($row = mysqli_fetch_assoc($rs)) {                    
+    ($rs ? mysqli_data_seek($rs, 0) : null);
+    while ($row = ($rs ? mysqli_fetch_assoc($rs) : null)) {                    
 	    //$row = update_estimated_totals($row);
 	    $bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
 	    $table_string1 .= "<tr class='$bgColor'>";
@@ -495,7 +495,7 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
     }
     // Process the additional query results if provided
     if (isset($query2)) {
-	    while ($row = mysqli_fetch_assoc($rs2)) {
+	    while ($row = ($rs2 ? mysqli_fetch_assoc($rs2) : null)) {
 		    $bgColor = $i % 2 == 0 ? 'white-bg' : 'blue-bg';
 		    $table_string1 .= "<tr class='$bgColor'>";
 		    foreach ($row as $column_name => $column_value) {
@@ -552,17 +552,17 @@ function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $wri
 		    $header = []; // Initialize an array to store column names
 		    do {
 			    if ($result = mysqli_store_result($conn)) {
-				    if (mysqli_num_rows($result) == 0) {
+				    if (($result ? mysqli_num_rows($result) : null) == 0) {
 					    echo "No data returned from the query.";
 					    return;
 				    }
 				    if (empty($header)) {
-					    $header = array_keys(mysqli_fetch_array($result, MYSQLI_ASSOC));
+					    $header = array_keys(($result ? mysqli_fetch_array($result, MYSQLI_ASSOC) : null));
 					    $rows = count($header ?? array());
 					    $csv_headers = camel_replace($header);
-					    mysqli_data_seek($result, 0);
+					    ($result ? mysqli_data_seek($result, 0) : null);
 				    }
-				    while ($rowvalue = mysqli_fetch_assoc($result)) {
+				    while ($rowvalue = ($result ? mysqli_fetch_assoc($result) : null)) {
 					    foreach ($rowvalue as $key => $value) {
 						    $formatted_value = sanitizeValue($value);
 						    $rowvalue[$key] = $formatted_value; 
@@ -574,7 +574,7 @@ function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $wri
 					    }
 					    $csv_rows[] = $rowvalue;
 				    }
-				    mysqli_free_result($result);
+				    ($result ? mysqli_free_result($result) : null);
 			    }
 		    } while (mysqli_next_result($conn));
 		    $csv_rows[] = generateTotalRow($csv_headers, true, $column_totals);
@@ -592,16 +592,16 @@ function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $wri
     $rs = mysqli_query($conn, $query);
     $table_string = '';
     $rows = count($csv_headers ?? array());
-    if (!$rs || mysqli_num_rows($rs) < 1) {
+    if (!$rs || ($rs ? mysqli_num_rows($rs) : null) < 1) {
         return "<tr><td colspan='{$rows}'> No Data is available </td></tr>";
     }
     if($rs){
 	    $header=[];
 	    if (empty($header)) {
-		    $header = array_keys(mysqli_fetch_array($rs, MYSQLI_ASSOC));
+		    $header = array_keys(($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null));
 		    $rows = count($header ?? array());
 		    $csv_headers = camel_replace($header);
-		    mysqli_data_seek($rs, 0);
+		    ($rs ? mysqli_data_seek($rs, 0) : null);
 		    $table_string= get_table_skeleton_first($csv_headers);
 	    }
     }
@@ -609,16 +609,16 @@ function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $wri
     // Initialize an array to store column-wise totals
     $column_totals = [];
 
-    while ($row = mysqli_fetch_assoc($rs)) {
+    while ($row = ($rs ? mysqli_fetch_assoc($rs) : null)) {
 	    $csv_rows[] = $row;
 	    // Check for row exclusion based on 'exclude' option
-	    if (isset($options['exclude']) && in_array(current($row), $options['exclude'])) {
+	    if (isset($options['exclude']) && in_array(current($row), ($options['exclude'] ?? array()))) {
 		    continue;
 	    }
 
 	    // Apply transformations based on 'format' option
 	    $first_column = key($row);
-	    if (isset($options['format']) && array_key_exists($row[$first_column], $options['format'])) {
+	    if (isset($options['format']) && array_key_exists($row[$first_column], ($options['format'] ?? array()))) {
 		    $row[$first_column] = $options['format'][$row[$first_column]];
 	    }
 
@@ -630,7 +630,7 @@ function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $wri
 		    if ($column_value === 'fp') {
 			    $column_value = 'firing pattern';
 		    }
-		    $style = ($column_name === array_keys($row)[1]) ? 'style="width: 10%;"' : '';
+		    $style = ($column_name === array_keys(($row ?? array()))[1]) ? 'style="width: 10%;"' : '';
 		    if (is_numeric($column_value)) {
 			    processColumnValue($column_value, $column_name, $table_string, $column_totals, $style);
 			    continue;
@@ -664,7 +664,7 @@ function camel_replace($header, $char = null) {
     // Replace underscores with the specified character or a space
     $csv_headers = array_map(function($header_item) use ($char) {
         return str_replace('_', $char ?? ' ', ($header_item ?? ''));
-    }, $header);
+    }, ($header ?? array()));
 
     // If no character is provided, handle "SYNPRO" case
     if ($char === null) {
@@ -694,12 +694,12 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 				if ($result = mysqli_store_result($conn)) {
 					$na_rows = [];
 					if (empty($header)) {
-						$header = array_keys(mysqli_fetch_array($result, MYSQLI_ASSOC));
+						$header = array_keys(($result ? mysqli_fetch_array($result, MYSQLI_ASSOC) : null));
 						$rows = count($header ?? array());
 						$csv_headers = camel_replace($header);
-						mysqli_data_seek($result, 0);
+						($result ? mysqli_data_seek($result, 0) : null);
 					}
-					while ($rowvalue = mysqli_fetch_assoc($result)) {
+					while ($rowvalue = ($result ? mysqli_fetch_assoc($result) : null)) {
 						foreach ($rowvalue as $key => $value) {
 							if($key == 'Subregion' || $key == 'Neuron_Type_Name'){
 								continue;
@@ -812,10 +812,10 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 							$csv_rows[] = $rowvalue;
 						}
 					}
-					mysqli_free_result($result);
+					($result ? mysqli_free_result($result) : null);
 				}
 			} while (mysqli_next_result($conn));
-            		$csv_rows = array_merge($csv_rows, $na_rows);
+            		$csv_rows = array_merge(($csv_rows ?? array()), ($na_rows ?? array()));
 			$csv_rows[] = generateTotalRow($csv_headers, true, $column_totals);
 			$csv_data[$csv_tablename]=['filename'=>toCamelCase($csv_tablename),'headers'=>$csv_headers,'rows'=>$csv_rows];
 			return $csv_data[$csv_tablename];
@@ -837,13 +837,13 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 		do {
 			if ($result = mysqli_store_result($conn)) {
 				if (empty($header)) {
-					$header = array_keys(mysqli_fetch_array($result, MYSQLI_ASSOC));
+					$header = array_keys(($result ? mysqli_fetch_array($result, MYSQLI_ASSOC) : null));
 					$rows = count($header ?? array());
 					$csv_headers = camel_replace($header);
-					mysqli_data_seek($result, 0);
+					($result ? mysqli_data_seek($result, 0) : null);
 					$table_string1 = get_table_skeleton_first($csv_headers);
 				}
-				while ($rowvalue = mysqli_fetch_assoc($result)) {
+				while ($rowvalue = ($result ? mysqli_fetch_assoc($result) : null)) {
 					$value = $rowvalue['Neuron_Type_Name'];
 					if (isset($neuron_ids[$value])) {
 						if (!isset($write_file)) {
@@ -864,7 +864,7 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
 						array_push($array_subs[$rowvalue['Subregion']][$rowvalue['Neuron_Type_Name']], $value);
 					}
 				}
-				mysqli_free_result($result);
+				($result ? mysqli_free_result($result) : null);
 			}
 		} while (mysqli_next_result($conn));
 
@@ -985,7 +985,7 @@ function format_table_connectivity($conn, $query, $table_string, $csv_tablename,
 	$array_subs ??= [];
 	$array_subs1 ??= [];
 	$array_subsNA ??= [];
-	while ($rowvalue = mysqli_fetch_array($rs, MYSQLI_ASSOC)) {
+	while ($rowvalue = ($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null)) {
 		if (isset($neuron_ids[$rowvalue['source_neuron_name']]) && $rowvalue['source_neuron_name'] !== 'None of the Above') {
 			$rowvalue['source_neuron_name'] = get_link($rowvalue['source_neuron_name'], $neuron_ids[$rowvalue['source_neuron_name']], './neuron_page.php', 'neuron');
 		}
@@ -1035,7 +1035,7 @@ function format_table_connectivity($conn, $query, $table_string, $csv_tablename,
 		$actualTargetNeuronType = $target_neuron_name ?: 'None of the Above';
 
 		if (!isset($array_subs1[$actualSourceSubregion][$actualSourceNeuronType][$actualTargetSubregion][$actualTargetNeuronType])) {
-			$array_subs1[$actualSourceSubregion][$actualSourceNeuronType][$actualTargetSubregion][$actualTargetNeuronType] = array_fill_keys($connectivity_cols, 0.0);
+			$array_subs1[$actualSourceSubregion][$actualSourceNeuronType][$actualTargetSubregion][$actualTargetNeuronType] = array_fill_keys(($connectivity_cols ?? array()), 0.0);
 			$array_subs1[$actualSourceSubregion][$actualSourceNeuronType][$actualTargetSubregion][$actualTargetNeuronType]['Total_Views'] = 0.0;
 		}
 
@@ -1044,7 +1044,7 @@ function format_table_connectivity($conn, $query, $table_string, $csv_tablename,
 
 	}
 
-	$array_subs = array_merge_recursive($array_subs1, $array_subsNA);
+	$array_subs = array_merge_recursive(($array_subs1 ?? array()), ($array_subsNA ?? array()));
 	//var_dump($array_subs);exit;
 	$column_totals = [];
 	$csv_rows = [];
@@ -1138,7 +1138,7 @@ function generateTotalRow($headers, $isCsv = true, $columnTotals = [])
 	    $columnTotals['Total Views'] = $columnTotals['Post 2019 Views'] + $columnTotals['Prorated Pre 2019 Views'];
     }
     if ($numEmptyColumns >= 0) {
-        $totalCountRow = array_merge($totalCountRow, array_fill(0, $numEmptyColumns, ''));
+        $totalCountRow = array_merge(($totalCountRow ?? array()), array_fill(0, $numEmptyColumns, ''));
     }
     foreach ($headers as $header) {
         if (isset($columnTotals[$header])) {
@@ -1188,7 +1188,7 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
     $array_subs ??= [];
 
     $neuronal_segments = array_change_key_case($neuronal_segments, CASE_LOWER);
-    while ($rowvalue = mysqli_fetch_array($rs, MYSQLI_ASSOC)) {
+    while ($rowvalue = ($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null)) {
 	    if (empty($rowvalue['neuron_name']) || empty($rowvalue['subregion'])) {
 		    continue;
 	    }
@@ -1272,7 +1272,7 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 			    $typeData = [$type]; // First value in the row
 
 			    foreach ($values as $category => $properties) {
-				    $rowData = array_merge($typeData, [$subtype, $category]); 
+				    $rowData = array_merge(($typeData ?? array()), [$subtype, $category]); 
 				    foreach ($properties as $property => $value) {
 					    if ($property == "") continue; // Skip empty properties
 					    if (is_null($value) || trim((string)$value) === '') {
@@ -1328,7 +1328,7 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
 		    }
 
 		    foreach ($values as $category => $properties) {
-			    if (in_array($category, $color_cols)) {
+			    if (in_array($category, ($color_cols ?? array()))) {
 				    $table_string2 .= "<tr>";
 			    }
 			    if($k%2==0){
@@ -1434,7 +1434,7 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 
 	$color_segments = array_change_key_case($color_segments, CASE_LOWER);
 	//$neuronal_segments = array_change_key_case($neuronal_segments, CASE_LOWER);
-	while ($rowvalue = mysqli_fetch_array($rs, MYSQLI_ASSOC)) {
+	while ($rowvalue = ($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null)) {
     		// Modify neuron name if necessary
 		if (isset($neuron_ids[$rowvalue['neuron_name']])) {
 			if (!isset($write_file)) {
@@ -1446,7 +1446,7 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 		$neuron_name = $rowvalue['neuron_name'];
 		$color = isset($color_segments[strtolower($rowvalue['color'])]) ? $color_segments[strtolower($rowvalue['color'])] : 'None of the Above';
 		$decodedKey = urldecode($rowvalue['evidence']);
-		if (array_key_exists($decodedKey, $neuronal_segments)) {
+		if (array_key_exists($decodedKey, ($neuronal_segments ?? array()))) {
 			$evidence = $neuronal_segments[$decodedKey];
 		} else {
 			$evidence = $neuronal_segments[""];
@@ -1502,7 +1502,7 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
                     foreach ($subtypes as $subtype => $values) {
                             $typeData = [$type]; // First value in the row
                             foreach ($values as $category => $properties) {
-                                    $rowData = array_merge($typeData, [$subtype, $category]); // Create row with type, subtype, and category
+                                    $rowData = array_merge(($typeData ?? array()), [$subtype, $category]); // Create row with type, subtype, and category
                                     foreach ($properties as $property => $value) {
                                             if ($property == "") continue; // Skip empty properties
 					    if (is_null($value) || trim((string)$value) === '') {
@@ -1526,7 +1526,7 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 			    }    
                     }    
             }    
-	    $csv_rows = array_merge($csv_rows, $special_rows);
+	    $csv_rows = array_merge(($csv_rows ?? array()), ($special_rows ?? array()));
             $csv_rows[] = generateTotalRow($csv_headers, true, $column_totals);
             // Create final CSV data structure
             $csv_data[$csv_tablename] = [
@@ -1588,7 +1588,7 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
 			if($i%2==0){ $table_string2 .= "<td  class='white-bg' rowspan='".$subtyperowspan."'>".$subtype."</td>";
 			}else{ $table_string2 .= "<td  class='blue-bg' rowspan='".$subtyperowspan."'>".$subtype."</td>"; }
 			foreach ($values as $category => $properties) {
-				if (in_array($category, $color_cols)) {		$table_string2 .= "<tr>"; 	}
+				if (in_array($category, ($color_cols ?? array()))) {		$table_string2 .= "<tr>"; 	}
 				if($k%2==0){  $table_string2 .= "<td class='white-bg'>".$category."</td>";	}
 				else{	$table_string2 .= "<td class='blue-bg'>".$category."</td>"; }
 				foreach ($properties as $property => $value) {
@@ -1691,7 +1691,7 @@ function update_estimated_totals($data) {
 			$row['Prorated_Pre_2019_Views'] = 0;
 		}
 		if (($row['Post_2019_Views'] > $row['Prorated_Pre_2019_Views']) ||
-				($row['Prorated_Pre_2019_Views'] == 0 && $row['Post_2019_Views'] >= 1)) {
+				((float)$row['Prorated_Pre_2019_Views'] == 0 && $row['Post_2019_Views'] >= 1)) {
 			$row['Prorated_Pre_2019_Views'] = round(DELTA_VIEWS * $row['Post_2019_Views'], 3);
 			$row['Total_Views'] = $row['Post_2019_Views'] + $row['Prorated_Pre_2019_Views'];
 		}
@@ -1706,7 +1706,7 @@ function update_estimated_totals($data) {
 			    $post2019Views = $colors['Post_2019_Views'] ?? 0;
 			    $pre2019Views = $colors['Prorated_Pre_2019_Views'] ?? 0;
 
-			    if (($post2019Views > $pre2019Views) || ($pre2019Views == 0 && $post2019Views >= 1)) {
+			    if (($post2019Views > $pre2019Views) || ((float)$pre2019Views == 0 && $post2019Views >= 1)) {
 				    $array_subs[$groupKey][$subgroupKey]['Prorated_Pre_2019_Views'] = round(DELTA_VIEWS * $post2019Views, 3);
 				    $array_subs[$groupKey][$subgroupKey]['Total_Views'] = $post2019Views + $array_subs[$groupKey][$subgroupKey]['Prorated_Pre_2019_Views'];
 			    }
@@ -1750,7 +1750,7 @@ function format_table_biophysics($conn, $query, $table_string, $csv_tablename, $
 		return $table_string1;
         }
 	$array_subs ??= [];
-	while($rowvalue = mysqli_fetch_array($rs, MYSQLI_ASSOC)){
+	while($rowvalue = ($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null)){
 		if(isset($neuron_ids[$rowvalue['neuron_name']])){
 			$rowvalue['neuron_name'] = get_link($rowvalue['neuron_name'], $neuron_ids[$rowvalue['neuron_name']], './neuron_page.php','neuron');
 		}
@@ -1760,13 +1760,13 @@ function format_table_biophysics($conn, $query, $table_string, $csv_tablename, $
                                 $array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$col] = 0.0;
                         }
 			$array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']]['Total_Views'] = 0.0;
-			if(isset($array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$neuronal_segments[$rowvalue['evidence']]]) && $array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$neuronal_segments[$rowvalue['evidence']]] == 0){
+			if(isset($array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$neuronal_segments[$rowvalue['evidence']]]) && (float)$array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$neuronal_segments[$rowvalue['evidence']]] == 0){
 				$total_views = isset($rowvalue['Total_Views']) && is_numeric($rowvalue['Total_Views']) ? floatval($rowvalue['Total_Views']) : 0;
 				$array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$neuronal_segments[$rowvalue['evidence']]] += $total_views;
 				$array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']]['Total_Views'] += $rowvalue['Total_Views'];
 			}
 		}else{
-			if(isset($array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$neuronal_segments[$rowvalue['evidence']]]) && $array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$neuronal_segments[$rowvalue['evidence']]] == 0){
+			if(isset($array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$neuronal_segments[$rowvalue['evidence']]]) && (float)$array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$neuronal_segments[$rowvalue['evidence']]] == 0){
 				$total_views = isset($rowvalue['Total_Views']) && is_numeric($rowvalue['Total_Views']) ? floatval($rowvalue['Total_Views']) : 0;
 				$array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']][$neuronal_segments[$rowvalue['evidence']]] += $total_views;
 				$array_subs[$rowvalue['subregion']][$rowvalue['neuron_name']]['Total_Views'] += $rowvalue['Total_Views'];
@@ -1781,7 +1781,7 @@ function format_table_biophysics($conn, $query, $table_string, $csv_tablename, $
 		foreach ($array_subs as $groupKey => $subgroups) {
 			foreach ($subgroups as $subgroupKey => $colors) {
 				foreach ($colors as $property => $value) {
-					if (!in_array($property, $all_headers, true) && $property !== "") {
+					if (!in_array($property, ($all_headers ?? array()), true) && $property !== "") {
 						$all_headers[] = $property;
 					}
 				}
@@ -1793,7 +1793,7 @@ function format_table_biophysics($conn, $query, $table_string, $csv_tablename, $
 				$rowData[0] = $groupKey; // Set the 'Group' column
 				$rowData[1] = $subgroupKey; // Set the 'Subgroup' column
 				foreach ($colors as $property => $value) {
-					$headerIndex = array_search($property, $all_headers, true);
+					$headerIndex = array_search($property, ($all_headers ?? array()), true);
 					$value = (is_numeric($value) && $value !== '') ? floatval($value) : 0.0;
 					if ($headerIndex !== false) {
 						$rowData[$headerIndex] = ($value > 0) ? $value : "0"; // Ensure non-negative values
@@ -1816,7 +1816,7 @@ function format_table_biophysics($conn, $query, $table_string, $csv_tablename, $
 	$column_totals=[];
 	foreach ($array_subs as $groupKey => $subgroups) {
 		$table_string1 .= "<tr>";
-		$keyCounts = count(array_keys($subgroups));
+		$keyCounts = count(array_keys(($subgroups ?? array())));
 		$rowspan = $keyCounts;
 		$table_string1 .= ($j % 2 == 0)
 			? "<td class='lightgreen-bg' rowspan='$rowspan'>" . $groupKey . "</td>"
@@ -1896,7 +1896,7 @@ function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_
 	$array_subs ??= [];
 	$array_subs1 ??= [];
 	$array_subsNA ??= [];
-	while ($rowvalue = mysqli_fetch_array($rs, MYSQLI_ASSOC)) {
+	while ($rowvalue = ($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null)) {
 		if (isset($neuron_ids[$rowvalue['Neuron_Type_Name']]) && $rowvalue['Neuron_Type_Name'] != 'None of the Above') {
 			$rowvalue['Neuron_Type_Name'] = get_link($rowvalue['Neuron_Type_Name'], $neuron_ids[$rowvalue['Neuron_Type_Name']], './neuron_page.php', 'neuron');
 		}
@@ -1918,7 +1918,7 @@ function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_
 			}
 		}
 	}
-	$array_subs = array_merge_recursive($array_subs1, $array_subsNA);
+	$array_subs = array_merge_recursive(($array_subs1 ?? array()), ($array_subsNA ?? array()));
  	$column_totals = [];
 	if (isset($write_file)) {
 		foreach ($array_subs as $groupKey => $subgroups) {
@@ -1958,7 +1958,7 @@ function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_
 	// Loop through the merged $array_subs
 	foreach ($array_subs as $groupKey => $subgroups) {
 		$table_string1 .= "<tr>";
-		$keyCounts = count(array_keys($subgroups));
+		$keyCounts = count(array_keys(($subgroups ?? array())));
 		$rowspan = $keyCounts;
 
 		// Set background color for group rows
@@ -2013,7 +2013,7 @@ function get_page_views($conn){ //Passed on Dec 3 2023
 
         $rs = mysqli_query($conn,$page_views_query);
         $result_page_views_array = array();
-        while($row = mysqli_fetch_row($rs))
+        while($row = ($rs ? mysqli_fetch_row($rs) : null))
         {
                 array_push($result_page_views_array, $row);
         }

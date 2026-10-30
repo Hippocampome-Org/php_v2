@@ -34,7 +34,7 @@ class fragment_synpro
 		$query = "SELECT id, original_id, quote, page_location, pmid_isbn, pmid_isbn_page, type, attachment, attachment_type, interpretation, interpretation_notes, linking_pmid_isbn, linking_pmid_isbn_page, linking_quote, linking_page_location FROM $table WHERE id = '$id'";
 		//echo $query;
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($id, $original_id, $quote, $page_location, $pmid_isbn, $pmid_isbn_page, $type, $attachment, $attachment_type, $interpretation, $interpretation_notes, $linking_pmid_isbn, $linking_pmid_isbn_page, $linking_quote, $linking_page_location) = mysqli_fetch_row($rs))
+		while(list($id, $original_id, $quote, $page_location, $pmid_isbn, $pmid_isbn_page, $type, $attachment, $attachment_type, $interpretation, $interpretation_notes, $linking_pmid_isbn, $linking_pmid_isbn_page, $linking_quote, $linking_page_location) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setID($id);
 			$this->setOriginal_id($original_id);			
@@ -81,7 +81,7 @@ class fragment_synpro
 		$query = "SELECT attachment FROM $table WHERE fragment_id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($attachment) = mysqli_fetch_row($rs))
+		while(list($attachment) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setAttachment_array($attachment, $n);	
 			$n = $n + 1;
@@ -96,7 +96,7 @@ class fragment_synpro
 		$query = "SELECT attachment_type FROM $table WHERE original_id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($attachment_type) = mysqli_fetch_row($rs))
+		while(list($attachment_type) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setAttachment_type_array($attachment_type, $n);
 			$n = $n + 1;
@@ -110,7 +110,7 @@ class fragment_synpro
 		
 		$query = "SELECT attachment, attachment_type FROM $table WHERE original_id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($attachment, $attachment_type) = mysqli_fetch_row($rs))
+		while(list($attachment, $attachment_type) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setAttachment($attachment);	
 			$this->setAttachment_type($attachment_type);	
@@ -323,7 +323,7 @@ class fragment_synpro
     	//echo $query;
     	$rs = mysqli_query($GLOBALS['conn'],$query);
 		#$subregion = mysqli_fetch_row($rs)[0];
-		while(list($val_result) = mysqli_fetch_row($rs))
+		while(list($val_result) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$subregion = $val_result;
 		}
@@ -339,7 +339,7 @@ class fragment_synpro
     	//echo $query;
     	$rs = mysqli_query($GLOBALS['conn'],$query);
 		#$subregion = mysqli_fetch_row($rs)[0];
-		while(list($val_result) = mysqli_fetch_row($rs))
+		while(list($val_result) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$subregion = $val_result;
 		}
@@ -353,7 +353,7 @@ class fragment_synpro
     	$query = "SELECT neurite_quant_neurite FROM SynproPropParcelRel WHERE parcel='".$prop_name."';";
 		
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($neurite_quant_neurite) = mysqli_fetch_row($rs))
+		while(list($neurite_quant_neurite) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	    	
 			# just saves the variable neurite_quant_neurite
 			$nq_neurite_name=$neurite_quant_neurite;
@@ -368,7 +368,7 @@ class fragment_synpro
     	$query = "SELECT CAST(STD(CAST(total_length AS DECIMAL(10,2))) AS DECIMAL(10,2)) AS std_tl, CAST(AVG(CAST(total_length AS DECIMAL(10,2))) AS DECIMAL(10,2)) AS avg_tl, CAST(COUNT(CAST(total_length AS DECIMAL(10,0))) AS DECIMAL(10,0)) AS count_tl, CAST(MIN(CAST(total_length AS DECIMAL(10,2))) AS DECIMAL(10,2)) AS min_tl, CAST(MAX(CAST(total_length AS DECIMAL(10,2))) AS DECIMAL(10,2)) AS max_tl FROM neurite_quantified WHERE unique_id=".$neuron_id." AND neurite_quantified.neurite='".$neurite."' AND reference_ID=".$refID." AND total_length!='';";
     	//echo $query;
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($std, $avg, $count, $min, $max) = mysqli_fetch_row($rs))
+		while(list($std, $avg, $count, $min, $max) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	    	
 			array_push($neurite_lengths, $std);
 			array_push($neurite_lengths, $avg);
@@ -386,7 +386,7 @@ class fragment_synpro
     	//$query = "SELECT CAST(STD(total_length) AS DECIMAL(10,2)) AS std_tl, CAST(AVG(total_length) AS DECIMAL(10,2)) AS avg_tl, CAST(COUNT(total_length) AS DECIMAL(10,0)) AS count_tl, CAST(MIN(total_length) AS DECIMAL(10,2)) AS min_tl, CAST(MAX(total_length) AS DECIMAL(10,2)) AS max_tl FROM neurite_quantified WHERE unique_id=".$neuron_id." AND neurite_quantified.neurite='".$neurite."' AND reference_ID=".$refID." AND total_length!='';";
     	$query = "SELECT convexhull FROM neurite_quantified WHERE unique_id=".$neuron_id." AND neurite_quantified.neurite='".$neurite."' AND reference_ID=".$refID." AND convexhull!='';";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($convexhullvolume) = mysqli_fetch_row($rs))
+		while(list($convexhullvolume) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	    	
 			$convexhull = $convexhullvolume;
 		}
@@ -399,7 +399,7 @@ class fragment_synpro
     	$length=Null;
 		$query = "SELECT CAST(total_length AS DECIMAL(10,2)) AS tl FROM neurite_quantified WHERE unique_id=".$neuron_id." AND neurite_quantified.neurite='".$neurite."' AND reference_ID=".$refID." AND total_length!='';";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($tl) = mysqli_fetch_row($rs))
+		while(list($tl) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	    	
 			# just saves the variable neurite_quant_neurite
 			$length=$tl;
@@ -414,7 +414,7 @@ class fragment_synpro
 		$query = "SELECT CAST(STD(CAST(avg_path_length AS DECIMAL(10,2))) AS DECIMAL(10,2)) AS std_sd, CAST(AVG(CAST(avg_path_length AS DECIMAL(10,2))) AS DECIMAL(10,2)) AS avg, CAST(COUNT(CAST(avg_path_length AS DECIMAL(10,0))) AS DECIMAL(10,0)) AS count_sd, CAST(MIN(min_path_length) AS DECIMAL(10,2)) AS min_sd, CAST(MAX(max_path_length) AS DECIMAL(10,2)) AS max_sd FROM neurite_quantified WHERE unique_id=".$neuron_id." AND neurite_quantified.neurite='".$neurite."' AND reference_ID=".$refID." AND avg_path_length!='';";
 		//echo $query."<br>";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($std_sd, $avg, $count_sd, $min_sd, $max_sd) = mysqli_fetch_row($rs))
+		while(list($std_sd, $avg, $count_sd, $min_sd, $max_sd) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	    	
 			array_push($somatic_distances, $std_sd);
 			array_push($somatic_distances, $avg);
@@ -432,7 +432,7 @@ class fragment_synpro
 		$query = "SELECT CAST(avg_path_length AS DECIMAL(10,2)) AS mpl FROM neurite_quantified WHERE unique_id=".$neuron_id." AND neurite_quantified.neurite='".$neurite."' AND reference_ID=".$refID." AND avg_path_length!='';";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		//echo $query."<br>";
-		while(list($mpl) = mysqli_fetch_row($rs))
+		while(list($mpl) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	    	
 			$somatic_distance = $mpl;
 		}
@@ -445,7 +445,7 @@ class fragment_synpro
     	$rar_file='';
 		$query = "SELECT rar_file FROM attachment_neurite_rar WHERE neuron_id=".$neuron_id." AND neurite_name='".$neurite_name."' AND reference_ID=".$refID.";";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($rar_file_result) = mysqli_fetch_row($rs))
+		while(list($rar_file_result) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	    	
 			$rar_file=$rar_file_result;
 		}
@@ -458,7 +458,7 @@ class fragment_synpro
     	$species='';
 		$query = "SELECT species FROM neurite WHERE referenceID=".$refID.";";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($species_result) = mysqli_fetch_row($rs))
+		while(list($species_result) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	    	
 			$species=$species_result;
 		}
@@ -473,7 +473,7 @@ class fragment_synpro
     	$query = "SELECT DISTINCT Evidence_id FROM SynproEvidencePropertyTypeRel WHERE Type_id = '$type_id';";
 		//echo $query."<br>";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($eid) = mysqli_fetch_row($rs))
+		while(list($eid) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	    	
 			array_push($eids, $eid);
 			//echo " ".$eid."<br>";
@@ -485,7 +485,7 @@ class fragment_synpro
 	    	$query = "SELECT Article_id FROM SynproArticleEvidenceRel where Evidence_id = '$eids[$i]';";
 			//echo $query."<br>";
 			$rs = mysqli_query($GLOBALS['conn'],$query);
-			while(list($artid) = mysqli_fetch_row($rs))
+			while(list($artid) = ($rs ? mysqli_fetch_row($rs) : null))
 			{	    	
 				array_push($artids, $artid);
 			}

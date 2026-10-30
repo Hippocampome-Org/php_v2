@@ -16,7 +16,7 @@ $_SESSION['cg']=0;
 $_SESSION['sp']=0;
 $query = "SELECT permission FROM user WHERE id=2"; // id=2 is anonymous user
 $rs = mysqli_query($conn,$query);
-list($permission) = mysqli_fetch_row($rs);
+list($permission) = ($rs ? mysqli_fetch_row($rs) : null);
 if ($permission == 1) { 
   $_SESSION['perm'] = 1;
 }
@@ -26,11 +26,11 @@ else{
 //-------------------------------------------
 //$_SESSION['perm'] = 0;
 $permission1 = $_SESSION['perm'] ?? null;
-if ($_SESSION['perm'] == 0) {
-  if (array_key_exists('password', $_REQUEST)) {
+if ((float)$_SESSION['perm'] == 0) {
+  if (array_key_exists('password', ($_REQUEST ?? array()))) {
     $query = "SELECT permission FROM user WHERE password = '{$_REQUEST['password']}'";
     $rs = mysqli_query($conn,$query);
-    while(list($permission) = mysqli_fetch_row($rs)) {
+    while(list($permission) = ($rs ? mysqli_fetch_row($rs) : null)) {
       if ($permission == 1) { 
         $permission1 = $permission;
         $_SESSION['perm'] = $permission1;
@@ -39,28 +39,28 @@ if ($_SESSION['perm'] == 0) {
     }
       $query = "SELECT permission FROM user WHERE id=5";
       $rs = mysqli_query($conn,$query);
-      while(list($permission) = mysqli_fetch_row($rs)) {
+      while(list($permission) = ($rs ? mysqli_fetch_row($rs) : null)) {
           if ($permission == 1) {
               $_SESSION['im']=1;
           }
       }
       $query = "SELECT permission FROM user WHERE id=6";
       $rs = mysqli_query($conn,$query);
-      while(list($permission) = mysqli_fetch_row($rs)) {
+      while(list($permission) = ($rs ? mysqli_fetch_row($rs) : null)) {
           if ($permission == 1) {
               $_SESSION['sy']=1;
           }
       }      
       $query = "SELECT permission FROM user WHERE id=7";
       $rs = mysqli_query($conn,$query);
-      while(list($permission) = mysqli_fetch_row($rs)) {
+      while(list($permission) = ($rs ? mysqli_fetch_row($rs) : null)) {
           if ($permission == 1) {
               $_SESSION['cg']=1;
           }
       }
       $query = "SELECT permission FROM user WHERE id=8";
       $rs = mysqli_query($conn,$query);
-      while(list($permission) = mysqli_fetch_row($rs)) {
+      while(list($permission) = ($rs ? mysqli_fetch_row($rs) : null)) {
           if ($permission == 1) {
               $_SESSION['sp']=1;
           }
@@ -159,7 +159,7 @@ include("function/icon.html");
 
 <?php 
 include("function/title.php");
-if ($permission1 != 0) {
+if ((float)$permission1 != 0) {
 include("function/menu_main.php");  
 }
 ?>  
@@ -210,7 +210,7 @@ jQuery(document).ready(function() {
       <a href="mailto:Hippocampome.org@gmail.com">Hippocampome.org@gmail.com</a>.
 
       <?php
-        if ($permission1 == 0) {
+        if ((float)$permission1 == 0) {
       ?>
 
       <form action="index.php" method="post" id="form_load">

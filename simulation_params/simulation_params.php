@@ -39,7 +39,7 @@ function get_synaptome_details($sub_synaptome, $sub, $conn_synaptome, $table_nam
     $rs = mysqli_query($conn_synaptome,$select_synaptome_query);
     $columns += explode(", ", $column);
     $result_synaptome_array = array();
-    while($row = mysqli_fetch_row($rs))
+    while($row = ($rs ? mysqli_fetch_row($rs) : null))
     {	
         $arrVal = [];  
         $i=0;          
@@ -102,7 +102,7 @@ $result_array = array();
 
 $result_array = ["DG"=>array(), "CA3"=>array(), "CA1"=>array(), 
         "EC"=>array(), "CA2"=>array(),"Sub"=>array()];
-while(list($id, $name, $subregion, $nickname, $excit_inhib, $type_subtype, $ranks , $v2p0) = mysqli_fetch_row($rs))
+while(list($id, $name, $subregion, $nickname, $excit_inhib, $type_subtype, $ranks , $v2p0) = ($rs ? mysqli_fetch_row($rs) : null))
 {	
     $value=NULL;
     //Get the Synaptome details if exists

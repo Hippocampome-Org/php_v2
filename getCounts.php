@@ -165,6 +165,10 @@ $neuron = array("DG"=>'DG('.$nDG.')',"CA3"=>'CA3('.$nCA3.')',"CA3c"=>'CA3('.$nCA
 $neuronColor = array("DG"=>'#770000',"CA3"=>'#C08181',"CA3c"=>'#C08181',"CA2"=>'#FFCC00',"CA1"=>'#FF6103',"SUB"=>'#FFCC33',"EC"=>'#336633');
 // dww_20240112 echo("<script>console.log('PHP: In getizhikevich.php');</script>");
 // main logic for calculating anf filling json starts here -->
+// PHP83-FIX by KN on 2026-10-30: $responce was never created (its line is inside the commented-out block above).
+// PHP 7 created it automatically with a warning; PHP 8 stops with "Attempt to assign property on null".
+$responce = new stdClass();
+$rows = array();
 $ii = -1;
 for($i = 0; $i<$number_type; $i++)
 {
@@ -251,7 +255,7 @@ for($i = 0; $i<$number_type; $i++)
 	$type -> retrieve_v2p0_by_id($id);
 	$v2p0 = $type -> getV2p0();
 
-	if ($v2p0 == 0)
+	if ((float)$v2p0 == 0)
 	{
 		$ii = $ii + 1;
 
@@ -269,12 +273,12 @@ for($i = 0; $i<$number_type; $i++)
 
 			$rows[$ii]['cell'][0] = '<span style="color:'.$neuronColor[$subregion].'"><strong>'.$neuron[$subregion].'</strong></span>';
 			$rows[$ii]['cell'][1] = "    ".'<a href="neuron_page.php?id='.$id.'" target="blank" title="'.$type->getName().'"><font color="'.$fontColor.'">'.$nickname.'</font></a>';
-			if ($optimum == 0){
+			if ((float)$optimum == 0){
 				$rows[$ii]['cell'][2] = '';
 			}else{
 				$rows[$ii]['cell'][2] = '<span class="link_left font4"><a href = "property_page_counts.php?id_neuron='.$id.'&val_property=counts" target="_blank">'.$optimum.'<span class = "link_left">&#10;['.$lower_bound.', '.$upper_bound.']</span></a></span>';		
 			}
-			if ($optimum == 0){
+			if ((float)$optimum == 0){
 				$rows[$ii]['cell'][3] = '';
 			}else{
 				$rows[$ii]['cell'][3] = '<span class="link_left font4">'.round(intval($optimum)*0.41).'</span>';		
@@ -284,12 +288,12 @@ for($i = 0; $i<$number_type; $i++)
 		{
 			$rows[$ii]['cell'][0] = '<span style="color:'.$neuronColor[$subregion].'"><strong>'.$neuron[$subregion].'</strong></span>';
 			$rows[$ii]['cell'][1] = '<a href="neuron_page.php?id='.$id.'" target="blank" title="'.$type->getName().'"><font color="'.$fontColor.'">'.$nickname.'</font></a>';
-			if ($optimum == 0){
+			if ((float)$optimum == 0){
 				$rows[$ii]['cell'][2] = '';
 			}else{
 				$rows[$ii]['cell'][2] = '<span class="link_left font4"><a href = "property_page_counts.php?id_neuron='.$id.'&val_property=counts" target="_blank">'.$optimum.'<span class = "link_left">&#10;['.$lower_bound.', '.$upper_bound.']</span></a></span>';		
 			}
-			if ($optimum == 0){
+			if ((float)$optimum == 0){
 				$rows[$ii]['cell'][3] = '';
 			}else{
 				$rows[$ii]['cell'][3] = '<span class="link_left font4">'.round(intval($optimum)*0.41).'</span>';		

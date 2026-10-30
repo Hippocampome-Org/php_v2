@@ -18,7 +18,7 @@ class synonym
 		
 		$query = "SELECT id, dt, name FROM $table WHERE id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($id, $dt, $name) = mysqli_fetch_row($rs))
+		while(list($id, $dt, $name) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setId($id);
 			$this->setDt($dt);

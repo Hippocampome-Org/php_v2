@@ -112,7 +112,7 @@ function get_default_neuron_params_details($conn, $neurons_default=NULL){
     //var_dump($defualt_neuron_calculations);exit;
     $missing_neurons = array();
     $neurons_db = array();
-    while($row = mysqli_fetch_row($rs))
+    while($row = ($rs ? mysqli_fetch_row($rs) : null))
     {   
         $arrVal = array();  
         $i=0;      
@@ -134,7 +134,7 @@ function get_default_neuron_params_details($conn, $neurons_default=NULL){
         }
         array_push($result_default_neuron_params_array, $arrVal);
     }
-    $missing_neurons = array_diff($neurons, $neurons_db);
+    $missing_neurons = array_diff(($neurons ?? array()), ($neurons_db ?? array()));
     /*echo "count of neurons: ";echo count($neurons ?? array());
     echo "neurons: ";var_dump($neurons);
     echo "neurons_db: ";var_dump($neurons_db);

@@ -35,7 +35,7 @@ class fragment_phases
 		$query = "SELECT id, referenceID, cellID, location_in_reference, FTQ_ID, material_used, phase_parameter, phase_parameter_ID, authors, title, journal, year, PMID, pmid_isbn_page FROM $table WHERE id = '$id'";
 		#echo $query."<br>";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($id, $referenceID, $cellID, $location_in_reference, $FTQ_ID, $material_used, $phase_parameter, $phase_parameter_ID, $authors, $title, $journal, $year, $PMID, $pmid_isbn_page) = mysqli_fetch_row($rs))
+		while(list($id, $referenceID, $cellID, $location_in_reference, $FTQ_ID, $material_used, $phase_parameter, $phase_parameter_ID, $authors, $title, $journal, $year, $PMID, $pmid_isbn_page) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setReferenceID($referenceID);
 			$this->setID($id);
@@ -67,7 +67,7 @@ class fragment_phases
 		$query = "SELECT attachment FROM $table WHERE fragment_id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($attachment) = mysqli_fetch_row($rs))
+		while(list($attachment) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setAttachment_array($attachment, $n);	
 			$n = $n + 1;
@@ -82,7 +82,7 @@ class fragment_phases
 		$query = "SELECT attachment_type FROM $table WHERE original_id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($attachment_type) = mysqli_fetch_row($rs))
+		while(list($attachment_type) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setAttachment_type_array($attachment_type, $n);
 			$n = $n + 1;
@@ -96,7 +96,7 @@ class fragment_phases
 		
 		$query = "SELECT attachment, attachment_type FROM $table WHERE original_id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($attachment, $attachment_type) = mysqli_fetch_row($rs))
+		while(list($attachment, $attachment_type) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setAttachment($attachment);	
 			$this->setAttachment_type($attachment_type);	
@@ -319,7 +319,7 @@ class fragment_phases
     	//echo $query;
     	$rs = mysqli_query($GLOBALS['conn'],$query);
 		#$subregion = mysqli_fetch_row($rs)[0];
-		while(list($val_result) = mysqli_fetch_row($rs))
+		while(list($val_result) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$subregion = $val_result;
 		}
@@ -335,7 +335,7 @@ class fragment_phases
     	#echo $query;
     	$rs = mysqli_query($GLOBALS['conn'],$query);
 		#$subregion = mysqli_fetch_row($rs)[0];
-		while(list($val_result) = mysqli_fetch_row($rs))
+		while(list($val_result) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$subregion = $val_result;
 		}
@@ -349,7 +349,7 @@ class fragment_phases
 		$query = "SELECT location_in_reference FROM phases_fragment WHERE id='$evidence_id';";
 		//echo $query;
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($lir_result) = mysqli_fetch_row($rs))
+		while(list($lir_result) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	    	
 			$lir=$lir_result;
 		}
@@ -375,7 +375,7 @@ class fragment_phases
 		$query = "SELECT referenceID FROM phases_fragment WHERE id='$frag_id';";
 		//echo $query;
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($referenceID) = mysqli_fetch_row($rs))
+		while(list($referenceID) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	    	
 			$ref_id=$referenceID;
 		}
@@ -390,7 +390,7 @@ class fragment_phases
     	$query = "SELECT DISTINCT Evidence_id FROM phases_evidence_type_rel WHERE Type_id = '$type_id';";
 		//echo $query."<br>";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($eid) = mysqli_fetch_row($rs))
+		while(list($eid) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	    	
 			array_push($eids, $eid);
 			//echo " ".$eid."<br>";
@@ -402,7 +402,7 @@ class fragment_phases
 	    	$query = "SELECT pmid FROM phases_fragment where id = '$eids[$i]';";
 			//echo $query."<br>";
 			$rs = mysqli_query($GLOBALS['conn'],$query);
-			while(list($pmid) = mysqli_fetch_row($rs))
+			while(list($pmid) = ($rs ? mysqli_fetch_row($rs) : null))
 			{	    	
 				array_push($pmids, $pmid);
 			}
@@ -414,7 +414,7 @@ class fragment_phases
 	    	$query = "SELECT id FROM Article where pmid_isbn='$pmids[$i]';";
 			//echo $query."<br>";
 			$rs = mysqli_query($GLOBALS['conn'],$query);
-			while(list($artid) = mysqli_fetch_row($rs))
+			while(list($artid) = ($rs ? mysqli_fetch_row($rs) : null))
 			{	    	
 				array_push($artids, $artid);
 			}

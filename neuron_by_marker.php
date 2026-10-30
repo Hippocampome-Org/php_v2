@@ -84,7 +84,7 @@ function markers_search($evidencepropertyyperel, $property_1, $type, $predicate,
 	
 	// Check if Type_id arrary is not null
 	if ($type_id != NULL)
-		$new_type_id = array_unique($type_id);
+		$new_type_id = array_unique(($type_id ?? array()));
 	
 	if (!empty($new_type_id)) {
 		foreach ($new_type_id as $an_id) {
@@ -134,7 +134,7 @@ function markers_search($evidencepropertyyperel, $property_1, $type, $predicate,
 						AND predicate like 'has name'";
 	//print($query_to_get_name);
 	$rs_name = mysqli_query($GLOBALS['conn'],$query_to_get_name);
-	$row_name = mysqli_fetch_assoc($rs_name);
+	$row_name = ($rs_name ? mysqli_fetch_assoc($rs_name) : null);
 	$name_val=$row_name['object'] ?? '';
 	if($name_val!="")
 		print("$name_val [$title]");
@@ -200,7 +200,7 @@ foreach ($predicateArr as $k => $v)
 
 			foreach($pos_neg_all as $arr) {
 			    if(is_array($arr)) {
-			        $marker_id = array_merge($marker_id, $arr);
+			        $marker_id = array_merge(($marker_id ?? array()), ($arr ?? array()));
 			    }
 			}
 		}
@@ -227,7 +227,7 @@ foreach ($predicateArr as $k => $v)
 			
 			foreach($arrayOfPosArrays as $arr) {
 				if(is_array($arr)) {
-					$pos_combined_array = array_merge($pos_combined_array, $arr);
+					$pos_combined_array = array_merge(($pos_combined_array ?? array()), ($arr ?? array()));
 				}
 			}
 			
@@ -241,7 +241,7 @@ foreach ($predicateArr as $k => $v)
 			
 			foreach($arrayOfNegArrays as $arr) {
 				if(is_array($arr)) {
-					$neg_combined_array = array_merge($neg_combined_array, $arr);
+					$neg_combined_array = array_merge(($neg_combined_array ?? array()), ($arr ?? array()));
 				}
 			}
 			
@@ -262,10 +262,10 @@ foreach ($predicateArr as $k => $v)
 			 
 			
 			if((!empty($pos_combined_array)) && (!empty($neg_combined_array))) {
-				$mixed_type = array_intersect($pos_combined_array, $neg_combined_array);
+				$mixed_type = array_intersect(($pos_combined_array ?? array()), ($neg_combined_array ?? array()));
 			}
-			if($k == 'positive' && !empty($pos_combined_array)) $marker_id = array_diff($pos_combined_array, $mixed_type);
-			if($k == 'negative' && !empty($neg_combined_array)) $marker_id = array_diff($neg_combined_array, $mixed_type);			
+			if($k == 'positive' && !empty($pos_combined_array)) $marker_id = array_diff(($pos_combined_array ?? array()), ($mixed_type ?? array()));
+			if($k == 'negative' && !empty($neg_combined_array)) $marker_id = array_diff(($neg_combined_array ?? array()), ($mixed_type ?? array()));			
 		}
 	}
 	else {
@@ -311,16 +311,16 @@ foreach ($predicateArr as $k => $v)
 				$id_t = $id;
 				$name_type = $type -> getNickname();
 				$inhib_excit=$type->getExcit_Inhib();
-				if ((!empty($conf_notes_pi) && array_key_exists($id_t, $conf_notes_pi)) ||
-						(!empty($conf_notes_ni) && array_key_exists($id_t, $conf_notes_ni)))
+				if ((!empty($conf_notes_pi) && array_key_exists($id_t, ($conf_notes_pi ?? array()))) ||
+						(!empty($conf_notes_ni) && array_key_exists($id_t, ($conf_notes_ni ?? array()))))
 					$name_type = $name_type . " (inference)";
 						
-				if ((!empty($conf_notes_pos_conf) && array_key_exists($id_t, $conf_notes_pos_conf)) ||
-						(!empty($conf_notes_neg_conf) && array_key_exists($id_t, $conf_notes_neg_conf)))
+				if ((!empty($conf_notes_pos_conf) && array_key_exists($id_t, ($conf_notes_pos_conf ?? array()))) ||
+						(!empty($conf_notes_neg_conf) && array_key_exists($id_t, ($conf_notes_neg_conf ?? array()))))
 					$name_type = $name_type . " (confirmed by inference)";
 							
-				if ((!empty($conf_notes_pi_conf) && array_key_exists($id_t, $conf_notes_pi_conf)) ||
-						(!empty($conf_notes_ni_conf) && array_key_exists($id_t, $conf_notes_ni_conf)))
+				if ((!empty($conf_notes_pi_conf) && array_key_exists($id_t, ($conf_notes_pi_conf ?? array()))) ||
+						(!empty($conf_notes_ni_conf) && array_key_exists($id_t, ($conf_notes_ni_conf ?? array()))))
 					$name_type = $name_type . " (inference confirmed by additional inference(s))";						
 				
 				//$subregion_type = $type -> getSubregion();
@@ -328,25 +328,25 @@ foreach ($predicateArr as $k => $v)
 				$n_result_tot = $n_result_tot + 1;
 				
 				if($k=='mixed') {
-					if ((!empty($conf_notes_subtypes) && array_key_exists($id_t, $conf_notes_subtypes)) ||
-							(!empty($conf_notes_se) && array_key_exists($id_t, $conf_notes_se)) ||
-							(!empty($conf_notes_sp) && array_key_exists($id_t, $conf_notes_sp)) ||
-							(!empty($conf_notes_unresolved) && array_key_exists($id_t, $conf_notes_unresolved))) {
+					if ((!empty($conf_notes_subtypes) && array_key_exists($id_t, ($conf_notes_subtypes ?? array()))) ||
+							(!empty($conf_notes_se) && array_key_exists($id_t, ($conf_notes_se ?? array()))) ||
+							(!empty($conf_notes_sp) && array_key_exists($id_t, ($conf_notes_sp ?? array()))) ||
+							(!empty($conf_notes_unresolved) && array_key_exists($id_t, ($conf_notes_unresolved ?? array())))) {
 						$evidencepropertyyperel -> retrive_unvetted($id,($objArr['positive'] ?? null));
 						$unvetted = $evidencepropertyyperel -> getUnvetted();
 						$evidencepropertyyperel -> retrieve_conflict_note(($objArr['positive'] ?? null), $id);
 						$conflict_note = $evidencepropertyyperel -> getConflict_note();
 					}
-					elseif ((!empty($conf_notes_pin) && array_key_exists($id_t, $conf_notes_pin)) ||							
-							(!empty($conf_notes_pini) && array_key_exists($id_t, $conf_notes_pini)) ||
-							(!empty($conf_notes_unresolvedInf) && array_key_exists($id_t, $conf_notes_unresolvedInf)) ||
-							(!empty($conf_notes_spInf) && array_key_exists($id_t, $conf_notes_spInf))) {
+					elseif ((!empty($conf_notes_pin) && array_key_exists($id_t, ($conf_notes_pin ?? array()))) ||							
+							(!empty($conf_notes_pini) && array_key_exists($id_t, ($conf_notes_pini ?? array()))) ||
+							(!empty($conf_notes_unresolvedInf) && array_key_exists($id_t, ($conf_notes_unresolvedInf ?? array()))) ||
+							(!empty($conf_notes_spInf) && array_key_exists($id_t, ($conf_notes_spInf ?? array())))) {
 						$evidencepropertyyperel -> retrive_unvetted($id,($objArr['positive_inference'] ?? null));
 						$unvetted = $evidencepropertyyperel -> getUnvetted();
 						$evidencepropertyyperel -> retrieve_conflict_note(($objArr['positive_inference'] ?? null), $id);
 						$conflict_note = $evidencepropertyyperel -> getConflict_note();
 					}
-					elseif (!empty($conf_notes_pni) && array_key_exists($id_t, $conf_notes_pni)) {
+					elseif (!empty($conf_notes_pni) && array_key_exists($id_t, ($conf_notes_pni ?? array()))) {
 						$evidencepropertyyperel -> retrive_unvetted($id,($objArr['negative_inference'] ?? null));
 						$unvetted = $evidencepropertyyperel -> getUnvetted();
 						$evidencepropertyyperel -> retrieve_conflict_note(($objArr['negative_inference'] ?? null), $id);
@@ -388,7 +388,7 @@ foreach ($predicateArr as $k => $v)
 							) AS sub
 						GROUP BY sub.Type_id";
 				$rs_color = mysqli_query($GLOBALS['conn'],$query_to_get_color);
-				$row = mysqli_fetch_assoc($rs_color);
+				$row = ($rs_color ? mysqli_fetch_assoc($rs_color) : null);
 				$color_val=$row['object'] && '';
 				//print("$query_to_get_color,$color_val");
 				print("<a align='left' href='property_page_markers.php?id_neuron=$id&val_property=$parameter&color=$color_val&page=markers' target='_blank'> [Evidence] </a>

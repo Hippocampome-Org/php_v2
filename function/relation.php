@@ -3,7 +3,7 @@ function relation($n, $property, $part)
 {
 	if ($property == 'Morphology')
 	{
-		if ($n == 0)
+		if ((float)$n == 0)
 			$relation = 'is found in';
 		if ($n == 1)
 			$relation = 'is not found in';
@@ -11,7 +11,7 @@ function relation($n, $property, $part)
 
 	if ($property == 'Molecular markers')
 	{
-		if ($n == 0)
+		if ((float)$n == 0)
 			$relation = 'is expressed';
 		if ($n == 1)
 			$relation = 'is not expressed';		
@@ -27,7 +27,7 @@ function relation($n, $property, $part)
 
 	if ($property == 'Electrophysiology' || $property == 'Unique Id')
 	{
-		if ($n == 0)
+		if ((float)$n == 0)
 			$relation = '=';
 		if ($n == 1)
 			$relation = '<';		
@@ -42,7 +42,7 @@ function relation($n, $property, $part)
 	if ($property == 'Connectivity')
 	{
 		if (strpos($part,'input') == true) {
-			if ($n == 0)
+			if ((float)$n == 0)
 				$relation = 'potentially from';
 			if ($n == 1)
 				$relation = 'known to come from';
@@ -50,7 +50,7 @@ function relation($n, $property, $part)
 				$relation = 'known not to come from';
 		}
 		elseif (strpos($part,'output') == true) {
-			if ($n == 0)
+			if ((float)$n == 0)
 				$relation = 'potentially targeting';
 			if ($n == 1)
 				$relation = 'known to target';
@@ -62,7 +62,7 @@ function relation($n, $property, $part)
 	
 	if ($property == 'Major Neurotransmitter')
 	{
-		if ($n == 0)
+		if ((float)$n == 0)
 			$relation = 'is expressed';
 		if ($n == 1)
 			$relation = 'is not expressed';
@@ -70,7 +70,7 @@ function relation($n, $property, $part)
 	
 	if ($property == 'Firing Pattern')
 	{
-		if ($n == 0)	
+		if ((float)$n == 0)	
 			$relation = 'Occurrences =';
 		if ($n == 1)
 			$relation = 'Occurrences <';		
@@ -83,7 +83,7 @@ function relation($n, $property, $part)
 	}
 	if ($property == 'Firing Pattern Parameter')
 	{
-		if ($n == 0)
+		if ((float)$n == 0)
 			$relation = '=';
 		if ($n == 1)
 			$relation = '<';		

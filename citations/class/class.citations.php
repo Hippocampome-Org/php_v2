@@ -20,7 +20,7 @@ class citations
 		$query = "SELECT DISTINCT brief_citation FROM citations";	
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($brief_citation) = mysqli_fetch_row($rs))
+		while(list($brief_citation) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$this->setCitations_array($brief_citation, $n);
 			$n = $n + 1;		
@@ -34,7 +34,7 @@ class citations
 		$query = "SELECT DISTINCT brief_citation FROM citations WHERE citation_ID='$citation_ID'";	
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$brief_citation="";
-		while($rows=mysqli_fetch_array($rs, MYSQLI_ASSOC))
+		while($rows=($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null))
 		{
 			$brief_citation=$rows['brief_citation'];
 		}
@@ -46,7 +46,7 @@ class citations
 		$query = "SELECT DISTINCT full_citation FROM citations WHERE citation_ID='$citation_ID'";	
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$full_citation="";
-		while($rows=mysqli_fetch_array($rs, MYSQLI_ASSOC))
+		while($rows=($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null))
 		{
 			$full_citation=$rows['full_citation'];
 		}

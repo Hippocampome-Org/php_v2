@@ -366,7 +366,7 @@ if (!isset($_SESSION['user_login']) || $_SESSION['user_login'] == '') {
     while($row = $result->fetch_assoc()) { 
       $i=$i+1;
       $selection='';      
-      if (in_array($i,$sel_sbj)) {
+      if (in_array($i,($sel_sbj ?? array()))) {
         $selection='selected';
       }
       echo "<option value=".$i." ".$selection.">".$row["subject"]."</option>";
@@ -384,7 +384,7 @@ if (!isset($_SESSION['user_login']) || $_SESSION['user_login'] == '') {
     while($row = $result->fetch_assoc()) { 
       $i=$i+1;
       $selection='';
-      if (in_array($i,$sel_det)) {
+      if (in_array($i,($sel_det ?? array()))) {
         $selection='selected';
       }
       echo "<option value=".$i." ".$selection.">".$row["detail_level"]."</option>";
@@ -402,7 +402,7 @@ if (!isset($_SESSION['user_login']) || $_SESSION['user_login'] == '') {
     while($row = $result->fetch_assoc()) { 
       $i=$i+1;
       $selection='';
-      if (in_array($i,$sel_ipl)) {
+      if (in_array($i,($sel_ipl ?? array()))) {
         $selection='selected';
       }
       echo "<option value=".$i." ".$selection.">".$row["level"]."</option>";
@@ -420,7 +420,7 @@ if (!isset($_SESSION['user_login']) || $_SESSION['user_login'] == '') {
     while($row = $result->fetch_assoc()) { 
       $i=$i+1;
       $selection='';
-      if (in_array($i,$sel_thy)) {
+      if (in_array($i,($sel_thy ?? array()))) {
         $selection='selected';
       }
       echo "<option value=".$i." ".$selection.">".$row["category"]."</option>";
@@ -439,7 +439,7 @@ if (!isset($_SESSION['user_login']) || $_SESSION['user_login'] == '') {
     while($row = $result->fetch_assoc()) { 
       $i=$i+1;
       $selection='';
-      if (in_array($i,$sel_kwd)) {
+      if (in_array($i,($sel_kwd ?? array()))) {
         $selection='selected';
       }
       echo "<option value=".$i." ".$selection.">".$row["keyword"]."</option>";

@@ -14,6 +14,6 @@ fputcsv($output, array('Spike Data'));
 $query_to_get_data="SELECT spike_data FROM SpikeTime WHERE FiringPattern_id=$fp_id";
 $rows = mysqli_query($GLOBALS['conn'],$query_to_get_data);
 // loop over the rows, outputting them
-while ($row = mysqli_fetch_assoc($rows)) 
+while ($row = ($rows ? mysqli_fetch_assoc($rows) : null)) 
 	fputcsv($output, $row);
 ?>

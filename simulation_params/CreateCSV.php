@@ -16,7 +16,7 @@ function get_csv($filepath, $csv_file_name, $excel_param_data){
 }
 
 function create_csv_files($filepath, $excel_file_names, $excel_conn_param_data, $excel_neuron_param_data){
-    $csv_file_name = join('', $excel_file_names);
+    $csv_file_name = join('', ($excel_file_names ?? array()));
     get_csv($filepath, $csv_file_name.'neuron_parameters', $excel_neuron_param_data);
     get_csv($filepath, $csv_file_name.'conn_parameters', $excel_conn_param_data);
 }

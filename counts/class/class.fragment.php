@@ -35,7 +35,7 @@ class fragment_counts
 		$query = "SELECT id, referenceID, cellID, location_in_reference, material_used, authors, title, journal, year, PMID, pmid_isbn_page FROM $table WHERE id = '$id'";
 		#echo $query."<br>";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($id, $referenceID, $cellID, $location_in_reference, $material_used, $authors, $title, $journal, $year, $PMID, $pmid_isbn_page) = mysqli_fetch_row($rs))
+		while(list($id, $referenceID, $cellID, $location_in_reference, $material_used, $authors, $title, $journal, $year, $PMID, $pmid_isbn_page) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setReferenceID($referenceID);
 			$this->setID($id);
@@ -68,7 +68,7 @@ class fragment_counts
 		$query = "SELECT attachment FROM $table WHERE fragment_id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($attachment) = mysqli_fetch_row($rs))
+		while(list($attachment) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setAttachment_array($attachment, $n);	
 			$n = $n + 1;
@@ -83,7 +83,7 @@ class fragment_counts
 		$query = "SELECT attachment_type FROM $table WHERE original_id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n=0;
-		while(list($attachment_type) = mysqli_fetch_row($rs))
+		while(list($attachment_type) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setAttachment_type_array($attachment_type, $n);
 			$n = $n + 1;
@@ -97,7 +97,7 @@ class fragment_counts
 		
 		$query = "SELECT attachment, attachment_type FROM $table WHERE original_id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($attachment, $attachment_type) = mysqli_fetch_row($rs))
+		while(list($attachment, $attachment_type) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setAttachment($attachment);	
 			$this->setAttachment_type($attachment_type);	
@@ -108,7 +108,7 @@ class fragment_counts
 		$query = "SELECT species FROM counts_fragment WHERE id ='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$species_value="";
-		while($rows=mysqli_fetch_array($rs, MYSQLI_ASSOC))
+		while($rows=($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null))
 		{	
 			$species_value=$rows['species'];
 		}
@@ -119,7 +119,7 @@ class fragment_counts
 		$query = "SELECT strain FROM counts_fragment WHERE id ='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$strain_value="";
-		while($rows=mysqli_fetch_array($rs, MYSQLI_ASSOC))
+		while($rows=($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null))
 		{	
 			$strain_value=$rows['strain'];
 		}
@@ -130,7 +130,7 @@ class fragment_counts
 		$query = "SELECT measurement_equation FROM counts_fragment WHERE id ='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$equation_value="";
-		while($rows=mysqli_fetch_array($rs, MYSQLI_ASSOC))
+		while($rows=($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null))
 		{	
 			$equation_value=$rows['measurement_equation'];
 		}
@@ -141,7 +141,7 @@ class fragment_counts
 		$query = "SELECT interpretation FROM counts_fragment WHERE id ='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$interpretation_value="";
-		while($rows=mysqli_fetch_array($rs, MYSQLI_ASSOC))
+		while($rows=($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null))
 		{	
 			$interpretation_value=$rows['interpretation'];
 		}
@@ -152,7 +152,7 @@ class fragment_counts
 		$query = "SELECT variable FROM counts_fragment WHERE id ='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$variable_value="";
-		while($rows=mysqli_fetch_array($rs, MYSQLI_ASSOC))
+		while($rows=($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null))
 		{	
 			$variable_value=$rows['variable'];
 		}
@@ -163,7 +163,7 @@ class fragment_counts
 		$query = "SELECT cell_type FROM counts_fragment WHERE id ='$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$cell_type__value="";
-		while($rows=mysqli_fetch_array($rs, MYSQLI_ASSOC))
+		while($rows=($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null))
 		{	
 			$cell_type__value=$rows['cell_type'];
 		}
@@ -386,7 +386,7 @@ class fragment_counts
     	//echo $query;
     	$rs = mysqli_query($GLOBALS['conn'],$query);
 		#$subregion = mysqli_fetch_row($rs)[0];
-		while(list($val_result) = mysqli_fetch_row($rs))
+		while(list($val_result) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$subregion = $val_result;
 		}
@@ -402,7 +402,7 @@ class fragment_counts
     	#echo $query;
     	$rs = mysqli_query($GLOBALS['conn'],$query);
 		#$subregion = mysqli_fetch_row($rs)[0];
-		while(list($val_result) = mysqli_fetch_row($rs))
+		while(list($val_result) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$subregion = $val_result;
 		}
@@ -416,7 +416,7 @@ class fragment_counts
 		$query = "SELECT location_in_reference FROM counts_fragment WHERE id='$evidence_id';";
 		//echo $query;
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($lir_result) = mysqli_fetch_row($rs))
+		while(list($lir_result) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	    	
 			$lir=$lir_result;
 		}
@@ -442,7 +442,7 @@ class fragment_counts
 		$query = "SELECT referenceID FROM counts_fragment WHERE id='$frag_id';";
 		//echo $query;
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($referenceID) = mysqli_fetch_row($rs))
+		while(list($referenceID) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	    	
 			$ref_id=$referenceID;
 		}
@@ -457,7 +457,7 @@ class fragment_counts
     	$query = "SELECT DISTINCT Evidence_id FROM counts_evidence_type_rel WHERE Type_id = '$type_id';";
 		//echo $query."<br>";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($eid) = mysqli_fetch_row($rs))
+		while(list($eid) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	    	
 			array_push($eids, $eid);
 			//echo " ".$eid."<br>";
@@ -469,7 +469,7 @@ class fragment_counts
 	    	$query = "SELECT pmid FROM counts_fragment where id = '$eids[$i]';";
 			//echo $query."<br>";
 			$rs = mysqli_query($GLOBALS['conn'],$query);
-			while(list($pmid) = mysqli_fetch_row($rs))
+			while(list($pmid) = ($rs ? mysqli_fetch_row($rs) : null))
 			{	    	
 				array_push($pmids, $pmid);
 			}
@@ -481,7 +481,7 @@ class fragment_counts
 	    	$query = "SELECT id FROM Article where pmid_isbn='$pmids[$i]';";
 			//echo $query."<br>";
 			$rs = mysqli_query($GLOBALS['conn'],$query);
-			while(list($artid) = mysqli_fetch_row($rs))
+			while(list($artid) = ($rs ? mysqli_fetch_row($rs) : null))
 			{	    	
 				array_push($artids, $artid);
 			}

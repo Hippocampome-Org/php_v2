@@ -18,7 +18,7 @@ class hc2nmo
 		$query = "SELECT DISTINCT NMO_archive FROM Hippocampome_to_NMO WHERE Hippocampome_ID = '$id' ORDER BY NMO_archive ASC";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n = 0;
-		while(list($NMO_archive) = mysqli_fetch_row($rs))
+		while(list($NMO_archive) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setArchive_array($NMO_archive, $n);
 			$n = $n + 1;
@@ -32,7 +32,7 @@ class hc2nmo
 		$query = "SELECT NMO_neuron_name, reason_for_inclusion FROM Hippocampome_to_NMO WHERE Hippocampome_ID = '$id' AND NMO_archive = '$archive' ORDER BY NMO_neuron_name ASC";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n = 0;
-		while(list($NMO_neuron_name, $reason_for_inclusion) = mysqli_fetch_row($rs))
+		while(list($NMO_neuron_name, $reason_for_inclusion) = ($rs ? mysqli_fetch_row($rs) : null))
 		{	
 			$this->setName_array($NMO_neuron_name, $n);
 			$this->setReason_for_inclusion_array($reason_for_inclusion, $n);

@@ -64,7 +64,7 @@ class temporary_search
 
 		$query = "SELECT id, N, operator, property, part, relation, value FROM $name_temporary_table WHERE id = '$id'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
-		while(list($id, $N, $operator, $property, $part, $relation, $value) = mysqli_fetch_row($rs))
+		while(list($id, $N, $operator, $property, $part, $relation, $value) = ($rs ? mysqli_fetch_row($rs) : null))
 		{
 			$this->setID($id);
 			$this->setN($N);
@@ -83,7 +83,7 @@ class temporary_search
 		$query = "SELECT N FROM $name_temporary_table";
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n = 0;
-		while(list($N) = mysqli_fetch_row($rs))
+		while(list($N) = ($rs ? mysqli_fetch_row($rs) : null))
 			 $n = $n_ + 1;	
 			 
 		$this->setN_search($n);	 	
@@ -96,7 +96,7 @@ class temporary_search
 		$query = "SELECT id FROM $name_temporary_table";	
 		$rs = mysqli_query($GLOBALS['conn'],$query);
 		$n = 0;
-		while(list($id)	= mysqli_fetch_row($rs))		
+		while(list($id)	= ($rs ? mysqli_fetch_row($rs) : null))		
 		{
 			$this->setID_array($id, $n);
 			$n = $n + 1;

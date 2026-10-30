@@ -49,7 +49,7 @@ function get_type_details($conn){
     $n=0;
 
     $result_array = array();
-    while(list($id, $name, $subregion, $nickname, $excit_inhib, $position, $type_subtype, $ranks , $v2p0) = mysqli_fetch_row($rs))
+    while(list($id, $name, $subregion, $nickname, $excit_inhib, $position, $type_subtype, $ranks , $v2p0) = ($rs ? mysqli_fetch_row($rs) : null))
     {
         if(in_array($nickname, array('CA1 Deep Pyramidal', 'CA1 Superficial Pyramidal'))){ continue; }
 
@@ -64,7 +64,7 @@ function get_type_details($conn){
 
 function get_neurons($type_details, $subregions){
     $neurons = $neurons_subregions = array();
-    $type_details_vals = array_values($type_details);
+    $type_details_vals = array_values(($type_details ?? array()));
     foreach($subregions as $subregion){
         $neurons_subregions[$subregion] = array();
     }
@@ -86,7 +86,7 @@ function get_synproCPtotal_data($conn){
     $rs = mysqli_query($conn,$select_query);
 
     $result_array = array();
-    while(list($source_id, $source_excit_inhib, $target_id, $target_excit_inhib, $cp_mean_total, $cp_stdev_total, $parcel_count) = mysqli_fetch_row($rs))
+    while(list($source_id, $source_excit_inhib, $target_id, $target_excit_inhib, $cp_mean_total, $cp_stdev_total, $parcel_count) = ($rs ? mysqli_fetch_row($rs) : null))
     //var_dump($rs);
     //while(list($source_id, $target_id, $cp_mean_total, $cp_stdev_total, $parcel_count) = mysqli_fetch_row($rs))
     {

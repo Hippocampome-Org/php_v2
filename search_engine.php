@@ -38,7 +38,7 @@ $morphology_properties_query =
 $query = "SELECT permission FROM user WHERE id=2"; // id=2 is anonymous user
 //echo $query;
 $rs = mysqli_query($conn,$query);
-list($permission) = mysqli_fetch_row($rs);
+list($permission) = ($rs ? mysqli_fetch_row($rs) : null);
 
 function update_arrayHash($conflict_tables, $key, $result_subject, $id_t, $name_type, $subregion_type, $position_type, $n_result_tot, $conflict = NULL)
 {
@@ -53,15 +53,15 @@ function update_arrayHash($conflict_tables, $key, $result_subject, $id_t, $name_
 //Added on Nov 12 2022
 function dbresultsconsolidated($rs){
 	$array_conflict_ids = array();
-	while(list($id, $subject, $subject_count, $conflict) = mysqli_fetch_row($rs))
+	while(list($id, $subject, $subject_count, $conflict) = ($rs ? mysqli_fetch_row($rs) : null))
 	{
 		if (strpos($conflict, "positive") !== false) {
 			if(CheckIfArrNotEmpty($array_conflict_ids, "positive")){
 				if(intval($subject_count) == intval($array_conflict_ids["positive"][2])){
 					$old_ids = explode(", ", $array_conflict_ids["positive"][0]);
 					$idval = explode(", ", $id);
-					$ids = array_merge($old_ids, $idval);
-					$id = implode(", ", $ids);
+					$ids = array_merge(($old_ids ?? array()), ($idval ?? array()));
+					$id = implode(", ", ($ids ?? array()));
 					$array_conflict_ids["positive"] = array($id, $subject, $subject_count, $conflict);
 				}else{
 					$array_conflict_ids[$conflict] = array($id, $subject, $subject_count, $conflict);
@@ -75,8 +75,8 @@ function dbresultsconsolidated($rs){
 				if(intval($subject_count) == intval($array_conflict_ids["negative"][2])){
 					$old_ids = explode(", ", $array_conflict_ids["negative"][0]);
 					$idval = explode(", ", $id);
-					$ids = array_merge($old_ids, $idval);
-					$id = implode(", ", $ids);
+					$ids = array_merge(($old_ids ?? array()), ($idval ?? array()));
+					$id = implode(", ", ($ids ?? array()));
 					$array_conflict_ids["negative"] = array($id, $subject, $subject_count, $conflict);
 				}else{
 					$array_conflict_ids[$conflict] = array($id, $subject, $subject_count, $conflict);
@@ -94,7 +94,7 @@ function dbresultsconsolidated($rs){
 
 function CheckIfArrNotEmpty($array = array(), $key = null)
 {
-    if (array_key_exists($key, $array) && !empty($array[$key])) {
+    if (array_key_exists($key, ($array ?? array())) && !empty($array[$key])) {
         return true;
     }
     if (is_array($array)) {
@@ -257,7 +257,7 @@ function information_by_id ($name_temporary_table, $id)
 {
 	$query = "SELECT property, part, relation, value FROM $name_temporary_table WHERE id='$id'";
 	$rs = mysqli_query($GLOBALS['conn'],$query);
-	while(list($property, $part, $relation, $value) = mysqli_fetch_row($rs))
+	while(list($property, $part, $relation, $value) = ($rs ? mysqli_fetch_row($rs) : null))
 	{
 		$varr[0] = $property;
 		$varr[1] = $part;
@@ -274,7 +274,7 @@ function unique_ids_search($relation,$value){
 	$index=0;
 	$query_to_get_unique_ids = "SELECT DISTINCT id FROM Type WHERE id $relation $value";
 	$rs_unique_ids = mysqli_query($GLOBALS['conn'],$query_to_get_unique_ids);	
-	while(list($unique_ids) = mysqli_fetch_row($rs_unique_ids))						
+	while(list($unique_ids) = ($rs_unique_ids ? mysqli_fetch_row($rs_unique_ids) : null))						
 		$part[$index++] = $unique_ids;
 	return $part;
 
@@ -348,7 +348,7 @@ function morphology_search_for_hippocampal_formation ($evidencepropertyyperel, $
 	}	
 	// Now, the program must remove the double or more type_id:	
 	if ($type_id != NULL)
-		$new_type_id=array_unique($type_id);
+		$new_type_id=array_unique(($type_id ?? array()));
 	return $new_type_id;
 }
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -450,7 +450,7 @@ function markers_search($evidencepropertyyperel, $property_1, $type, $subject, $
 		}
 		// Check if Type_id arrary is not null
 		if ($type_id != NULL)
-				$new_type_id=array_unique($type_id);
+				$new_type_id=array_unique(($type_id ?? array()));
 
 		if ($type_id_latest != NULL)
 				$new_type_id_latest=$type_id_latest; //Array unique does not work as we have ENK, id and conflict
@@ -475,7 +475,7 @@ function major_neurontransmitter_search($property_1, $type, $subject, $predicate
 	}
 		
 	if ($type_id != NULL)
-		$new_type_id=array_unique($type_id);
+		$new_type_id=array_unique(($type_id ?? array()));
 
 	return $new_type_id;
 }
@@ -604,7 +604,7 @@ function ephys_search($evidencepropertyyperel, $property_1, $type, $subject, $pr
 
 	// Now, the program must remove the doubble or more type_id:	
 	if ($type_id != NULL)
-		$new_type_id=array_unique($type_id);
+		$new_type_id=array_unique(($type_id ?? array()));
 	
 	return $new_type_id;
 }
@@ -644,7 +644,7 @@ function fp_search($subject, $predicate,$value)
 	$rs_type_id = mysqli_query($GLOBALS['conn'],$query_get_type_id);
 	//print($query_get_type_id);
 	$index = 0;
-	while(list($id) = mysqli_fetch_row($rs_type_id))
+	while(list($id) = ($rs_type_id ? mysqli_fetch_row($rs_type_id) : null))
 	{
 		$new_type_id[$index]=$id;
 		$index = $index + 1;
@@ -667,7 +667,7 @@ function fp_parameter_search($subject, $predicate,$value,$fp_name){
 				AND ROUND(fp.".$fp_name[$index_of_parameter-1].",$precision)"." $predicate $value ";
 		$rs_type_id = mysqli_query($GLOBALS['conn'],$query_get_type_id);
 		$index = 0;
-		while(list($id) = mysqli_fetch_row($rs_type_id))
+		while(list($id) = ($rs_type_id ? mysqli_fetch_row($rs_type_id) : null))
 		{
 			$new_type_id[$index]=$id;
 			$index = $index + 1;
@@ -735,7 +735,7 @@ function connectivity_search ($evidencepropertyyperel, $property_1, $type, $part
 		$explicit_nontarget_query = $explicit_target_and_source_base_query . " WHERE Type1_id = '$id' AND connection_status = 'negative'";
 		$result = mysqli_query($GLOBALS['conn'],$explicit_nontarget_query);
 		$explicit_nontargets = result_set_to_array($result, "t2_id");		
-		$conn_search_result_array = array_merge(array_diff($possible_targets, $explicit_nontargets), $explicit_targets);
+		$conn_search_result_array = array_merge(array_diff(($possible_targets ?? array()), ($explicit_nontargets ?? array())), ($explicit_targets ?? array()));
 	}
 	elseif (strpos($rel,'potentially targeting') === 0) {	
 		$dendrite_query = $one_type_query . " AND subject = 'dendrites'";
@@ -750,11 +750,11 @@ function connectivity_search ($evidencepropertyyperel, $property_1, $type, $part
 		$explicit_nonsource_query = $explicit_target_and_source_base_query . " WHERE Type2_id = '$id' AND connection_status = 'negative'";
 		$result = mysqli_query($GLOBALS['conn'],$explicit_nonsource_query);
 		$explicit_nonsources = result_set_to_array($result, "t1_id");		
-		$conn_search_result_array = array_merge(array_diff($possible_sources, $explicit_nonsources), $explicit_sources);
+		$conn_search_result_array = array_merge(array_diff(($possible_sources ?? array()), ($explicit_nonsources ?? array())), ($explicit_sources ?? array()));
 	}
 			
 	if ($conn_search_result_array != NULL) {
-		$conn_search_result_array = array_unique($conn_search_result_array);
+		$conn_search_result_array = array_unique(($conn_search_result_array ?? array()));
 		$conn_search_result_array = get_sorted_records($conn_search_result_array);
 	}
 	
@@ -766,7 +766,7 @@ function connectivity_search ($evidencepropertyyperel, $property_1, $type, $part
 	
 	// Now, the program must remove the double or more type_id:	
 	if ($type_id != NULL)
-		$new_type_id=array_unique($type_id);
+		$new_type_id=array_unique(($type_id ?? array()));
 	
 	return $new_type_id;
 }
@@ -791,7 +791,7 @@ $name_temporary_table_search = $_REQUEST['name_table'] ?? null;
 $query = "SELECT id FROM $name_temporary_table_search";
 $rs = mysqli_query($GLOBALS['conn'],$query);
 $n_line = 0;
-while(list($id) = mysqli_fetch_row($rs))
+while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 {
 	$id_line[$n_line]=$id;
 	$n_line = $n_line + 1;
@@ -804,7 +804,7 @@ for ($i=0; $i<$n_line; $i++)
 {
 	$query = "SELECT id, operator FROM $name_temporary_table_search WHERE id = '$id_line[$i]'";
 	$rs = mysqli_query($GLOBALS['conn'],$query);
-	while(list($id, $operator) = mysqli_fetch_row($rs))
+	while(list($id, $operator) = ($rs ? mysqli_fetch_row($rs) : null))
 	{	
 		if ( ($operator == '') || ($operator == 'AND') )
 		{
@@ -900,7 +900,7 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 			$res = morphology_search_for_hippocampal_formation ($evidencepropertyyperel, $property_1, $subject, $predicate, $value, $type);	
 			
 			if ($res != NULL)
-				$id_type_res = array_merge($id_type_res, $res); 	
+				$id_type_res = array_merge(($id_type_res ?? array()), ($res ?? array())); 	
 	
 		}
 		// END Script for MORPHOLOGY +++++++++++++++++++++++++++++++++++++++
@@ -920,11 +920,11 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 			//$res_marker = markers_search($evidencepropertyyperel, $property_1, $type, $subject, $predicate);
 			list($res_marker, $res_marker_latest) = markers_search($evidencepropertyyperel, $property_1, $type, $subject, $predicate);
 			if ($res_marker != NULL)
-				$id_type_res = array_merge($id_type_res, $res_marker);
+				$id_type_res = array_merge(($id_type_res ?? array()), ($res_marker ?? array()));
 			
 			//Added on Oct 22 2022
 			if($res_marker_latest != NULL)
-				$id_type_res_latest = array_merge($id_type_res_latest, $res_marker_latest);	
+				$id_type_res_latest = array_merge(($id_type_res_latest ?? array()), ($res_marker_latest ?? array()));	
 			//Till Here
 		}
 		// END Script for MARKERS +++++++++++++++++++++++++++++++++++++++		
@@ -951,7 +951,7 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 			$res_marker = major_neurontransmitter_search($property_1, $type, $subject, $predicate) ;
 		
 			if ($res_marker != NULL)
-				$id_type_res = array_merge($id_type_res, $res_marker);
+				$id_type_res = array_merge(($id_type_res ?? array()), ($res_marker ?? array()));
 		
 		}
 		// END Script for Major Neurotransmitter +++++++++++++++++++++++++++++++++++++++
@@ -965,7 +965,7 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 			$res_ephys = ephys_search($evidencepropertyyperel, $property_1, $type, $subject, $predicate, $class_evidence_property_type_rel, $epdataevidencerel, $value, $epdata);
 				
 			if ($res_ephys != NULL)
-				$id_type_res = array_merge($id_type_res, $res_ephys); 	
+				$id_type_res = array_merge(($id_type_res ?? array()), ($res_ephys ?? array())); 	
 		}
 		// END Script for ELETROPHISIOLOGY +++++++++++++++++++++++++++++++++++++++			
 		
@@ -977,7 +977,7 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 			$res_fp = fp_search($subject, $predicate, $value);
 				
 			if ($res_fp != NULL)
-				$id_type_res = array_merge($id_type_res, $res_fp); 	
+				$id_type_res = array_merge(($id_type_res ?? array()), ($res_fp ?? array())); 	
 		}
 		// End Firing Pattern
 		// Firing pattern parameter
@@ -988,7 +988,7 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 			$res_fp = fp_parameter_search($subject, $predicate, $value,$firing_pattern_parameter_names);
 				
 			if ($res_fp != NULL)
-				$id_type_res = array_merge($id_type_res, $res_fp); 	
+				$id_type_res = array_merge(($id_type_res ?? array()), ($res_fp ?? array())); 	
 		}
 		// End Firing pattern parameter
 		// Script for CONNECTIVITY +++++++++++++++++++++++++++++++++++++++++++
@@ -1014,7 +1014,7 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 			$res_connectivity = connectivity_search($evidencepropertyyperel, $property_1, $type, $part, $relation, $value);
 			
 			if ($res_connectivity != NULL)
-				$id_type_res = array_merge($id_type_res, $res_connectivity);
+				$id_type_res = array_merge(($id_type_res ?? array()), ($res_connectivity ?? array()));
 		}
 		// END Script for CONNECTIVITY +++++++++++++++++++++++++++++++++++++++
 		//Unque Ids
@@ -1023,7 +1023,7 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 			$res_ids = unique_ids_search($relation,$value);
 				
 			if ($res_ids != NULL){
-				$id_type_res = array_merge($id_type_res, $res_ids); 	
+				$id_type_res = array_merge(($id_type_res ?? array()), ($res_ids ?? array())); 	
 				//Need to test this one as new array will be multi array and res_ids will be normal array with ids
 				//$id_type_res = array_merge($id_type_res_latest, $res_ids); 	
 			} 
@@ -1044,7 +1044,7 @@ for ($i=0; $i<=$a; $i++)   // Count for each OR
 		for ($q=0; $q<$n1; $q++)
 		{
 			$ww=$id_type_res[$q];
-			$count_result = array_count_values($id_type_res);
+			$count_result = array_count_values(($id_type_res ?? array()));
 			
 			if ($count_result[$ww] == $n_b)
 			{
@@ -1124,7 +1124,7 @@ include ("function/icon.html");
 			$queryList = "select distinct conflict_note  from EvidencePropertyTypeRel eptr";			
 			$rsqueryList = mysqli_query($GLOBALS['conn'],$queryList);
 			$conflict_tables = array();
-			while(list($conflict_note) = mysqli_fetch_row($rsqueryList)){
+			while(list($conflict_note) = ($rsqueryList ? mysqli_fetch_row($rsqueryList) : null)){
 				//Create Empty Tables;
 				if(!$conflict_note){
 					$conflict_note = $cn = "nullunknown";
@@ -1208,10 +1208,10 @@ include ("function/icon.html");
 						list($id_t1, $name_type1, $subregion_type1, $position_type1, $n_result_tot1)= get_UItable($id, $subject, $conflict, $type, $name_temporary_table_result, $conflict);
 						//array_walk($name_type1, function(&$value, $key)  use ($conflict) { $value = $value." (".$conflict.")"; } );
 						//Merge them
-						$id_t = array_merge($id_t, $id_t1);
-						$name_type = array_merge($name_type, $name_type1);
-						$subregion_type = array_merge($subregion_type, $subregion_type1);
-						$position_type = array_merge($position_type, $position_type1);
+						$id_t = array_merge(($id_t ?? array()), ($id_t1 ?? array()));
+						$name_type = array_merge(($name_type ?? array()), ($name_type1 ?? array()));
+						$subregion_type = array_merge(($subregion_type ?? array()), ($subregion_type1 ?? array()));
+						$position_type = array_merge(($position_type ?? array()), ($position_type1 ?? array()));
 						$n_result_tot = $n_result_tot + $n_result_tot1;
 					}
 					//$conflict will have that value positive inference or anything
@@ -1234,11 +1234,11 @@ include ("function/icon.html");
 			$n_result_tot=0;
 			$n_result_tot_unknown=0;
 			$id_array = array();
-			while(list($id) = mysqli_fetch_row($rs))
+			while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))
 			{
 				array_push($id_array, $id);
 			}
-			$id_string = implode(", ", $id_array);
+			$id_string = implode(", ", ($id_array ?? array()));
 			list($id_t, $name_type, $subregion_type, $position_type, $n_result_tot) = get_UItable($id_string, NUll, NULL, $type, $name_temporary_table_result);
 		//	$conflict_tables["Expressed"] = update_arrayHash($conflict_tables, "Expressed" , $result_subject, $id_t, $name_type, $subregion_type, $position_type, $n_result_tot, NULL);
 			$conflict_tables["NotExpressed"] = update_arrayHash($conflict_tables, "NotExpressed" , $result_subject, $id_t, $name_type, $subregion_type, $position_type, $n_result_tot, NULL);
@@ -1305,7 +1305,7 @@ include ("function/icon.html");
 			}
 		}//end of for
 	
-		if ($n_result_tot == 0);
+		if ((float)$n_result_tot == 0);
 		else {
 		
 			print ("<table border='0'  cellspacing='3' cellpadding='3' class='table_result'>
@@ -1364,7 +1364,7 @@ include ("function/icon.html");
 		}
 
 
-		else if($permission==1 || $_SESSION["fp"]==0){
+		else if($permission==1 || (float)$_SESSION["fp"]==0){
 			print ("
 				</td>		
 				</tr>

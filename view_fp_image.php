@@ -46,7 +46,7 @@ img{
 			AND t.id=fpr.Type_id";
 		$rs_types = mysqli_query($GLOBALS['conn'],$query_to_get_types);
 		$index=1;
-		while(list($type_id,$type_name,$type_nick) = mysqli_fetch_row($rs_types))	{		
+		while(list($type_id,$type_name,$type_nick) = ($rs_types ? mysqli_fetch_row($rs_types) : null))	{		
 			print("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$index) <a title='$type_nick' href='neuron_page.php?id=$type_id' target='_blank'>$type_name</a><br>");
 			$index++;
 		}

@@ -8,7 +8,7 @@ function retrieve_evidences($show1, $type_for_display, $fragment, $conn, $id1_ne
 		$type_show  = "";
 		$query_type = "SELECT distinct type FROM $name_temporary_table WHERE id_fragment = $id_fragment $subquery ORDER BY type ASC";
 		$rs_type = mysqli_query($conn,$query_type);	
-		while(list($type) = mysqli_fetch_row($rs_type))
+		while(list($type) = ($rs_type ? mysqli_fetch_row($rs_type) : null))
 		{
 			$type_show  = $type_show . $type;
 		}				
@@ -55,10 +55,10 @@ function retrieve_evidences($show1, $type_for_display, $fragment, $conn, $id1_ne
 		$dendrite_group = array('Dendrites', 'Somata', 'AxonsSomata', 'AxonsDendrites', 'DendritesSomata', 'AxonsDendritesSomata');
 		$axon_group = array('Axons','Somata','AxonsSomata','AxonsDendrites','AxonsDendritesSomata');
 		$original_id = $fragment -> getOriginal_id();
-		if (in_array($type_for_display,$dendrite_group)) {
+		if (in_array($type_for_display,($dendrite_group ?? array()))) {
 			$neurite_ref = $val1_property.":D";
 		}
-		elseif (in_array($type_for_display,$axon_group)) {
+		elseif (in_array($type_for_display,($axon_group ?? array()))) {
 			$neurite_ref = $val1_property.":A";	
 		}
 		$attachment_obj = new attachment_synpro($class_attachment ?? null); // this clears prior attachment results
@@ -88,7 +88,7 @@ function retrieve_evidences($show1, $type_for_display, $fragment, $conn, $id1_ne
 		$rs_to_get_info = mysqli_query($conn,$query_to_get_info);	
 		$seg_1_text="";
 		$seg_2_text="";
-		while(list($interpretation_notes,$protocol,$age_weight,$species_tag) = mysqli_fetch_row($rs_to_get_info))
+		while(list($interpretation_notes,$protocol,$age_weight,$species_tag) = ($rs_to_get_info ? mysqli_fetch_row($rs_to_get_info) : null))
 		{
 			if ($interpretation_notes=='NULL') {$interpretation_notes='';}
 			if ($protocol=='NULL') {$protocol='';}
@@ -144,10 +144,10 @@ function retrieve_evidences($show1, $type_for_display, $fragment, $conn, $id1_ne
 		$dendrite_group = array('Dendrites', 'Somata', 'AxonsSomata', 'AxonsDendrites', 'DendritesSomata', 'AxonsDendritesSomata');
 		$axon_group = array('Axons','Somata','AxonsSomata','AxonsDendrites','AxonsDendritesSomata');
 		$original_id = $fragment -> getOriginal_id();
-		if (in_array($type_for_display,$dendrite_group)) {
+		if (in_array($type_for_display,($dendrite_group ?? array()))) {
 			$neurite_ref = $val1_property.":D";
 		}
-		elseif (in_array($type_for_display,$axon_group)) {
+		elseif (in_array($type_for_display,($axon_group ?? array()))) {
 			$neurite_ref = $val1_property.":A";	
 		}
 		$attachment_obj -> retrive_by_props($id_original, $id_neuron, $neurite_ref);

@@ -329,7 +329,7 @@ $(document).ready(function(){
 				$temp_neuron = htmlspecialchars($name_neuron_right,ENT_QUOTES);	
 				echo"<option value='".$temp_neuron."'>".stripslashes($name_neuron_right)."</option>";
 				print("<OPTION VALUE='' disabled></OPTION>");
-				if ($total == 0)
+				if ((float)$total == 0)
 				{
 					print("<OPTION VALUE=''>-</OPTION>");
 				}	
@@ -445,7 +445,7 @@ $(document).ready(function(){
 							$term_human_rat = $term->getHumanRat();
 							$term_term_display = '';
 							$term_concept_display = '';
-							if ($k3 == 0) {
+							if ((float)$k3 == 0) {
 								$term_term_display = $term_term;
 								$term_concept_display = $term_concept;
 							}
