@@ -78,7 +78,7 @@ function remove_table_by_tyme()  // after 2 hours:
 			$new_name = strstr($tableName, '__');
 			$new_name = str_replace('__', '', ($new_name ?? ''));
 
-			$delta_t = $time_1 - $new_name;
+			$delta_t = $time_1 - (int)$new_name; //Fix for php83
 
 			if ($delta_t > $time_rem)  // 36000
 			{
@@ -93,7 +93,7 @@ function remove_table_by_tyme()  // after 2 hours:
 			$new_name = strstr($tableName, '__');
 			$new_name = str_replace('__', '', ($new_name ?? ''));
 
-			$delta_t = $time_1 - $new_name;
+			$delta_t = $time_1 - (int)$new_name;//Php83fix
 
 			if ($delta_t > $time_rem)  // 36000
 			{
@@ -108,7 +108,7 @@ function remove_table_by_tyme()  // after 2 hours:
 			$new_name = strstr($tableName, '__');
 			$new_name = str_replace('__', '', ($new_name ?? ''));
 
-			$delta_t = $time_1 - $new_name;
+			$delta_t = $time_1 - (int)$new_name; //php83 fix
 
 			if ($delta_t > $time_rem)  // 36000
 			{
