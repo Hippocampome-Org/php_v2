@@ -8,7 +8,7 @@ function get_neuron_ids($conn){
         if(!$rs || ($rs->num_rows < 1)){
                 return $neuron_ids;
         }
-	while($row = ($rs ? mysqli_fetch_row($rs) : null))
+	while($row = ($rs ? ($rs ? mysqli_fetch_row($rs) : null) : null))
 	{
 		$neuron_ids[$row[0]]= $row[1] ?? null;
 	}
@@ -123,7 +123,7 @@ function format_table_synpro($conn, $query, $table_string, $csv_tablename, $csv_
                 $table_string1 = get_table_skeleton_first($csv_headers);
         }
 	$i=0;
-	while($rowvalue = mysqli_fetch_array($rs, MYSQLI_ASSOC))
+	while($rowvalue = ($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null))
 	{      
 		$row = parseUrl($rowvalue['page']);
 		if($csv_tablename == 'synpro_table'){
@@ -243,7 +243,7 @@ function format_table($conn, $query, $table_string, $csv_tablename, $csv_headers
 		}
 	}
 	$i=0;
-	while($row = ($rs ? mysqli_fetch_row($rs) : null))
+	while($row = ($rs ? ($rs ? mysqli_fetch_row($rs) : null) : null))
 	{       
 		$csv_rows[] = $row;
 		$j=0;
@@ -310,7 +310,7 @@ function format_table_combined($conn, $query, $csv_tablename, $csv_headers, $wri
     }
 
     $i = 0;
-    while($row = ($rs ? mysqli_fetch_row($rs) : null)){
+    while($row = ($rs ? ($rs ? mysqli_fetch_row($rs) : null) : null)){
 	$csv_rows[] = $row;
         // Check for row exclusion based on 'exclude' option
         if (isset($options['exclude']) && in_array($row[0], ($options['exclude'] ?? array()))) {
@@ -395,7 +395,7 @@ function format_table_neurons($conn, $query, $table_string, $csv_tablename, $csv
     if (!$array_subs) {
         $array_subs = [];
     }
-    while ($row = ($rs ? mysqli_fetch_row($rs) : null)) {
+    while ($row = ($rs ? ($rs ? mysqli_fetch_row($rs) : null) : null)) {
         if (isset($write_file)) {
             $csv_rows[] = $row;
         } else {
@@ -482,7 +482,7 @@ function format_table_connectivity($conn, $query, $table_string, $csv_tablename,
         }
 	if(!$array_subs){ $array_subs = [];}
 
-	while ($rowvalue = ($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null)) {
+	while ($rowvalue = ($rs ? ($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null) : null)) {
 		//$source_subregion, $source_neuron_name, $target_subregion, $target_neuron_name, views, nm_page, parcel_specific
 		
                 // Modify neuron name if necessary
@@ -652,7 +652,7 @@ function format_table_morphology($conn, $query, $table_string, $csv_tablename, $
         }
 	if(!$array_subs){ $array_subs = [];}
 
-	while ($rowvalue = ($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null)) {
+	while ($rowvalue = ($rs ? ($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null) : null)) {
     		// Modify neuron name if necessary
 		if (isset($neuron_ids[$rowvalue['neuron_name']])) {
 			$rowvalue['neuron_name'] = get_link($rowvalue['neuron_name'], $neuron_ids[$rowvalue['neuron_name']], './neuron_page.php', 'neuron');
@@ -847,7 +847,7 @@ function format_table_markers($conn, $query, $table_string, $csv_tablename, $csv
         }
 	if(!$array_subs){ $array_subs = [];}
 
-	while ($rowvalue = ($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null)) {
+	while ($rowvalue = ($rs ? ($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null) : null)) {
     		// Modify neuron name if necessary
 		if (isset($neuron_ids[$rowvalue['neuron_name']])) {
 			$rowvalue['neuron_name'] = get_link($rowvalue['neuron_name'], $neuron_ids[$rowvalue['neuron_name']], './neuron_page.php', 'neuron');
@@ -1003,7 +1003,7 @@ function format_table_biophysics($conn, $query, $table_string, $csv_tablename, $
 		return $table_string1;
         }
 	if(!$array_subs){ $array_subs = [];}
-	while($rowvalue = ($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null)){
+	while($rowvalue = ($rs ? ($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null) : null)){
 		if(isset($neuron_ids[$row['neuron_name']])){
 			$rowvalue['neuron_name'] = get_link($rowvalue['neuron_name'], $neuron_ids[$rowvalue['neuron_name']], './neuron_page.php','neuron');
 		}
@@ -1097,7 +1097,7 @@ function format_table_phases($conn, $query, $table_string, $csv_tablename, $csv_
 		return $table_string1;
         }
 	if(!$array_subs){ $array_subs = [];}
-	while($rowvalue = ($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null)){
+	while($rowvalue = ($rs ? ($rs ? mysqli_fetch_array($rs, MYSQLI_ASSOC) : null) : null)){
 		//var_dump($rowvalue);
 		if(isset($neuron_ids[$row['neuron_name']])){
 			$rowvalue['neuron_name'] = get_link($rowvalue['neuron_name'], $neuron_ids[$rowvalue['neuron_name']], './neuron_page.php','neuron');
@@ -1181,7 +1181,7 @@ function get_page_views($conn){ //Passed on Dec 3 2023
 
 	$rs = mysqli_query($conn,$page_views_query);
 	$result_page_views_array = array();
-	while($row = ($rs ? mysqli_fetch_row($rs) : null))
+	while($row = ($rs ? ($rs ? mysqli_fetch_row($rs) : null) : null))
 	{
 		array_push($result_page_views_array, $row);
 	}

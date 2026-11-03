@@ -49,7 +49,7 @@ function get_type_details($conn){
     $n=0;
 
     $result_array = array();
-    while(list($id, $name, $subregion, $nickname, $excit_inhib, $position, $type_subtype, $ranks , $v2p0) = ($rs ? mysqli_fetch_row($rs) : null))
+    while(list($id, $name, $subregion, $nickname, $excit_inhib, $position, $type_subtype, $ranks , $v2p0) = ($rs ? ($rs ? mysqli_fetch_row($rs) : null) : null))
     {
         if(in_array($nickname, array('CA1 Deep Pyramidal', 'CA1 Superficial Pyramidal'))){ continue; }
 
@@ -86,7 +86,7 @@ function get_synproCPtotal_data($conn){
     $rs = mysqli_query($conn,$select_query);
 
     $result_array = array();
-    while(list($source_id, $source_excit_inhib, $target_id, $target_excit_inhib, $cp_mean_total, $cp_stdev_total, $parcel_count) = ($rs ? mysqli_fetch_row($rs) : null))
+    while(list($source_id, $source_excit_inhib, $target_id, $target_excit_inhib, $cp_mean_total, $cp_stdev_total, $parcel_count) = ($rs ? ($rs ? mysqli_fetch_row($rs) : null) : null))
     //var_dump($rs);
     //while(list($source_id, $target_id, $cp_mean_total, $cp_stdev_total, $parcel_count) = mysqli_fetch_row($rs))
     {
@@ -124,7 +124,7 @@ function get_synprotypetyperel_data($conn_synaptome){
     $rs = mysqli_query($conn_synaptome,$select_query);
     $n=0;
     $result_array = array();
-    while(list($pre, $pre_id, $post, $post_id) = mysqli_fetch_row($rs))
+    while(list($pre, $pre_id, $post, $post_id) = ($rs ? mysqli_fetch_row($rs) : null))
     {
         //Using this on Feb 23 2023 as we got new db with nickname updated    
         array_push($result_array, 

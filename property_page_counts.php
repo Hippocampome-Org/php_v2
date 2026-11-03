@@ -374,7 +374,7 @@ if ($name_show_only_article_var)
 	$rs2 = mysqli_query($GLOBALS['conn'],$query);	
 	$query ="SELECT id, PMID FROM $name_temporary_table";
 	$rs = mysqli_query($GLOBALS['conn'],$query);					
-	while(list($id, $pmid) = ($rs ? mysqli_fetch_row($rs) : null))	
+	while(list($id, $pmid) = ($rs ? ($rs ? mysqli_fetch_row($rs) : null) : null))	
 	{	
 		if ($name_show_only_article == 'article')
 		{
@@ -438,7 +438,7 @@ if ($name_show_only_authors_var)
 		$rs2 = mysqli_query($GLOBALS['conn'],$query);	
 		$query ="SELECT id FROM $name_temporary_table WHERE authors LIKE '%$name_show_only_authors%'";
 		$rs = mysqli_query($GLOBALS['conn'],$query);					
-		while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))		
+		while(list($id) = ($rs ? ($rs ? mysqli_fetch_row($rs) : null) : null))		
 		{
 			$query = "UPDATE $name_temporary_table SET show_only =  '1' WHERE id = '$id'";
 			$rs2 = mysqli_query($GLOBALS['conn'],$query);
@@ -784,7 +784,7 @@ function show_only_authors(link, start1, stop1)
 			$query = "SELECT DISTINCT title FROM $name_temporary_table WHERE show_only = 1";
 			$rs = mysqli_query($GLOBALS['conn'],$query);
 			$n_id_tot = 0;	 // Total number of articles:
-			while(list($id) = ($rs ? mysqli_fetch_row($rs) : null))			
+			while(list($id) = ($rs ? ($rs ? mysqli_fetch_row($rs) : null) : null))			
 				$n_id_tot = $n_id_tot + 1;
 
 /*
@@ -799,7 +799,7 @@ function show_only_authors(link, start1, stop1)
 					$rs = mysqli_query($GLOBALS['conn'],$query);
 					$total_count_all=$number_of_quotes_axon = $number_of_quotes_dendrite=$number_of_quotes_somata=0;
 					 // total number of axon quotes
-					while(list($total_count,$axon_count,$dendrite_count,$soma_count) = mysqli_fetch_row($rs))	{		
+					while(list($total_count,$axon_count,$dendrite_count,$soma_count) = ($rs ? mysqli_fetch_row($rs) : null))	{		
 						$total_count_all=intval($total_count);
 						$number_of_quotes_axon = intval($axon_count);	
 						$number_of_quotes_dendrite = intval($dendrite_count);	
@@ -817,7 +817,7 @@ function show_only_authors(link, start1, stop1)
 					$rs = mysqli_query($GLOBALS['conn'],$query);
 					$show_only_total_count_all=$show_only_number_of_quotes_axon = $show_only_number_of_quotes_dendrite=$show_only_number_of_quotes_somata=0;
 					 // total number of axon quotes
-					while(list($total_count,$axon_count,$dendrite_count,$soma_count) = mysqli_fetch_row($rs))	{		
+					while(list($total_count,$axon_count,$dendrite_count,$soma_count) = ($rs ? mysqli_fetch_row($rs) : null))	{		
 						$show_only_total_count_all=intval($total_count);
 						$show_only_number_of_quotes_axon = intval($axon_count);	
 						$show_only_number_of_quotes_dendrite = intval($dendrite_count);	
@@ -835,7 +835,7 @@ function show_only_authors(link, start1, stop1)
 					}
 					$rs = mysqli_query($GLOBALS['conn'],$query);	
 					$n_id = 0;
-					while(list($title) = ($rs ? mysqli_fetch_row($rs) : null))
+					while(list($title) = ($rs ? ($rs ? mysqli_fetch_row($rs) : null) : null))
 					{
 						$title_temp[$n_id] = $title;											
 						$n_id = $n_id + 1;
@@ -900,7 +900,7 @@ function show_only_authors(link, start1, stop1)
 							$rs = mysqli_query($GLOBALS['conn'],$query);
 							$number_of_articles_1 = 0;
 							$number_of_books_1 = 0;
-							while(list($title, $pmid) = ($rs ? mysqli_fetch_row($rs) : null))		
+							while(list($title, $pmid) = ($rs ? ($rs ? mysqli_fetch_row($rs) : null) : null))		
 							{	
 								if (strlen($pmid) > 10)
 									$number_of_books_1 = $number_of_books_1 + 1;
@@ -943,7 +943,7 @@ function show_only_authors(link, start1, stop1)
 							// retrieve the name of journal from temporary table:
 							$query ="SELECT DISTINCT publication FROM $name_temporary_table";
 							$rs = mysqli_query($GLOBALS['conn'],$query);					
-							while(list($pub) = ($rs ? mysqli_fetch_row($rs) : null))	
+							while(list($pub) = ($rs ? ($rs ? mysqli_fetch_row($rs) : null) : null))	
 							{	
 								// retrieve the number of articles for this publication:
 								$pub= mysqli_real_escape_string($GLOBALS['conn'],$pub);
@@ -968,7 +968,7 @@ function show_only_authors(link, start1, stop1)
 							print("<font class='font2'>By:</font> ");
 							$query ="SELECT distinct authors FROM $name_temporary_table";
 							$rs = mysqli_query($GLOBALS['conn'],$query);				
-							while(list($allauthors) = ($rs ? mysqli_fetch_row($rs) : null))
+							while(list($allauthors) = ($rs ? ($rs ? mysqli_fetch_row($rs) : null) : null))
 							{
 								if($author_string=="")
 									$author_string=$allauthors;	
@@ -1069,7 +1069,7 @@ function show_only_authors(link, start1, stop1)
 					$rs = mysqli_query($GLOBALS['conn'],$query);	
 					$auth=array();	
 							
-					while(list($id, $authors, $publication, $year, $PMID, $pages, $page_location, $show, $pmcid, $nihmsid, $doi, $show_only, $volume, $issue, $referenceID) = ($rs ? mysqli_fetch_row($rs) : null))
+					while(list($id, $authors, $publication, $year, $PMID, $pages, $page_location, $show, $pmcid, $nihmsid, $doi, $show_only, $volume, $issue, $referenceID) = ($rs ? ($rs ? mysqli_fetch_row($rs) : null) : null))
 					{			
 						$auth=array();
 						$authors2="";
@@ -1194,7 +1194,7 @@ function show_only_authors(link, start1, stop1)
 					{					
 						$query = "SELECT distinct id_fragment, id_original, quote, page_location, type, referenceID FROM $name_temporary_table WHERE title = '$title_temp[$i]' ORDER BY id_fragment ASC";	
 						$rs = mysqli_query($GLOBALS['conn'],$query);	
-						while(list($id_fragment, $id_original, $quote, $page_location, $type, $referenceID) = ($rs ? mysqli_fetch_row($rs) : null))
+						while(list($id_fragment, $id_original, $quote, $page_location, $type, $referenceID) = ($rs ? ($rs ? mysqli_fetch_row($rs) : null) : null))
 						{	
 							if ($show1 == 1)
 							{
@@ -1359,7 +1359,7 @@ function show_only_authors(link, start1, stop1)
 //								$query = "SELECT distinct quote FROM $name_temporary_table WHERE show_only=1 $subquery";
 								$query = "SELECT distinct quote FROM $name_temporary_table WHERE show_only=1";
 								$rs = mysqli_query($GLOBALS['conn'],$query);			
-								while(list($quote) = ($rs ? mysqli_fetch_row($rs) : null))
+								while(list($quote) = ($rs ? ($rs ? mysqli_fetch_row($rs) : null) : null))
 								{
 									$cnt++;
 								}
